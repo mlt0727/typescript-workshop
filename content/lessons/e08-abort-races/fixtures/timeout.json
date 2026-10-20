@@ -1,0 +1,5 @@
+[
+  { "url": "/api/fast", "delayMs": 20, "body": { "name": "fast" } },
+  { "url": "/api/slow", "delayMs": 400, "body": { "name": "slow" } },
+  { "url": "/api/missing", "delayMs": 20, "status": 404, "statusText": "Not Found", "body": { "message": "没有" } }
+]

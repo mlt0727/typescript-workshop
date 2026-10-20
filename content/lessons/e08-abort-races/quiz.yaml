@@ -1,0 +1,45 @@
+- id: race-cause
+  type: single
+  prompt: 搜索框中先后发出了 `t` 和 `ty` 两个请求，界面最终显示了 `t` 的结果。最可能的原因是？
+  options:
+    - text: "`t` 的请求更慢，它的结果后到，覆盖了 `ty` 的结果"
+      correct: true
+      explain: 请求完成的顺序不一定是发出的顺序。要么取消过时的请求，要么丢弃过时的结果。
+    - text: 浏览器按顺序处理请求，第二个请求被忽略了
+      explain: 浏览器会并发地发出请求，两个都完成了。
+    - text: "`fetch` 缓存了 `t` 的结果"
+      explain: 与缓存无关，是到达顺序的问题。
+- id: abort-error
+  type: single
+  prompt: 调用 `controller.abort()` 取消一个进行中的 `fetch` 后，会发生什么？
+  options:
+    - text: fetch 以一个 name 为 'AbortError' 的 DOMException 拒绝
+      correct: true
+      explain: 这是程序主动取消造成的，通常应该识别出来并静默忽略。
+    - text: fetch 兑现为 undefined
+      explain: 被取消的 fetch 是被拒绝，不是兑现。
+    - text: 什么都不会发生，请求照常完成
+      explain: 只要请求还没完成，传入了 signal 的 fetch 就会被中止。
+- id: reuse-controller
+  type: single
+  prompt: 能不能让每次请求都复用同一个 AbortController，在发新请求前调用一次 abort()？
+  options:
+    - text: 不能。abort 之后它的 signal 永远处于已取消状态，后面的请求一开始就会被拒绝
+      correct: true
+      explain: AbortController 是一次性的，每个请求都要新建一个。
+    - text: 能，abort 之后 signal 会自动恢复
+      explain: signal 一旦取消就不会恢复。
+    - text: 能，但每次要调用 controller.reset()
+      explain: AbortController 没有 reset 方法。
+- id: timeout-signal
+  type: multiple
+  prompt: 关于 `AbortSignal.timeout(ms)` 和 `AbortSignal.any([...])`，哪些说法正确？
+  options:
+    - text: "`AbortSignal.timeout(ms)` 到时间后自动取消，拒绝原因的 name 是 'TimeoutError'"
+      correct: true
+      explain: 这样就能和用户主动取消（AbortError）区分开。
+    - text: "`AbortSignal.any` 中任何一个信号取消，组合出的信号就取消"
+      correct: true
+      explain: 适合“用户取消或者超时，任何一个发生就中止”。
+    - text: 用 Promise.race 实现超时，效果和 AbortSignal.timeout 完全一样
+      explain: Promise.race 只是提前结束等待，请求本身仍在进行；AbortSignal.timeout 真正中止了请求。

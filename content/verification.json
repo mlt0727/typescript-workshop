@@ -5834,6 +5834,113 @@
         }
       ]
     },
+    "e08-abort-races": {
+      "verifiedAt": "2026-10-20T12:22:38.543Z",
+      "sourceHash": "1f08bbdda6fe5783",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:race-problem:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:race-problem:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 显示了 ty 的结果： [ 'TypeScript', 'Typed arrays' ] | [log] 显示了 t 的结果： [ 'TypeScript', 'Tailwind', 'Testing Library' ] | [log] 最终界面上的结果： [ 'TypeScript', 'Tailwind', 'Testing Library' ]"
+        },
+        {
+          "target": "playground:abort:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:abort:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] t 的请求被取消了 | [log] 显示了 ty 的结果： [ 'TypeScript', 'Typed arrays' ]"
+        },
+        {
+          "target": "playground:timeout:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:timeout:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 超时： TimeoutError | [log] 用户取消： AbortError"
+        },
+        {
+          "target": "exercise:latest-search:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(createSearcher › 后发先至时，只显示最新的结果,createSearcher › 即使 search 忽略了 signal，过时的结果也被丢弃,createSearcher › 新的调用会取消上一次的 signal，每次使用新的 signal,createSearcher › 最新调用的错误会传出；过时调用的错误被忽略)"
+        },
+        {
+          "target": "exercise:latest-search:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:latest-search:alt:request-counter",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:latest-search:wrong:abort-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSearcher › 即使 search 忽略了 signal，过时的结果也被丢弃,createSearcher › 最新调用的错误会传出；过时调用的错误被忽略)"
+        },
+        {
+          "target": "exercise:latest-search:wrong:check-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSearcher › 新的调用会取消上一次的 signal，每次使用新的 signal)"
+        },
+        {
+          "target": "exercise:latest-search:wrong:reuse-controller",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSearcher › 新的调用会取消上一次的 signal，每次使用新的 signal)"
+        },
+        {
+          "target": "exercise:latest-search:wrong:rethrow-stale-errors",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSearcher › 后发先至时，只显示最新的结果,createSearcher › 新的调用会取消上一次的 signal，每次使用新的 signal,createSearcher › 最新调用的错误会传出；过时调用的错误被忽略)"
+        },
+        {
+          "target": "exercise:timeout-fetch:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(getJsonWithTimeout › 超时：以 RequestTimeoutError 拒绝，并且很快结束,getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝,getJsonWithTimeout › HTTP 错误)"
+        },
+        {
+          "target": "exercise:timeout-fetch:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:timeout-fetch:alt:manual-controller",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:timeout-fetch:wrong:ignore-caller-signal",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝)"
+        },
+        {
+          "target": "exercise:timeout-fetch:wrong:everything-is-timeout",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝)"
+        },
+        {
+          "target": "exercise:timeout-fetch:wrong:race-without-abort",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝)"
+        },
+        {
+          "target": "exercise:timeout-fetch:wrong:no-status-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › HTTP 错误)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",

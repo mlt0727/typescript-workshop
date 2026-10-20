@@ -1,0 +1,5 @@
+[
+  { "url": "/api/search?q=t", "delayMs": 300, "body": ["TypeScript", "Tailwind", "Testing Library"] },
+  { "url": "/api/search?q=ty", "delayMs": 100, "body": ["TypeScript", "Typed arrays"] },
+  { "url": "/api/slow", "delayMs": 300, "body": { "ok": true } }
+]
