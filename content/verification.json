@@ -7781,8 +7781,8 @@
       ]
     },
     "g14-async-data": {
-      "verifiedAt": "2026-10-20T16:06:21.158Z",
-      "sourceHash": "268836825afa5e79",
+      "verifiedAt": "2026-10-20T16:33:16.081Z",
+      "sourceHash": "648b42b191539ad3",
       "ok": true,
       "checks": [
         {
@@ -7808,7 +7808,7 @@
         {
           "target": "exercise:use-json-hook:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(url 为 null：idle，不发请求；reload 也什么都不做 ⟶ expect(…).toEqual({ status: 'idle' }),先是 loading，然后是 success；请求带着中止信号 ⟶ expect(…).toEqual({,失败：状态码不是 2xx、数据格式不对、网络失败 ⟶ expect(…).toEqual({ status: 'error', message: '服务器返回了 500' }),重试：重新请求当前的地址，期间显示加载中 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",url 变化：中止旧的请求；被中止的请求不算失败，旧的结果也不会出现 ⟶ expect(…).toBe(true),传入内联的 parse 函数也不会重复请求 ⟶ TestingLibraryElementError: Unable to find an element with the text: success. This could be because the text is broken up by multiple elements. In this case, yo,一次成功的加载只提交两次：出现时一次，结果到达时一次 ⟶ TestingLibraryElementError: Unable to find role=\"list\" and name \"用户\")"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(url 为 null：idle，不发请求；reload 也什么都不做 ⟶ expect(…).toEqual({ status: 'idle' }),先是 loading，然后是 success；请求带着中止信号 ⟶ expect(…).toEqual({,失败：状态码不是 2xx、数据格式不对、网络失败 ⟶ expect(…).toEqual({ status: 'error', message: '服务器返回了 500' }),重试：重新请求当前的地址，期间显示加载中 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",url 变化：中止旧的请求；被中止的请求不算失败，旧的结果也不会出现 ⟶ expect(…).toBe(true),传入内联的 parse 函数也不会重复请求 ⟶ TestingLibraryElementError: Unable to find an element with the text: success. This could be because the text is broken up by multiple elements. In this case, yo,url 变成 null：中止请求，回到 idle ⟶ expect(…).toEqual({ status: 'idle' }),使用最新传入的 parse ⟶ expect(…).toEqual({ status: 'success', data: '最新的 parse' }),一次成功的加载只提交两次：出现时一次，结果到达时一次 ⟶ TestingLibraryElementError: Unable to find role=\"list\" and name \"用户\",重试、换地址时也只多提交两次：操作本身一次，结果到达时一次 ⟶ TestingLibraryElementError: Unable to find role=\"alert\")"
         },
         {
           "target": "exercise:use-json-hook:solution:solution",
@@ -7838,17 +7838,27 @@
         {
           "target": "exercise:use-json-hook:wrong:no-signal",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(先是 loading，然后是 success；请求带着中止信号 ⟶ expect(…).toBeInstanceOf([Function: AbortSignal] {,url 变化：中止旧的请求；被中止的请求不算失败，旧的结果也不会出现 ⟶ expect(…).toBe(true))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(先是 loading，然后是 success；请求带着中止信号 ⟶ expect(…).toBeInstanceOf([Function: AbortSignal] {,url 变化：中止旧的请求；被中止的请求不算失败，旧的结果也不会出现 ⟶ expect(…).toBe(true),url 变成 null：中止请求，回到 idle ⟶ expect(…).toBe(true))"
         },
         {
           "target": "exercise:use-json-hook:wrong:sync-loading",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(一次成功的加载只提交两次：出现时一次，结果到达时一次 ⟶ 不要在 Effect 中同步地设置“加载中”：根据结果属于哪一次请求，在渲染时推出来)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(一次成功的加载只提交两次：出现时一次，结果到达时一次 ⟶ 不要在 Effect 中同步地设置“加载中”：根据结果属于哪一次请求，在渲染时推出来,重试、换地址时也只多提交两次：操作本身一次，结果到达时一次 ⟶ 重试时多提交了：不要在 Effect 中设置“加载中”)"
+        },
+        {
+          "target": "exercise:use-json-hook:wrong:guarded-sync-loading",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(重试、换地址时也只多提交两次：操作本身一次，结果到达时一次 ⟶ 重试时多提交了：不要在 Effect 中设置“加载中”)"
+        },
+        {
+          "target": "exercise:use-json-hook:wrong:stale-parse",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(使用最新传入的 parse ⟶ expect(…).toEqual({ status: 'success', data: '最新的 parse' }))"
         },
         {
           "target": "exercise:book-routes:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(直接打开书单：先显示“正在加载…”，数据到了再显示书单 ⟶ TestingLibraryElementError: Unable to find an element with the text: 正在加载…. This could be because the text is broken up by multiple elements. In this case, you ,进入详情：加载时原来的页面保留，状态区显示“正在加载…” ⟶ TestingLibraryElementError: Unable to find role=\"link\" and name \"活着\",服务器出错、数据格式不对：显示加载失败的原因，导航还在 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",数据格式不对也是加载失败 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",加载中又去了别的页面：中止上一次的请求 ⟶ TestingLibraryElementError: Unable to find role=\"link\" and name \"活着\")"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(直接打开书单：先显示“正在加载…”，数据到了再显示书单 ⟶ TestingLibraryElementError: Unable to find an element with the text: 正在加载…. This could be because the text is broken up by multiple elements. In this case, you ,进入详情：加载时原来的页面保留，状态区显示“正在加载…” ⟶ TestingLibraryElementError: Unable to find role=\"link\" and name \"活着\",书单的数据格式不对：在布局中显示加载失败 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",服务器出错、数据格式不对：显示加载失败的原因，导航还在 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",数据格式不对也是加载失败 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",加载中又去了别的页面：中止上一次的请求 ⟶ TestingLibraryElementError: Unable to find role=\"link\" and name \"活着\")"
         },
         {
           "target": "exercise:book-routes:solution:solution",
@@ -7863,7 +7873,7 @@
         {
           "target": "exercise:book-routes:wrong:boundary-on-root",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(不存在的书：“没有这本书”，导航还在 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"navigation\" and name \"主导航\",服务器出错、数据格式不对：显示加载失败的原因，导航还在 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"navigation\" and name \"主导航\")"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(不存在的书：“没有这本书”，导航还在 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"navigation\" and name \"主导航\",书单的数据格式不对：在布局中显示加载失败 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"main\",服务器出错、数据格式不对：显示加载失败的原因，导航还在 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"navigation\" and name \"主导航\")"
         },
         {
           "target": "exercise:book-routes:wrong:no-hydrate-fallback",
@@ -7878,7 +7888,7 @@
         {
           "target": "exercise:book-routes:wrong:no-param-check",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编号格式不对：不发请求，直接是“没有这本书” ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"没有这本书\")"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编号格式不对：不发请求，直接是“没有这本书” ⟶ 格式不对的编号不应该请求服务器)"
         },
         {
           "target": "exercise:book-routes:wrong:no-signal",
@@ -8078,6 +8088,93 @@
           "target": "exercise:add-task:wrong:forgot-render",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按回车添加：进入“待办”，清空输入框，焦点留在输入框，播报结果 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name `/^待办 2$/`,点“添加”按钮也能添加；连续添加的任务 id 不重复 ⟶ expect(…).toEqual([ 't1', 't3', 't4' ]),用户输入的 HTML 只作为文字显示 ⟶ expect(…).toEqual([ '写周报', '<b>粗体</b> 任务' ]))"
+        }
+      ]
+    },
+    "p1-03-edit-delete": {
+      "verifiedAt": "2026-10-20T16:28:41.827Z",
+      "sourceHash": "fc6c57ebaa395f54",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:delegation:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:delegation:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:task-actions:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(右移：任务移到下一列，焦点留在它的“右移”按钮上，播报结果 ⟶ expect(…).toEqual([]),移到最右边之后，焦点落在“左移”上；用键盘继续操作 ⟶ expect(…).toEqual([ '写周报', '买牛奶' ]),删除：任务消失，焦点移到这一列的标题上，播报结果 ⟶ expect(…).toEqual([]),新添加的任务的按钮同样有效 ⟶ expect(…).toEqual([ '修自行车', '新任务' ]))"
+        },
+        {
+          "target": "exercise:task-actions:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:task-actions:alt:switch-and-find",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:task-actions:wrong:target-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(右移：任务移到下一列，焦点留在它的“右移”按钮上，播报结果 ⟶ expect(…).toEqual([]),移到最右边之后，焦点落在“左移”上；用键盘继续操作 ⟶ expect(…).toEqual([ '写周报', '买牛奶' ]),删除：任务消失，焦点移到这一列的标题上，播报结果 ⟶ expect(…).toEqual([]),新添加的任务的按钮同样有效 ⟶ expect(…).toEqual([ '修自行车', '新任务' ]))"
+        },
+        {
+          "target": "exercise:task-actions:wrong:focus-lost",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(右移：任务移到下一列，焦点留在它的“右移”按钮上，播报结果 ⟶ expect(…).toHaveFocus(),移到最右边之后，焦点落在“左移”上；用键盘继续操作 ⟶ expect(…).toEqual([ '写周报', '买牛奶' ]),删除：任务消失，焦点移到这一列的标题上，播报结果 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:task-actions:wrong:per-button-listeners",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(移到最右边之后，焦点落在“左移”上；用键盘继续操作 ⟶ expect(…).toEqual([ '写周报', '买牛奶' ]),新添加的任务的按钮同样有效 ⟶ expect(…).toEqual([ '修自行车', '新任务' ]))"
+        },
+        {
+          "target": "exercise:rename-task:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点“改名”：任务变成表单，输入框显示原来的标题，获得焦点并选中全部文字 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",回车保存：去掉首尾空白，标签保留，焦点回到“改名”按钮，播报结果 ⟶ expect(…).toEqual([ '写周报（第 42 周）' ]),点“保存”按钮也能保存 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",Esc 或“取消”：不保存，焦点回到“改名”按钮 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"取消\",标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",同一时间只编辑一个任务；编辑时其他任务的按钮照常工作 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\")"
+        },
+        {
+          "target": "exercise:rename-task:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:rename-task:alt:form-data",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:rename-task:wrong:no-select",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点“改名”：任务变成表单，输入框显示原来的标题，获得焦点并选中全部文字 ⟶ expect(…).toEqual([ 0, 3 ]),回车保存：去掉首尾空白，标签保留，焦点回到“改名”按钮，播报结果 ⟶ expect(…).toEqual([ '写周报（第 42 周）' ]))"
+        },
+        {
+          "target": "exercise:rename-task:wrong:focus-lost",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(回车保存：去掉首尾空白，标签保留，焦点回到“改名”按钮，播报结果 ⟶ expect(…).toHaveFocus(),点“保存”按钮也能保存 ⟶ expect(…).toHaveFocus(),Esc 或“取消”：不保存，焦点回到“改名”按钮 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:rename-task:wrong:no-prevent-default",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ expect(…).toEqual([ true ]))"
+        },
+        {
+          "target": "exercise:rename-task:wrong:no-escape",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Esc 或“取消”：不保存，焦点回到“改名”按钮 ⟶ expect(…).toEqual([ '写周报' ]),标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ expect(…).toEqual([ '写周报' ]))"
+        },
+        {
+          "target": "exercise:rename-task:wrong:empty-exits",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\")"
         }
       ]
     }

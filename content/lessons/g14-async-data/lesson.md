@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: e07 用可辨识联合描述了一次请求的几种状态，e08 处理了取消与竞态，g11 在 Effect 中请求过数据。真实的 React 应用里，几乎每个页面都要加载数据：加载时要有提示，失败时能重试，参数变了要取消旧的请求，数据格式不对要报错，还要决定数据在哪里加载：在组件中，还是在路由上。这一课先把这些整理成一个可复用的数据加载 Hook，再用 React Router 的 loader 在导航时加载数据，用错误边界显示“找不到”和意外的错误，最后介绍 React 19 的 use 与 Suspense，以及真实项目中常用的数据请求库。
 objectives:
   - 用可辨识联合描述远程数据的状态；在渲染时根据“结果属于哪一次请求”推出加载状态，不在 Effect 中同步地 setState
@@ -34,7 +34,7 @@ references:
 
 每个需要数据的组件都要处理同样的几件事：发请求、显示加载中、处理失败、验证数据、参数变化时取消旧的请求。把它们写进一个 Hook，组件只需要关心“拿到了什么”。
 
-状态用 e07 的可辨识联合描述。和 g11 的城市搜索一样，**加载中不是一个单独设置的 state**：Hook 记住“最近一次的结果属于哪个地址、第几次尝试”，结果不属于当前的请求，就是“加载中”。这样 Effect 只在请求结束时设置 state，不需要一开始先同步地设置“加载中”（g12 讲过这会多一次渲染）。
+状态用 e07 的可辨识联合描述。和 g11 的城市搜索一样，**加载中不是一个单独设置的 state**：Hook 记住“最近一次的结果属于哪个地址、第几次尝试”，结果不属于当前的请求，就是“加载中”。这样 Effect 只在请求结束时设置 state，不需要一开始先同步地设置“加载中”（g12 讲过这会多一次渲染）。这个 Hook 只记住**最近一次**的结果，相当于一个只有一格的缓存：从 A 换到 B、B 的结果还没回来时又换回 A，会先显示 A 上一次的结果，同时重新请求。如果要求“换了地址一定先显示加载中”，可以在渲染期间发现地址变了就清空结果（g12 的“根据新的 props 调整 state”）。
 
 :::playground{#use-json fixtures=api}
 ```tsx file=App.tsx
@@ -173,7 +173,7 @@ function Layout() {
   const navigation = useNavigation();
   return (
     <>
-      <nav aria-label="书">
+      <nav aria-label="示例链接">
         <Link to="/books/1">第 1 本</Link> · <Link to="/books/2">第 2 本（较慢）</Link> · <Link to="/books/99">不存在的书</Link> ·{' '}
         <Link to="/books/500">服务器出错</Link>
       </nav>
@@ -225,21 +225,25 @@ createRoot(container).render(<RouterProvider router={router} />);
 - `bookLoader` 是一个普通的 async 函数，不是 Hook：它在组件之外，导航开始时就被调用。`request.signal` 是这次导航的中止信号：“第 2 本”还在加载时点了别的链接，React Router 会中止这次请求（e08）。
 - “不存在的书”：loader 中 `throw data('没有这本书', { status: 404 })`，最近的 `ErrorBoundary` 代替这个路由的组件显示出来，`isRouteErrorResponse(error)` 判断出这是一个“响应”，可以读 `status`。导航和状态区还在：错误只替换了出错的那一层路由。
 - “服务器出错”：loader 抛出的是一个普通的 `Error`，同样由 `ErrorBoundary` 显示。组件渲染时抛出的错误也会被它捕获。
-- 第 35 行的 `useLoaderData<typeof bookLoader>()`：类型参数写的是 loader 本身，`book` 的类型由 loader 的返回值推出来（`Book`）。在 loader 中验证数据，组件拿到的就是可以放心使用的类型。
+- 第 35 行的 `useLoaderData<typeof bookLoader>()`：类型参数写的是 loader 本身，`book` 的类型由 loader 的返回值推出来（`Book`）。在 loader 中验证了数据，组件拿到的就是可以放心使用的类型，前提是类型参数写对了：React Router 不检查这个组件是不是真的用在 `bookLoader` 的路由上，写成别的 loader 也能通过编译，这和 `querySelector<T>` 一样只是“相信我”。
 :::
 
 两个补充：
 
-- **第一次加载**：如果用户直接打开 `/books/1`，页面刚启动时还没有任何数据可以显示。给路由加一个 `HydrateFallback` 组件（例如“正在加载…”），React Router 在第一次的 loader 完成之前显示它。
+- **第一次加载**：如果用户直接打开 `/books/1`，页面刚启动时还没有任何数据可以显示。给路由加一个 `HydrateFallback` 组件（例如“正在加载…”），React Router 在第一次的 loader 完成之前显示它。它代替的是它所在的那一层路由**及以下**的全部内容：挂在根路由上，第一次加载时导航也看不到；子路由自己没有 `HydrateFallback` 时，使用最近的祖先路由上的那一个；一个都没有时什么都不显示，并在控制台中给出警告。
 - **组件里加载还是路由上加载**：路由的数据（打开这个页面就需要的东西）适合放在 loader 中，它和导航一起开始、一起取消，错误由路由的错误边界统一处理；页面上局部的、按需的数据（例如展开一个面板才需要的详情），在组件中用前面的 Hook 加载更合适。
 
 测试 loader 和 g13 一样用 `createMemoryRouter`。要注意 loader 是异步的：从一个带 loader 的地址开始渲染时，先显示的是 `HydrateFallback`，断言数据要用 `findBy…`。
 
 ## use 与 Suspense
 
-React 19 的 `use` 可以在渲染时读取一个 Promise：Promise 还没有完成时，组件“挂起”，最近的 `<Suspense fallback={…}>` 显示后备内容；Promise 被拒绝时，错误交给最近的错误边界（`use` 不能放在 `try/catch` 中）。
+React 19 的 `use` 可以在渲染时读取一个 Promise：Promise 还没有完成时，组件“挂起”，最近的 `<Suspense fallback={…}>` 显示后备内容；Promise 被拒绝时，错误交给最近的错误边界（`use` 不能放在 `try/catch` 中）。在 React Router 之外，错误边界要写成一个 class 组件（实现 `getDerivedStateFromError`），或者使用 react-error-boundary 这样的库；它只捕获渲染过程中的错误，不捕获事件处理函数、Effect 和异步回调中的错误，所以前面的 Hook 要自己把错误存进 state。
 
 ```tsx
+import { Suspense, use } from 'react';
+
+type Album = { id: number; title: string };
+
 function Albums({ albumsPromise }: { albumsPromise: Promise<Album[]> }) {
   const albums = use(albumsPromise);
   return <ul>{albums.map((a) => <li key={a.id}>{a.title}</li>)}</ul>;
@@ -248,7 +252,7 @@ function Albums({ albumsPromise }: { albumsPromise: Promise<Album[]> }) {
 // 使用：<Suspense fallback={<p>正在加载…</p>}><Albums albumsPromise={albumsPromise} /></Suspense>
 ```
 
-关键的前提是：**Promise 必须被缓存**，在多次渲染之间是同一个对象。直接在渲染中写 `use(fetch(…))`，每次渲染都会创建一个新的 Promise，组件就会一直挂起、永远显示后备内容。Promise 应该在渲染之外创建：在事件处理函数中、在路由的 loader 中、在服务端组件中（H 阶段），或者由一个负责缓存的框架、库来管理。Suspense 也看不到在 Effect 中发起的请求：它只对 `use` 读取的 Promise（以及 `lazy` 加载的组件等）起作用。
+关键的前提是：**Promise 必须被缓存**，在多次渲染之间是同一个对象。直接在渲染中写 `use(fetch(…))`，每次渲染都会创建一个新的 Promise，组件就会一直挂起、永远显示后备内容，而且每次重试都会再发一次请求。Promise 应该在渲染之外创建：在事件处理函数中、在路由的 loader 中、在服务端组件中（H 阶段），或者由一个负责缓存的框架、库来管理。Suspense 也看不到在 Effect 中发起的请求：它只对 `use` 读取的 Promise（以及 `lazy` 加载的组件等）起作用。
 
 ## 真实项目中的数据请求库
 

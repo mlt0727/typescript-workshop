@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 72 / 规划总数 126**（草稿 3，规划中 51）
+**已发布 73 / 规划总数 126**（草稿 3，规划中 50）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -131,7 +131,7 @@
 | `f11-lint-format` 格式化与静态检查 | ⬜ 规划中 | `f03-tsconfig` |
 | `f12-build-ci` 生产构建与 CI | ⬜ 规划中 | `f11-lint-format`、`f10-git` |
 
-## G. React + TypeScript（已发布 13 / 15）
+## G. React + TypeScript（已发布 14 / 15）
 
 组件、props、state、表单、Hook、Effect、路由与测试，全部在真实预览中练习。
 
@@ -150,7 +150,7 @@
 | `g11-effects` Effect：适用场景、依赖与清理 | ✅ 已发布 | `g09-refs`、`e08-abort-races` |
 | `g12-effect-pitfalls` 避免滥用 Effect 与性能 Hook | ✅ 已发布 | `g11-effects` |
 | `g13-routing` 用 React Router 组织页面 | ✅ 已发布 | `g12-effect-pitfalls`、`e10-url-routing` |
-| `g14-async-data` 异步数据与错误状态 | 📝 草稿 | `g13-routing`、`e08-abort-races` |
+| `g14-async-data` 异步数据与错误状态 | ✅ 已发布 | `g13-routing`、`e08-abort-races` |
 | `g15-a11y-component-tests` 可访问性与组件测试 | ⬜ 规划中 | `g14-async-data`、`f08-dom-tests` |
 
 ## H. Next.js 与基础全栈实验（已发布 0 / 9）
@@ -177,7 +177,7 @@
 |---|---|---|
 | `p1-01-plan-and-model` 项目 1·任务板：需求与数据模型 | 📝 草稿 | `d10-state-and-render` |
 | `p1-02-render-and-add` 项目 1·任务板：渲染与新增 | 📝 草稿 | `p1-01-plan-and-model` |
-| `p1-03-edit-delete` 项目 1·任务板：编辑与删除（事件委托） | ⬜ 规划中 | `p1-02-render-and-add` |
+| `p1-03-edit-delete` 项目 1·任务板：编辑与删除（事件委托） | 📝 草稿 | `p1-02-render-and-add` |
 | `p1-04-filters` 项目 1·任务板：过滤与 URL 状态 | ⬜ 规划中 | `p1-03-edit-delete`、`e10-url-routing` |
 | `p1-05-persistence` 项目 1·任务板：持久化与数据校验 | ⬜ 规划中 | `p1-04-filters`、`e09-storage-serialization` |
 | `p1-06-local-project` 项目 1·任务板：本地工程、测试与导出 | ⬜ 规划中 | `p1-05-persistence`、`f08-dom-tests` |

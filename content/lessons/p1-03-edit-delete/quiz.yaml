@@ -1,0 +1,33 @@
+- id: closest
+  type: single
+  prompt: 按钮里有一个图标 `<span aria-hidden="true">→</span>`。在任务板上委托处理点击时，为什么要写 `event.target.closest('button[data-action]')`？
+  options:
+    - text: 用鼠标点到图标时，event.target 是那个 span，而不是按钮；closest 从它向上找到按钮
+      correct: true
+      explain: event.target 是实际被点击的最内层元素。closest 也包括元素自身，点到按钮的空白处时同样能找到。
+    - text: 为了让键盘用户也能操作按钮
+      explain: 键盘按下按钮时，浏览器本来就会触发 click；closest 解决的是“点到了按钮里面的元素”。
+    - text: 为了提高性能
+      explain: 和性能无关，是为了找到正确的元素。
+- id: view-state
+  type: single
+  prompt: “哪个任务正在改名”（editingId）应该放在哪里？
+  options:
+    - text: 单独的界面状态中，和任务板的数据一起传给渲染函数，但不保存到本地存储
+      correct: true
+      explain: 它决定了页面的样子，但不是任务板的数据：下次打开页面时不需要恢复“正在编辑”。
+    - text: "作为 Task 的一个属性 editing: boolean"
+      explain: 这样它会被保存下来，下次打开时任务还停在编辑状态；而且多个任务可能同时为 true。
+    - text: 不需要保存，直接在 DOM 中把 li 换成表单
+      explain: 下一次因为别的操作重新渲染时，表单会消失，正在输入的内容也丢了。
+- id: focus-after-delete
+  type: single
+  prompt: 用键盘删除一个任务之后，任务板重新渲染。焦点应该放在哪里？
+  options:
+    - text: 这个任务原来所在的那一列的标题上（标题带 tabindex="-1"），并用 role="status" 说明“已删除”
+      correct: true
+      explain: 被删除的按钮已经不存在，焦点会回到页面开头；放到同一列的标题上，用户知道自己还在原来的位置。
+    - text: 不需要处理，浏览器会自动把焦点放到下一个按钮上
+      explain: 元素被替换之后，焦点会回到 document.body，键盘用户只能从头开始。
+    - text: 页面最上方的输入框
+      explain: 用户刚才在任务板中操作，跳到页面顶部会让他们失去位置。

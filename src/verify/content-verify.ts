@@ -141,8 +141,16 @@ async function verifyExercise(lesson: Lesson, ex: Exercise, variants: VerifyData
       why = ok ? '起始代码未通过（符合预期）' : '起始代码竟然通过了验收';
     } else {
       const stageFailed = v.fails === 'types' ? !r.types.ok : v.fails === 'rules' ? !r.rules.ok : !r.tests.ok;
-      ok = !r.passed && stageFailed;
-      why = ok ? `被拒绝（${v.fails}）` : r.passed ? '错误解竟然通过了' : `被拒绝，但不是在声明的 ${v.fails} 阶段`;
+      // 声明“测试中失败”的错误解必须能通过类型与规则检查：否则它是因为一个无关的错误被拒绝的，测的不是它想测的东西
+      const incidental = v.fails === 'tests' && (!r.types.ok || !r.rules.ok);
+      ok = !r.passed && stageFailed && !incidental;
+      why = ok
+        ? `被拒绝（${v.fails}）`
+        : r.passed
+          ? '错误解竟然通过了'
+          : incidental
+            ? '错误解声明在测试中失败，但类型或规则检查也没有通过（它应该只因为测试而失败）'
+            : `被拒绝，但不是在声明的 ${v.fails} 阶段`;
     }
     out.push({ lessonId: lesson.id, target: `exercise:${ex.id}:${v.kind}:${v.name}`, ok, detail: `${why}；${summarize(r)}` });
   }

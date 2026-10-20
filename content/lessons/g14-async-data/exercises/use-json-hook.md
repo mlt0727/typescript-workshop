@@ -7,13 +7,14 @@ timeoutMs: 15000
 实现 `useJson.ts` 中的 `useJson(url, parse)`，返回 `{ state, reload }`，`state` 的类型是 `RemoteData<T>`：
 
 1. `url` 为 `null` 时是 `{ status: 'idle' }`，不发请求，`reload()` 也什么都不做；
-2. 否则请求 `url`（`fetch(url, { signal })`，传入中止信号），完成之前是 `{ status: 'loading' }`；
+2. 否则请求 `url`（`fetch(url, { signal })`，传入中止信号），完成之前是 `{ status: 'loading' }`（换回最近一次已有结果的地址时，可以先显示那个结果）；
 3. 成功时是 `{ status: 'success', data: parse(响应的 JSON) }`；
 4. 失败时是 `{ status: 'error', message }`：状态码不是 2xx 时 `message` 是“服务器返回了 500”这样的文字；`parse` 抛出错误、网络失败时，用错误的 `message`；
 5. `url` 变化时中止旧的请求；**被中止的请求不算失败**，它的结果也不能出现；
 6. `reload()` 重新请求当前的地址，期间回到 `loading`；
 7. 调用方传入内联的 `parse` 函数（每次渲染都是新的）时，不能因此重新请求；
-8. 不要在 Effect 中同步地设置“加载中”：一次成功的加载只应该提交两次（组件出现时一次，结果到达时一次）。
+8. 不要在 Effect 中同步地设置“加载中”：一次成功的加载只应该提交两次（组件出现时一次，结果到达时一次）；重试、换地址时也一样：操作本身一次，结果到达时一次；
+9. `url` 变成 `null` 时，中止正在进行的请求，回到 `idle`；每次都使用最新传入的 `parse`。
 
 `UserList.tsx`（只读）使用了这个 Hook，可以在预览中试试。
 
@@ -148,7 +149,12 @@ export function useJson<T>(url: string | null, parse: (value: unknown) => T): { 
   let state: RemoteData<T> = { status: 'idle' };
   if (url !== null) state = result !== null && result.url === url && result.attempt === attempt ? result.outcome : { status: 'loading' };
 
-  return { state, reload: () => setAttempt((n) => n + 1) };
+  return {
+    state,
+    reload() {
+      if (url !== null) setAttempt((n) => n + 1);
+    },
+  };
 }
 ```
 :::
@@ -239,6 +245,22 @@ test('传入内联的 parse 函数也不会重复请求', async () => {
   expect(fetchSpy, '每次渲染的 parse 都是新函数，不能因此重新请求').toHaveBeenCalledTimes(1);
 });
 
+test('url 变成 null：中止请求，回到 idle', () => {
+  const fetchSpy = vi.spyOn(window, 'fetch');
+  const { result, rerender } = renderHook(({ url }: { url: string | null }) => useJson(url, parseUsers), { initialProps: { url: '/api/users/slow' as string | null } });
+  rerender({ url: null });
+  expect(result.current.state).toEqual({ status: 'idle' });
+  expect(fetchSpy.mock.calls[0]?.[1]?.signal?.aborted).toBe(true);
+});
+
+test('使用最新传入的 parse', async () => {
+  const { result, rerender } = renderHook(({ parse }: { parse: (value: unknown) => string }) => useJson('/api/users', parse), {
+    initialProps: { parse: () => '第一次传入的 parse' },
+  });
+  rerender({ parse: () => '最新的 parse' });
+  await waitFor(() => expect(result.current.state).toEqual({ status: 'success', data: '最新的 parse' }));
+});
+
 test('一次成功的加载只提交两次：出现时一次，结果到达时一次', async () => {
   const commits: string[] = [];
   render(
@@ -248,6 +270,27 @@ test('一次成功的加载只提交两次：出现时一次，结果到达时�
   );
   await screen.findByRole('list', { name: '用户' });
   expect(commits, '不要在 Effect 中同步地设置“加载中”：根据结果属于哪一次请求，在渲染时推出来').toEqual(['mount', 'update']);
+});
+
+test('重试、换地址时也只多提交两次：操作本身一次，结果到达时一次', async () => {
+  const commits: string[] = [];
+  const tree = (url: string) => (
+    <Profiler id="list" onRender={(_id, phase) => commits.push(phase)}>
+      <UserList url={url} />
+    </Profiler>
+  );
+  const user = userEvent.setup();
+  const { rerender } = render(tree('/api/users/broken'));
+  await screen.findByRole('alert');
+  commits.length = 0;
+  await user.click(screen.getByRole('button', { name: '重试' }));
+  await screen.findByRole('alert');
+  await wait(50);
+  expect(commits, '重试时多提交了：不要在 Effect 中设置“加载中”').toEqual(['update', 'update']);
+  commits.length = 0;
+  rerender(tree('/api/users'));
+  await screen.findByRole('list', { name: '用户' });
+  expect(commits, '换地址时多提交了：不要在 Effect 中设置“加载中”').toEqual(['update', 'update']);
 });
 ```
 :::
@@ -264,7 +307,7 @@ Effect 的依赖是 `[url, attempt]`；`url === null` 时直接返回。用 `con
 这个 Hook 的每一个细节都对应前面讲过的一个问题：
 
 - **状态的形状**（e07、b09）：可辨识联合让“成功时才有 `data`、失败时才有 `message`”由类型保证；
-- **加载中是推出来的**（g11、g12）：如果在 Effect 一开始 `setState({ status: 'loading' })`，每次请求都会多一次渲染，而且第一次渲染时 state 还停留在上一个地址的结果上。记住结果属于哪一次请求，渲染时一比较就知道是不是加载中，最后一个测试检查的就是这一点；
+- **加载中是推出来的**（g11、g12）：如果在 Effect 一开始 `setState({ status: 'loading' })`，每次请求都会多一次渲染，而且地址变化后的第一次渲染中，state 还停留在上一个地址的结果上。即使写成“已经是加载中就不设置”，重试和换地址时仍然多一次（最后一个测试检查的就是这些情况）。记住结果属于哪一次请求，渲染时一比较就知道是不是加载中，最后一个测试检查的就是这一点；
 - **取消与竞态**（e08）：清理函数中止过时的请求，`catch` 中识别出“这是我们自己中止的”。如果把被中止的请求当成失败，它的错误结果会记在旧的地址上，用户换回这个地址时，就会立刻看到一个并没有发生的“失败”（第五个测试）；
 - **最新的回调**（g11）：`parse` 写进依赖数组，调用方一写内联函数，每次渲染都会重新请求：请求完成、更新 state、重新渲染、新的 `parse`、又一次请求……`useEffectEvent` 让 Effect 读到最新的 `parse`，又不把它当成依赖。
 
@@ -359,7 +402,12 @@ export function useJson<T>(url: string | null, parse: (value: unknown) => T): { 
   let state: RemoteData<T> = { status: 'idle' };
   if (url !== null) state = result !== null && result.url === url && result.attempt === attempt ? result.outcome : { status: 'loading' };
 
-  return { state, reload: () => setAttempt((n) => n + 1) };
+  return {
+    state,
+    reload() {
+      if (url !== null) setAttempt((n) => n + 1);
+    },
+  };
 }
 ```
 :::
@@ -399,7 +447,12 @@ export function useJson<T>(url: string | null, parse: (value: unknown) => T): { 
   let state: RemoteData<T> = { status: 'idle' };
   if (url !== null) state = result !== null && result.url === url && result.attempt === attempt ? result.outcome : { status: 'loading' };
 
-  return { state, reload: () => setAttempt((n) => n + 1) };
+  return {
+    state,
+    reload() {
+      if (url !== null) setAttempt((n) => n + 1);
+    },
+  };
 }
 ```
 :::
@@ -439,7 +492,12 @@ export function useJson<T>(url: string | null, parse: (value: unknown) => T): { 
   let state: RemoteData<T> = { status: 'idle' };
   if (url !== null) state = result !== null && result.url === url && result.attempt === attempt ? result.outcome : { status: 'loading' };
 
-  return { state, reload: () => setAttempt((n) => n + 1) };
+  return {
+    state,
+    reload() {
+      if (url !== null) setAttempt((n) => n + 1);
+    },
+  };
 }
 ```
 :::
@@ -480,7 +538,12 @@ export function useJson<T>(url: string | null, parse: (value: unknown) => T): { 
   let state: RemoteData<T> = { status: 'idle' };
   if (url !== null) state = result !== null && result.url === url && result.attempt === attempt ? result.outcome : { status: 'loading' };
 
-  return { state, reload: () => setAttempt((n) => n + 1) };
+  return {
+    state,
+    reload() {
+      if (url !== null) setAttempt((n) => n + 1);
+    },
+  };
 }
 ```
 :::
@@ -522,6 +585,97 @@ export function useJson<T>(url: string | null, parse: (value: unknown) => T): { 
   }, [url, attempt]);
 
   return { state, reload: () => setAttempt((n) => n + 1) };
+}
+```
+:::
+
+:::variant{kind=wrong name=guarded-sync-loading fails=tests reason="在 Effect 中设置“加载中”时先判断是否已经是加载中，挂载时没有多余的渲染，但重试、换地址时仍然多一次"}
+```ts file=useJson.ts
+import { useEffect, useEffectEvent, useState } from 'react';
+
+export type RemoteData<T> =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'success'; data: T };
+
+type Outcome<T> = Extract<RemoteData<T>, { status: 'error' } | { status: 'success' }>;
+
+export function useJson<T>(url: string | null, parse: (value: unknown) => T): { state: RemoteData<T>; reload: () => void } {
+  const [attempt, setAttempt] = useState(0);
+  const [state, setState] = useState<RemoteData<T>>(url === null ? { status: 'idle' } : { status: 'loading' });
+  const parseLatest = useEffectEvent(parse);
+
+  useEffect(() => {
+    if (url === null) {
+      setState({ status: 'idle' });
+      return;
+    }
+    setState((current) => (current.status === 'loading' ? current : { status: 'loading' }));
+    const controller = new AbortController();
+    fetch(url, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`服务器返回了 ${response.status}`);
+        setState({ status: 'success', data: parseLatest(await response.json()) });
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+        setState({ status: 'error', message: error instanceof Error ? error.message : String(error) });
+      });
+    return () => controller.abort();
+  }, [url, attempt]);
+
+  return { state, reload: () => setAttempt((n) => n + 1) };
+}
+```
+:::
+
+:::variant{kind=wrong name=stale-parse fails=tests reason="ref 只保存了第一次传入的 parse，之后没有更新"}
+```ts file=useJson.ts
+import { useEffect, useRef, useState } from 'react';
+
+export type RemoteData<T> =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'success'; data: T };
+
+type Outcome<T> = Extract<RemoteData<T>, { status: 'error' } | { status: 'success' }>;
+
+export function useJson<T>(url: string | null, parse: (value: unknown) => T): { state: RemoteData<T>; reload: () => void } {
+  const [attempt, setAttempt] = useState(0);
+  const [settled, setSettled] = useState<{ key: string; outcome: Outcome<T> } | null>(null);
+  const latestParse = useRef(parse);
+
+  const key = url === null ? null : `${attempt} ${url}`;
+
+  useEffect(() => {
+    if (url === null) return undefined;
+    const requestKey = `${attempt} ${url}`;
+    const controller = new AbortController();
+    async function load(target: string) {
+      try {
+        const response = await fetch(target, { signal: controller.signal });
+        if (!response.ok) throw new Error(`服务器返回了 ${response.status}`);
+        const json: unknown = await response.json();
+        setSettled({ key: requestKey, outcome: { status: 'success', data: latestParse.current(json) } });
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setSettled({ key: requestKey, outcome: { status: 'error', message: error instanceof Error ? error.message : String(error) } });
+        }
+      }
+    }
+    void load(url);
+    return () => controller.abort();
+  }, [url, attempt]);
+
+  const state: RemoteData<T> = key === null ? { status: 'idle' } : settled?.key === key ? settled.outcome : { status: 'loading' };
+  return {
+    state,
+    reload() {
+      if (url !== null) setAttempt((n) => n + 1);
+    },
+  };
 }
 ```
 :::

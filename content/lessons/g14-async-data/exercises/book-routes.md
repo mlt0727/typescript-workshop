@@ -6,11 +6,11 @@ timeoutMs: 20000
 ---
 `routes.tsx` 中的书单是写死的。改用 loader 从模拟的服务器加载数据：
 
-1. `/books` 的 loader 请求 `/api/books`，得到书的数组；`/books/:bookId` 的 loader 请求 `/api/books/编号`。两个请求都要传入 `request.signal`，响应的数据都要验证（不符合 `Book` 的形状时抛出 `Error('数据格式不正确')`）；
+1. `/books` 的 loader 请求 `/api/books`，得到书的数组；`/books/:bookId` 的 loader 请求 `/api/books/编号`。两个请求都写成 `fetch(地址, { signal: request.signal })`，响应的数据都要验证（不符合 `Book` 的形状时抛出 `Error('数据格式不正确')`）；
 2. 编号必须只由数字组成、不以 0 开头，否则不发请求，直接当作“找不到”；服务器返回 404 时也是“找不到”：`throw data('没有这本书', { status: 404 })`；其他不是 2xx 的状态码抛出 `Error('服务器返回了 500')` 这样的错误；
 3. 两个路由都有错误边界，显示在布局的 `<main>` 中（导航不消失）：“找不到”时显示 `<h1>没有这本书</h1>`，其他错误显示 `<div role="alert">加载失败：错误的消息</div>`；
 4. 布局中有一个状态区 `<p role="status">`：正在导航（等待 loader）时显示“正在加载…”，否则为空；
-5. 直接打开一个需要加载数据的地址时，第一次的数据到达之前显示“正在加载…”（用根路由的 `HydrateFallback`）。
+5. 直接打开一个需要加载数据的地址时，第一次的数据到达之前显示“正在加载…”（用根路由的 `HydrateFallback`，一个普通的 `<p>`：它是第一屏的内容，不需要 `role="status"`）。
 
 页面的样子（标题、列表、“作者：…”、“返回书单”）保持起始代码中的写法。
 
@@ -145,7 +145,7 @@ function Layout() {
 }
 
 function Loading() {
-  return <p role="status">正在加载…</p>;
+  return <p>正在加载…</p>;
 }
 
 function BookList() {
@@ -199,7 +199,7 @@ export const routes: RouteObject[] = [
 :::files{role=tests}
 ```tsx file=routes.test.tsx
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
@@ -228,9 +228,11 @@ const nav = () => screen.getByRole('navigation', { name: '主导航' });
 const requested = (spy: { mock: { calls: unknown[][] } }) => spy.mock.calls.map(([input]) => String(input));
 
 test('直接打开书单：先显示“正在加载…”，数据到了再显示书单', async () => {
+  const fetchSpy = vi.spyOn(window, 'fetch');
   start('/books');
   expect(screen.getByText('正在加载…')).toBeInTheDocument();
-  expect(screen.queryByRole('heading', { level: 1 })).toBeNull();
+  expect(screen.queryByRole('heading', { level: 1, name: '书单' })).toBeNull();
+  expect(fetchSpy.mock.calls[0]?.[1]?.signal, '请求要带着 request.signal').toBeInstanceOf(AbortSignal);
   expect(await screen.findByRole('heading', { level: 1, name: '书单' })).toBeInTheDocument();
   expect(screen.getAllByRole('listitem').map((li) => li.textContent)).toEqual(['三体', '活着', '围城']);
 });
@@ -254,10 +256,24 @@ test('不存在的书：“没有这本书”，导航还在', async () => {
 });
 
 test('编号格式不对：不发请求，直接是“没有这本书”', async () => {
-  const fetchSpy = vi.spyOn(window, 'fetch');
-  start('/books/abc');
-  expect(await screen.findByRole('heading', { level: 1, name: '没有这本书' })).toBeInTheDocument();
-  expect(requested(fetchSpy).filter((url) => url.includes('abc'))).toEqual([]);
+  for (const id of ['abc', '01']) {
+    const fetchSpy = vi.spyOn(window, 'fetch');
+    start(`/books/${id}`);
+    expect(await screen.findByRole('heading', { level: 1, name: '没有这本书' })).toBeInTheDocument();
+    expect(requested(fetchSpy).filter((url) => url.includes(`/api/books/${id}`)), '格式不对的编号不应该请求服务器').toEqual([]);
+    cleanup();
+    vi.restoreAllMocks();
+  }
+});
+
+test('书单的数据格式不对：在布局中显示加载失败', async () => {
+  vi.spyOn(window, 'fetch').mockImplementationOnce(() =>
+    Promise.resolve(new Response(JSON.stringify({ books: [] }), { headers: { 'content-type': 'application/json' } })),
+  );
+  start('/books');
+  expect(await screen.findByRole('alert')).toHaveTextContent('加载失败：数据格式不正确');
+  expect(screen.getByRole('main')).toContainElement(screen.getByRole('alert'));
+  expect(nav()).toBeInTheDocument();
 });
 
 test('服务器出错、数据格式不对：显示加载失败的原因，导航还在', async () => {
@@ -296,7 +312,7 @@ loader 把“这个页面需要什么数据”写在了路由上，带来了几�
 
 - **导航与数据一起开始、一起取消**：点击链接时 loader 立刻开始；又点了别的链接，React Router 中止上一次导航，`request.signal` 让对应的 `fetch` 也真正停下来（最后一个测试）；
 - **组件不用处理“加载中”**：`BookPage` 渲染时数据已经在了。“正在加载…”由布局根据 `useNavigation()` 统一显示，原来的页面在数据到达之前保持不变，不会闪成一片空白；
-- **错误有统一的去处**：loader 中抛出的错误（包括 `throw data(…, { status: 404 })`）交给最近的错误边界，`isRouteErrorResponse` 区分“预期中的响应”（找不到）和意外的错误。错误边界挂在哪一层，出错时就替换哪一层，所以挂在子路由上，布局和导航都留着。
+- **错误有统一的去处**：loader 中抛出的错误（包括 `throw data(…, { status: 404 })`）交给最近的错误边界，`isRouteErrorResponse` 区分“预期中的响应”（找不到）和意外的错误。错误边界挂在哪一层，出错时就替换哪一层，所以挂在子路由上，布局和导航都留着。如果**只**挂在根路由上，任何错误都会替换整个页面；官方建议根路由上也放一个错误边界，作为最后的兜底。
 
 编号的验证在发请求之前：`/books/abc` 根本不会去问服务器。这和 g13 的商品详情是同一个道理，只是现在“找不到”通过错误边界显示。
 
@@ -357,7 +373,7 @@ function Layout() {
 }
 
 function Loading() {
-  return <p role="status">正在加载…</p>;
+  return <p>正在加载…</p>;
 }
 
 function BookList() {
@@ -463,7 +479,7 @@ function Layout() {
 }
 
 function Loading() {
-  return <p role="status">正在加载…</p>;
+  return <p>正在加载…</p>;
 }
 
 function BookList() {
@@ -565,7 +581,7 @@ function Layout() {
 }
 
 function Loading() {
-  return <p role="status">正在加载…</p>;
+  return <p>正在加载…</p>;
 }
 
 function BookList() {
@@ -664,7 +680,7 @@ function Layout() {
 }
 
 function Loading() {
-  return <p role="status">正在加载…</p>;
+  return <p>正在加载…</p>;
 }
 
 function BookList() {
@@ -764,7 +780,7 @@ function Layout() {
 }
 
 function Loading() {
-  return <p role="status">正在加载…</p>;
+  return <p>正在加载…</p>;
 }
 
 function BookList() {
@@ -865,7 +881,7 @@ function Layout() {
 }
 
 function Loading() {
-  return <p role="status">正在加载…</p>;
+  return <p>正在加载…</p>;
 }
 
 function BookList() {
@@ -967,7 +983,7 @@ function Layout() {
 }
 
 function Loading() {
-  return <p role="status">正在加载…</p>;
+  return <p>正在加载…</p>;
 }
 
 function BookList() {

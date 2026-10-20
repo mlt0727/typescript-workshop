@@ -134,7 +134,7 @@ stages:
       - { id: g11-effects, title: Effect：适用场景、依赖与清理, status: published, prerequisites: [g09-refs, e08-abort-races] }
       - { id: g12-effect-pitfalls, title: 避免滥用 Effect 与性能 Hook, status: published, prerequisites: [g11-effects] }
       - { id: g13-routing, title: 用 React Router 组织页面, status: published, prerequisites: [g12-effect-pitfalls, e10-url-routing] }
-      - { id: g14-async-data, title: 异步数据与错误状态, status: draft, prerequisites: [g13-routing, e08-abort-races] }
+      - { id: g14-async-data, title: 异步数据与错误状态, status: published, prerequisites: [g13-routing, e08-abort-races] }
       - { id: g15-a11y-component-tests, title: 可访问性与组件测试, status: planned, prerequisites: [g14-async-data, f08-dom-tests] }
 
   - id: H
@@ -157,7 +157,7 @@ stages:
     lessons:
       - { id: p1-01-plan-and-model, title: 项目 1·任务板：需求与数据模型, status: draft, prerequisites: [d10-state-and-render] }
       - { id: p1-02-render-and-add, title: 项目 1·任务板：渲染与新增, status: draft, prerequisites: [p1-01-plan-and-model] }
-      - { id: p1-03-edit-delete, title: 项目 1·任务板：编辑与删除（事件委托）, status: planned, prerequisites: [p1-02-render-and-add] }
+      - { id: p1-03-edit-delete, title: 项目 1·任务板：编辑与删除（事件委托）, status: draft, prerequisites: [p1-02-render-and-add] }
       - { id: p1-04-filters, title: 项目 1·任务板：过滤与 URL 状态, status: planned, prerequisites: [p1-03-edit-delete, e10-url-routing] }
       - { id: p1-05-persistence, title: 项目 1·任务板：持久化与数据校验, status: planned, prerequisites: [p1-04-filters, e09-storage-serialization] }
       - { id: p1-06-local-project, title: 项目 1·任务板：本地工程、测试与导出, status: planned, prerequisites: [p1-05-persistence, f08-dom-tests] }

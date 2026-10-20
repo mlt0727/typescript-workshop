@@ -4,5 +4,6 @@
   {"url": "/api/books/2", "delayMs": 900, "body": {"id": 2, "title": "活着", "author": "余华"}},
   {"url": "/api/books/3", "delayMs": 100, "body": {"id": 3, "name": "围城"}},
   {"url": "/api/books/99", "delayMs": 100, "status": 404, "body": {"message": "没有这本书"}},
-  {"url": "/api/books/500", "delayMs": 100, "status": 500, "body": {"message": "出错了"}}
+  {"url": "/api/books/500", "delayMs": 100, "status": 500, "body": {"message": "出错了"}},
+  {"url": "/api/books/*", "delayMs": 50, "status": 404, "body": {"message": "没有这本书"}}
 ]
