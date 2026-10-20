@@ -3,6 +3,7 @@ import type { Lesson, PlaygroundBlock } from '../../content/types.ts';
 import { progressStore } from '../../storage/store.ts';
 import { Icon } from '../../ui/Icon.tsx';
 import { DiagnosticList } from '../workspace/Diagnostics.tsx';
+import { JsPreview } from '../workspace/JsPreview.tsx';
 import { OutputPanel } from '../workspace/OutputPanel.tsx';
 import { useDraftFiles } from '../workspace/useDraftFiles.ts';
 import { useProject, useSeen } from '../workspace/useProject.ts';
@@ -27,6 +28,7 @@ export function Playground({ lesson, block }: { lesson: Lesson; block: Playgroun
   const runner = useRunner({ projectId, mode: block.mode, overrides: block.compiler.overrides, entry: block.entry, timeoutMs: block.timeoutMs, fixtures: block.fixtures });
   const { jump, jumpTo } = useJump();
   const [expanded, setExpanded] = useState(false);
+  const [showJs, setShowJs] = useState(false);
   const busy = runner.state.status === 'running' || runner.state.status === 'compiling';
   const visible = useMemo(
     () => block.files.filter((f) => !f.hidden).map((f) => ({ path: f.path, content: files[f.path] ?? f.content, readOnly: f.readonly })),
@@ -67,6 +69,9 @@ export function Playground({ lesson, block }: { lesson: Lesson; block: Playgroun
           <button type="button" className="btn" onClick={() => { draft.reset(); runner.clear(); }} disabled={!draft.isModified && runner.state.status === 'idle'}>
             <Icon name="reset" /> 重置
           </button>
+          <button type="button" className="btn btn-ghost" onClick={() => setShowJs((v) => !v)} aria-pressed={showJs}>
+            {showJs ? '隐藏 JS' : '查看 JS'}
+          </button>
           <button type="button" className="btn btn-ghost" onClick={() => setExpanded((e) => !e)} aria-pressed={expanded}>
             <Icon name="expand" /> {expanded ? '收起' : '展开'}
           </button>
@@ -86,6 +91,7 @@ export function Playground({ lesson, block }: { lesson: Lesson; block: Playgroun
         <div className="playground-editor">
           <Workspace files={visible} diagnostics={project.diagnostics} onChange={draft.setFile} service={project.service} onRun={run} label="示例代码" jump={jump} />
           <DiagnosticList diagnostics={project.diagnostics} status={project.status} error={project.error} expected={block.expectDiagnostics} onJump={jumpTo} />
+          {showJs && <JsPreview mode={block.mode} files={visible} />}
         </div>
         <OutputPanel mode={block.mode} state={runner.state} stale={stale} previewRef={runner.previewRef} onJump={(l, c, f) => jumpTo(f, l, c)} />
       </div>

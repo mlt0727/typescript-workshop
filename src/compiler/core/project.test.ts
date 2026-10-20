@@ -109,6 +109,23 @@ describe('规则（AST，而非关键词搜索）', () => {
     ]);
   });
 
+  test('报告 var 声明（含 for 循环头），不报告 let / const / declare var', async () => {
+    const src = [
+      'var a = 1;',
+      'let b = 2;',
+      'const c = 3;',
+      'for (var i = 0; i < 1; i++) {}',
+      'for (const k of [1]) { console.log(k); }',
+      'declare var injected: number;',
+      'declare global { var flag: boolean; }',
+      'const note = "var x = 1";',
+      'console.log(a, b, c, i, note);',
+    ].join('\n');
+    const p = await service.open('r-var', { mode: 'ts', files: { 'main.ts': src } });
+    const v = p.rules(['main.ts'], ['var']);
+    expect(v.map((x) => `${x.rule}@${x.line}`)).toEqual(['var@1', 'var@4']);
+  });
+
   test('带类型参数的 querySelector / querySelectorAll / closest 视为断言', async () => {
     const src = [
       'const a = document.querySelector<HTMLButtonElement>("#a");',

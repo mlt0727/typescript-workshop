@@ -8,6 +8,7 @@ const RULE_LABEL: Record<string, string> = {
   'type-assertion': '禁止类型断言',
   'non-null-assertion': '禁止非空断言',
   'ts-directive': '禁止 @ts-ignore 等指令',
+  var: '禁止 var',
 };
 
 function Section(props: { ok: boolean; title: string; skipped?: boolean; children?: React.ReactNode }) {

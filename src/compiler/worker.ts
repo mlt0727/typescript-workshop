@@ -1,5 +1,6 @@
 /// <reference lib="webworker" />
-import { TS_VERSION, type TypeGroup } from './config.ts';
+import ts from 'typescript';
+import { rawTranspileOptions, TS_VERSION, type TypeGroup } from './config.ts';
 import { ProjectService } from './core/project.ts';
 import type { CompilerMethod, CompilerMethods, CompilerRequest, CompilerResponse } from './protocol.ts';
 
@@ -50,6 +51,11 @@ const handlers: Handlers = {
   async buildRun({ projectId, spec, entries, loopGuard }) {
     const p = await service.open(projectId, spec);
     return { bundle: p.buildRun({ entries, nonce: nonce(), loopGuard }), diagnostics: p.diagnostics() };
+  },
+  async emitJs({ mode, file, content }) {
+    const { options } = ts.convertCompilerOptionsFromJson({ ...rawTranspileOptions(mode), sourceMap: false }, '/');
+    const out = ts.transpileModule(content, { fileName: `/${file}`, compilerOptions: options, reportDiagnostics: false });
+    return { code: out.outputText };
   },
   async judge({ projectId, spec, studentFiles, testFiles, forbid, runEntries, loopGuard }) {
     const p = await service.open(projectId, { ...spec, withTests: true });

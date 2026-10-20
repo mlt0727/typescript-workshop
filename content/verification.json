@@ -1,6 +1,327 @@
 {
   "tsVersion": "6.0.3",
   "lessons": {
+    "a01-where-ts-runs": {
+      "verifiedAt": "2026-10-20T09:06:07.479Z",
+      "sourceHash": "7aa320ad02f1c6b1",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:first-run:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:first-run:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] TypeScript 首次公开发布于 2012 年 | [log] 本平台规划了 126 节课"
+        },
+        {
+          "target": "playground:check-vs-run:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:check-vs-run:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 总价： 60 | [log] 加上数量： 203"
+        },
+        {
+          "target": "playground:no-dom:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:no-dom:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（ReferenceError: document is not defined）；输出：[log] setTimeout 的类型： function | [log] document 的类型： undefined | [error] Uncaught ReferenceError: document is not defined\n    at main.ts:4:1"
+        },
+        {
+          "target": "playground:function-preview:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:function-preview:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 100 炎热 | [log] 10 凉爽"
+        },
+        {
+          "target": "exercise:fix-receipt:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2322@receipt.ts:2 Type 'string' is not assignable to type 'number'.；TS2322@receipt.ts:3 Type 'string' is not assignable to type 'number'.) rules=ok tests=fail(数量和运费是数字,总价正确)"
+        },
+        {
+          "target": "exercise:fix-receipt:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-receipt:alt:explicit-number",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-receipt:wrong:change-annotation",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@receipt.ts:5 Type 'string' is not assignable to type 'number'.；TS2363@receipt.ts:5 The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.；TS2344@receipt.test-d.ts:4 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: str) rules=ok tests=fail(数量和运费是数字,总价正确)"
+        },
+        {
+          "target": "exercise:fix-receipt:wrong:fix-one-only",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@receipt.ts:3 Type 'string' is not assignable to type 'number'.) rules=ok tests=fail(数量和运费是数字,总价正确)"
+        },
+        {
+          "target": "exercise:fix-receipt:wrong:hardcode-total",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@receipt.ts:2 Type 'string' is not assignable to type 'number'.；TS2322@receipt.ts:3 Type 'string' is not assignable to type 'number'.) rules=ok tests=fail(数量和运费是数字,总价正确)"
+        },
+        {
+          "target": "exercise:body-temperature:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2304@temperature.ts:3 Cannot find name 'toFahrenheit'.；TS2304@temperature.ts:3 Cannot find name 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'toFahrenheit'.；TS2305@t) rules=ok tests=fail(SyntaxError: The requested module 'blob:null/4250170b-2d58-41cb-acdc-351e9c474456' does not provide an export named 'classify')"
+        },
+        {
+          "target": "exercise:body-temperature:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:body-temperature:alt:ternary-and-factor",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:body-temperature:wrong:forgot-offset",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toFahrenheit › 0°C 是 32°F,toFahrenheit › 100°C 是 212°F,toFahrenheit › -40°C 是 -40°F,toFahrenheit › 37°C 是 98.6°F,toFahrenheit › 36.5°C 是 97.7°F)"
+        },
+        {
+          "target": "exercise:body-temperature:wrong:boundary",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(classify › 37.3°C → 发热)"
+        },
+        {
+          "target": "exercise:body-temperature:wrong:any-param",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=fail(TS2344@temperature.test-d.ts:4 Type '(celsius: number) => number' does not satisfy the constraint '\"Expected: function, Actual: never\"'.) rules=fail(any@1) tests=ok"
+        }
+      ]
+    },
+    "a02-compile-vs-runtime": {
+      "verifiedAt": "2026-10-20T09:06:26.517Z",
+      "sourceHash": "214130fb9f379b7e",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:compile-only:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:compile-only:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] ADA | [log] undefined"
+        },
+        {
+          "target": "playground:erased:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:erased:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（ReferenceError: Point is not defined）；输出：[log] object | [error] Uncaught ReferenceError: Point is not defined\n    at main.ts:5:31"
+        },
+        {
+          "target": "playground:typeof-values:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:typeof-values:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] number string boolean undefined | [log] object object object | [log] function | [log] true false"
+        },
+        {
+          "target": "playground:json-boundary:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:json-boundary:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: user.name.toUpperCase is not a function）；输出：[log] TypeScript 认为 name 是字符串，实际是： number | [error] Uncaught TypeError: user.name.toUpperCase is not a function\n    at main.ts:7:23"
+        },
+        {
+          "target": "exercise:describe-value:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2339@describe.ts:2 Property 'length' does not exist on type 'string | number'.) rules=ok tests=fail(数字)"
+        },
+        {
+          "target": "exercise:describe-value:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:describe-value:alt:check-number-first",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:describe-value:wrong:no-check",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2339@describe.ts:2 Property 'length' does not exist on type 'string | number'.；TS2339@describe.ts:3 Property 'length' does not exist on type 'string | number'.；TS2362@describe.ts:5 The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.) rules=ok tests=fail(字符串)"
+        },
+        {
+          "target": "exercise:describe-value:wrong:coerce-to-number",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(字符串,数字形式的字符串仍然按字符串处理)"
+        },
+        {
+          "target": "exercise:read-port:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(readPort › 字段缺失 时返回默认端口,readPort › 字符串形式的数字 时返回默认端口,readPort › 小数 时返回默认端口,readPort › 0 时返回默认端口,readPort › 超出范围 时返回默认端口,readPort › 负数 时返回默认端口,readPort › null 时返回默认端口,readPort › 布尔值 时返回默认端口,readPort › 返回值确实是数字)"
+        },
+        {
+          "target": "exercise:read-port:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:read-port:alt:early-returns",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:read-port:wrong:trust-annotation",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(readPort › 字符串形式的数字 时返回默认端口,readPort › 小数 时返回默认端口,readPort › 布尔值 时返回默认端口,readPort › 返回值确实是数字)"
+        },
+        {
+          "target": "exercise:read-port:wrong:no-range",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(readPort › 0 时返回默认端口,readPort › 超出范围 时返回默认端口,readPort › 负数 时返回默认端口)"
+        }
+      ]
+    },
+    "a03-let-const-inference": {
+      "verifiedAt": "2026-10-20T09:13:30.352Z",
+      "sourceHash": "ca177172e47f42df",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:let-const:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:let-const:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Assignment to constant variable.）；输出：[error] Uncaught TypeError: Assignment to constant variable.\n    at main.ts:5:9"
+        },
+        {
+          "target": "playground:block-scope:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:block-scope:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（ReferenceError: scoped is not defined）；输出：[log] var 声明的变量 | [error] Uncaught ReferenceError: scoped is not defined\n    at main.ts:7:13"
+        },
+        {
+          "target": "playground:inference:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:inference:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 1 再见 欢迎 true"
+        },
+        {
+          "target": "playground:when-annotate:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:when-annotate:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 42 上午好"
+        },
+        {
+          "target": "exercise:choose-declarations:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2588@countdown.ts:3 Cannot assign to 'i' because it is a constant.；TS2588@countdown.ts:4 Cannot assign to 'text' because it is a constant.) rules=ok tests=fail(TypeError: Assignment to constant variable.)"
+        },
+        {
+          "target": "exercise:choose-declarations:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:choose-declarations:alt:while-loop",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:choose-declarations:wrong:only-text",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2588@countdown.ts:3 Cannot assign to 'i' because it is a constant.) rules=ok tests=fail(从 3 倒数,只有 1)"
+        },
+        {
+          "target": "exercise:choose-declarations:wrong:use-var",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(var@2,var@3) tests=ok"
+        },
+        {
+          "target": "exercise:choose-declarations:wrong:off-by-one",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(从 3 倒数,只有 1)"
+        },
+        {
+          "target": "exercise:coupon-price:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS7006@price.ts:1 Parameter 'price' implicitly has an 'any' type.；TS7006@price.ts:1 Parameter 'isMember' implicitly has an 'any' type.；TS2344@price.test-d.ts:4 Type '(price: number, isMember: boolean) => number' does not satisfy the constraint '\"Expected: function, Actual: never\"'.) rules=ok tests=fail(非会员 › 满 100 元减 15 元,非会员 › 正好 100 元也能减,会员 › 先减再打九折,会员 › 不满 100 元也打九折,会员 › 四舍五入到整数分)"
+        },
+        {
+          "target": "exercise:coupon-price:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:coupon-price:alt:const-steps",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:coupon-price:wrong:member-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(会员 › 先减再打九折)"
+        },
+        {
+          "target": "exercise:coupon-price:wrong:strict-threshold",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(非会员 › 正好 100 元也能减,会员 › 先减再打九折)"
+        },
+        {
+          "target": "exercise:coupon-price:wrong:floor",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(会员 › 四舍五入到整数分)"
+        },
+        {
+          "target": "exercise:coupon-price:wrong:any-params",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=fail(TS2344@price.test-d.ts:4 Type '(price: number, isMember: boolean) => number' does not satisfy the constraint '\"Expected: function, Actual: never\"'.) rules=fail(any@1,any@1) tests=ok"
+        },
+        {
+          "target": "exercise:coupon-price:wrong:string-member",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@price.test.ts:6 Argument of type 'boolean' is not assignable to parameter of type 'string'.；TS2345@price.test.ts:10 Argument of type 'boolean' is not assignable to parameter of type 'string'.；TS2345@price.test.ts:14 Argument of type 'boolean' is not assignable to parameter of type 'string'.；T) rules=ok tests=fail(会员 › 先减再打九折,会员 › 不满 100 元也打九折,会员 › 四舍五入到整数分)"
+        }
+      ]
+    },
     "a08-optional-chaining-nullish": {
       "verifiedAt": "2026-10-20T08:56:41.232Z",
       "sourceHash": "7d438c40c3026e6d",

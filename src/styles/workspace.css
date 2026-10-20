@@ -589,3 +589,17 @@
   gap: 0.4rem;
   margin-top: 0.4rem;
 }
+
+.js-preview {
+  padding: 0.4rem 0.75rem 0.6rem;
+  border-top: 1px solid var(--border);
+}
+.js-preview .file-name {
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius-small) var(--radius-small) 0 0;
+}
+.js-preview pre {
+  margin-bottom: 0.5rem;
+  border-radius: 0 0 var(--radius-small) var(--radius-small);
+}

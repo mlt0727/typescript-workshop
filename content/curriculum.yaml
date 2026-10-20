@@ -7,9 +7,9 @@ stages:
     title: 起步与 JavaScript 共同语法
     summary: 从第一天写 TypeScript，补齐 JS 特有的语法与运行语义。
     lessons:
-      - { id: a01-where-ts-runs, title: TS、JS、浏览器与 Node.js 的关系, status: planned, prerequisites: [] }
-      - { id: a02-compile-vs-runtime, title: 编译期与运行期：类型擦除的边界, status: planned, prerequisites: [a01-where-ts-runs] }
-      - { id: a03-let-const-inference, title: let/const、类型注解与类型推断, status: planned, prerequisites: [a02-compile-vs-runtime] }
+      - { id: a01-where-ts-runs, title: TS、JS、浏览器与 Node.js 的关系, status: draft, prerequisites: [] }
+      - { id: a02-compile-vs-runtime, title: 编译期与运行期：类型擦除的边界, status: draft, prerequisites: [a01-where-ts-runs] }
+      - { id: a03-let-const-inference, title: let/const、类型注解与类型推断, status: draft, prerequisites: [a02-compile-vs-runtime] }
       - { id: a04-primitives-strings, title: number、string、boolean 与模板字符串, status: planned, prerequisites: [a03-let-const-inference] }
       - { id: a05-null-undefined, title: null 与 undefined, status: planned, prerequisites: [a04-primitives-strings] }
       - { id: a06-operators-equality, title: 运算符、=== 与类型转换, status: planned, prerequisites: [a05-null-undefined] }

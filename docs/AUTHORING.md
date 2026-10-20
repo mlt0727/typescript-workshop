@@ -75,7 +75,7 @@ console.log(ada.profile.nickname);
 kind: task            # task（小任务）| challenge（编程挑战）
 title: 安全地读取收货城市
 # 可选：mode、entry、tests（默认有 *.test.ts 就运行）、timeoutMs、perTestTimeoutMs、fixtures、
-#      forbid / allow（规则：any、type-assertion、non-null-assertion、ts-directive，默认全部禁止）、
+#      forbid / allow（规则：any、type-assertion、non-null-assertion、ts-directive、var，默认全部禁止）、
 #      expect（要求出现的诊断）、wrongNotApplicable（错误解确实不适用时说明原因）
 ---
 题目说明（规格要清楚到能写出测试）。

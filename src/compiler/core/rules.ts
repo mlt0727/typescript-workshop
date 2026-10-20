@@ -13,6 +13,7 @@ const MESSAGES: Record<RuleId, string> = {
     '本题不允许非空断言（x!）：请用条件判断等方式先确认值不是 null/undefined。',
   'ts-directive':
     '本题不允许 @ts-ignore / @ts-nocheck / @ts-expect-error：它们会隐藏真实的类型错误。',
+  var: '本题不允许 var：它只有函数作用域，会漏出代码块。请用 const，需要重新赋值时用 let。',
 };
 
 /** 这些 DOM 方法的类型参数只是“相信我”，不做任何运行时检查 */
@@ -26,6 +27,14 @@ export function checkRules(sf: ts.SourceFile, forbid: readonly RuleId[]): RuleVi
     out.push({ rule, file, line: lc.line + 1, column: lc.character + 1, message });
   };
   const has = (r: RuleId) => forbid.includes(r);
+  const inDeclareContext = (node: ts.Node): boolean => {
+    for (let p: ts.Node | undefined = node; p; p = p.parent) {
+      if (ts.canHaveModifiers(p) && ts.getModifiers(p)?.some((m) => m.kind === ts.SyntaxKind.DeclareKeyword)) {
+        return true;
+      }
+    }
+    return sf.isDeclarationFile;
+  };
 
   const visit = (node: ts.Node) => {
     if (has('any') && node.kind === ts.SyntaxKind.AnyKeyword) {
@@ -54,6 +63,15 @@ export function checkRules(sf: ts.SourceFile, forbid: readonly RuleId[]): RuleVi
     }
     if (has('non-null-assertion') && ts.isNonNullExpression(node)) {
       report('non-null-assertion', node.getStart(sf));
+    }
+    // `declare var` / `declare global { var … }` 只描述已有的全局变量，不算 var 声明
+    if (
+      has('var') &&
+      ts.isVariableDeclarationList(node) &&
+      (node.flags & ts.NodeFlags.BlockScoped) === 0 &&
+      !inDeclareContext(node)
+    ) {
+      report('var', node.getStart(sf));
     }
     ts.forEachChild(node, visit);
   };

@@ -20,13 +20,14 @@ export interface DiagnosticInfo {
   related?: { file?: string; line?: number; column?: number; message: string }[];
 }
 
-export type RuleId = 'any' | 'type-assertion' | 'non-null-assertion' | 'ts-directive';
+export type RuleId = 'any' | 'type-assertion' | 'non-null-assertion' | 'ts-directive' | 'var';
 
 export const ALL_RULES: readonly RuleId[] = [
   'any',
   'type-assertion',
   'non-null-assertion',
   'ts-directive',
+  'var',
 ];
 
 export interface RuleViolation {

@@ -1,0 +1,73 @@
+- id: const-object
+  type: single
+  prompt: |
+    下面哪一行会让 TypeScript 报错？
+
+    ```ts
+    const config = { debug: false };
+    config.debug = true;      // 第 2 行
+    config = { debug: true }; // 第 3 行
+    ```
+  options:
+    - text: 只有第 3 行
+      correct: true
+      explain: "`const` 只禁止重新赋值（第 3 行，TS2588）。第 2 行修改的是对象的属性，`config` 仍然指向同一个对象，这是允许的。"
+    - text: 只有第 2 行
+      explain: 修改 `const` 对象的属性是允许的；不允许的是让 `config` 指向另一个对象。
+    - text: 第 2 行和第 3 行都会报错
+      explain: "`const` 不会让对象变成只读，第 2 行没有问题。"
+    - text: 都不报错
+      explain: 第 3 行给 `const` 变量重新赋值，会报 TS2588。
+- id: inferred-types
+  type: single
+  prompt: |
+    `a` 和 `b` 分别被推断为什么类型？
+
+    ```ts
+    let a = 'hello';
+    const b = 'hello';
+    ```
+  options:
+    - text: "`a` 是 `string`，`b` 是 `\"hello\"`"
+      correct: true
+      explain: "`const` 不会被重新赋值，所以 TypeScript 推断出字面量类型 `\"hello\"`；`let` 以后可能存别的字符串，推断为 `string`。"
+    - text: 都是 `string`
+      explain: "`const` 声明会推断出更精确的字面量类型。把鼠标停在变量名上可以看到推断结果。"
+    - text: 都是 `any`
+      explain: 有初始值时，TypeScript 会根据初始值推断类型，不会是 `any`。
+    - text: "`a` 是 `\"hello\"`，`b` 是 `string`"
+      explain: 正好反了：`let` 推断为更宽的 `string`。
+- id: need-annotation
+  type: multiple
+  prompt: 在本平台的严格模式下，下列哪些情况**需要**写类型注解，否则会报错或得到不想要的类型？
+  options:
+    - text: 函数参数，例如 `function area(width, height) { … }`
+      correct: true
+      explain: TypeScript 不会根据调用处推断参数类型，参数没有注解会报 TS7006（隐式 any）。
+    - text: 有初始值的局部变量，例如 `const total = 0;`
+      explain: 初始值已经足够推断出类型，不需要注解。
+    - text: 先声明、稍后才赋值的变量，并且希望它只能存字符串，例如 `let label;`
+      correct: true
+      explain: "没有初始值时 TypeScript 无法从初始值推断。写成 `let label: string;`，类型就明确了，使用前未赋值也会被检查出来。"
+    - text: 之后只会被赋成数字的计数器，例如 `let count = 0;`
+      explain: "`count` 已被推断为 `number`，赋值成别的类型会报错，不需要额外注解。"
+- id: block-scope
+  type: single
+  prompt: |
+    运行下面的代码会怎样？
+
+    ```ts
+    const hour = 9;
+    if (hour < 12) {
+      let greeting = '上午好';
+    }
+    console.log(greeting);
+    ```
+  options:
+    - text: TypeScript 报错找不到 `greeting`；即使强行运行，也会抛出 `ReferenceError`
+      correct: true
+      explain: "`let` 是块级作用域，`greeting` 只在 `if` 的花括号里存在。这一点和 Java/C++ 一样，和 Python 不同。"
+    - text: 输出 `上午好`
+      explain: 这是 Python 的行为。JavaScript 的 `let` 不会漏出代码块。
+    - text: 输出 `undefined`
+      explain: 如果用 `var` 声明并且条件不成立，才可能得到 `undefined`；`let` 声明的变量在块外根本不存在。

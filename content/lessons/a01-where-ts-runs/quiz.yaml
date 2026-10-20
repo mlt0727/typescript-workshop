@@ -1,0 +1,45 @@
+- id: true-statements
+  type: multiple
+  prompt: 下列哪些说法是正确的？
+  options:
+    - text: 浏览器执行的是 TypeScript 擦除类型后得到的 JavaScript
+      correct: true
+      explain: 浏览器的 JavaScript 引擎只执行 JavaScript，TypeScript 需要先擦除类型。
+    - text: 只要代码里有类型错误，程序就一定无法运行
+      explain: 类型检查与运行是分开的。本平台和大多数工具在有类型错误时仍会产出并运行 JavaScript，所以你要主动处理报错。
+    - text: Node.js 22.18 及以上可以直接运行 `.ts` 文件，但不会做类型检查
+      correct: true
+      explain: Node.js 只是把类型语法擦除掉再运行；需要类型检查时要另外运行 `tsc`。
+    - text: 运行时可以读取变量的 TypeScript 类型，用来检查参数是否合法
+      explain: 类型在编译后被完全擦除，运行时不存在 TypeScript 类型。运行时检查需要自己写代码（后面的课会讲）。
+- id: predict-concat
+  type: single
+  prompt: |
+    忽略编辑器里的类型错误直接运行，输出是什么？
+
+    ```ts
+    const base: number = 20;
+    const extra: number = '8';
+    console.log(base + extra);
+    ```
+  options:
+    - text: "`208`"
+      correct: true
+      explain: 类型被擦除后，`extra` 的值仍是字符串 `'8'`；数字与字符串用 `+` 相加会变成字符串拼接，得到 `'208'`。
+    - text: "`28`"
+      explain: 如果 `extra` 真的是数字就会得到 28。但它的实际值是字符串，TypeScript 的类型注解不会在运行时转换数据。
+    - text: 抛出 `TypeError`
+      explain: JavaScript 不会因为数字加字符串而报错，而是做字符串拼接。
+    - text: 程序不会运行，因为有类型错误
+      explain: 类型错误不会自动阻止运行。
+- id: document-in-worker
+  type: single
+  prompt: 在本平台的“纯 TypeScript”示例里写 `document.title = 'x';`，会发生什么？
+  options:
+    - text: 编辑器报 TS2584（找不到 `document`），运行时抛出 `ReferenceError`
+      correct: true
+      explain: 纯 TypeScript 示例运行在 Web Worker 中，没有 DOM；类型库也相应地没有 `document`，所以编译期和运行期都会出错。
+    - text: 页面标题变成 `x`
+      explain: 纯 TypeScript 示例没有页面。需要页面时使用“网页（DOM）”模式。
+    - text: 没有类型错误，运行时什么也不发生
+      explain: TypeScript 根据 `lib` 配置知道当前环境没有 `document`，会在编译期报错。

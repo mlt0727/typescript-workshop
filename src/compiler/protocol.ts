@@ -22,6 +22,8 @@ export interface CompilerMethods {
     bundle: RunBundle;
     diagnostics: DiagnosticInfo[];
   };
+  /** 把单个文件转译成 JavaScript（教学用：展示类型擦除后的代码） */
+  emitJs(params: { mode: ProjectSpec['mode']; file: string; content: string }): { code: string };
   judge(params: {
     projectId: string;
     spec: ProjectSpec;
