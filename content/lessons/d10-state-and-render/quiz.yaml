@@ -1,0 +1,48 @@
+- id: single-source
+  type: single
+  prompt: 待办应用要显示“剩余 N 项”。下面哪种做法最可靠？
+  options:
+    - text: 在 render 中根据 todos 计算剩余数
+      correct: true
+      explain: 派生数据每次从唯一的数据来源算出来，永远不会与 todos 不一致。
+    - text: 在状态中另外保存一个 remaining，每次勾选时加一或减一
+      explain: 多了一份可能不一致的数据，漏掉一种操作（例如删除）就会出错。
+    - text: 读取页面上未勾选的复选框个数
+      explain: 这是把 DOM 当作数据来源；筛选之后页面上只显示一部分项，结果就错了。
+- id: immutable-why
+  type: multiple
+  prompt: "`update` 返回新的状态对象、不修改旧状态，有哪些好处？"
+  options:
+    - text: 旧状态保存下来就能实现撤销
+      correct: true
+      explain: 旧状态从来没有被修改过。
+    - text: 用 `===` 比较就能知道状态有没有变化
+      correct: true
+      explain: 约定“没有变化时返回同一个对象”，比较引用即可，不用逐个字段比较。
+    - text: 程序运行得更快，因为不需要创建新对象
+      explain: 恰恰相反，它会创建新对象；好处在于正确性和简单，而不是减少分配。
+    - text: "`readonly` 类型可以帮忙发现意外的修改"
+      correct: true
+      explain: "例如 `state.todos.push(…)` 会直接报类型错误。"
+- id: dispatch-role
+  type: single
+  prompt: 在本课的结构中，事件监听器应该做什么？
+  options:
+    - text: 把用户操作翻译成一个动作，交给 dispatch
+      correct: true
+      explain: 改变状态的逻辑集中在 update，更新界面的逻辑集中在 render，监听器只负责翻译。
+    - text: 直接修改相关的 DOM 元素，再更新状态
+      explain: 这样界面和状态就有两个来源，容易不一致。
+    - text: 修改状态之后，只更新受影响的那一部分界面
+      explain: 手工挑选要更新的部分正是容易出错的地方；交给 render 根据状态统一更新。
+- id: action-union
+  type: single
+  prompt: "把所有动作写成 `type Action = { type: 'add'; … } | { type: 'toggle'; … } | …`，在 update 的 switch 中加上穷尽检查，有什么作用？"
+  options:
+    - text: 新增一种动作却忘了在 update 中处理时，TypeScript 会报错
+      correct: true
+      explain: 这是 b09 的穷尽检查：没处理的动作类型会流到 never 分支。
+    - text: 动作会在运行时自动被验证
+      explain: 类型只在编译期起作用。
+    - text: 可以省掉 render 函数
+      explain: 动作描述的是状态如何改变，界面仍然需要 render。

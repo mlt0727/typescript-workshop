@@ -4963,6 +4963,98 @@
         }
       ]
     },
+    "d10-state-and-render": {
+      "verifiedAt": "2026-10-20T12:07:23.675Z",
+      "sourceHash": "2c1e560316984353",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:counter:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:counter:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:mini-todos:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:mini-todos:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:todo-reducer:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(update › add：去掉空白，使用 nextId 并加 1,update › add：空白文字返回原来的 state,update › toggle：只替换被切换的那一项,update › remove 与 clear-done,update › set-filter,派生数据 › visibleTodos,派生数据 › remainingCount)"
+        },
+        {
+          "target": "exercise:todo-reducer:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-reducer:alt:handlers-object",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-reducer:wrong:mutate-todo",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(update › toggle：只替换被切换的那一项,派生数据 › remainingCount)"
+        },
+        {
+          "target": "exercise:todo-reducer:wrong:same-next-id",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(update › add：去掉空白，使用 nextId 并加 1)"
+        },
+        {
+          "target": "exercise:todo-reducer:wrong:always-new-state",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(update › 没有变化时返回原来的 state 对象)"
+        },
+        {
+          "target": "exercise:todo-reducer:wrong:no-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(update › add：去掉空白，使用 nextId 并加 1,update › add：空白文字返回原来的 state)"
+        },
+        {
+          "target": "exercise:todo-app:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面加载后渲染初始状态,勾选、筛选、删除,添加：清空输入框；空白输入不添加，也不产生历史,清除已完成；没有已完成的项时按钮禁用,撤销一步步恢复到初始状态)"
+        },
+        {
+          "target": "exercise:todo-app:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-app:alt:record-of-handlers",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-app:wrong:history-always",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加：清空输入框；空白输入不添加，也不产生历史)"
+        },
+        {
+          "target": "exercise:todo-app:wrong:dom-as-state",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(勾选、筛选、删除,清除已完成；没有已完成的项时按钮禁用,撤销一步步恢复到初始状态)"
+        },
+        {
+          "target": "exercise:todo-app:wrong:undo-without-render",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(撤销一步步恢复到初始状态)"
+        }
+      ]
+    },
     "e01-event-loop": {
       "verifiedAt": "2026-10-20T11:45:19.956Z",
       "sourceHash": "883cb12fb24c3566",
