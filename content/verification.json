@@ -4550,6 +4550,113 @@
         }
       ]
     },
+    "d06-dom-create-update": {
+      "verifiedAt": "2026-10-20T11:54:47.575Z",
+      "sourceHash": "24184152ca397361",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:text-vs-html:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:text-vs-html:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] safe 里的元素个数： 0 | [log] unsafe 里的元素： [ 'B', 'IMG' ]"
+        },
+        {
+          "target": "playground:create:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:create:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ '已有的一项', '苹果', '香蕉', '新的第一项' ]"
+        },
+        {
+          "target": "playground:attr-vs-prop:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:attr-vs-prop:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 当前值（property）： Grace | [log] 初始值（attribute）： Ada"
+        },
+        {
+          "target": "exercise:render-todos:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(每个待办渲染成一个 li，带有 data-id,重复渲染会替换原有内容,文字原样显示，不被当作 HTML,已完成的项带有 done，复选框勾选；未完成的都没有)"
+        },
+        {
+          "target": "exercise:render-todos:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:render-todos:alt:template-literal-free-builder",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:render-todos:wrong:inner-html",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(文字原样显示，不被当作 HTML,已完成的项带有 done，复选框勾选；未完成的都没有)"
+        },
+        {
+          "target": "exercise:render-todos:wrong:append-without-clear",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(重复渲染会替换原有内容)"
+        },
+        {
+          "target": "exercise:render-todos:wrong:checked-attribute",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已完成的项带有 done，复选框勾选；未完成的都没有)"
+        },
+        {
+          "target": "exercise:render-todos:wrong:class-on-label",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已完成的项带有 done，复选框勾选；未完成的都没有)"
+        },
+        {
+          "target": "exercise:sync-list:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(复用已有的元素：保留用户输入的备注,新增、删除、重新排序,名称变化时更新文字和 aria-label，元素仍然复用)"
+        },
+        {
+          "target": "exercise:sync-list:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:sync-list:alt:append-in-order",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:sync-list:wrong:rebuild-everything",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(复用已有的元素：保留用户输入的备注,新增、删除、重新排序,名称变化时更新文字和 aria-label，元素仍然复用)"
+        },
+        {
+          "target": "exercise:sync-list:wrong:match-by-index",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(复用已有的元素：保留用户输入的备注,新增、删除、重新排序)"
+        },
+        {
+          "target": "exercise:sync-list:wrong:keep-stale",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(新增、删除、重新排序,更新为空数组时清空列表)"
+        },
+        {
+          "target": "exercise:sync-list:wrong:no-label-update",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(名称变化时更新文字和 aria-label，元素仍然复用)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T11:45:19.120Z",
       "sourceHash": "5fb16b205d4ef535",

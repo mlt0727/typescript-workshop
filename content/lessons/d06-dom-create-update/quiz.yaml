@@ -1,0 +1,44 @@
+- id: show-user-input
+  type: single
+  prompt: 要在页面上显示用户提交的评论，应该怎么写？
+  options:
+    - text: "`el.textContent = comment`"
+      correct: true
+      explain: 评论被当作纯文字显示，其中的 `<` `>` 不会被解析。
+    - text: "`el.innerHTML = comment`"
+      explain: 评论会被当作 HTML 解析，用户可以注入元素甚至脚本（XSS）。
+    - text: "`el.innerHTML = '<p>' + comment + '</p>'`"
+      explain: 包了一层标签也一样，评论本身仍被当作 HTML 解析。
+- id: append-moves
+  type: single
+  prompt: "`list.append(first)` 中，`first` 是已经在 `list` 开头的 `<li>`。执行后会怎样？"
+  options:
+    - text: "`first` 被移动到列表末尾，列表的项数不变"
+      correct: true
+      explain: 一个节点同时只能在一个位置，插入已经在页面上的节点就是移动它。
+    - text: 列表末尾多出一个 `first` 的副本
+      explain: 需要副本时要先 `cloneNode(true)`。
+    - text: 抛出错误，因为它已经在列表中
+      explain: 不会报错，节点被移动了。
+- id: attribute-vs-property
+  type: single
+  prompt: 用户在 `<input value="Ada">` 中改成了“Grace”。`input.getAttribute('value')` 和 `input.value` 分别是什么？
+  options:
+    - text: "`'Ada'` 和 `'Grace'`"
+      correct: true
+      explain: HTML 属性是初始值，DOM 属性 `value` 是当前值。
+    - text: "`'Grace'` 和 `'Grace'`"
+      explain: 用户的输入不会改写 HTML 属性。
+    - text: "`'Ada'` 和 `'Ada'`"
+      explain: "`input.value` 反映用户当前输入的内容。"
+- id: boolean-attribute
+  type: single
+  prompt: "`checkbox.setAttribute('checked', 'false')` 之后，复选框（在用户操作之前）是什么状态？"
+  options:
+    - text: 勾选
+      correct: true
+      explain: HTML 的布尔属性只看有没有这个属性，不看它的值。要取消勾选，设置 `checkbox.checked = false` 或 `removeAttribute('checked')`。
+    - text: 未勾选
+      explain: 属性的值 `'false'` 只是一个字符串，属性存在就表示勾选。
+    - text: 抛出错误
+      explain: 不会报错。
