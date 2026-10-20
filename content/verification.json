@@ -3282,8 +3282,8 @@
       ]
     },
     "b11-overloads": {
-      "verifiedAt": "2026-10-20T10:35:14.465Z",
-      "sourceHash": "657c13854c2ca960",
+      "verifiedAt": "2026-10-20T10:59:05.192Z",
+      "sourceHash": "2dfe447caed64048",
       "ok": true,
       "checks": [
         {
@@ -3304,7 +3304,7 @@
         {
           "target": "playground:return-depends:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 43 2 | [log] [ '7' ]"
+          "detail": "期望 done，实际 done；输出：[log] 43 2 | [log] 7"
         },
         {
           "target": "playground:prefer-union:types",
@@ -3314,7 +3314,7 @@
         {
           "target": "playground:prefer-union:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 2 3 | [log] 3"
+          "detail": "期望 done，实际 done；输出：[log] 2 3 | [log] 2"
         },
         {
           "target": "exercise:first-item:starter:starter",
@@ -3349,7 +3349,7 @@
         {
           "target": "exercise:setting-overloads:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@settings.test-d.ts:5 Type '\"light\" | \"dark\"' does not satisfy the constraint '\"Expected: literal string: light, Actual: string\" | \"Expected: literal string: light, Actual: number\" | \"Expected: literal string: dark, Actual: string\" | \"Expected: literal string: dark, Actual: number\"'.；TS2344@se) rules=ok tests=fail(createSettings › 修改设置,createSettings › 非法的值抛出 RangeError，并保持原值,createSettings › 与 initial 互不影响)"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2578@settings.test.ts:38 Unused '@ts-expect-error' directive.；TS2344@settings.test-d.ts:5 Type '\"light\" | \"dark\"' does not satisfy the constraint '\"Expected: literal string: light, Actual: string\" | \"Expected: literal string: light, Actual: number\" | \"Expected: literal string: dark, Actual: string) rules=ok tests=fail(createSettings › 修改设置,createSettings › 非法的值抛出 RangeError，并保持原值,createSettings › 非法的主题也抛出 RangeError,createSettings › 与 initial 互不影响)"
         },
         {
           "target": "exercise:setting-overloads:solution:solution",
@@ -3364,28 +3364,28 @@
         {
           "target": "exercise:setting-overloads:wrong:union-return",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2344@settings.test-d.ts:5 Type '\"light\" | \"dark\"' does not satisfy the constraint '\"Expected: literal string: light, Actual: string\" | \"Expected: literal string: light, Actual: number\" | \"Expected: literal string: dark, Actual: string\" | \"Expected: literal string: dark, Actual: number\"'.；TS2344@se) rules=ok tests=ok"
+          "detail": "被拒绝（types）；types=fail(TS2344@settings.test-d.ts:5 Type '\"light\" | \"dark\"' does not satisfy the constraint '\"Expected: literal string: light, Actual: string\" | \"Expected: literal string: light, Actual: number\" | \"Expected: literal string: dark, Actual: string\" | \"Expected: literal string: dark, Actual: number\"'.；TS2344@se) rules=ok tests=fail(createSettings › 非法的主题也抛出 RangeError)"
         },
         {
           "target": "exercise:setting-overloads:wrong:loose-set",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2578@settings.test-d.ts:9 Unused '@ts-expect-error' directive.；TS2578@settings.test-d.ts:11 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+          "detail": "被拒绝（types）；types=fail(TS2578@settings.test.ts:38 Unused '@ts-expect-error' directive.；TS2578@settings.test-d.ts:9 Unused '@ts-expect-error' directive.；TS2578@settings.test-d.ts:11 Unused '@ts-expect-error' directive.) rules=ok tests=fail(createSettings › 非法的主题也抛出 RangeError)"
         },
         {
           "target": "exercise:setting-overloads:wrong:no-copy",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSettings › 与 initial 互不影响)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSettings › 非法的主题也抛出 RangeError,createSettings › 与 initial 互不影响)"
         },
         {
           "target": "exercise:setting-overloads:wrong:no-range-check",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSettings › 非法的值抛出 RangeError，并保持原值)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSettings › 非法的值抛出 RangeError，并保持原值,createSettings › 非法的主题也抛出 RangeError)"
         }
       ]
     },
     "b12-classes": {
-      "verifiedAt": "2026-10-20T10:37:47.543Z",
-      "sourceHash": "cf328d0c2a842b78",
+      "verifiedAt": "2026-10-20T10:59:05.696Z",
+      "sourceHash": "245eb61998874571",
       "ok": true,
       "checks": [
         {
@@ -3407,6 +3407,16 @@
           "target": "playground:private:run",
           "ok": true,
           "detail": "期望 done，实际 done；输出：[log] 100 {\"owner\":\"Ada\"} [ 'owner' ] | [log] Ada"
+        },
+        {
+          "target": "playground:setter:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:setter:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（RangeError: 音量必须是 0–10 的整数：11）；输出：[log] 8 | [error] Uncaught RangeError: 音量必须是 0–10 的整数：11\n    at #check (main.ts:15:13)\n    at set level (main.ts:9:16)\n    at main.ts:23:13"
         },
         {
           "target": "playground:static-and-parameter-properties:types",
@@ -3492,12 +3502,17 @@
           "target": "exercise:lru-cache:wrong:public-map",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(LruCache › 内部数据是私有的)"
+        },
+        {
+          "target": "exercise:lru-cache:wrong:ts-private",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(LruCache › 内部数据是私有的)"
         }
       ]
     },
     "b13-inheritance-implements": {
-      "verifiedAt": "2026-10-20T10:41:18.194Z",
-      "sourceHash": "751ea0c76e42ad5a",
+      "verifiedAt": "2026-10-20T10:59:06.114Z",
+      "sourceHash": "652eb5e170b7822f",
       "ok": true,
       "checks": [
         {
@@ -3551,7 +3566,7 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:shape-classes:alt:getter-fields",
+          "target": "exercise:shape-classes:alt:private-fields-no-override",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
@@ -3561,9 +3576,9 @@
           "detail": "被拒绝（types）；types=fail(TS17009@shapes.ts:18 'super' must be called before accessing 'this' in the constructor of a derived class.；TS17009@shapes.ts:30 'super' must be called before accessing 'this' in the constructor of a derived class.；TS17009@shapes.ts:31 'super' must be called before accessing 'this' in the constructor) rules=ok tests=fail(圆,矩形)"
         },
         {
-          "target": "exercise:shape-classes:wrong:wrong-name",
+          "target": "exercise:shape-classes:wrong:missing-area",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(圆,矩形)"
+          "detail": "被拒绝（types）；types=fail(TS2515@shapes.ts:26 Non-abstract class 'Rect' does not implement inherited abstract member area from class 'Shape'.) rules=ok tests=fail(矩形)"
         },
         {
           "target": "exercise:notifier:starter:starter",
@@ -3576,7 +3591,7 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:notifier:alt:functional-notify",
+          "target": "exercise:notifier:alt:shared-outbox",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
@@ -3603,8 +3618,8 @@
       ]
     },
     "b14-generics": {
-      "verifiedAt": "2026-10-20T10:43:20.733Z",
-      "sourceHash": "10e6eca6ac0232c8",
+      "verifiedAt": "2026-10-20T10:59:07.054Z",
+      "sourceHash": "138f1f959f851ed4",
       "ok": true,
       "checks": [
         {

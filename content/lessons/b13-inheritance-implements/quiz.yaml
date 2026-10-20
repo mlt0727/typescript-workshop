@@ -22,7 +22,7 @@
       explain: "`this.level = level` 出现在 `super(name)` 之前，会报 TS17009。"
 - id: override-typo
   type: single
-  prompt: 开启 `noImplicitOverride` 后，在子类中写 `override rendr() { … }`（父类的方法叫 `render`）会怎样？
+  prompt: "在子类中写 `override rendr() { … }`（父类的方法叫 `render`）会怎样？"
   options:
     - text: 报错：父类中没有 `rendr` 可以覆盖（TS4117，并提示是不是想写 `render`）
       correct: true

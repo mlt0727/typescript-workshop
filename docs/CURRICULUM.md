@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 32 / 规划总数 126**（草稿 9，规划中 85）
+**已发布 36 / 规划总数 126**（草稿 5，规划中 85）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -32,7 +32,7 @@
 | `a19-modules` ESM 导入与导出 | ✅ 已发布 | `a13-functions` |
 | `a20-errors` 错误处理：throw、try/catch 与 unknown | ✅ 已发布 | `a13-functions` |
 
-## B. 日常 TypeScript（已发布 10 / 17）
+## B. 日常 TypeScript（已发布 14 / 17）
 
 用类型描述数据、函数与模块，理解结构化类型与类型收窄。
 
@@ -48,10 +48,10 @@
 | `b08-type-guards` 自定义类型守卫与断言函数 | ✅ 已发布 | `b07-narrowing` |
 | `b09-discriminated-unions` 可辨识联合与穷尽检查 | ✅ 已发布 | `b08-type-guards` |
 | `b10-function-types` 函数类型与回调 | ✅ 已发布 | `b07-narrowing`、`a16-array-methods` |
-| `b11-overloads` 函数重载：何时用，何时不用 | 📝 草稿 | `b10-function-types` |
-| `b12-classes` 类、字段与访问控制 | 📝 草稿 | `b10-function-types`、`a15-this` |
-| `b13-inheritance-implements` 继承、实现接口与抽象类 | 📝 草稿 | `b12-classes` |
-| `b14-generics` 泛型函数与泛型类型 | 📝 草稿 | `b10-function-types` |
+| `b11-overloads` 函数重载：何时用，何时不用 | ✅ 已发布 | `b10-function-types` |
+| `b12-classes` 类、字段与访问控制 | ✅ 已发布 | `b10-function-types`、`a15-this` |
+| `b13-inheritance-implements` 继承、实现接口与抽象类 | ✅ 已发布 | `b12-classes` |
+| `b14-generics` 泛型函数与泛型类型 | ✅ 已发布 | `b10-function-types` |
 | `b15-generic-constraints` 泛型约束 | 📝 草稿 | `b14-generics` |
 | `b16-assertions-as-const-satisfies` 类型断言、as const 与 satisfies | 📝 草稿 | `b15-generic-constraints` |
 | `b17-enums-and-alternatives` 枚举与可擦除语法 | 📝 草稿 | `b16-assertions-as-const-satisfies` |

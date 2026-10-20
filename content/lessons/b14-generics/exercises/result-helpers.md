@@ -14,9 +14,9 @@ type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E };
 | --- | --- |
 | `ok(value)` | 返回 `{ ok: true, value }`，类型为 `Result<T, never>` |
 | `err(error)` | 返回 `{ ok: false, error }`，类型为 `Result<never, E>` |
-| `map(result, fn)` | 成功时用 `fn` 转换值，返回新的成功结果；失败时原样返回失败结果。类型：`Result<T, E>` → `Result<U, E>` |
+| `map(result, fn)` | 成功时用 `fn` 转换值，返回新的成功结果；失败时返回失败结果（错误不变，不调用 `fn`）。类型：`Result<T, E>` → `Result<U, E>` |
 | `unwrapOr(result, fallback)` | 成功时返回值，失败时返回 `fallback`。返回类型为 `T` |
-| `all(results)` | 全部成功时返回 `ok(所有值组成的数组)`；否则返回**第一个**失败结果。类型：`readonly Result<T, E>[]` → `Result<T[], E>` |
+| `all(results)` | 全部成功时返回 `ok(所有值组成的数组)`；否则返回**第一个**失败结果（错误相同）。类型：`readonly Result<T, E>[]` → `Result<T[], E>` |
 
 :::files{role=starter}
 ```ts file=result.ts

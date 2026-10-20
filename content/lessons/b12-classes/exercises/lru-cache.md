@@ -142,7 +142,7 @@ describe('LruCache', () => {
   test('内部数据是私有的', () => {
     const cache = new LruCache(2);
     cache.set('a', '1');
-    expect(Object.keys(cache)).toEqual(['capacity']);
+    expect(Object.values(cache).some((value) => value instanceof Map)).toBe(false);
   });
 });
 ```
@@ -159,7 +159,7 @@ describe('LruCache', () => {
 :::explanation
 LRU 缓存需要两种能力：按键快速查找，以及记住使用的先后顺序。`Map` 同时提供了这两点：查找是 `get`，顺序是插入顺序。每次使用时删除再重新插入，这个键就移到了末尾；超过容量时，删除第一个键，也就是最久没用的那个。
 
-`#entries` 是私有字段，外部无法绕过 `get`/`set` 修改数据，所以“使用顺序”始终由类自己维护。`keys()` 返回展开得到的新数组，调用方修改它不会影响缓存（a14）。
+`#entries` 是私有字段，外部无法绕过 `get`/`set` 修改数据，所以“使用顺序”始终由类自己维护。`keys()` 返回展开得到的新数组，调用方修改它不会影响缓存（a11）。
 
 `keys().next()` 是迭代器的接口：它返回 `{ value, done }`。在 `done` 为 `false` 时，`value` 才是有效的键——TypeScript 也会根据 `done` 收窄 `value` 的类型（可辨识联合，b09）。
 :::
@@ -339,6 +339,49 @@ export class LruCache {
 export class LruCache {
   readonly capacity: number;
   entries = new Map<string, string>();
+
+  constructor(capacity: number) {
+    if (!Number.isInteger(capacity) || capacity <= 0) throw new RangeError('容量无效');
+    this.capacity = capacity;
+  }
+
+  get size(): number {
+    return this.entries.size;
+  }
+
+  has(key: string): boolean {
+    return this.entries.has(key);
+  }
+
+  get(key: string): string | undefined {
+    const value = this.entries.get(key);
+    if (value === undefined) return undefined;
+    this.entries.delete(key);
+    this.entries.set(key, value);
+    return value;
+  }
+
+  set(key: string, value: string): void {
+    this.entries.delete(key);
+    this.entries.set(key, value);
+    if (this.entries.size > this.capacity) {
+      const oldest = this.entries.keys().next();
+      if (!oldest.done) this.entries.delete(oldest.value);
+    }
+  }
+
+  keys(): string[] {
+    return [...this.entries.keys()];
+  }
+}
+```
+:::
+
+:::variant{kind=wrong name=ts-private fails=tests reason="用 TypeScript 的 private 保存数据，运行时仍然是普通属性"}
+```ts file=lru.ts
+export class LruCache {
+  readonly capacity: number;
+  private entries = new Map<string, string>();
 
   constructor(capacity: number) {
     if (!Number.isInteger(capacity) || capacity <= 0) throw new RangeError('容量无效');

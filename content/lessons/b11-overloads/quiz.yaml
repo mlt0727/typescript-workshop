@@ -48,6 +48,6 @@
       correct: true
       explain: 重载只存在于类型层面，运行时是同一个函数，由实现内部自己判断。
     - text: 每个重载签名生成一个函数，运行时根据参数类型自动选择
-      explain: 这是 Java 的方法重载。JavaScript 没有按类型分派的机制。
+      explain: "Java 在编译期按参数的静态类型选定重载，并为每个重载生成独立的方法；TypeScript 两件事都不做，运行时只有一个函数。"
     - text: 生成一个分派函数，自动检查参数类型
       explain: TypeScript 不生成运行时检查代码。

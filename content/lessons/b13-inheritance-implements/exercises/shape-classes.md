@@ -3,7 +3,7 @@ kind: task
 title: 抽象图形类
 compiler:
   overrides: { noImplicitOverride: true }
-  note: 本题开启 noImplicitOverride，覆盖或实现父类方法时要写 override。
+  note: 本题开启 noImplicitOverride，覆盖已有实现的方法时必须写 override；实现抽象方法时推荐写。
 ---
 抽象类 `Shape` 已经写好：它要求子类实现 `area()`，并提供了一个使用 `area()` 的 `describe()` 方法。
 
@@ -132,7 +132,7 @@ export class Rect extends Shape {
 实现抽象方法时，`override` 是可写可不写的：`noImplicitOverride` 只强制要求覆盖**已有实现**的方法写 `override`。写上它仍然是好习惯，读代码的人一眼就知道这个方法来自父类的约定。
 :::
 
-:::variant{kind=alt name=getter-fields}
+:::variant{kind=alt name=private-fields-no-override}
 ```ts file=shapes.ts
 export abstract class Shape {
   readonly name: string;
@@ -154,7 +154,7 @@ export class Circle extends Shape {
     super('圆');
     this.#r = radius;
   }
-  override area(): number {
+  area(): number {
     return Math.PI * this.#r * this.#r;
   }
 }
@@ -167,7 +167,7 @@ export class Rect extends Shape {
     this.#w = w;
     this.#h = h;
   }
-  override area(): number {
+  area(): number {
     return this.#w * this.#h;
   }
 }
@@ -216,7 +216,7 @@ export class Rect extends Shape {
 ```
 :::
 
-:::variant{kind=wrong name=wrong-name fails=tests reason="传给 super 的名称写错了"}
+:::variant{kind=wrong name=missing-area fails=types reason="Rect 没有实现抽象方法 area"}
 ```ts file=shapes.ts
 export abstract class Shape {
   readonly name: string;
@@ -235,7 +235,7 @@ export abstract class Shape {
 export class Circle extends Shape {
   readonly radius: number;
   constructor(radius: number) {
-    super('Circle');
+    super('圆');
     this.radius = radius;
   }
   override area(): number {
@@ -247,12 +247,9 @@ export class Rect extends Shape {
   readonly width: number;
   readonly height: number;
   constructor(width: number, height: number) {
-    super('Rect');
+    super('矩形');
     this.width = width;
     this.height = height;
-  }
-  override area(): number {
-    return this.width * this.height;
   }
 }
 ```

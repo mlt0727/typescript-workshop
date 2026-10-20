@@ -19,7 +19,7 @@ interface Channel {
 
 **`SmsChannel implements Channel`**：`name` 为 `'sms'`。`send` 在 `contact.phone` 正好是 11 位数字、并且 `message` 不超过 70 个字符时成功：记录 `{ to: phone, message }`，返回 `true`；否则返回 `false`。同样提供 `sent()`。
 
-**`Notifier`**：构造函数接收一个渠道数组 `readonly Channel[]`。`notify(contact, message)` 依次尝试**每一个**渠道，返回发送成功的渠道名称数组（按渠道顺序）。某个渠道抛出异常时，当作发送失败，继续尝试后面的渠道。
+**`Notifier`**：构造函数接收一个渠道数组 `readonly Channel[]`，并保存它的**副本**（之后调用方修改原数组不影响 `Notifier`）。`notify(contact, message)` 依次尝试**每一个**渠道，返回发送成功的渠道名称数组（按渠道顺序）。某个渠道抛出异常时，当作发送失败，继续尝试后面的渠道。
 
 :::files{role=starter}
 ```ts file=notify.ts
@@ -219,12 +219,12 @@ describe('Notifier', () => {
 :::explanation
 `Channel` 接口只描述“能发送消息”这一能力。`EmailChannel` 和 `SmsChannel` 各自实现它，`Notifier` 则通过**组合**——持有一组 `Channel`——获得发送能力，而不是继承某个渠道类。要增加一种新渠道，只需再写一个满足接口的类（甚至一个普通对象，见测试中的 `console2`），`Notifier` 不需要修改。
 
-测试里的普通对象没有写 `implements`，也能当作 `Channel` 使用：结构化类型下，`implements` 只是让类在声明处就接受检查。
+测试里直接用对象字面量作为渠道（对象字面量本来就没有 `implements` 的写法），只要形状相符就能用：结构化类型下，`implements` 只是让类在声明处就接受检查。
 
 每个渠道的调用都包在 `try/catch` 里：一个渠道出问题，不应该影响其他渠道。构造函数复制渠道数组，避免调用方之后的修改改变 `Notifier` 的行为（a11）。
 :::
 
-:::variant{kind=alt name=functional-notify}
+:::variant{kind=alt name=shared-outbox}
 ```ts file=notify.ts
 export type Contact = { email?: string; phone?: string };
 
@@ -235,37 +235,45 @@ export interface Channel {
 
 export type Sent = { to: string; message: string };
 
-abstract class RecordingChannel implements Channel {
-  abstract readonly name: string;
-  #outbox: Sent[] = [];
+class Outbox {
+  #items: Sent[] = [];
 
-  protected abstract address(contact: Contact, message: string): string | null;
-
-  send(contact: Contact, message: string): boolean {
-    const to = this.address(contact, message);
-    if (to === null) return false;
-    this.#outbox.push({ to, message });
+  record(to: string, message: string): true {
+    this.#items.push({ to, message });
     return true;
   }
 
-  sent(): Sent[] {
-    return this.#outbox.map((s) => ({ ...s }));
+  list(): Sent[] {
+    return this.#items.map((item) => ({ ...item }));
   }
 }
 
-export class EmailChannel extends RecordingChannel {
+export class EmailChannel implements Channel {
   readonly name = 'email';
-  protected address(contact: Contact): string | null {
-    return contact.email?.includes('@') ? contact.email : null;
+  readonly #outbox = new Outbox();
+
+  send(contact: Contact, message: string): boolean {
+    const email = contact.email;
+    return email !== undefined && email.includes('@') && this.#outbox.record(email, message);
+  }
+
+  sent(): Sent[] {
+    return this.#outbox.list();
   }
 }
 
-export class SmsChannel extends RecordingChannel {
+export class SmsChannel implements Channel {
   readonly name = 'sms';
-  protected address(contact: Contact, message: string): string | null {
+  readonly #outbox = new Outbox();
+
+  send(contact: Contact, message: string): boolean {
     const phone = contact.phone ?? '';
-    const valid = phone.length === 11 && [...phone].every((c) => '0123456789'.includes(c));
-    return valid && message.length <= 70 ? phone : null;
+    const valid = phone.length === 11 && [...phone].every((c) => '0123456789'.includes(c)) && message.length <= 70;
+    return valid && this.#outbox.record(phone, message);
+  }
+
+  sent(): Sent[] {
+    return this.#outbox.list();
   }
 }
 

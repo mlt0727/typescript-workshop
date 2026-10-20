@@ -14,7 +14,7 @@ type SettingKey = 'theme' | 'fontSize' | 'language';
 实现 `createSettings(initial: Settings)`，返回一个对象，带有两个函数：
 
 - `get(key)`：用重载描述三种调用：`get('theme')` 返回 `'light' | 'dark'`，`get('fontSize')` 返回 `number`，`get('language')` 返回 `string`。
-- `set(key, value)`：同样用重载，值的类型必须与键对应（`set('fontSize', '16')` 应当报类型错误）。另外在运行时检查：`fontSize` 必须是 8 到 72 之间的整数，否则抛出 `RangeError`；`language` 去掉首尾空格后不能为空，否则抛出 `RangeError`。
+- `set(key, value)`：同样用重载，值的类型必须与键对应（`set('fontSize', '16')` 应当报类型错误）。另外在运行时检查：`fontSize` 必须是 8 到 72 之间的整数，否则抛出 `RangeError`；`language` 去掉首尾空格后不能为空，否则抛出 `RangeError`；合法时保存**去掉首尾空格后**的值。`theme` 不是 `'light'` 或 `'dark'` 时也抛出 `RangeError`。
 
 `createSettings` 要复制一份 `initial`，之后对 `initial` 的修改不影响设置存储，`set` 也不修改 `initial`。
 
@@ -64,7 +64,10 @@ export function createSettings(initial: Settings) {
         throw new RangeError('language 不能为空');
       }
       current.language = value.trim();
-    } else if (value === 'light' || value === 'dark') {
+    } else {
+      if (value !== 'light' && value !== 'dark') {
+        throw new RangeError('theme 只能是 light 或 dark');
+      }
       current.theme = value;
     }
   }
@@ -111,6 +114,13 @@ describe('createSettings', () => {
     expect(s.get('language')).toBe('zh-CN');
   });
 
+  test('非法的主题也抛出 RangeError', () => {
+    const s = createSettings(sample());
+    // @ts-expect-error 故意传入类型不对的值，检查运行时校验
+    expect(() => s.set('theme', 'blue')).toThrow(RangeError);
+    expect(s.get('theme')).toBe('light');
+  });
+
   test('与 initial 互不影响', () => {
     const initial = sample();
     const s = createSettings(initial);
@@ -152,7 +162,7 @@ s.get('color');
 
 为什么还要在运行时检查？类型只能保证“是数字”，保证不了“是 8 到 72 之间的整数”；另外，来自外部的数据（例如 `JSON.parse` 的结果）可以绕过类型检查。
 
-这种“根据传入的字面量返回不同类型”的写法，在浏览器的 `createElement`、`addEventListener` 等 API 中很常见（D 阶段会看到）。b15 学了泛型约束后，可以用 `get<K extends SettingKey>(key: K): Settings[K]` 一个签名表达同样的意思，不需要逐个列出。
+浏览器的 `createElement`、`addEventListener` 也能“根据传入的字面量返回不同类型”，效果和这里类似；不过 lib.dom 实际用的是 b15 将要学的泛型写法。b15 学了泛型约束后，可以用 `get<K extends SettingKey>(key: K): Settings[K]` 一个签名表达同样的意思，不需要逐个列出。
 :::
 
 :::variant{kind=alt name=switch-based}
@@ -181,7 +191,8 @@ export function createSettings(initial: Settings) {
   function set(key: 'fontSize', value: number): void;
   function set(key: 'language', value: string): void;
   function set(key: SettingKey, value: unknown): void {
-    if (key === 'theme' && (value === 'light' || value === 'dark')) {
+    if (key === 'theme') {
+      if (value !== 'light' && value !== 'dark') throw new RangeError('theme 无效');
       current = { ...current, theme: value };
     } else if (key === 'fontSize' && typeof value === 'number') {
       if (!Number.isInteger(value) || value < 8 || value > 72) throw new RangeError('fontSize 超出范围');
