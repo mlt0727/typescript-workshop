@@ -1,0 +1,52 @@
+- id: parse-int-map
+  type: single
+  prompt: "`console.log(['1', '2', '3'].map(Number.parseInt))` 输出什么？"
+  options:
+    - text: "`[ 1, NaN, NaN ]`"
+      correct: true
+      explain: "`map` 把下标作为第二个参数传给回调，实际调用的是 `parseInt('2', 1)`、`parseInt('3', 2)`，进制不合法或数字超出进制范围，得到 `NaN`。"
+    - text: "`[ 1, 2, 3 ]`"
+      explain: 这是 `map((s) => Number.parseInt(s, 10))` 的结果。直接传入 `parseInt` 时，下标被当成了进制。
+    - text: TypeScript 报错
+      explain: "`parseInt(string, radix?)` 的参数类型和 `map` 回调的 `(value, index)` 恰好兼容，TypeScript 不会报错。"
+- id: find-type
+  type: single
+  prompt: "`const users: { name: string }[] = …;` 之后，`users.find((u) => u.name === 'Ada')` 的类型是什么？"
+  options:
+    - text: "`{ name: string } | undefined`"
+      correct: true
+      explain: 可能找不到，所以类型包含 `undefined`，使用前要检查（或用 `?.`）。
+    - text: "`{ name: string }`"
+      explain: "`find` 找不到时返回 `undefined`，TypeScript 把这种可能性写进了类型。"
+    - text: "`{ name: string }[]`"
+      explain: 返回多个元素的是 `filter`；`find` 只返回第一个。
+    - text: "`number`"
+      explain: 返回下标的是 `findIndex`。
+- id: reduce-empty
+  type: single
+  prompt: "`const xs: number[] = [];` 时，`xs.reduce((a, b) => a + b)` 会怎样？"
+  options:
+    - text: 运行时抛出 `TypeError`
+      correct: true
+      explain: 没有初始值时，`reduce` 要用第一个元素作初始值；空数组没有元素，只能抛出异常。写成 `xs.reduce((a, b) => a + b, 0)`。
+    - text: 返回 `0`
+      explain: 只有提供了初始值 `0` 时才会返回 `0`。
+    - text: 返回 `undefined`
+      explain: "`reduce` 不会返回 `undefined`，而是直接抛出 `TypeError`。"
+    - text: TypeScript 报错
+      explain: TypeScript 不会提醒这个问题，这正是要养成“总写初始值”习惯的原因。
+- id: non-mutating
+  type: multiple
+  prompt: 下列哪些方法**不会**修改原数组？
+  options:
+    - text: "`map`"
+      correct: true
+      explain: 返回新数组。
+    - text: "`filter`"
+      correct: true
+      explain: 返回新数组。
+    - text: "`find`"
+      correct: true
+      explain: 只是查找，返回元素本身（不复制）或 `undefined`。
+    - text: "`push`"
+      explain: "`push` 在原数组末尾添加元素（a10）。"

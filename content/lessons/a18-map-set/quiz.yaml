@@ -1,0 +1,51 @@
+- id: set-size
+  type: single
+  prompt: "`new Set([1, 1, '1', 2]).size` 是多少？"
+  options:
+    - text: "`3`"
+      correct: true
+      explain: 两个数字 `1` 只保留一个；字符串 `'1'` 和数字 `1` 是不同的值。集合里是 `1`、`'1'`、`2`。
+    - text: "`2`"
+      explain: Set 不做类型转换，`'1'` 和 `1` 不相等。
+    - text: "`4`"
+      explain: 重复的数字 `1` 只会保留一个。
+- id: get-type
+  type: single
+  prompt: "`const m = new Map<string, number>();` 之后，`m.get('a')` 的类型是什么？"
+  options:
+    - text: "`number | undefined`"
+      correct: true
+      explain: 键可能不存在，不存在时返回 `undefined`。常用 `m.get('a') ?? 0` 提供默认值。
+    - text: "`number`"
+      explain: 不存在的键会得到 `undefined`，TypeScript 把这种可能写进了类型。
+    - text: 不存在时抛出异常，所以是 `number`
+      explain: 这是 Python `dict['a']` 的行为。Map 的 `get` 不会抛异常。
+- id: object-key
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    const m = new Map<{ id: number }, string>();
+    m.set({ id: 1 }, 'Ada');
+    console.log(m.get({ id: 1 }));
+    ```
+  options:
+    - text: "`undefined`"
+      correct: true
+      explain: "对象作为键时按引用比较。查找时写的 `{ id: 1 }` 是另一个新对象。应该用 `id` 本身作为键。"
+    - text: "`Ada`"
+      explain: 两个对象字面量内容相同，但不是同一个对象。
+    - text: TypeScript 报错，Map 的键不能是对象
+      explain: Map 的键可以是任何类型，包括对象，只是按引用比较。
+- id: map-json
+  type: single
+  prompt: "`JSON.stringify(new Map([['a', 1]]))` 的结果是什么？"
+  options:
+    - text: "`'{}'`"
+      correct: true
+      explain: "`JSON.stringify` 不认识 Map。先用 `Object.fromEntries(map)` 转成普通对象，或展开成数组。"
+    - text: "`'{\"a\":1}'`"
+      explain: 这是 `JSON.stringify(Object.fromEntries(map))` 的结果。
+    - text: "`'[[\"a\",1]]'`"
+      explain: 这是 `JSON.stringify([...map])` 的结果。

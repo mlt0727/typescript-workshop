@@ -1671,6 +1671,357 @@
         }
       ]
     },
+    "a16-array-methods": {
+      "verifiedAt": "2026-10-20T09:53:58.569Z",
+      "sourceHash": "2945560f1efc16ae",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:map-filter:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:map-filter:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 96, 36, 64, 240 ] [ 45, 80 ] [ 120, 45, 80, 300 ] | [log] [ '1. ¥120', '2. ¥45', '3. ¥80', '4. ¥300' ]"
+        },
+        {
+          "target": "playground:map-parse-int:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:map-parse-int:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 1, NaN, NaN ] | [log] [ 1, 2, 3 ] | [log] [ 1, 2, 3 ]"
+        },
+        {
+          "target": "playground:find:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:find:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 85 | [log] undefined | [log] 2 | [log] true true"
+        },
+        {
+          "target": "playground:reduce:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:reduce:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Reduce of empty array with no initial value）；输出：[log] 247 82.33333333333333 | [log] 92 | [log] 0 | [error] Uncaught TypeError: Reduce of empty array with no initial value\n    at main.ts:10:19"
+        },
+        {
+          "target": "playground:chaining:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:chaining:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 50 | [log] [ 3, null, 10 ] [ 3, 10 ]"
+        },
+        {
+          "target": "exercise:order-report:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2322@report.ts:4 Type 'Order' is not assignable to type 'number'.；TS2365@report.ts:4 Operator '+' cannot be applied to types 'Order' and 'number'.) rules=ok tests=fail(paidTotal › 只统计已付款的订单,paidTotal › 没有订单时为 0,paidTotal › 没有已付款订单时为 0,unpaidIds › 未付款订单的 id，保持顺序,findLarge › 正好等于 min 也算)"
+        },
+        {
+          "target": "exercise:order-report:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:order-report:alt:loops",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:order-report:wrong:sum-all",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(paidTotal › 只统计已付款的订单,paidTotal › 没有已付款订单时为 0)"
+        },
+        {
+          "target": "exercise:order-report:wrong:strict-greater",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(findLarge › 正好等于 min 也算)"
+        },
+        {
+          "target": "exercise:order-report:wrong:no-initial",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(paidTotal › 没有订单时为 0,paidTotal › 没有已付款订单时为 0)"
+        },
+        {
+          "target": "exercise:exam-summary:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(summarize › 普通情况,summarize › 缺考不计入平均分，也不算不及格,summarize › 并列最高分取最先出现的,summarize › 0 分是有效成绩)"
+        },
+        {
+          "target": "exercise:exam-summary:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:exam-summary:alt:single-loop",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:exam-summary:wrong:truthy-score",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summarize › 0 分是有效成绩)"
+        },
+        {
+          "target": "exercise:exam-summary:wrong:tie-last",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summarize › 并列最高分取最先出现的,summarize › 0 分是有效成绩)"
+        },
+        {
+          "target": "exercise:exam-summary:wrong:null-as-zero",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summarize › 普通情况,summarize › 缺考不计入平均分，也不算不及格)"
+        },
+        {
+          "target": "exercise:exam-summary:wrong:compare-null",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18047@exam.ts:15 'r.score' is possibly 'null'.) rules=ok tests=fail(summarize › 普通情况,summarize › 缺考不计入平均分，也不算不及格,summarize › 没有人参加考试)"
+        }
+      ]
+    },
+    "a17-sort-and-mutation": {
+      "verifiedAt": "2026-10-20T09:56:14.938Z",
+      "sourceHash": "c601746cd492091c",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:default-sort:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:default-sort:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 1, 10, 100, 9 ] | [log] [ 1, 9, 10, 100 ] | [log] [ 100, 10, 9, 1 ] | [log] [ 'Cherry', 'apple', 'banana' ] | [log] [ 'apple', 'banana', 'Cherry' ]"
+        },
+        {
+          "target": "playground:mutation:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:mutation:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] true [ 1, 2, 3 ] | [log] [ 4, 5, 6 ] | [log] [ 6, 4, 5 ] [ 99, 4, 6 ] | [log] [ 5, 4, 6 ]"
+        },
+        {
+          "target": "playground:sort-objects:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:sort-objects:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ '李四', '张三', '王五' ] | [log] [ '王五', '张三', '李四' ] | [log] [ '张三', '李四', '王五' ]"
+        },
+        {
+          "target": "playground:readonly:types",
+          "ok": true,
+          "detail": "诊断符合预期（3 个故意的错误）"
+        },
+        {
+          "target": "playground:readonly:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 95, 88 ] [ 70, 95, 88 ]"
+        },
+        {
+          "target": "exercise:sort-prices:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2339@prices.ts:2 Property 'sort' does not exist on type 'readonly number[]'.) rules=ok tests=fail(按数值从低到高,包含相同价格和小数,不修改传入的数组)"
+        },
+        {
+          "target": "exercise:sort-prices:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:sort-prices:alt:copy-then-sort",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:sort-prices:wrong:no-comparator",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按数值从低到高,包含相同价格和小数)"
+        },
+        {
+          "target": "exercise:sort-prices:wrong:descending",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按数值从低到高,包含相同价格和小数)"
+        },
+        {
+          "target": "exercise:sort-prices:wrong:boolean-comparator",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@prices.ts:2 Argument of type '(a: number, b: number) => boolean' is not assignable to parameter of type '(a: number, b: number) => number'.) rules=ok tests=fail(按数值从低到高,包含相同价格和小数)"
+        },
+        {
+          "target": "exercise:ranking:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(ranking › 题目中的例子,ranking › 得分相同比用时,ranking › 并列时名字排序，名次相同,ranking › 多组并列,ranking › 得分为两位和三位数时按数值比较)"
+        },
+        {
+          "target": "exercise:ranking:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:ranking:alt:for-loop",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:ranking:wrong:dense-rank",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(ranking › 题目中的例子,ranking › 多组并列)"
+        },
+        {
+          "target": "exercise:ranking:wrong:ignore-seconds",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(ranking › 题目中的例子,ranking › 得分相同比用时)"
+        },
+        {
+          "target": "exercise:ranking:wrong:sort-mutates",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2339@ranking.ts:4 Property 'sort' does not exist on type 'readonly Player[]'.) rules=ok tests=fail(ranking › 题目中的例子,ranking › 并列时名字排序，名次相同,ranking › 多组并列,ranking › 不修改传入的数组)"
+        },
+        {
+          "target": "exercise:ranking:wrong:default-sort-score",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(ranking › 多组并列,ranking › 得分为两位和三位数时按数值比较)"
+        }
+      ]
+    },
+    "a18-map-set": {
+      "verifiedAt": "2026-10-20T09:58:17.984Z",
+      "sourceHash": "b520e047ffcd3ece",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:map-basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:map-basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 5 undefined true 2 | [log] 苹果 5 | [log] 香蕉 0 | [log] Map(1) { '苹果' => 5 } [ '苹果' ]"
+        },
+        {
+          "target": "playground:counting:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:counting:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Map(4) { 'to' => NaN, 'be' => NaN, 'or' => NaN, 'not' => NaN }"
+        },
+        {
+          "target": "playground:set:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:set:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 3 [ 'ts', 'js', 'react' ] | [log] true | [log] Set(4) { 1, 2, 3, 4 } Set(2) { 2, 3 } Set(1) { 1 } | [log] 3"
+        },
+        {
+          "target": "playground:pitfalls:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:pitfalls:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] undefined | [log] 10 | [log] {} | [log] {\"1\":10} [[1,10]]"
+        },
+        {
+          "target": "playground:group-by:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:group-by:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ '伦敦', '纽约' ] | [log] [ 'Ada', 'Alan' ]"
+        },
+        {
+          "target": "exercise:word-count:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2532@count.ts:4 Object is possibly 'undefined'.) rules=ok tests=fail(统计次数，保持第一次出现的顺序,不区分大小写,空字符串返回空 Map,只有一个单词)"
+        },
+        {
+          "target": "exercise:word-count:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:word-count:alt:has-check",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:word-count:wrong:non-null",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(non-null-assertion@6) tests=fail(统计次数，保持第一次出现的顺序,不区分大小写,只有一个单词)"
+        },
+        {
+          "target": "exercise:word-count:wrong:case-sensitive",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(统计次数，保持第一次出现的顺序,不区分大小写)"
+        },
+        {
+          "target": "exercise:word-count:wrong:empty-word",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(空字符串返回空 Map)"
+        },
+        {
+          "target": "exercise:visit-stats:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(uniqueVisitors › 不同用户的数量,pagesByUser › 每个用户的不同页面，保持首次访问的顺序,commonPages › 两人都访问过的页面，排序后返回)"
+        },
+        {
+          "target": "exercise:visit-stats:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:visit-stats:alt:arrays-and-includes",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:visit-stats:wrong:count-visits",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(uniqueVisitors › 不同用户的数量)"
+        },
+        {
+          "target": "exercise:visit-stats:wrong:no-dedupe",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(pagesByUser › 每个用户的不同页面，保持首次访问的顺序)"
+        },
+        {
+          "target": "exercise:visit-stats:wrong:union-instead",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(commonPages › 两人都访问过的页面，排序后返回,commonPages › 没有记录的用户)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

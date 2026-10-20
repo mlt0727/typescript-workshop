@@ -1,0 +1,57 @@
+- id: default-sort
+  type: single
+  prompt: "`console.log([10, 9, 1].sort())` 输出什么？"
+  options:
+    - text: "`[ 1, 10, 9 ]`"
+      correct: true
+      explain: 默认按字符串比较，`'10'` 的第一个字符 `'1'` 小于 `'9'`。
+    - text: "`[ 1, 9, 10 ]`"
+      explain: 这是 `sort((a, b) => a - b)` 的结果。
+    - text: "`[ 10, 9, 1 ]`"
+      explain: "`sort` 默认是升序（按字符串），不会保持原样或降序。"
+- id: same-array
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    const a = [3, 1, 2];
+    const b = a.sort((x, y) => x - y);
+    console.log(a, a === b);
+    ```
+  options:
+    - text: "`[ 1, 2, 3 ] true`"
+      correct: true
+      explain: "`sort` 在原数组上排序并返回同一个数组。"
+    - text: "`[ 3, 1, 2 ] false`"
+      explain: 这是 `toSorted` 的行为。`sort` 会修改原数组。
+    - text: "`[ 1, 2, 3 ] false`"
+      explain: "`sort` 返回的就是 `a` 本身，不是新数组。"
+- id: non-mutating
+  type: multiple
+  prompt: 下列哪些调用**不会**修改 `arr`？
+  options:
+    - text: "`arr.toSorted((a, b) => a - b)`"
+      correct: true
+      explain: 返回新数组。
+    - text: "`arr.toReversed()`"
+      correct: true
+      explain: 返回新数组。
+    - text: "`arr.with(0, 1)`"
+      correct: true
+      explain: 返回替换了一个元素的新数组。
+    - text: "`arr.reverse()`"
+      explain: "`reverse` 在原数组上反转。"
+    - text: "`arr.splice(0, 1)`"
+      explain: "`splice` 从原数组删除元素（a10）。"
+- id: comparator
+  type: single
+  prompt: 要把 `items` 按 `price` **从高到低**排序，比较函数应该怎么写？
+  options:
+    - text: "`(a, b) => b.price - a.price`"
+      correct: true
+      explain: "`b` 的价格更高时返回正数，`b` 排在前面，于是得到降序。"
+    - text: "`(a, b) => a.price - b.price`"
+      explain: 这是升序。
+    - text: "`(a, b) => a.price < b.price`"
+      explain: 比较函数必须返回数字，返回布尔值时 TypeScript 会报错，结果也不可靠。

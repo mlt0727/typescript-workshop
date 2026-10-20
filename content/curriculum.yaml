@@ -22,9 +22,9 @@ stages:
       - { id: a13-functions, title: 普通函数、箭头函数与参数, status: published, prerequisites: [a12-destructuring-spread] }
       - { id: a14-scope-closures, title: 作用域与闭包, status: draft, prerequisites: [a13-functions] }
       - { id: a15-this, title: this 的关键差异, status: draft, prerequisites: [a14-scope-closures] }
-      - { id: a16-array-methods, title: map、filter、reduce、find 的实际用法, status: planned, prerequisites: [a13-functions] }
-      - { id: a17-sort-and-mutation, title: sort 与变异行为的常见误区, status: planned, prerequisites: [a16-array-methods] }
-      - { id: a18-map-set, title: Map 与 Set, status: planned, prerequisites: [a11-objects-references] }
+      - { id: a16-array-methods, title: map、filter、reduce、find 的实际用法, status: draft, prerequisites: [a13-functions] }
+      - { id: a17-sort-and-mutation, title: sort 与变异行为的常见误区, status: draft, prerequisites: [a16-array-methods] }
+      - { id: a18-map-set, title: Map 与 Set, status: draft, prerequisites: [a11-objects-references] }
       - { id: a19-modules, title: ESM 导入与导出, status: planned, prerequisites: [a13-functions] }
       - { id: a20-errors, title: 错误处理：throw、try/catch 与 unknown, status: planned, prerequisites: [a13-functions] }
 
