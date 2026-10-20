@@ -3704,6 +3704,108 @@
         }
       ]
     },
+    "b15-generic-constraints": {
+      "verifiedAt": "2026-10-20T10:47:31.682Z",
+      "sourceHash": "f0de01a4d2a34a75",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:constraint:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:constraint:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 3 2 7 | [log] undefined | [log] [ 1, 2 ]"
+        },
+        {
+          "target": "playground:constrained-values:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:constrained-values:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 1, 2, 3 ]"
+        },
+        {
+          "target": "playground:keyof:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:keyof:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] age 36 Ada email"
+        },
+        {
+          "target": "playground:get-prop:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:get-prop:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] ADA 37"
+        },
+        {
+          "target": "exercise:pluck:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS7053@pluck.ts:2 Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'unknown'.；TS2344@pluck.test-d.ts:7 Type 'string[]' does not satisfy the constraint '\"Expected: string, Actual: unknown\"[]'.；TS2344@pluck.test-d.ts:8 Type 'number[]' does not satisf) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pluck:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pluck:alt:array-generic",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pluck:wrong:string-key",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@pluck.test-d.ts:7 Type 'string[]' does not satisfy the constraint '\"Expected: string, Actual: number\"[]'.；TS2344@pluck.test-d.ts:8 Type 'number[]' does not satisfy the constraint '\"Expected: number, Actual: string\"[]'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pluck:wrong:unknown-result",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@pluck.test-d.ts:7 Type 'string[]' does not satisfy the constraint '\"Expected: string, Actual: unknown\"[]'.；TS2344@pluck.test-d.ts:8 Type 'number[]' does not satisfy the constraint '\"Expected: number, Actual: unknown\"[]'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-store:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS7053@store.ts:4 Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.；TS2339@store.test.ts:52 Property 'count' does not exist on type 'object'.；TS2344@store.test-d.ts:8 Type '{ count: number; user: string; ready: boolean; }' does not satisfy the) rules=ok tests=fail(createStore › 读取与修改,createStore › 通知订阅了该键的监听函数,createStore › 与 initial 互不影响，snapshot 是拷贝)"
+        },
+        {
+          "target": "exercise:typed-store:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-store:alt:grouped-by-key",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-store:wrong:string-keys",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@store.test-d.ts:6 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: unknown\"'.；TS2344@store.test-d.ts:7 Type 'string' does not satisfy the constraint '\"Expected: string, Actual: unknown\"'.；TS2344@store.test-d.ts:8 Type '{ count: number; user: string; ready: boolean; }') rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-store:wrong:no-copy",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createStore › 与 initial 互不影响，snapshot 是拷贝)"
+        },
+        {
+          "target": "exercise:typed-store:wrong:notify-unchanged",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createStore › 值没有变化时不通知)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

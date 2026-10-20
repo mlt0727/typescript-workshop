@@ -1,0 +1,55 @@
+- id: keyof-result
+  type: single
+  prompt: "`type Point = { x: number; y: number; label: string }`。`keyof Point` 是什么类型？"
+  options:
+    - text: "`'x' | 'y' | 'label'`"
+      correct: true
+      explain: "`keyof` 得到所有键组成的字面量联合。"
+    - text: "`number | string`"
+      explain: 这是所有值的类型，可以写成 `Point[keyof Point]`。
+    - text: "`string[]`"
+      explain: "`keyof` 得到的是类型（字面量联合），不是数组；运行时的 `Object.keys` 才返回数组。"
+- id: indexed-access
+  type: single
+  prompt: "`function getProp<T, K extends keyof T>(obj: T, key: K): T[K]`。对 `const p = { x: 1, label: 'A' }` 调用 `getProp(p, 'label')`，返回类型是什么？"
+  options:
+    - text: "`string`"
+      correct: true
+      explain: "`K` 被推断为 `'label'`，`T[K]` 就是 `label` 属性的类型 `string`。"
+    - text: "`string | number`"
+      explain: 这是 `T[keyof T]`。传入具体的键时，返回类型也是那个键的类型。
+    - text: "`unknown`"
+      explain: 索引访问类型保留了准确的类型。
+- id: constrained-return
+  type: single
+  prompt: |
+    为什么下面的函数报错？
+
+    ```ts
+    function reset<T extends { count: number }>(value: T): T {
+      return { count: 0 };
+    }
+    ```
+  options:
+    - text: "`T` 可能是比 `{ count: number }` 更具体的类型，返回一个只有 `count` 的新对象不满足调用方期待的 `T`"
+      correct: true
+      explain: "例如传入 `{ count: 3, name: 'x' }`，调用方以为拿回的对象也有 `name`。可以返回 `{ ...value, count: 0 }`。"
+    - text: 泛型函数不能返回对象字面量
+      explain: 可以返回，只要它的类型符合返回类型。
+    - text: 约束必须写成 interface
+      explain: 约束可以是任何类型。
+- id: constraint-call
+  type: multiple
+  prompt: "`function size<T extends { length: number }>(x: T): number`。下列哪些调用能通过类型检查？"
+  options:
+    - text: "`size('hello')`"
+      correct: true
+      explain: 字符串有 `length`。
+    - text: "`size([1, 2, 3])`"
+      correct: true
+      explain: 数组有 `length`。
+    - text: "`size({ length: 3, extra: true })`"
+      correct: true
+      explain: 满足约束即可，多出的属性没有问题（`T` 会被推断成这个对象的类型）。
+    - text: "`size(42)`"
+      explain: 数字没有 `length`，不满足约束。
