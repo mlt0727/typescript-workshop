@@ -1,0 +1,48 @@
+- id: mobile-first
+  type: single
+  prompt: 采用“移动优先”写响应式样式，意思是什么？
+  options:
+    - text: 不在媒体查询中的规则是窄屏的样式，再用 `(width >= …)` 的媒体查询为更宽的屏幕追加规则
+      correct: true
+      explain: 窄屏的布局通常最简单（单列），宽屏只需要追加规则，覆盖的规则更少。
+    - text: "先写桌面样式，再用 `(max-width: …)` 的媒体查询修改手机样式"
+      explain: 这是“桌面优先”，往往需要撤销更多规则。
+    - text: 只为手机设计，桌面上放大显示
+      explain: 移动优先指的是写样式的顺序，不是只支持手机。
+- id: contrast
+  type: single
+  prompt: 按 WCAG 2.2 的 AA 级要求，正文文字与背景的对比度至少应该是多少？
+  options:
+    - text: "4.5:1"
+      correct: true
+      explain: 大号文字（24px 以上，或 18.66px 以上的粗体）的要求是 3:1。
+    - text: "3:1"
+      explain: 这是大号文字和界面元素（边框、焦点轮廓）的要求，正文更严格。
+    - text: "7:1"
+      explain: 这是更严格的 AAA 级要求。
+- id: focus-style
+  type: single
+  prompt: 设计师觉得按钮被点击后出现的焦点框不好看。最好的处理方式是什么？
+  options:
+    - text: 用 `:focus-visible` 写一个与设计协调的焦点样式，鼠标点击时它不会出现，键盘操作时会出现
+      correct: true
+      explain: 既照顾了鼠标用户的观感，也保证键盘用户知道焦点在哪里。
+    - text: "`button:focus { outline: none; }`"
+      explain: 键盘用户会完全看不到焦点的位置。
+    - text: 给按钮加 `tabindex="-1"`，让它不能获得焦点
+      explain: 这样键盘用户就根本无法使用这个按钮。
+- id: a11y-facts
+  type: multiple
+  prompt: 下列哪些做法改善了可访问性？
+  options:
+    - text: 只有“×”图标的关闭按钮加上 `aria-label="关闭"`
+      correct: true
+      explain: 屏幕阅读器会读出“关闭，按钮”，而不是“乘号”。
+    - text: 表单出错时，除了红色边框，再显示一段文字说明
+      correct: true
+      explain: 不只靠颜色传达信息，色觉障碍的用户也能知道出了什么问题。
+    - text: 把说明文字改成浅灰色，让页面看起来更简洁
+      explain: 浅灰色文字的对比度往往达不到 4.5:1。
+    - text: 字号用 `rem` 而不是 `px`
+      correct: true
+      explain: 用户在浏览器设置中调大字号时，用 rem 写的文字会跟着变大。

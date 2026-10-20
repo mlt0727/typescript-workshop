@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 39 / 规划总数 126**（草稿 6，规划中 81）
+**已发布 43 / 规划总数 126**（草稿 4，规划中 79）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -56,16 +56,16 @@
 | `b16-assertions-as-const-satisfies` 类型断言、as const 与 satisfies | ✅ 已发布 | `b15-generic-constraints` |
 | `b17-enums-and-alternatives` 枚举与可擦除语法 | ✅ 已发布 | `b16-assertions-as-const-satisfies` |
 
-## E. 浏览器机制、异步与数据（已发布 0 / 13）
+## E. 浏览器机制、异步与数据（已发布 4 / 13）
 
 事件循环、Promise、fetch、运行时校验、取消与竞态、存储、URL 与安全边界。
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `e01-event-loop` 事件循环的必要知识 | 📝 草稿 | `a13-functions` |
-| `e02-promises` Promise 基础 | 📝 草稿 | `e01-event-loop`、`b14-generics` |
-| `e03-async-await` async/await 与错误传播 | 📝 草稿 | `e02-promises`、`a20-errors` |
-| `e04-promise-combinators` Promise.all、allSettled、race 与 any | 📝 草稿 | `e03-async-await` |
+| `e01-event-loop` 事件循环的必要知识 | ✅ 已发布 | `a14-scope-closures`、`b12-classes` |
+| `e02-promises` Promise 基础 | ✅ 已发布 | `e01-event-loop`、`b14-generics`、`a20-errors` |
+| `e03-async-await` async/await 与错误传播 | ✅ 已发布 | `e02-promises`、`a20-errors` |
+| `e04-promise-combinators` Promise.all、allSettled、race 与 any | ✅ 已发布 | `e03-async-await`、`b09-discriminated-unions`、`b13-inheritance-implements` |
 | `e05-fetch-json` fetch、HTTP 状态与 JSON | ⬜ 规划中 | `e04-promise-combinators` |
 | `e06-runtime-validation` 运行时数据校验 | ⬜ 规划中 | `e05-fetch-json`、`b08-type-guards` |
 | `e07-loading-states` 加载、空与失败状态 | ⬜ 规划中 | `e06-runtime-validation`、`d06-dom-create-update` |
@@ -103,8 +103,8 @@
 |---|---|---|
 | `d01-html-semantics` HTML 语义结构 | 📝 草稿 | `a01-where-ts-runs` |
 | `d02-html-forms` 表单元素与标签 | 📝 草稿 | `d01-html-semantics` |
-| `d03-css-layout` CSS 布局：Flexbox 与 Grid | ⬜ 规划中 | `d01-html-semantics` |
-| `d04-responsive-a11y` 响应式与可访问性基础 | ⬜ 规划中 | `d03-css-layout`、`d02-html-forms` |
+| `d03-css-layout` CSS 布局：Flexbox 与 Grid | 📝 草稿 | `d01-html-semantics` |
+| `d04-responsive-a11y` 响应式与可访问性基础 | 📝 草稿 | `d03-css-layout`、`d02-html-forms` |
 | `d05-dom-query` DOM 查询、null 检查与元素类型收窄 | ⬜ 规划中 | `d01-html-semantics`、`b07-narrowing` |
 | `d06-dom-create-update` 创建与更新节点 | ⬜ 规划中 | `d05-dom-query` |
 | `d07-events` 事件监听、target 与 currentTarget | ✅ 已发布 | `d06-dom-create-update`、`b10-function-types` |

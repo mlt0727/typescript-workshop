@@ -40,14 +40,14 @@
 ## M3 TypeScript 主线（依赖 M1）
 
 - [x] A 阶段全部课时（共同语法）：a01–a20 已发布
-- [ ] B 阶段全部课时（日常 TypeScript）：b01–b06 草稿已通过浏览器验证，待独立审查；b07–b17 未开始
-- [ ] E1–E4（事件循环、Promise、async/await、组合方法）
-- [ ] 每课：至少 1 挑战 + 2–4 测验 + ≥2 错误解 + ≥1 替代正确解，全部通过 `content:verify`
-- [~] 独立二次审查（审查轮）并记录结果：A 阶段三轮审查（a01–a07、a09–a13、a14–a20）已完成并按意见修订，记录见 STATUS
+- [x] B 阶段全部课时（日常 TypeScript）：b01–b17 已发布
+- [x] E1–E4（事件循环、Promise、async/await、组合方法）：已发布
+- [x] 每课：至少 1 挑战 + 2–4 测验 + ≥2 错误解 + ≥1 替代正确解，全部通过 `content:verify`
+- [x] 独立二次审查（审查轮）并记录结果：第 1–9 轮，记录见 STATUS
 
 ## M4 浏览器与 React 项目主线（依赖 M3）
 
-- [ ] D 阶段（HTML/CSS/DOM）
+- [ ] D 阶段（HTML/CSS/DOM）：d01–d03 草稿已通过浏览器验证；平台已支持纯 HTML/CSS 页面、计算样式断言与 `page.viewport()`
 - [ ] E5–E13（fetch、校验、加载状态、取消与竞态、存储、URL、CORS、XSS、密钥边界）
 - [ ] F 阶段（工程化、测试、调试、Git、构建与 CI），配本地实验项目
 - [ ] G 阶段（React + TS）

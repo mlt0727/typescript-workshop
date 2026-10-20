@@ -18,3 +18,5 @@ src/generated/
 .secrets/
 .debug/
 .claude/settings.local.json
+# 本地探测脚本（PROBE=1 时作为 probe 项目运行）
+tests/probe/

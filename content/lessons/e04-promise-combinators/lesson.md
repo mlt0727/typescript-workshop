@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 真实程序经常要同时处理多个异步操作：并行请求几份互不依赖的数据，批量检查一组链接，给请求加上超时，从几个镜像中选最快的一个。Promise 提供了四个组合方法：all、allSettled、race 和 any。它们的区别在于“什么时候算完成”和“失败了怎么办”，选错了就会出现一个请求失败导致整页空白，或者错误被悄悄吞掉之类的问题。
 objectives:
   - 用 Promise.all 并行等待多个操作，理解它的“一个失败就整体失败”
@@ -83,11 +83,11 @@ function after<T>(value: T, ms: number): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
 }
 
-function failAfter(message: string, ms: number): Promise<never> {
+function failAfter(ms: number, message: string): Promise<never> {
   return new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms));
 }
 
-const results = await Promise.allSettled([after('A', 30), failAfter('B 失败', 10), after('C', 20)]);
+const results = await Promise.allSettled([after('A', 30), failAfter(10, 'B 失败'), after('C', 20)]);
 
 for (const result of results) {
   if (result.status === 'fulfilled') {
@@ -144,21 +144,21 @@ function after<T>(value: T, ms: number): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
 }
 
-function failAfter(message: string, ms: number): Promise<never> {
+function failAfter(ms: number, message: string): Promise<never> {
   return new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms));
 }
 
-const fastest = await Promise.any([failAfter('镜像 1 不可用', 10), after('镜像 2', 30), after('镜像 3', 50)]);
+const fastest = await Promise.any([failAfter(10, '镜像 1 不可用'), after('镜像 2', 30), after('镜像 3', 50)]);
 console.log('any：', fastest);
 
 try {
-  await Promise.race([failAfter('镜像 1 不可用', 10), after('镜像 2', 30)]);
+  await Promise.race([failAfter(10, '镜像 1 不可用'), after('镜像 2', 30)]);
 } catch (err) {
   console.log('race：', err instanceof Error ? err.message : err);
 }
 
 try {
-  await Promise.any([failAfter('镜像 1 不可用', 10), failAfter('镜像 2 不可用', 20)]);
+  await Promise.any([failAfter(10, '镜像 1 不可用'), failAfter(20, '镜像 2 不可用')]);
 } catch (err) {
   if (err instanceof AggregateError) {
     console.log('any：', err.errors.length, '个来源都失败了');

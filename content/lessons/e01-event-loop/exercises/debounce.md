@@ -13,6 +13,8 @@ title: 防抖
 
 为了简化，`fn` 只接收一个字符串参数：`(value: string) => void`。
 
+起始代码已经给出了返回值的形状。`Debounced` 类型中的 `(value: string): void` 叫**调用签名**，表示这个值可以像函数一样调用；它同时还带有 `cancel`、`flush`、`pending` 三个方法——JavaScript 中函数也是对象，可以附加属性。`Object.assign(函数, { … })` 把这些方法复制到函数对象上，并返回这个函数。你只需要实现它们的行为。
+
 :::files{role=starter}
 ```ts file=debounce.ts
 export type Debounced = {
@@ -143,6 +145,17 @@ describe('debounce', () => {
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
+  test('定时器到点执行之后，不再有等待中的调用', () => {
+    const fn = vi.fn();
+    const search = debounce(fn, 200);
+    search('a');
+    vi.advanceTimersByTime(200);
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(search.pending()).toBe(false);
+    search.flush();
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
   test('没有等待中的调用时 flush 什么也不做', () => {
     const fn = vi.fn();
     const search = debounce(fn, 200);
@@ -170,7 +183,7 @@ describe('debounce', () => {
 :::
 
 :::hint{level=2}
-`debounced(value)`：保存 `lastValue = value`；如果 `timer !== null` 就 `clearTimeout(timer)`；然后 `timer = setTimeout(run, wait)`。`run` 把 `timer` 设回 `null` 再调用 `fn(lastValue)`。`flush` 在有定时器时清除它并立刻 `run()`。返回的对象用 `Object.assign(函数, { cancel, flush, pending })` 把方法挂到函数上（`Debounced` 类型描述的是“可以调用、同时带有属性的函数”）。
+`debounced(value)`：保存 `lastValue = value`；如果 `timer !== null` 就 `clearTimeout(timer)`；然后 `timer = setTimeout(run, wait)`。`run` 把 `timer` 设回 `null` 再调用 `fn(lastValue)`。`flush` 在有定时器时清除它并立刻 `run()`。起始代码中的 `Object.assign(函数, { cancel, flush, pending })` 已经把方法挂到了函数上，保留这个结构即可。
 :::
 
 :::explanation
@@ -342,6 +355,47 @@ export function debounce(fn: (value: string) => void, wait: number): Debounced {
       if (timer !== null) fn(lastValue);
     },
     pending: () => timer !== null,
+  });
+}
+```
+:::
+
+:::variant{kind=wrong name=run-keeps-timer fails=tests reason="定时器到点执行后没有把 timer 设回 null，pending 一直为真，flush 又执行了一次"}
+```ts file=debounce.ts
+export type Debounced = {
+  (value: string): void;
+  cancel: () => void;
+  flush: () => void;
+  pending: () => boolean;
+};
+
+export function debounce(fn: (value: string) => void, wait: number): Debounced {
+  let timer: number | null = null;
+  let lastValue = '';
+
+  const debounced = (value: string): void => {
+    lastValue = value;
+    if (timer !== null) clearTimeout(timer);
+    timer = setTimeout(() => fn(lastValue), wait);
+  };
+
+  return Object.assign(debounced, {
+    cancel(): void {
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    },
+    flush(): void {
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+        fn(lastValue);
+      }
+    },
+    pending(): boolean {
+      return timer !== null;
+    },
   });
 }
 ```

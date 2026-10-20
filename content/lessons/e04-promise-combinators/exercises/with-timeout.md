@@ -84,13 +84,19 @@ describe('withTimeout', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  test('超时后以 TimeoutError 拒绝', async () => {
+  test('恰好在 ms 毫秒时以 TimeoutError 拒绝', async () => {
     const result = withTimeout(later('slow', 500), 100);
-    const caught = result.then(
-      () => 'resolved',
-      (err: unknown) => err,
-    );
-    await vi.advanceTimersByTimeAsync(500);
+    let settled = false;
+    const caught = result
+      .then(() => 'resolved')
+      .catch((err: unknown) => err)
+      .finally(() => {
+        settled = true;
+      });
+    await vi.advanceTimersByTimeAsync(99);
+    expect(settled).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(settled).toBe(true);
     const err = await caught;
     expect(err).toBeInstanceOf(TimeoutError);
     expect(err).toMatchObject({ name: 'TimeoutError', ms: 100, message: '操作超时（100 毫秒）' });
@@ -120,7 +126,7 @@ expectTypeOf(withTimeout(numbers, 10)).toEqualTypeOf<Promise<number[]>>();
 :::
 
 :::hint{level=1}
-让 `promise` 和一个“`ms` 毫秒后被拒绝”的 Promise 赛跑：`Promise.race`。这个超时 Promise 永远不会兑现，所以它的类型可以写成 `Promise<never>`，这样 `race` 的结果仍然是 `Promise<T>`。
+让 `promise` 和一个“`ms` 毫秒后被拒绝”的 Promise 赛跑：`Promise.race`。这个超时 Promise 永远不会兑现，所以它的类型可以写成 `Promise<never>`，这样 `race` 的结果仍然对应 `T`。
 :::
 
 :::hint{level=2}
@@ -128,13 +134,13 @@ expectTypeOf(withTimeout(numbers, 10)).toEqualTypeOf<Promise<number[]>>();
 :::
 
 :::explanation
-`Promise.race` 采用第一个完成的结果：`promise` 先完成，就得到它的值或原因；超时 Promise 先完成，就得到 `TimeoutError`。超时 Promise 的类型是 `Promise<never>`，`race` 的结果类型是 `T | never`，也就是 `T`。
+`Promise.race` 采用第一个完成的结果：`promise` 先完成，就得到它的值或原因；超时 Promise 先完成，就得到 `TimeoutError`。超时 Promise 的类型是 `Promise<never>`，而 `never` 在联合中会消失，所以结果只和 `T` 有关。把鼠标停在 `Promise.race(…)` 上，会看到 `Promise<Awaited<T>>`：`Awaited<T>` 表示“`T` 被 `await` 之后的类型”（如果 `T` 本身是 Promise，就取出它兑现的值的类型），C 阶段会详细讲。它可以直接作为返回类型 `Promise<T>` 的值返回。
 
-只用 `race` 还不够：`promise` 先完成时，超时用的计时器还在等待。它触发时会拒绝一个已经没人关心的 Promise，这没有害处，但计时器本身会一直留到时间到。如果在循环里大量使用，或者超时设得很长，这些计时器就会堆积。所以要用 `finally` 在两种情况下都清除它。
+只用 `race` 还不够：`promise` 先完成时，超时用的计时器还在等待。它触发时会拒绝一个已经没人关心的 Promise，这没有害处，但计时器本身会一直留到时间到。如果在循环里大量使用，或者超时设得很长，这些计时器就会堆积。在本平台上也能看到后果：运行代码要等所有计时器结束才算完成，留下一个 10 秒的超时计时器，程序就会多“运行” 10 秒。所以要用 `finally` 在两种情况下都清除它。
 
-`finally` 返回的新 Promise 采用原来的结果：回调的返回值被忽略，原来的值或拒绝原因原样传下去。
+`finally` 返回的新 Promise 通常采用原来的结果：回调的返回值被忽略，原来的值或拒绝原因原样传下去。例外是回调本身抛出错误或返回一个被拒绝的 Promise，这时新 Promise 以这个新错误拒绝；回调返回 Promise 时，会先等它完成。
 
-注意 `promise` 本身并没有被停止：超时之后它仍在运行。要真正取消一个请求，需要 `AbortController`（e08）。
+注意 `promise` 本身并没有被停止：超时之后它仍在运行。要真正取消一个请求，需要 `AbortController`；给 `fetch` 加超时，现代写法是传入 `AbortSignal.timeout(毫秒)`（e08）。
 :::
 
 :::variant{kind=alt name=async-finally}
@@ -236,7 +242,7 @@ export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 ```
 :::
 
-:::variant{kind=wrong name=any-instead-of-race fails=tests reason="用了 Promise.any：原来的 Promise 被拒绝时没有立刻采用它的原因"}
+:::variant{kind=wrong name=any-instead-of-race fails=tests reason="用了 Promise.any：原来的 Promise 被拒绝时没有立刻采用它的原因，超时的拒绝也被忽略"}
 ```ts file=timeout.ts
 export class TimeoutError extends Error {
   readonly ms: number;

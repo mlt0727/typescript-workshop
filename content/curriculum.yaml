@@ -54,10 +54,10 @@ stages:
     title: 浏览器机制、异步与数据
     summary: 事件循环、Promise、fetch、运行时校验、取消与竞态、存储、URL 与安全边界。
     lessons:
-      - { id: e01-event-loop, title: 事件循环的必要知识, status: draft, prerequisites: [a13-functions] }
-      - { id: e02-promises, title: Promise 基础, status: draft, prerequisites: [e01-event-loop, b14-generics] }
-      - { id: e03-async-await, title: async/await 与错误传播, status: draft, prerequisites: [e02-promises, a20-errors] }
-      - { id: e04-promise-combinators, title: Promise.all、allSettled、race 与 any, status: draft, prerequisites: [e03-async-await] }
+      - { id: e01-event-loop, title: 事件循环的必要知识, status: published, prerequisites: [a14-scope-closures, b12-classes] }
+      - { id: e02-promises, title: Promise 基础, status: published, prerequisites: [e01-event-loop, b14-generics, a20-errors] }
+      - { id: e03-async-await, title: async/await 与错误传播, status: published, prerequisites: [e02-promises, a20-errors] }
+      - { id: e04-promise-combinators, title: Promise.all、allSettled、race 与 any, status: published, prerequisites: [e03-async-await, b09-discriminated-unions, b13-inheritance-implements] }
       - { id: e05-fetch-json, title: fetch、HTTP 状态与 JSON, status: planned, prerequisites: [e04-promise-combinators] }
       - { id: e06-runtime-validation, title: 运行时数据校验, status: planned, prerequisites: [e05-fetch-json, b08-type-guards] }
       - { id: e07-loading-states, title: 加载、空与失败状态, status: planned, prerequisites: [e06-runtime-validation, d06-dom-create-update] }
@@ -92,7 +92,7 @@ stages:
       - { id: d01-html-semantics, title: HTML 语义结构, status: draft, prerequisites: [a01-where-ts-runs] }
       - { id: d02-html-forms, title: 表单元素与标签, status: draft, prerequisites: [d01-html-semantics] }
       - { id: d03-css-layout, title: CSS 布局：Flexbox 与 Grid, status: draft, prerequisites: [d01-html-semantics] }
-      - { id: d04-responsive-a11y, title: 响应式与可访问性基础, status: planned, prerequisites: [d03-css-layout, d02-html-forms] }
+      - { id: d04-responsive-a11y, title: 响应式与可访问性基础, status: draft, prerequisites: [d03-css-layout, d02-html-forms] }
       - { id: d05-dom-query, title: DOM 查询、null 检查与元素类型收窄, status: planned, prerequisites: [d01-html-semantics, b07-narrowing] }
       - { id: d06-dom-create-update, title: 创建与更新节点, status: planned, prerequisites: [d05-dom-query] }
       - { id: d07-events, title: 事件监听、target 与 currentTarget, status: published, prerequisites: [d06-dom-create-update, b10-function-types] }

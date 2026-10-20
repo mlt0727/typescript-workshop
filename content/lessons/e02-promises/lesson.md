@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 网络请求、读取文件、等待定时器都不会立刻得到结果，但事件循环不允许你“停下来等”。早期 JavaScript 用回调函数处理这类结果，层层嵌套之后很难读，错误也很难传递。Promise 把“一个将来才会得到的结果”变成了一个可以传递、可以组合的值。fetch、React 的数据加载、几乎所有现代异步 API 都返回 Promise。
 objectives:
   - 理解 Promise 的三种状态：等待中、已兑现、已拒绝，状态一旦确定就不再改变
@@ -29,7 +29,9 @@ references:
 - **已兑现**（fulfilled）：成功，带有一个值；
 - **已拒绝**（rejected）：失败，带有一个原因（通常是 `Error`）。
 
-状态只会从“等待中”变成另外两种之一，并且**只变一次**。TypeScript 用 `Promise<T>` 表示“最终会兑现为 `T` 的 Promise”。
+状态只会从“等待中”变成另外两种之一，并且**只变一次**。兑现和拒绝统称**完成**（settled）。TypeScript 用 `Promise<T>` 表示“最终会兑现为 `T` 的 Promise”。
+
+如果你用过 Java 的 `CompletableFuture` 或 Python asyncio 的 `Future`，Promise 是同一类东西：一个代表“将来的结果”的对象，结果出来后，通知事先登记好的回调。
 
 `promise.then(回调)` 登记一个回调：Promise 兑现时，回调收到兑现的值。`catch` 登记失败时的回调，`finally` 无论成功失败都会执行。
 
@@ -41,14 +43,13 @@ function wait(ms: number): Promise<void> {
   });
 }
 
-function rollDice(): Promise<number> {
+function rollDice(lost: boolean): Promise<number> {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      const value = 4;
-      if (value > 0) {
-        resolve(value);
-      } else {
+      if (lost) {
         reject(new Error('骰子丢了'));
+      } else {
+        resolve(4);
       }
     }, 100);
   });
@@ -56,13 +57,18 @@ function rollDice(): Promise<number> {
 
 console.log('开始');
 wait(50).then(() => console.log('等了 50 毫秒'));
-rollDice()
+rollDice(false)
   .then((n) => console.log('掷出', n))
-  .finally(() => console.log('掷骰子结束'));
+  .finally(() => console.log('第一次掷骰子结束'));
+rollDice(true)
+  .then((n) => console.log('掷出', n))
+  .catch((err: unknown) => console.log('失败：', err instanceof Error ? err.message : err))
+  .finally(() => console.log('第二次掷骰子结束'));
 console.log('同步代码结束');
 ```
-- 第 2 行：`new Promise(执行函数)` 立即调用执行函数，并传给它 `resolve` 和 `reject`。调用 `resolve(值)` 兑现，调用 `reject(原因)` 拒绝。这是把 `setTimeout` 这类基于回调的 API 包装成 Promise 的标准写法。
-- 第 20–24 行只是**登记**回调，不会等待：“同步代码结束”先输出，结果出来后回调才执行（e01 的事件循环）。
+- 第 2 行：`new Promise(执行函数)` 立即调用执行函数，并传给它 `resolve` 和 `reject`。调用 `resolve(值)` 兑现，调用 `reject(原因)` 拒绝。这是把 `setTimeout` 这类基于回调的 API 包装成 Promise 的标准写法。（如果传给 `resolve` 的本身是另一个 Promise，这个 Promise 不会立刻兑现，而是跟随那个 Promise 的结果。）
+- 第 20–27 行只是**登记**回调，不会等待：“同步代码结束”先输出，结果出来后回调才执行（e01 的事件循环）。
+- 第 24 行的 Promise 被拒绝：`then` 的回调被跳过，`catch` 的回调收到错误；`finally` 无论成败都会执行。
 - 实际开发中，你更多是**使用**别人返回的 Promise（例如 `fetch`），很少自己 `new Promise`。
 :::
 
@@ -139,7 +145,7 @@ parsePrice('abc')
 parsePrice('oops').then((price) => console.log(price));
 ```
 - 第 5 行抛出的错误跳过了第 12、13 行，被第 14 行的 `catch` 处理。`catch` 返回 `0`，链继续，第 18 行输出“继续执行，值是 0”。
-- `catch` 回调的参数和 a20 一样是 `unknown` 类型的错误（这里写出了注解 `err: unknown`）。
+- 注意 `catch` 回调的参数：标准库把它的类型写成了 `any`，和 `try/catch` 不同，`strict` 选项管不到这里，直接写 `err.message` 也不会报错。所以要像第 14 行这样自己写上注解 `err: unknown`，再像 a20 那样检查后使用。`then` 的第二个参数（失败时的回调）也是如此。
 - 第 20 行没有 `catch`，平台报告了“未处理的 Promise 拒绝”。
 :::
 

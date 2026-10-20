@@ -9,7 +9,7 @@ title: 限制并发数量
 - 结果按 `items` 的顺序排列，与完成的先后无关；
 - 任何时刻，正在进行（已经调用、还没完成）的 `fn` 最多 `limit` 个；
 - 有任务完成时立刻启动下一个，不要等一整批都完成；
-- 任何一个 `fn` 被拒绝时，`mapLimit` 返回的 Promise 以同样的原因被拒绝，并且**不再启动**新的任务（已经在进行的无法取消，不用管它们）；
+- 任何一个 `fn` 被拒绝时，`mapLimit` 返回的 Promise **立即**以同样的原因被拒绝（不等其他正在进行的任务结束），并且**不再启动**新的任务（已经在进行的无法取消，不用管它们）；
 - `limit` 不是正整数时，返回的 Promise 被拒绝，原因是 `RangeError`；
 - `items` 为空时得到 `[]`。
 
@@ -138,6 +138,17 @@ describe('mapLimit', () => {
     await expect(promise).rejects.toThrow('任务 2 失败');
     await sleep(60);
     expect(started).toEqual([1, 2]);
+  });
+
+  test('任务被拒绝时立即拒绝，不等其他正在进行的任务', async () => {
+    const start = Date.now();
+    const promise = mapLimit(['fast-fail', 'slow'], 2, async (name) => {
+      await sleep(name === 'slow' ? 300 : 5);
+      if (name === 'fast-fail') throw new Error('失败');
+      return name;
+    });
+    await expect(promise).rejects.toThrow('失败');
+    expect(Date.now() - start).toBeLessThan(200);
   });
 
   test('空数组得到空数组，不调用 fn', async () => {
@@ -344,6 +355,41 @@ export async function mapLimit<T, U>(
   const workers: Promise<void>[] = [];
   for (let i = 0; i < Math.min(limit, items.length); i++) workers.push(worker());
   await Promise.all(workers);
+  return results;
+}
+```
+:::
+
+:::variant{kind=wrong name=settle-then-throw fails=tests reason="等所有任务都结束后才拒绝，没有立即拒绝"}
+```ts file=map-limit.ts
+export async function mapLimit<T, U>(
+  items: readonly T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<U>,
+): Promise<U[]> {
+  if (!Number.isInteger(limit) || limit <= 0) throw new RangeError('limit 无效');
+  const queue = [...items.entries()];
+  const results: U[] = [];
+  let failed = false;
+  async function worker(): Promise<void> {
+    while (!failed) {
+      const entry = queue.shift();
+      if (entry === undefined) return;
+      const [index, item] = entry;
+      try {
+        results[index] = await fn(item, index);
+      } catch (err) {
+        failed = true;
+        throw err;
+      }
+    }
+  }
+  const workers: Promise<void>[] = [];
+  for (let i = 0; i < Math.min(limit, items.length); i++) workers.push(worker());
+  const settled = await Promise.allSettled(workers);
+  for (const s of settled) {
+    if (s.status === 'rejected') throw s.reason;
+  }
   return results;
 }
 ```

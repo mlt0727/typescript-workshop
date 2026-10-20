@@ -9,7 +9,7 @@ title: 加载用户主页
 
 规则：
 
-1. 先获取用户；用户不存在时，抛出 `Error('用户不存在')`（`loadProfile` 返回的 Promise 被拒绝），并且**不要**再请求文章；
+1. 先获取用户；用户不存在时，抛出 `new Error('用户不存在')`（`loadProfile` 返回的 Promise 被拒绝），并且**不要**再请求文章；
 2. 再获取这个用户的文章；
 3. 返回 `{ name: 用户名, postCount: 文章数, latest: 最新一篇文章的标题 }`，没有文章时 `latest` 为 `null`。文章数组按时间从旧到新排列，最后一篇是最新的。
 
@@ -49,8 +49,7 @@ export async function loadProfile(id: number, api: Api): Promise<Profile> {
     throw new Error('用户不存在');
   }
   const posts = await api.getPosts(user.id);
-  const last = posts.at(-1);
-  return { name: user.name, postCount: posts.length, latest: last === undefined ? null : last.title };
+  return { name: user.name, postCount: posts.length, latest: posts.at(-1)?.title ?? null };
 }
 ```
 :::
@@ -100,7 +99,7 @@ describe('loadProfile', () => {
 
 这里必须串行：文章请求需要先确认用户存在。起始代码同时发起了两个请求，用户不存在时也白白请求了文章。
 
-`posts.at(-1)` 取最后一个元素，类型是 `Post | undefined`，空数组时为 `undefined`。
+`posts.at(-1)` 取最后一个元素，类型是 `Post | undefined`，空数组时为 `undefined`；再用 a08 的 `?.` 和 `??` 把它变成标题或 `null`。
 :::
 
 :::variant{kind=alt name=then-chain}

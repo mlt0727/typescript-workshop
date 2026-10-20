@@ -2,7 +2,7 @@
   "tsVersion": "6.0.3",
   "lessons": {
     "a01-where-ts-runs": {
-      "verifiedAt": "2026-10-20T09:41:50.870Z",
+      "verifiedAt": "2026-10-20T11:44:47.170Z",
       "sourceHash": "96f2639660bdcf67",
       "ok": true,
       "checks": [
@@ -79,7 +79,7 @@
         {
           "target": "exercise:body-temperature:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2304@temperature.ts:3 Cannot find name 'toFahrenheit'.；TS2304@temperature.ts:3 Cannot find name 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'toFahrenheit'.；TS2305@t) rules=ok tests=fail(SyntaxError: The requested module 'blob:null/a23c260f-c6e3-4fec-aae8-a88b2fe961a5' does not provide an export named 'classify')"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2304@temperature.ts:3 Cannot find name 'toFahrenheit'.；TS2304@temperature.ts:3 Cannot find name 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'toFahrenheit'.；TS2305@t) rules=ok tests=fail(SyntaxError: The requested module './temperature.ts' does not provide an export named 'classify')"
         },
         {
           "target": "exercise:body-temperature:solution:solution",
@@ -109,7 +109,7 @@
       ]
     },
     "a02-compile-vs-runtime": {
-      "verifiedAt": "2026-10-20T11:09:49.839Z",
+      "verifiedAt": "2026-10-20T11:44:47.513Z",
       "sourceHash": "d740472dd62ea000",
       "ok": true,
       "checks": [
@@ -206,7 +206,7 @@
       ]
     },
     "a03-let-const-inference": {
-      "verifiedAt": "2026-10-20T09:41:51.627Z",
+      "verifiedAt": "2026-10-20T11:44:47.951Z",
       "sourceHash": "08c74ac95adc45b5",
       "ok": true,
       "checks": [
@@ -323,7 +323,7 @@
       ]
     },
     "a04-primitives-strings": {
-      "verifiedAt": "2026-10-20T09:41:52.062Z",
+      "verifiedAt": "2026-10-20T11:44:48.410Z",
       "sourceHash": "d4e98392db010a70",
       "ok": true,
       "checks": [
@@ -435,7 +435,7 @@
       ]
     },
     "a05-null-undefined": {
-      "verifiedAt": "2026-10-20T09:41:52.471Z",
+      "verifiedAt": "2026-10-20T11:44:48.850Z",
       "sourceHash": "f5b91e119d9913ae",
       "ok": true,
       "checks": [
@@ -547,7 +547,7 @@
       ]
     },
     "a06-operators-equality": {
-      "verifiedAt": "2026-10-20T09:41:52.858Z",
+      "verifiedAt": "2026-10-20T11:44:49.293Z",
       "sourceHash": "e4efaae6b72a7c46",
       "ok": true,
       "checks": [
@@ -654,7 +654,7 @@
       ]
     },
     "a07-truthy-falsy": {
-      "verifiedAt": "2026-10-20T09:41:53.324Z",
+      "verifiedAt": "2026-10-20T11:44:49.805Z",
       "sourceHash": "ce981082c8a7ab3f",
       "ok": true,
       "checks": [
@@ -761,7 +761,7 @@
       ]
     },
     "a08-optional-chaining-nullish": {
-      "verifiedAt": "2026-10-20T08:56:41.232Z",
+      "verifiedAt": "2026-10-20T11:44:50.385Z",
       "sourceHash": "7d438c40c3026e6d",
       "ok": true,
       "checks": [
@@ -913,7 +913,7 @@
       ]
     },
     "a09-control-flow": {
-      "verifiedAt": "2026-10-20T10:18:36.989Z",
+      "verifiedAt": "2026-10-20T11:44:50.801Z",
       "sourceHash": "d0adb89f20612ea7",
       "ok": true,
       "checks": [
@@ -1020,7 +1020,7 @@
       ]
     },
     "a10-arrays": {
-      "verifiedAt": "2026-10-20T09:51:11.350Z",
+      "verifiedAt": "2026-10-20T11:44:51.192Z",
       "sourceHash": "cb81fe04cae4ff08",
       "ok": true,
       "checks": [
@@ -1122,7 +1122,7 @@
       ]
     },
     "a11-objects-references": {
-      "verifiedAt": "2026-10-20T09:51:11.758Z",
+      "verifiedAt": "2026-10-20T11:44:51.587Z",
       "sourceHash": "9c6e39e4993e3a91",
       "ok": true,
       "checks": [
@@ -1224,7 +1224,7 @@
       ]
     },
     "a12-destructuring-spread": {
-      "verifiedAt": "2026-10-20T09:51:12.158Z",
+      "verifiedAt": "2026-10-20T11:44:51.987Z",
       "sourceHash": "2920a1138db44b85",
       "ok": true,
       "checks": [
@@ -1331,7 +1331,7 @@
       ]
     },
     "a13-functions": {
-      "verifiedAt": "2026-10-20T09:51:12.631Z",
+      "verifiedAt": "2026-10-20T11:44:52.448Z",
       "sourceHash": "c030cb3dec600d6e",
       "ok": true,
       "checks": [
@@ -1448,7 +1448,7 @@
       ]
     },
     "a14-scope-closures": {
-      "verifiedAt": "2026-10-20T10:18:37.494Z",
+      "verifiedAt": "2026-10-20T11:44:53.011Z",
       "sourceHash": "2ae5b2e3638a5b49",
       "ok": true,
       "checks": [
@@ -1570,7 +1570,7 @@
       ]
     },
     "a15-this": {
-      "verifiedAt": "2026-10-20T10:18:37.793Z",
+      "verifiedAt": "2026-10-20T11:44:53.350Z",
       "sourceHash": "a880078bef84a31e",
       "ok": true,
       "checks": [
@@ -1672,7 +1672,7 @@
       ]
     },
     "a16-array-methods": {
-      "verifiedAt": "2026-10-20T10:18:38.273Z",
+      "verifiedAt": "2026-10-20T11:44:53.955Z",
       "sourceHash": "9011a3f39f0b8a88",
       "ok": true,
       "checks": [
@@ -1794,7 +1794,7 @@
       ]
     },
     "a17-sort-and-mutation": {
-      "verifiedAt": "2026-10-20T10:18:38.709Z",
+      "verifiedAt": "2026-10-20T11:44:54.483Z",
       "sourceHash": "e93fd6b7286514ce",
       "ok": true,
       "checks": [
@@ -1906,7 +1906,7 @@
       ]
     },
     "a18-map-set": {
-      "verifiedAt": "2026-10-20T10:18:39.262Z",
+      "verifiedAt": "2026-10-20T11:44:55.019Z",
       "sourceHash": "4394bd40180ec60d",
       "ok": true,
       "checks": [
@@ -2023,7 +2023,7 @@
       ]
     },
     "a19-modules": {
-      "verifiedAt": "2026-10-20T10:18:39.667Z",
+      "verifiedAt": "2026-10-20T11:44:55.376Z",
       "sourceHash": "d867938cbbec323c",
       "ok": true,
       "checks": [
@@ -2130,7 +2130,7 @@
       ]
     },
     "a20-errors": {
-      "verifiedAt": "2026-10-20T10:18:40.110Z",
+      "verifiedAt": "2026-10-20T11:44:55.784Z",
       "sourceHash": "23006d6d51a93994",
       "ok": true,
       "checks": [
@@ -2232,7 +2232,7 @@
       ]
     },
     "b01-type-alias-interface": {
-      "verifiedAt": "2026-10-20T10:32:41.393Z",
+      "verifiedAt": "2026-10-20T11:44:56.261Z",
       "sourceHash": "a2ba11985f662cf0",
       "ok": true,
       "checks": [
@@ -2339,7 +2339,7 @@
       ]
     },
     "b02-structural-typing": {
-      "verifiedAt": "2026-10-20T10:32:41.779Z",
+      "verifiedAt": "2026-10-20T11:44:56.608Z",
       "sourceHash": "e3b05a429f1ffaa8",
       "ok": true,
       "checks": [
@@ -2431,7 +2431,7 @@
       ]
     },
     "b03-optional-readonly": {
-      "verifiedAt": "2026-10-20T10:32:42.215Z",
+      "verifiedAt": "2026-10-20T11:44:57.131Z",
       "sourceHash": "88f063b369af4012",
       "ok": true,
       "checks": [
@@ -2538,7 +2538,7 @@
       ]
     },
     "b04-union-literal": {
-      "verifiedAt": "2026-10-20T10:32:42.675Z",
+      "verifiedAt": "2026-10-20T11:44:57.709Z",
       "sourceHash": "16d820d8c2581d32",
       "ok": true,
       "checks": [
@@ -2640,7 +2640,7 @@
       ]
     },
     "b05-intersection-tuple": {
-      "verifiedAt": "2026-10-20T10:32:43.158Z",
+      "verifiedAt": "2026-10-20T11:44:58.247Z",
       "sourceHash": "4142cea7107ead35",
       "ok": true,
       "checks": [
@@ -2747,7 +2747,7 @@
       ]
     },
     "b06-any-unknown-never-void": {
-      "verifiedAt": "2026-10-20T10:32:43.541Z",
+      "verifiedAt": "2026-10-20T11:44:58.644Z",
       "sourceHash": "cc371768db05441b",
       "ok": true,
       "checks": [
@@ -2854,7 +2854,7 @@
       ]
     },
     "b07-narrowing": {
-      "verifiedAt": "2026-10-20T10:44:28.146Z",
+      "verifiedAt": "2026-10-20T11:44:59.044Z",
       "sourceHash": "868160f8a42d36ae",
       "ok": true,
       "checks": [
@@ -2966,7 +2966,7 @@
       ]
     },
     "b08-type-guards": {
-      "verifiedAt": "2026-10-20T10:44:28.593Z",
+      "verifiedAt": "2026-10-20T11:44:59.419Z",
       "sourceHash": "60f6d3b91e78c8b3",
       "ok": true,
       "checks": [
@@ -3063,7 +3063,7 @@
       ]
     },
     "b09-discriminated-unions": {
-      "verifiedAt": "2026-10-20T10:44:45.016Z",
+      "verifiedAt": "2026-10-20T11:44:59.907Z",
       "sourceHash": "49752a141ce3f081",
       "ok": true,
       "checks": [
@@ -3170,7 +3170,7 @@
       ]
     },
     "b10-function-types": {
-      "verifiedAt": "2026-10-20T10:44:29.593Z",
+      "verifiedAt": "2026-10-20T11:45:00.520Z",
       "sourceHash": "ae90adddb616d52c",
       "ok": true,
       "checks": [
@@ -3282,7 +3282,7 @@
       ]
     },
     "b11-overloads": {
-      "verifiedAt": "2026-10-20T10:59:05.192Z",
+      "verifiedAt": "2026-10-20T11:45:01.002Z",
       "sourceHash": "2dfe447caed64048",
       "ok": true,
       "checks": [
@@ -3304,7 +3304,7 @@
         {
           "target": "playground:return-depends:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 43 2 | [log] 7"
+          "detail": "期望 done，实际 done；输出：[log] 43 2 | [log] [ '7' ]"
         },
         {
           "target": "playground:prefer-union:types",
@@ -3384,7 +3384,7 @@
       ]
     },
     "b12-classes": {
-      "verifiedAt": "2026-10-20T10:59:05.696Z",
+      "verifiedAt": "2026-10-20T11:45:01.607Z",
       "sourceHash": "245eb61998874571",
       "ok": true,
       "checks": [
@@ -3511,7 +3511,7 @@
       ]
     },
     "b13-inheritance-implements": {
-      "verifiedAt": "2026-10-20T10:59:06.114Z",
+      "verifiedAt": "2026-10-20T11:45:02.090Z",
       "sourceHash": "652eb5e170b7822f",
       "ok": true,
       "checks": [
@@ -3618,7 +3618,7 @@
       ]
     },
     "b14-generics": {
-      "verifiedAt": "2026-10-20T10:59:07.054Z",
+      "verifiedAt": "2026-10-20T11:45:03.100Z",
       "sourceHash": "138f1f959f851ed4",
       "ok": true,
       "checks": [
@@ -3720,7 +3720,7 @@
       ]
     },
     "b15-generic-constraints": {
-      "verifiedAt": "2026-10-20T11:09:50.365Z",
+      "verifiedAt": "2026-10-20T11:45:03.658Z",
       "sourceHash": "528259f2d604df0a",
       "ok": true,
       "checks": [
@@ -3827,7 +3827,7 @@
       ]
     },
     "b16-assertions-as-const-satisfies": {
-      "verifiedAt": "2026-10-20T11:09:50.760Z",
+      "verifiedAt": "2026-10-20T11:45:04.111Z",
       "sourceHash": "dcf8757a3213b05e",
       "ok": true,
       "checks": [
@@ -3924,7 +3924,7 @@
       ]
     },
     "b17-enums-and-alternatives": {
-      "verifiedAt": "2026-10-20T11:09:51.102Z",
+      "verifiedAt": "2026-10-20T11:45:04.467Z",
       "sourceHash": "66c70085712d293e",
       "ok": true,
       "checks": [
@@ -4011,7 +4011,7 @@
       ]
     },
     "d01-html-semantics": {
-      "verifiedAt": "2026-10-20T11:34:38.968Z",
+      "verifiedAt": "2026-10-20T11:45:06.412Z",
       "sourceHash": "88d9e47ce68663a4",
       "ok": true,
       "checks": [
@@ -4118,7 +4118,7 @@
       ]
     },
     "d02-html-forms": {
-      "verifiedAt": "2026-10-20T11:34:44.658Z",
+      "verifiedAt": "2026-10-20T11:45:11.969Z",
       "sourceHash": "10f6444d8395406d",
       "ok": true,
       "checks": [
@@ -4230,7 +4230,7 @@
       ]
     },
     "d03-css-layout": {
-      "verifiedAt": "2026-10-20T11:38:47.501Z",
+      "verifiedAt": "2026-10-20T11:45:13.711Z",
       "sourceHash": "82f5c0087dbbf3d9",
       "ok": true,
       "checks": [
@@ -4336,8 +4336,115 @@
         }
       ]
     },
+    "d04-responsive-a11y": {
+      "verifiedAt": "2026-10-20T11:47:54.447Z",
+      "sourceHash": "1b701851e7594db4",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:fluid:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:fluid:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:media:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:media:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 现在是宽屏布局吗？ false"
+        },
+        {
+          "target": "playground:a11y:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:a11y:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 浅灰色文字：#999 配白色背景：2.85:1，没有达到 AA 要求 | [log] 深灰色文字：#555 配白色背景：7.46:1，达到 AA 要求"
+        },
+        {
+          "target": "exercise:responsive-layout:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面最宽 1000px，宽屏上水平居中,页面宽 375 像素时没有横向滚动条，图片不超出主要内容,页面宽 699 像素时没有横向滚动条，图片不超出主要内容,页面宽 700 像素时没有横向滚动条，图片不超出主要内容,页面宽 700 像素时，侧栏在右侧，宽 250px，间距 24px,页面宽 1024 像素时，侧栏在右侧，宽 250px，间距 24px)"
+        },
+        {
+          "target": "exercise:responsive-layout:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:responsive-layout:alt:flex-and-min-width",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:responsive-layout:wrong:fixed-width",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面宽 375 像素时没有横向滚动条，图片不超出主要内容,页面宽 699 像素时没有横向滚动条，图片不超出主要内容,页面宽 700 像素时没有横向滚动条，图片不超出主要内容)"
+        },
+        {
+          "target": "exercise:responsive-layout:wrong:image-overflow",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面宽 375 像素时没有横向滚动条，图片不超出主要内容,页面宽 699 像素时没有横向滚动条，图片不超出主要内容,页面宽 700 像素时没有横向滚动条，图片不超出主要内容,页面宽 1024 像素时没有横向滚动条，图片不超出主要内容)"
+        },
+        {
+          "target": "exercise:responsive-layout:wrong:off-by-one-breakpoint",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面宽 700 像素时，侧栏在右侧，宽 250px，间距 24px)"
+        },
+        {
+          "target": "exercise:responsive-layout:wrong:always-two-columns",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面宽 375 像素时没有横向滚动条，图片不超出主要内容,页面宽 375 像素时，侧栏在主要内容下方,页面宽 699 像素时，侧栏在主要内容下方)"
+        },
+        {
+          "target": "exercise:a11y-fixes:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(说明文字的对比度至少 4.5:1,用键盘聚焦“关闭通知”按钮时有清晰的轮廓,用键盘聚焦“订阅”按钮时有清晰的轮廓,关闭按钮有名字，可点击区域至少 24×24 像素,邮箱输入框有标签,邮箱错误不只用颜色表示)"
+        },
+        {
+          "target": "exercise:a11y-fixes:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:a11y-fixes:alt:visually-hidden-text",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:a11y-fixes:wrong:contrast-still-low",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(说明文字的对比度至少 4.5:1)"
+        },
+        {
+          "target": "exercise:a11y-fixes:wrong:outline-removed",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(用键盘聚焦“关闭通知”按钮时有清晰的轮廓,用键盘聚焦“订阅”按钮时有清晰的轮廓)"
+        },
+        {
+          "target": "exercise:a11y-fixes:wrong:close-too-small",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(关闭按钮有名字，可点击区域至少 24×24 像素)"
+        },
+        {
+          "target": "exercise:a11y-fixes:wrong:color-only-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(邮箱错误不只用颜色表示)"
+        }
+      ]
+    },
     "d07-events": {
-      "verifiedAt": "2026-10-20T11:34:50.146Z",
+      "verifiedAt": "2026-10-20T11:45:19.120Z",
       "sourceHash": "5fb16b205d4ef535",
       "ok": true,
       "checks": [
@@ -4444,8 +4551,8 @@
       ]
     },
     "e01-event-loop": {
-      "verifiedAt": "2026-10-20T10:54:04.478Z",
-      "sourceHash": "ea6bfee6cbd847ec",
+      "verifiedAt": "2026-10-20T11:45:19.956Z",
+      "sourceHash": "883cb12fb24c3566",
       "ok": true,
       "checks": [
         {
@@ -4532,12 +4639,17 @@
           "target": "exercise:debounce:wrong:flush-keeps-timer",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(debounce › flush 立即执行等待中的调用)"
+        },
+        {
+          "target": "exercise:debounce:wrong:run-keeps-timer",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(debounce › 定时器到点执行之后，不再有等待中的调用)"
         }
       ]
     },
     "e02-promises": {
-      "verifiedAt": "2026-10-20T10:56:43.252Z",
-      "sourceHash": "dc15916fa9136083",
+      "verifiedAt": "2026-10-20T11:45:20.658Z",
+      "sourceHash": "8f3e67a17837ffc3",
       "ok": true,
       "checks": [
         {
@@ -4548,7 +4660,7 @@
         {
           "target": "playground:basics:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 开始 | [log] 同步代码结束 | [log] 等了 50 毫秒 | [log] 掷出 4 | [log] 掷骰子结束"
+          "detail": "期望 done，实际 done；输出：[log] 开始 | [log] 同步代码结束 | [log] 等了 50 毫秒 | [log] 掷出 4 | [log] 第一次掷骰子结束 | [log] 失败： 骰子丢了 | [log] 第二次掷骰子结束"
         },
         {
           "target": "playground:chaining:types",
@@ -4583,7 +4695,7 @@
         {
           "target": "exercise:delay-helpers:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2339@delay.test.ts:14 Property 'then' does not exist on type 'void'.；TS7006@delay.test.ts:14 Parameter 'value' implicitly has an 'any' type.；TS2339@delay.test.ts:25 Property 'catch' does not exist on type 'void'.；TS2339@delay.test.ts:33 Property 'catch' does not exist on type 'void'.；TS2344@delay.) rules=ok tests=fail(delay 在指定时间后兑现,failAfter 在指定时间后拒绝,调用时不会立即抛出)"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2339@delay.test.ts:14 Property 'then' does not exist on type 'void'.；TS7006@delay.test.ts:14 Parameter 'value' implicitly has an 'any' type.；TS2339@delay.test.ts:25 Property 'catch' does not exist on type 'void'.；TS2339@delay.test.ts:35 Property 'catch' does not exist on type 'void'.；TS2344@delay.) rules=ok tests=fail(delay 在指定时间后兑现,failAfter 在指定时间后拒绝,调用时不会立即抛出)"
         },
         {
           "target": "exercise:delay-helpers:solution:solution",
@@ -4609,6 +4721,11 @@
           "target": "exercise:delay-helpers:wrong:resolve-immediately",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(delay 在指定时间后兑现)"
+        },
+        {
+          "target": "exercise:delay-helpers:wrong:reject-immediately",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(failAfter 在指定时间后拒绝)"
         },
         {
           "target": "exercise:retry:starter:starter",
@@ -4643,13 +4760,13 @@
         {
           "target": "exercise:retry:wrong:swallow-error",
           "ok": true,
-          "detail": "被拒绝（tests）；types=fail(TS2344@retry.test-d.ts:5 Type 'Promise<number[]>' does not satisfy the constraint '{ [toStringTag]: string; then: \"Expected: function, Actual: function\"; catch: <TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null | undefined) => Promise<...>; finally: \"Expected: f) rules=ok tests=fail(retry › 全部失败时以最后一次的错误拒绝,retry › 只尝试一次)"
+          "detail": "被拒绝（types）；types=fail(TS2344@retry.test-d.ts:5 Type 'Promise<number[]>' does not satisfy the constraint '{ [toStringTag]: string; then: \"Expected: function, Actual: function\"; catch: <TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null | undefined) => Promise<...>; finally: \"Expected: f) rules=ok tests=fail(retry › 全部失败时以最后一次的错误拒绝,retry › 只尝试一次)"
         }
       ]
     },
     "e03-async-await": {
-      "verifiedAt": "2026-10-20T11:04:47.133Z",
-      "sourceHash": "11264f80dc582c60",
+      "verifiedAt": "2026-10-20T11:45:24.676Z",
+      "sourceHash": "1b2f511ac620deb4",
       "ok": true,
       "checks": [
         {
@@ -4663,6 +4780,16 @@
           "detail": "期望 done，实际 done；输出：[log] 开始 | [log] 你好，Ada | [log] 你好，Grace | [log] 结束"
         },
         {
+          "target": "playground:sync-part:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:sync-part:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 调用之前 | [log] A：开始，同步执行 | [log] 调用之后 | [log] A：await 之后，作为微任务继续 | [log] 结束"
+        },
+        {
           "target": "playground:errors:types",
           "ok": true,
           "detail": "诊断符合预期（0 个故意的错误）"
@@ -4671,6 +4798,16 @@
           "target": "playground:errors:run",
           "ok": true,
           "detail": "期望 done，实际 done；输出：[log] 检查完毕： { \"port\": 8080 } | [log] 在 8080 端口启动 | [log] 检查完毕： { \"port\": \"x\" } | [log] 启动失败：配置无效 | [log] 检查完毕： { | [log] 启动失败：Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+        },
+        {
+          "target": "playground:return-await:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:return-await:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] withAwait：函数自己的 catch 捕获了错误 | [log] withoutAwait：错误逃出了函数，只能由调用方捕获"
         },
         {
           "target": "playground:parallel:types",
@@ -4725,7 +4862,7 @@
         {
           "target": "exercise:map-limit:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(mapLimit › 结果按输入顺序排列，并把下标传给 fn,mapLimit › 同时进行的任务不超过 limit，并且确实用满了 limit,mapLimit › limit 大于任务数时，全部同时进行,mapLimit › 一个任务完成后立刻启动下一个，不等整批完成,mapLimit › 任务被拒绝时，结果被拒绝，并且不再启动新的任务,mapLimit › limit 必须是正整数)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(mapLimit › 结果按输入顺序排列，并把下标传给 fn,mapLimit › 同时进行的任务不超过 limit，并且确实用满了 limit,mapLimit › limit 大于任务数时，全部同时进行,mapLimit › 一个任务完成后立刻启动下一个，不等整批完成,mapLimit › 任务被拒绝时，结果被拒绝，并且不再启动新的任务,mapLimit › 任务被拒绝时立即拒绝，不等其他正在进行的任务,mapLimit › limit 必须是正整数)"
         },
         {
           "target": "exercise:map-limit:solution:solution",
@@ -4765,13 +4902,18 @@
         {
           "target": "exercise:map-limit:wrong:missing-await",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2322@map-limit.ts:16 Type 'Promise<U>' is not assignable to type 'U'.) rules=ok tests=fail(mapLimit › 结果按输入顺序排列，并把下标传给 fn,mapLimit › 同时进行的任务不超过 limit，并且确实用满了 limit,mapLimit › 一个任务完成后立刻启动下一个，不等整批完成,mapLimit › 任务被拒绝时，结果被拒绝，并且不再启动新的任务)"
+          "detail": "被拒绝（types）；types=fail(TS2322@map-limit.ts:16 Type 'Promise<U>' is not assignable to type 'U'.) rules=ok tests=fail(mapLimit › 结果按输入顺序排列，并把下标传给 fn,mapLimit › 同时进行的任务不超过 limit，并且确实用满了 limit,mapLimit › 一个任务完成后立刻启动下一个，不等整批完成,mapLimit › 任务被拒绝时，结果被拒绝，并且不再启动新的任务,mapLimit › 任务被拒绝时立即拒绝，不等其他正在进行的任务)"
+        },
+        {
+          "target": "exercise:map-limit:wrong:settle-then-throw",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(mapLimit › 任务被拒绝时立即拒绝，不等其他正在进行的任务)"
         }
       ]
     },
     "e04-promise-combinators": {
-      "verifiedAt": "2026-10-20T11:15:57.057Z",
-      "sourceHash": "ec8134fca7803084",
+      "verifiedAt": "2026-10-20T11:45:25.847Z",
+      "sourceHash": "e48032b238bce25f",
       "ok": true,
       "checks": [
         {
@@ -4852,7 +4994,7 @@
         {
           "target": "exercise:with-timeout:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(withTimeout › 超时后以 TimeoutError 拒绝)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(withTimeout › 恰好在 ms 毫秒时以 TimeoutError 拒绝)"
         },
         {
           "target": "exercise:with-timeout:solution:solution",
@@ -4872,17 +5014,17 @@
         {
           "target": "exercise:with-timeout:wrong:return-without-await",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 超时后以 TimeoutError 拒绝)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 恰好在 ms 毫秒时以 TimeoutError 拒绝)"
         },
         {
           "target": "exercise:with-timeout:wrong:plain-error",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 超时后以 TimeoutError 拒绝)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 恰好在 ms 毫秒时以 TimeoutError 拒绝)"
         },
         {
           "target": "exercise:with-timeout:wrong:any-instead-of-race",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 超时后以 TimeoutError 拒绝,withTimeout › 原来的 Promise 先被拒绝时，采用它的原因，并清除计时器)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 恰好在 ms 毫秒时以 TimeoutError 拒绝,withTimeout › 原来的 Promise 先被拒绝时，采用它的原因，并清除计时器)"
         },
         {
           "target": "exercise:with-timeout:wrong:unknown-result",
@@ -4892,7 +5034,7 @@
       ]
     },
     "g03-events-state": {
-      "verifiedAt": "2026-10-20T11:34:53.316Z",
+      "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",
       "ok": true,
       "checks": [

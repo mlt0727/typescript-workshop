@@ -64,7 +64,9 @@ test('failAfter 在指定时间后拒绝', async () => {
   failAfter(500, '超时').catch((err: unknown) => {
     message = err instanceof Error ? err.message : '不是 Error';
   });
-  await vi.advanceTimersByTimeAsync(500);
+  await vi.advanceTimersByTimeAsync(499);
+  expect(message).toBe('');
+  await vi.advanceTimersByTimeAsync(1);
   expect(message).toBe('超时');
 });
 
@@ -95,7 +97,7 @@ expectTypeOf(failAfter(1, 'x')).toEqualTypeOf<Promise<never>>();
 
 `failAfter` 不能直接 `throw`：那样错误会在调用时同步抛出，而不是在 `ms` 毫秒后以 Promise 拒绝的形式出现。返回类型 `Promise<never>` 表示它永远不会兑现（b06 的 `never`）。
 
-测试中的 `vi.advanceTimersByTimeAsync` 在快进时间的同时，让 Promise 的回调（微任务）有机会执行。
+测试中的 `vi.advanceTimersByTimeAsync` 在快进时间的同时，让 Promise 的回调（微任务）有机会执行。测试代码用到了下一课才讲的 `async`/`await`：现在可以先把 `await x` 读作“等 `x` 完成再继续”。
 :::
 
 :::variant{kind=alt name=named-executor}
@@ -147,6 +149,20 @@ export function delay<T>(ms: number, value: T): Promise<T> {
 
 export function failAfter(ms: number, message: string): Promise<never> {
   return new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms));
+}
+```
+:::
+
+:::variant{kind=wrong name=reject-immediately fails=tests reason="failAfter 立刻返回被拒绝的 Promise，没有等到指定时间"}
+```ts file=delay.ts
+export function delay<T>(ms: number, value: T): Promise<T> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(value), ms);
+  });
+}
+
+export function failAfter(ms: number, message: string): Promise<never> {
+  return Promise.reject(new Error(message));
 }
 ```
 :::

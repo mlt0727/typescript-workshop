@@ -51,10 +51,10 @@
   type: single
   prompt: 在浏览器主线程上执行一段需要 3 秒的同步计算，用户会看到什么？
   options:
-    - text: 这 3 秒内页面无法响应点击，也不会更新画面
+    - text: 这 3 秒内页面无法响应点击，页面内容也不会更新
       correct: true
-      explain: 渲染和事件处理都要等当前任务结束。长时间的计算应该拆分或交给 Web Worker。
+      explain: 事件处理、布局、绘制和其他 JavaScript 都要等当前任务结束（有些滚动和 CSS 动画由单独的合成线程处理，可能仍会继续）。长时间的计算应该拆分或交给 Web Worker。
     - text: 页面照常响应，因为浏览器会自动开新线程
-      explain: 页面的 JavaScript 和渲染共用主线程，浏览器不会自动把你的代码移到别的线程。
+      explain: 页面的 JavaScript、事件处理和大部分渲染工作共用主线程，浏览器不会自动把你的代码移到别的线程。
     - text: 浏览器会自动把计算拆成小块
       explain: 需要你自己拆分（例如用 setTimeout 分批）或使用 Worker。

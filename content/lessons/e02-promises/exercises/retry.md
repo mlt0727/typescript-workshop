@@ -10,7 +10,7 @@ title: 失败后重试
 - 总共最多调用 `attempts` 次。全部失败时，以**最后一次**的错误拒绝；
 - `attempts` 必须是正整数，否则返回一个以 `RangeError` 拒绝的 Promise（不要同步抛出，也不要调用 `task`）。
 
-`retry` 是泛型函数：`task` 返回 `Promise<T>` 时，`retry` 也返回 `Promise<T>`。本题请用 `then`/`catch` 实现（下一课的 `async`/`await` 写起来会更短）。
+`retry` 是泛型函数：`task` 返回 `Promise<T>` 时，`retry` 也返回 `Promise<T>`。本题请用 `then`/`catch` 实现（下一课的 `async`/`await` 写起来会更短）。测试代码已经用到了 `async`/`await`：现在可以先把 `await x` 读作“等 `x` 完成再继续”。
 
 :::files{role=starter}
 ```ts file=retry.ts
@@ -113,7 +113,7 @@ return task().catch((error: unknown) => {
 关键在于 `catch` 回调的两种结果：
 
 - 在回调里 `throw error`：`catch` 返回的 Promise 以这个错误拒绝，失败一直传到调用方——这就是“以最后一次的错误拒绝”。
-- 返回 `retry(task, attempts - 1)`：`catch` 返回的 Promise 跟随这次新尝试的结果（e02 讲的“返回 Promise 会被展开”）。
+- 返回 `retry(task, attempts - 1)`：`catch` 返回的 Promise 跟随这次新尝试的结果（本课第二节讲的：回调返回 Promise 时，新 Promise 会等它完成并采用它的结果）。
 
 递归让每一次尝试都排在上一次失败之后，而不是同时发起。参数无效时返回 `Promise.reject(…)` 而不是 `throw`：调用方用 `.catch` 或 `await` 处理异步函数的错误，不应该同时还要防备它同步抛出。
 
@@ -183,7 +183,7 @@ export function retry<T>(task: () => Promise<T>, attempts: number): Promise<T> {
 ```
 :::
 
-:::variant{kind=wrong name=swallow-error fails=tests reason="全部失败时没有拒绝，而是以 undefined 兑现"}
+:::variant{kind=wrong name=swallow-error fails=types reason="全部失败时没有拒绝，而是以 undefined 兑现，返回类型变成了 Promise<T | undefined>"}
 ```ts file=retry.ts
 export function retry<T>(task: () => Promise<T>, attempts: number): Promise<T | undefined> {
   if (!Number.isInteger(attempts) || attempts < 1) {

@@ -68,9 +68,10 @@ async function fakeCheck(url: string): Promise<void> {
 
 describe('checkAll', () => {
   test('分别列出可用和不可用的链接，顺序与输入一致', async () => {
-    const report = await checkAll(['/a', '/404-b', '/c-longer', '/timeout', '/404'], fakeCheck);
+    // 检查耗时与链接长度成正比：完成的先后和输入顺序不同
+    const report = await checkAll(['/c-longer', '/404-b', '/a', '/timeout', '/404'], fakeCheck);
     expect(report).toEqual({
-      ok: ['/a', '/c-longer'],
+      ok: ['/c-longer', '/a'],
       failed: [
         { url: '/404-b', message: '404：/404-b' },
         { url: '/timeout', message: 'timeout' },
