@@ -6,7 +6,7 @@ title: 第一个重复出现的字符
 
 - 例如 `'abcb'` 读到第二个 `b` 时发现重复，返回 `'b'`；`'abba'` 也返回 `'b'`（第二个 `b` 比第二个 `a` 先出现）；
 - 区分大小写：`'aA'` 没有重复；
-- “字符”按 `for...of` 的单位计算：emoji 也是一个字符，`'😀a😀'` 返回 `'😀'`。
+- “字符”按 `for...of` 的单位（Unicode 码点）计算：😀 这样单个码点的 emoji 也算一个字符，`'😀a😀'` 返回 `'😀'`。
 
 提示：可以用一个字符串 `seen` 记录读过的字符，用 a04 学过的 `seen.includes(ch)` 判断是否读过。
 
@@ -59,7 +59,7 @@ describe('firstRepeated', () => {
     expect(firstRepeated('aA')).toBeNull();
   });
 
-  test('emoji 是一个完整的字符', () => {
+  test('单个码点的 emoji 算一个字符', () => {
     expect(firstRepeated('😀a😀')).toBe('😀');
     expect(firstRepeated('😀😃')).toBeNull();
   });
@@ -76,7 +76,7 @@ describe('firstRepeated', () => {
 :::
 
 :::explanation
-`for...of` 按完整的字符遍历字符串，emoji 不会被拆成两半。循环中先检查、再记录：顺序反过来的话，每个字符都会在记录之后立刻“发现自己”。
+`for...of` 按码点遍历字符串，😀 不会被拆成两半。循环中先检查、再记录：顺序反过来的话，每个字符都会在记录之后立刻“发现自己”。
 
 找到重复时直接 `return ch`，循环随之结束，不需要 `break`。
 
@@ -101,7 +101,7 @@ export function firstRepeated(text: string): string | null {
 ```
 :::
 
-:::variant{kind=wrong name=index-loop fails=tests reason="按下标遍历，emoji 被拆成两半"}
+:::variant{kind=wrong name=index-loop fails=tests reason="按下标遍历，😀 被拆成两半"}
 ```ts file=repeat.ts
 export function firstRepeated(text: string): string | null {
   let seen = '';
@@ -117,7 +117,7 @@ export function firstRepeated(text: string): string | null {
 ```
 :::
 
-:::variant{kind=wrong name=for-in fails=types reason="for...in 不能用于字符串，而且遍历的是下标"}
+:::variant{kind=wrong name=for-in fails=types reason="TypeScript 不允许对 string 使用 for...in（TS2407）；即使能运行，得到的也是下标字符串"}
 ```ts file=repeat.ts
 export function firstRepeated(text: string): string | null {
   let seen = '';

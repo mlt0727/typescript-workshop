@@ -23,7 +23,7 @@
       correct: true
       explain: 空数组 `pop` 得到 `undefined`。
     - text: "`for (const n of names)` 中的 `n`"
-      explain: "`for...of` 只取真实存在的元素，`n` 的类型是 `string`。"
+      explain: "`for...of` 依次取出数组的元素，`n` 的类型是 `string`，不需要检查 `undefined`。"
 - id: slice-vs-splice
   type: single
   prompt: |

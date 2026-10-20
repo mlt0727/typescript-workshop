@@ -1,0 +1,88 @@
+- id: independent-closures
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    function makeCounter() {
+      let count = 0;
+      return () => ++count;
+    }
+    const a = makeCounter();
+    const b = makeCounter();
+    a();
+    a();
+    console.log(a(), b());
+    ```
+  options:
+    - text: "`3 1`"
+      correct: true
+      explain: 每次调用 `makeCounter` 都创建一个新的 `count`，`a` 和 `b` 各自记住自己的那一个。
+    - text: "`3 4`"
+      explain: "`a` 和 `b` 不共享 `count`，因为它们来自两次不同的调用。"
+    - text: "`1 1`"
+      explain: "`count` 在多次调用 `a()` 之间被保留下来，这正是闭包的作用。"
+- id: live-variable
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    let price = 10;
+    const show = () => `价格：${price}`;
+    price = 20;
+    console.log(show());
+    ```
+  options:
+    - text: "`价格：20`"
+      correct: true
+      explain: 闭包捕获的是变量本身，调用时读到变量当时的值。
+    - text: "`价格：10`"
+      explain: 闭包不会在创建时保存值的快照。
+    - text: TypeScript 报错：闭包不能使用后来被修改的变量
+      explain: 这是 Java lambda 的限制（只能捕获实际上不变的变量），JavaScript 没有这个限制。
+- id: loop-var
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    const fns: (() => number)[] = [];
+    for (var i = 0; i < 3; i++) {
+      fns.push(() => i);
+    }
+    console.log(fns.map((f) => f()));
+    ```
+  options:
+    - text: "`[ 3, 3, 3 ]`"
+      correct: true
+      explain: "`var` 声明的 `i` 只有一个，三个函数共享它；调用时循环已经结束，`i` 是 `3`。"
+    - text: "`[ 0, 1, 2 ]`"
+      explain: 这是把 `var` 换成 `let` 的结果：`let` 在每一轮循环都创建新的 `i`。
+    - text: "`[ 2, 2, 2 ]`"
+      explain: 循环在 `i` 变成 `3` 时才因条件不成立而结束，所以是 `3`。
+- id: return-copy
+  type: multiple
+  prompt: |
+    `makeStore` 用闭包保存了一个内部数组 `items`。为了让外部代码**只能**通过 `add` 修改它，`list` 可以怎样写？
+
+    ```ts
+    function makeStore() {
+      const items: string[] = [];
+      return {
+        add: (item: string) => { items.push(item); },
+        list: /* ? */,
+      };
+    }
+    ```
+  options:
+    - text: "`() => [...items]`"
+      correct: true
+      explain: 每次返回一个新数组，外部修改它不影响 `items`。
+    - text: "`() => items.slice()`"
+      correct: true
+      explain: "`slice()` 不带参数时复制整个数组，效果和展开相同。"
+    - text: "`() => items`"
+      explain: 返回的是内部数组本身，外部可以直接 `push`。
+    - text: "`items`"
+      explain: 这把内部数组直接放在了返回的对象上，外部可以随意修改。

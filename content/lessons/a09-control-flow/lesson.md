@@ -2,13 +2,13 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: 条件和循环的语法与 Java/C++ 几乎一样，可以很快迁移过来。真正需要注意的是少数几处不同：switch 用 === 比较、for...of 和 for...in 是两种完全不同的循环，以及按下标遍历字符串时可能把一个字符拆成两半。
 objectives:
   - 快速迁移 if/else、三元运算符、while、do...while 与经典 for 循环
   - 写出不会意外贯穿的 switch，知道 noFallthroughCasesInSwitch 的作用
   - 用 for...of 遍历值，知道 for...in 遍历的是键（字符串），不要用它遍历数组
-  - 知道 for...of 按字符（码点）遍历字符串，而下标按 UTF-16 编码单元
+  - 知道 for...of 按 Unicode 码点遍历字符串，而下标按 UTF-16 编码单元
 references:
   - title: Control flow and error handling — MDN
     url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Control_flow_and_error_handling
@@ -63,7 +63,7 @@ console.log(tries);
 ```
 - 第 15–20 行：累加 1 到 100 中的奇数，结果是 `2500`。
 - 第 24–26 行：`do...while` 先执行一次再判断条件，所以即使条件一开始就不成立，`tries` 也是 `1`。
-- 即使代码块只有一行，也建议写上花括号，这是大多数 JavaScript 代码规范的要求。
+- 即使代码块只有一行，也建议写上花括号，许多代码规范（例如 Google JavaScript Style Guide）都这样要求。
 :::
 
 ## switch：用 === 比较，小心贯穿
@@ -126,13 +126,13 @@ for (const key in user) {
 ```
 - 第 3–5 行：`for...of` 得到元素。
 - 第 7–9 行：`for...in` 得到的是字符串 `'0'` 和 `'1'`。
-- 第 12–14 行：遍历普通对象的属性名是 `for...in` 的正常用途（不过更常用的是 a11 会讲的 `Object.keys`、`Object.entries`）。
+- 第 12–14 行：遍历普通对象的属性名是 `for...in` 的正常用途（不过更常用的是 a11 会讲的 `Object.keys`、`Object.entries`）。注意两点：在循环里写 `user[key]` 读取值会报 TS7053，因为 `key` 的类型只是 `string`，原因 a11 会讲；普通对象不能用 `for...of` 遍历（TS2488），它不是可迭代对象。
 - 循环变量用 `const` 声明：每一轮循环都是一个新的变量，在循环体里不需要重新赋值。
 :::
 
 ## 遍历字符串：for...of 按字符，下标按编码单元
 
-a04 讲过，`length` 统计的是 UTF-16 编码单元，emoji 等字符占 2 个。用下标遍历会把这样的字符拆成两半；`for...of` 则按完整的字符（Unicode 码点）遍历：
+a04 讲过，`length` 统计的是 UTF-16 编码单元，😀 这样的字符占 2 个。用下标遍历会把它拆成两半；`for...of` 则按 **Unicode 码点**遍历，一个码点就是一个完整的单位：
 
 :::playground{#string-iteration}
 ```ts file=main.ts
@@ -149,6 +149,7 @@ for (let i = 0; i < text.length; i++) {
 - `for...of` 输出两次：`好` 和 `😀`。
 - 下标循环执行了 3 次，后两次各得到半个 emoji，显示成乱码。
 - 处理用户输入的文字时，优先用 `for...of`。
+- 边界：`for...of` 按码点遍历，😀 这种单个码点的 emoji 不会被拆开；但由多个码点组合成的 emoji（带肤色的 👍🏽、国旗 🇨🇳、家庭组合等）仍会被拆成几部分。要按“用户看到的字符”切分，需要 `Intl.Segmenter`，超出了本课范围。
 :::
 
 ::exercise{#delivery-days}
@@ -163,7 +164,7 @@ for (let i = 0; i < text.length; i++) {
 
 - **用 `for...in` 遍历数组**：得到的是下标字符串，不是元素。用 `for...of`。
 - **`switch` 忘了 `break`**：本平台会报 TS7029；在没有开启这个选项的项目里，它只会悄悄产生错误结果。
-- **按下标遍历用户输入的文字**：emoji 会被拆成两半。用 `for...of`。
+- **按下标遍历用户输入的文字**：😀 这样的字符会被拆成两半。用 `for...of`。
 - **省略花括号**：`if (x) doA(); doB();` 中的 `doB()` 不受 `if` 控制。
 
 ## 下一步

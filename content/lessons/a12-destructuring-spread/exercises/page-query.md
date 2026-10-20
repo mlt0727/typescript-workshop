@@ -4,8 +4,8 @@ title: 分页查询的默认值
 ---
 `pageQuery(options)` 生成分页查询的参数文字，格式为 `q=关键字&page=页码&size=每页条数`。
 
-- `page` 没有提供时默认为 `1`；
-- `size` 没有提供时默认为 `20`；
+- `page` 没有提供（或为 `undefined`）时默认为 `1`；
+- `size` 没有提供（或为 `undefined`）时默认为 `20`；
 - `size` 为 `0` 表示“只要总数，不要列表”，是合法的值，要原样保留。
 
 例如 `pageQuery({ keyword: 'ts' })` 返回 `'q=ts&page=1&size=20'`，`pageQuery({ keyword: 'ts', size: 0 })` 返回 `'q=ts&page=1&size=0'`。

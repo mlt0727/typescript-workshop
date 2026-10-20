@@ -79,7 +79,7 @@ test('空数组返回 null', () => {
 
 参考答案先检查 `max === undefined`：空数组直接返回 `null`；否则 `max` 被收窄为 `number`，循环里的比较是安全的。用第一个元素作为初始值，也避免了“初始值设为 0”在全是负数时出错的问题。
 
-注意：只检查 `scores.length === 0` 并不能让 TypeScript 收窄 `scores[0]` 的类型——它不会把长度和下标访问联系起来。这时需要像另一种写法那样，在取出元素后再检查一次。
+注意：只检查 `scores.length === 0` 并不能让 TypeScript 收窄 `scores[0]` 的类型——它不会把长度和下标访问联系起来。这时要么像参考答案那样，在取出 `scores[0]` 之后检查它是不是 `undefined`；要么像另一种写法那样完全不用下标，以 `-Infinity` 作为初始值。
 :::
 
 :::variant{kind=alt name=length-check}

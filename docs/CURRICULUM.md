@@ -3,9 +3,9 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 10 / 规划总数 126**（草稿 5，规划中 111）
+**已发布 15 / 规划总数 126**（草稿 2，规划中 109）
 
-## A. 起步与 JavaScript 共同语法（已发布 8 / 20）
+## A. 起步与 JavaScript 共同语法（已发布 13 / 20）
 
 从第一天写 TypeScript，补齐 JS 特有的语法与运行语义。
 
@@ -19,13 +19,13 @@
 | `a06-operators-equality` 运算符、=== 与类型转换 | ✅ 已发布 | `a05-null-undefined` |
 | `a07-truthy-falsy` truthy 与 falsy | ✅ 已发布 | `a06-operators-equality` |
 | `a08-optional-chaining-nullish` ?.、?? 与 || 的区别 | ✅ 已发布 | `a07-truthy-falsy` |
-| `a09-control-flow` 条件与循环的快速迁移 | 📝 草稿 | `a07-truthy-falsy` |
-| `a10-arrays` 数组基础与越界访问 | 📝 草稿 | `a09-control-flow` |
-| `a11-objects-references` 对象、引用与浅拷贝 | 📝 草稿 | `a10-arrays` |
-| `a12-destructuring-spread` 解构与展开 | 📝 草稿 | `a11-objects-references` |
-| `a13-functions` 普通函数、箭头函数与参数 | 📝 草稿 | `a12-destructuring-spread` |
-| `a14-scope-closures` 作用域与闭包 | ⬜ 规划中 | `a13-functions` |
-| `a15-this` this 的关键差异 | ⬜ 规划中 | `a14-scope-closures` |
+| `a09-control-flow` 条件与循环的快速迁移 | ✅ 已发布 | `a07-truthy-falsy` |
+| `a10-arrays` 数组基础与越界访问 | ✅ 已发布 | `a09-control-flow` |
+| `a11-objects-references` 对象、引用与浅拷贝 | ✅ 已发布 | `a10-arrays` |
+| `a12-destructuring-spread` 解构与展开 | ✅ 已发布 | `a11-objects-references` |
+| `a13-functions` 普通函数、箭头函数与参数 | ✅ 已发布 | `a12-destructuring-spread` |
+| `a14-scope-closures` 作用域与闭包 | 📝 草稿 | `a13-functions` |
+| `a15-this` this 的关键差异 | 📝 草稿 | `a14-scope-closures` |
 | `a16-array-methods` map、filter、reduce、find 的实际用法 | ⬜ 规划中 | `a13-functions` |
 | `a17-sort-and-mutation` sort 与变异行为的常见误区 | ⬜ 规划中 | `a16-array-methods` |
 | `a18-map-set` Map 与 Set | ⬜ 规划中 | `a11-objects-references` |

@@ -6,7 +6,7 @@ title: 给文章加标签
 
 - 如果 `tags` 中已经有完全相同的标签（区分大小写），不重复添加，返回的新文章的 `tags` 与原来内容相同；
 - **不能修改**传入的 `post`，也不能修改它的 `tags` 数组；
-- 返回的文章和它的 `tags` 都必须是新的对象和数组（页面会用 `===` 判断数据是否变化）。
+- 返回的文章和它的 `tags` 都必须是新的对象和数组，即使没有添加新标签也是如此：调用方会继续修改返回的文章（例如接着添加别的标签），它必须和原数据完全独立。
 
 :::files{role=starter}
 ```ts file=post.ts
@@ -133,7 +133,7 @@ export function addTag(
 ```
 :::
 
-:::variant{kind=wrong name=same-when-exists fails=tests reason="标签已存在时直接返回了原对象，不是新的对象"}
+:::variant{kind=wrong name=same-when-exists fails=tests reason="标签已存在时直接返回了原对象，调用方之后修改它会改动原数据"}
 ```ts file=post.ts
 export function addTag(
   post: { title: string; tags: string[] },

@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 现代 JavaScript 代码里到处是 const { name } = user、[...list, item]、{ ...defaults, ...options } 这样的写法。它们让取值和组合数据变得很短，但默认值什么时候生效、展开时谁覆盖谁、undefined 会不会覆盖默认值，这些细节决定了代码是否正确。
 objectives:
   - 用对象解构和数组解构取出值，会重命名、设置默认值和使用剩余元素
@@ -54,7 +54,7 @@ console.log(year, others);
 
 ## 数组解构
 
-数组解构按**位置**取值，和 Python 的 `a, b = items` 相似：
+数组解构按**位置**取值，和 Python 的 `a, b = items` 相似。不同的是，Python 要求个数一致，否则抛出 `ValueError`；JavaScript 多出来的元素被忽略，不够的位置得到 `undefined`，不会报错：
 
 :::playground{#array-destructuring}
 ```ts file=main.ts

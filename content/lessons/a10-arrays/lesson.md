@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: JavaScript 的数组像 Python 的 list 或 Java 的 ArrayList：长度可变，随时增删。但读取不存在的下标时，它既不抛 IndexError 也不抛越界异常，只是安静地返回 undefined。本平台开启的 noUncheckedIndexedAccess 会把这个风险写进类型里。
 objectives:
   - 创建数组并写出数组类型 T[]，知道空数组需要类型注解
@@ -29,7 +29,7 @@ references:
 
 ## 创建数组与常用方法
 
-数组字面量用方括号。数组类型写作 `元素类型[]`，例如 `number[]`、`string[]`（也可以写成 `Array<number>`，效果相同）。有初始元素时 TypeScript 会推断类型；**空数组没有元素可供推断，要写上注解**。
+数组字面量用方括号。数组类型写作 `元素类型[]`，例如 `number[]`、`string[]`（也可以写成 `Array<number>`，效果相同）。有初始元素时 TypeScript 会推断类型；**空数组要写上注解**：不写的话，TypeScript 会根据之后 `push` 进去的值“边用边推断”，放进错误类型的值也不会报错（在另一些用法下则会报“隐式 any”）。
 
 :::playground{#basics expect="2345@main.ts:10"}
 ```ts file=main.ts
@@ -74,8 +74,8 @@ console.log(names.at(-1));
 ```
 - 第 2 行：输出 `undefined`。Python 会抛 `IndexError`，Java 会抛 `ArrayIndexOutOfBoundsException`。
 - 第 5 行报 TS18048：即使你知道 `names[0]` 存在，TypeScript 也无法确定（数组长度只在运行时才知道）。第 7–10 行是正确的写法：先检查。
-- 第 12–14 行：`for...of` 里的 `name` 类型是 `string`，没有 `undefined`——遍历只会取到真实存在的元素。**能用 `for...of` 时就不要用下标**。
-- 第 16 行：`at(-1)` 取最后一个元素，类型同样是 `string | undefined`。
+- 第 12–14 行：`for...of` 里的 `name` 类型是 `string`，没有 `undefined`——它依次取出下标 0 到 `length − 1` 的元素，只要数组没有“空位”（见下文），就不会得到 `undefined`。**能用 `for...of` 时就不要用下标**。
+- 第 16 行：`at(-1)` 取最后一个元素，类型同样是 `string | undefined`。Python 用户注意：`names[-1]` **不会**取到最后一个元素，而是得到 `undefined`（TypeScript 也不报错），要用 `at(-1)`。
 :::
 
 往超出长度的下标写入，数组会自动变长，中间留下“空位”（empty slots）。这几乎总是 bug，用 `push` 添加元素即可。

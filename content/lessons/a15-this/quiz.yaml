@@ -1,0 +1,67 @@
+- id: extracted-method
+  type: single
+  prompt: |
+    运行下面的代码会怎样？
+
+    ```ts
+    const user = {
+      name: 'Ada',
+      hello() {
+        return `我是 ${this.name}`;
+      },
+    };
+    const hello = user.hello;
+    console.log(hello());
+    ```
+  options:
+    - text: 运行时抛出 `TypeError`，TypeScript 不会报错
+      correct: true
+      explain: "`this` 由调用方式决定。`hello()` 前面没有对象，`this` 是 `undefined`，读取 `undefined.name` 抛出 `TypeError`。TypeScript 不跟踪方法被取出后的调用方式。"
+    - text: 输出 `我是 Ada`
+      explain: 在 Java 里方法总是绑定在对象上，但 JavaScript 的普通函数不是。`hello` 和 `user.hello` 是同一个函数，`this` 取决于调用时的形式。
+    - text: TypeScript 报错，不能把方法赋给变量
+      explain: 把方法赋给变量是合法的，问题出在之后的调用方式。
+- id: fix-callback
+  type: multiple
+  prompt: "`logger.log` 是一个使用了 `this` 的方法。下列哪些写法能让 `items.forEach(…)` 正确地调用它？"
+  options:
+    - text: "`items.forEach((x) => logger.log(x))`"
+      correct: true
+      explain: 箭头函数里以 `logger.log(x)` 的形式调用，`this` 是 `logger`。
+    - text: "`items.forEach(logger.log.bind(logger))`"
+      correct: true
+      explain: "`bind` 返回一个 `this` 固定为 `logger` 的新函数。"
+    - text: "`items.forEach(logger.log)`"
+      explain: "`forEach` 调用传入的函数时不提供 `this`，方法里的 `this` 是 `undefined`。"
+- id: arrow-method
+  type: single
+  prompt: |
+    第 4 行的 `this` 指的是什么？
+
+    ```ts
+    const timer = {
+      seconds: 0,
+      tick: () => {
+        this.seconds++;
+      },
+    };
+    ```
+  options:
+    - text: 模块顶层的 `this`，也就是 `undefined`；TypeScript 会报错
+      correct: true
+      explain: 箭头函数没有自己的 `this`，它使用定义位置外层的 `this`。这里外层是模块顶层，`this` 是 `undefined`（TS2532）。对象的方法应该用 `tick() { … }` 的写法。
+    - text: "`timer` 对象"
+      explain: 只有普通函数（包括方法简写）以 `timer.tick()` 调用时，`this` 才是 `timer`。箭头函数不是这样。
+    - text: 由调用方式决定
+      explain: 这是普通函数的规则。箭头函数的 `this` 由定义位置决定，与调用方式无关。
+- id: callback-in-method
+  type: single
+  prompt: 在对象的方法内部，要给 `map` 传一个需要用到 `this` 的回调，应该用哪种函数？
+  options:
+    - text: 箭头函数，因为它使用外层方法的 `this`
+      correct: true
+      explain: 箭头函数没有自己的 `this`，正好使用方法的 `this`。
+    - text: 普通 `function`，因为它有自己的 `this`
+      explain: 回调有自己的 `this` 正是问题所在：`map` 调用它时不提供 `this`，TypeScript 会报 TS2683。
+    - text: 两种都可以，`map` 会把数组作为 `this` 传给回调
+      explain: "`map` 默认不提供 `this`（只有传入第二个参数 `thisArg` 时才会提供）。"

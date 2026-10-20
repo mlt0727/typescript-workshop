@@ -51,9 +51,9 @@
   options:
     - text: 执行 1 次；`length` 是 2
       correct: true
-      explain: "`for...of` 按完整的字符（码点）遍历；`length` 按 UTF-16 编码单元计数，这个 emoji 占 2 个。"
+      explain: "`for...of` 按 Unicode 码点遍历，😀 是一个码点；`length` 按 UTF-16 编码单元计数，它占 2 个。"
     - text: 执行 2 次；`length` 是 2
-      explain: 按下标循环才会执行 2 次。`for...of` 不会拆开 emoji。
+      explain: 按下标循环才会执行 2 次。`for...of` 不会拆开 😀 这种单个码点的字符。
     - text: 执行 1 次；`length` 是 1
       explain: "`length` 统计 UTF-16 编码单元，这个 emoji 是 2。"
 - id: do-while

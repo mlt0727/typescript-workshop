@@ -67,7 +67,7 @@ test('返回的是另一个对象', () => {
 :::
 
 :::hint{level=2}
-`const copy = { ...user };`，然后修改 `copy.nickname` 并返回 `copy`。也可以一步写成 `return { ...user, nickname };`（下一课会讲这种写法）。
+`const copy = { ...user };`，然后修改 `copy.nickname` 并返回 `copy`。也可以一步写成 `return { ...user, nickname: nickname };`：展开之后再写的同名属性会覆盖展开得到的值。
 :::
 
 :::explanation
