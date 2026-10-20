@@ -4311,6 +4311,128 @@
         }
       ]
     },
+    "e03-async-await": {
+      "verifiedAt": "2026-10-20T11:04:47.133Z",
+      "sourceHash": "11264f80dc582c60",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 开始 | [log] 你好，Ada | [log] 你好，Grace | [log] 结束"
+        },
+        {
+          "target": "playground:errors:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:errors:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 检查完毕： { \"port\": 8080 } | [log] 在 8080 端口启动 | [log] 检查完毕： { \"port\": \"x\" } | [log] 启动失败：配置无效 | [log] 检查完毕： { | [log] 启动失败：Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+        },
+        {
+          "target": "playground:parallel:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:parallel:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 串行： 3 耗时约 400 毫秒 | [log] 并行： 3 耗时约 200 毫秒"
+        },
+        {
+          "target": "playground:mistakes:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:mistakes:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] undefined | [log] 这一行总会执行 | [log] forEach 之后： [] | [log] for...of 之后： [ 'a', 'b', 'c', 'd' ]"
+        },
+        {
+          "target": "exercise:load-profile:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2339@profile.ts:12 Property 'name' does not exist on type 'Promise<User | null>'.；TS2339@profile.ts:12 Property 'length' does not exist on type 'Promise<Post[]>'.) rules=ok tests=fail(loadProfile › 有文章的用户,loadProfile › 没有文章的用户,loadProfile › 用户不存在时拒绝，并且不请求文章)"
+        },
+        {
+          "target": "exercise:load-profile:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:load-profile:alt:then-chain",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:load-profile:wrong:parallel-requests",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadProfile › 用户不存在时拒绝，并且不请求文章)"
+        },
+        {
+          "target": "exercise:load-profile:wrong:return-null",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@profile.ts:11 Type 'null' is not assignable to type 'Profile'.) rules=ok tests=fail(loadProfile › 用户不存在时拒绝，并且不请求文章)"
+        },
+        {
+          "target": "exercise:load-profile:wrong:first-not-latest",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadProfile › 有文章的用户)"
+        },
+        {
+          "target": "exercise:map-limit:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(mapLimit › 结果按输入顺序排列，并把下标传给 fn,mapLimit › 同时进行的任务不超过 limit，并且确实用满了 limit,mapLimit › limit 大于任务数时，全部同时进行,mapLimit › 一个任务完成后立刻启动下一个，不等整批完成,mapLimit › 任务被拒绝时，结果被拒绝，并且不再启动新的任务,mapLimit › limit 必须是正整数)"
+        },
+        {
+          "target": "exercise:map-limit:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:map-limit:alt:shared-iterator",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:map-limit:wrong:no-limit",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(mapLimit › 同时进行的任务不超过 limit，并且确实用满了 limit,mapLimit › 任务被拒绝时，结果被拒绝，并且不再启动新的任务)"
+        },
+        {
+          "target": "exercise:map-limit:wrong:serial",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(mapLimit › 同时进行的任务不超过 limit，并且确实用满了 limit,mapLimit › limit 大于任务数时，全部同时进行,mapLimit › 一个任务完成后立刻启动下一个，不等整批完成)"
+        },
+        {
+          "target": "exercise:map-limit:wrong:batches",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(mapLimit › 一个任务完成后立刻启动下一个，不等整批完成)"
+        },
+        {
+          "target": "exercise:map-limit:wrong:finish-order",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(mapLimit › 结果按输入顺序排列，并把下标传给 fn)"
+        },
+        {
+          "target": "exercise:map-limit:wrong:keep-going",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(mapLimit › 任务被拒绝时，结果被拒绝，并且不再启动新的任务)"
+        },
+        {
+          "target": "exercise:map-limit:wrong:missing-await",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@map-limit.ts:16 Type 'Promise<U>' is not assignable to type 'U'.) rules=ok tests=fail(mapLimit › 结果按输入顺序排列，并把下标传给 fn,mapLimit › 同时进行的任务不超过 limit，并且确实用满了 limit,mapLimit › 一个任务完成后立刻启动下一个，不等整批完成,mapLimit › 任务被拒绝时，结果被拒绝，并且不再启动新的任务)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T08:56:49.878Z",
       "sourceHash": "0a98baee8e519cd3",

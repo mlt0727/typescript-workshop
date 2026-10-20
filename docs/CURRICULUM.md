@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 36 / 规划总数 126**（草稿 5，规划中 85）
+**已发布 36 / 规划总数 126**（草稿 6，规划中 84）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -64,7 +64,7 @@
 |---|---|---|
 | `e01-event-loop` 事件循环的必要知识 | 📝 草稿 | `a13-functions` |
 | `e02-promises` Promise 基础 | 📝 草稿 | `e01-event-loop`、`b14-generics` |
-| `e03-async-await` async/await 与错误传播 | ⬜ 规划中 | `e02-promises`、`a20-errors` |
+| `e03-async-await` async/await 与错误传播 | 📝 草稿 | `e02-promises`、`a20-errors` |
 | `e04-promise-combinators` Promise.all、allSettled、race 与 any | ⬜ 规划中 | `e03-async-await` |
 | `e05-fetch-json` fetch、HTTP 状态与 JSON | ⬜ 规划中 | `e04-promise-combinators` |
 | `e06-runtime-validation` 运行时数据校验 | ⬜ 规划中 | `e05-fetch-json`、`b08-type-guards` |

@@ -1,0 +1,60 @@
+- id: run-until-await
+  type: single
+  prompt: |
+    下面的代码按什么顺序输出？
+
+    ```ts
+    async function f(): Promise<void> {
+      console.log('B');
+      await null;
+      console.log('D');
+    }
+    console.log('A');
+    f();
+    console.log('C');
+    ```
+  options:
+    - text: "`A`、`B`、`C`、`D`"
+      correct: true
+      explain: 调用 async 函数时，函数体立刻同步执行，直到第一个 `await`；`await` 让函数暂停，后面的代码作为微任务，在当前同步代码（输出 `C`）结束后继续。
+    - text: "`A`、`C`、`B`、`D`"
+      explain: async 函数不会推迟整个函数体，第一个 `await` 之前的代码是同步执行的。
+    - text: "`A`、`B`、`D`、`C`"
+      explain: "`await` 即使等待的不是 Promise，也会让函数暂停到当前同步代码结束之后。"
+- id: parallel-ways
+  type: multiple
+  prompt: "`getA()` 和 `getB()` 互不依赖，各需要约 1 秒。哪些写法总共只需要约 1 秒？"
+  options:
+    - text: "`const [a, b] = await Promise.all([getA(), getB()]);`"
+      correct: true
+      explain: 两个操作都先启动，`Promise.all` 一起等待。这是推荐的写法。
+    - text: "`const pa = getA(); const pb = getB(); const a = await pa; const b = await pb;`"
+      correct: true
+      explain: 两个操作也是先同时启动的，所以约 1 秒。但如果 `pb` 在等待 `pa` 期间被拒绝，它暂时没有处理者，会被报告为未处理的拒绝，所以更推荐 `Promise.all`。
+    - text: "`const b = await getB(); const a = await getA();`"
+      explain: 只是换了顺序，仍然是等一个完成再启动下一个，约 2 秒。
+    - text: "`const pair = [await getA(), await getB()];`"
+      explain: 数组里的两个 `await` 从左到右依次执行，仍然是串行。
+- id: try-without-await
+  type: single
+  prompt: |
+    `load` 总是被拒绝。下面的代码会输出“捕获”吗？
+
+    ```ts
+    async function load(): Promise<string> {
+      throw new Error('失败');
+    }
+    try {
+      load();
+    } catch {
+      console.log('捕获');
+    }
+    ```
+  options:
+    - text: 不会：`load()` 返回一个被拒绝的 Promise，并没有同步抛出，`try` 什么也没捕获到
+      correct: true
+      explain: async 函数中的 `throw` 变成被拒绝的 Promise。这里没有 `await`，错误成了未处理的拒绝。改成 `await load()`，`catch` 才能捕获。
+    - text: 会：`load` 里抛出了错误
+      explain: 错误没有从 `load()` 调用处同步抛出，而是装进了它返回的 Promise。
+    - text: 会，但要等事件循环的下一轮
+      explain: 等到 Promise 被拒绝时，`try` 语句早就执行完了，不会再回来捕获。
