@@ -27,7 +27,7 @@ type RequestEvent =
 | `fetch` | 当前不是 `loading` 时，变成 `{ status: 'loading', startedAt: at }`；正在 `loading` 时忽略 |
 | `resolve` | 只在 `loading` 时有效：变成 `success`，`items` 复制一份，`loadedAt` 为事件的 `at` |
 | `reject` | 只在 `loading` 时有效：变成 `{ status: 'error', message }` |
-| `reset` | 任何状态都变成 `{ status: 'idle' }` |
+| `reset` | 任何状态都变成新的 `{ status: 'idle' }`（即使原来就是 `idle`，也返回新对象） |
 
 “忽略”和“无效”都表示**返回原来的同一个状态对象**（不创建新对象）。不能修改传入的状态。
 
@@ -216,27 +216,27 @@ export type RequestEvent =
   | { type: 'reject'; message: string }
   | { type: 'reset' };
 
+function assertNever(value: never): never {
+  throw new Error(`未处理：${JSON.stringify(value)}`);
+}
+
 export function transition(state: State, event: RequestEvent): State {
-  if (event.type === 'reset') {
-    return { status: 'idle' };
+  if (event.type === 'reset') return { status: 'idle' };
+  if (event.type === 'fetch') {
+    return state.status === 'loading' ? state : { status: 'loading', startedAt: event.at };
   }
-  if (state.status !== 'loading') {
-    return event.type === 'fetch' ? { status: 'loading', startedAt: event.at } : state;
-  }
-  if (event.type === 'resolve') {
-    return { status: 'success', items: event.items.slice(), loadedAt: event.at };
-  }
-  if (event.type === 'reject') {
-    return { status: 'error', message: event.message };
-  }
-  return state;
+  if (state.status !== 'loading') return state;
+  if (event.type === 'resolve') return { status: 'success', items: event.items.slice(), loadedAt: event.at };
+  if (event.type === 'reject') return { status: 'error', message: event.message };
+  return assertNever(event);
 }
 
 export function label(state: State): string {
   if (state.status === 'idle') return '未开始';
   if (state.status === 'loading') return '加载中…';
   if (state.status === 'success') return `已加载 ${state.items.length} 条`;
-  return `出错：${state.message}`;
+  if (state.status === 'error') return `出错：${state.message}`;
+  return assertNever(state);
 }
 ```
 :::

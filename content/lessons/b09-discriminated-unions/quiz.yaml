@@ -1,37 +1,12 @@
-- id: narrowing-by-tag
-  type: single
-  prompt: |
-    在 `case 'ok'` 分支里，可以直接读取哪些属性？
-
-    ```ts
-    type Reply =
-      | { kind: 'ok'; data: string }
-      | { kind: 'fail'; code: number };
-
-    function handle(r: Reply) {
-      switch (r.kind) {
-        case 'ok':
-          // 这里
-      }
-    }
-    ```
-  options:
-    - text: "`kind` 和 `data`"
-      correct: true
-      explain: 判别属性 `kind` 为 `'ok'` 时，`r` 被收窄成第一种类型。
-    - text: "`kind`、`data` 和 `code`"
-      explain: "`code` 只属于 `fail`，在 `ok` 分支里不存在。"
-    - text: 只有 `kind`
-      explain: 收窄之后，这种情况特有的属性 `data` 也可以直接读取。
 - id: impossible-states
   type: single
-  prompt: "为什么用可辨识联合表示请求状态，比 `{ loading: boolean; data?: T; error?: string }` 更好？"
+  prompt: "为什么用可辨识联合表示请求状态，比 `{ loading: boolean; data?: string[]; error?: string }` 更好？"
   options:
     - text: 它只允许合法的组合，并且在每种状态下 TypeScript 都知道哪些属性一定存在
       correct: true
       explain: 可选属性的写法允许“加载中又有错误”这类不可能的状态，使用时还要处理每个属性可能是 `undefined`。
     - text: 可辨识联合在运行时更快
-      explain: 类型在运行时被擦除，两种写法的运行性能没有差别。
+      explain: 类型在运行时被擦除，选择可辨识联合的理由和性能无关。
     - text: 可选属性在严格模式下不能使用
       explain: 可选属性可以使用，问题在于它表达不了“几种情况互斥”。
 - id: tag-must-be-literal
@@ -54,3 +29,15 @@
       explain: 兜底分支会悄悄吞掉新情况，编译器不会提醒。
     - text: "`default: break;`"
       explain: 同样会吞掉新情况；如果函数有返回类型，可能还会报“缺少返回语句”，但不会明确指向新增的情况。
+- id: result-type
+  type: single
+  prompt: |
+    `type ParseResult = { ok: true; value: number } | { ok: false; error: string };`。对 `r: ParseResult`，下面哪种写法能通过类型检查？
+  options:
+    - text: "`if (r.ok) { console.log(r.value); } else { console.log(r.error); }`"
+      correct: true
+      explain: "`ok` 是布尔字面量类型的判别属性，检查之后两个分支分别被收窄。"
+    - text: "`console.log(r.value);`"
+      explain: 没有检查 `ok`，`r` 可能是失败结果，没有 `value`（TS2339）。
+    - text: "`if (r.error) { … } else { console.log(r.value); }`"
+      explain: 成功结果没有 `error` 属性，不能在检查 `ok` 之前读取它。

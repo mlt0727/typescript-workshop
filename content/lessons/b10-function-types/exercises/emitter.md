@@ -2,7 +2,7 @@
 kind: challenge
 title: 消息订阅器
 ---
-实现 `createEmitter()`，返回一个简单的消息订阅器。先定义并导出两个类型：
+实现 `createEmitter()`，返回一个简单的消息订阅器。起始代码已经给出了两个类型：
 
 ```ts
 type Listener = (message: string) => void;
@@ -18,7 +18,7 @@ type Emitter = {
 - `on(listener)`：注册监听函数，返回一个**取消函数**。调用取消函数移除这一次注册；多次调用取消函数没有额外效果。
 - 同一个函数可以注册多次，每次注册各自独立：被注册两次就会被调用两次，取消其中一次不影响另一次。
 - `once(listener)`：注册一个只会被调用一次的监听函数（第一次 `emit` 之后自动移除）；同样返回取消函数。
-- `emit(message)`：按注册顺序调用**这次 `emit` 开始时**已注册的所有监听函数，返回调用的个数。监听函数在被调用时取消自己或别人的注册、或者注册新的监听函数，都不影响这一轮已经确定的调用名单——但已经被取消、还没轮到的监听函数不应再被调用。
+- `emit(message)`：按注册顺序调用**这次 `emit` 开始时**已注册的监听函数，返回调用的个数。监听函数在被调用时新注册的监听函数，从下一轮开始生效；取消注册则立即生效：本轮还没轮到、但已被取消的监听函数不再调用。
 
 :::files{role=starter}
 ```ts file=emitter.ts
@@ -216,7 +216,7 @@ expectTypeOf(emitter.emit).returns.toEqualTypeOf<number>();
 :::
 
 :::explanation
-这道题的关键在于“一次注册”是一个独立的对象，而不是“一个函数”。用 `indexOf(listener)` 查找时，同一个函数注册两次就无法区分；`indexOf` 找不到时返回 `-1`，`splice(-1, 1)` 还会删掉最后一个元素（a10）——起始代码多次调用取消函数就会误删别人的注册。
+这道题的关键在于“一次注册”是一个独立的对象，而不是“一个函数”。用 `indexOf(listener)` 查找时，同一个函数注册两次就无法区分；`indexOf` 找不到时返回 `-1`，而 `splice` 把负数下标理解为“从末尾数”，`splice(-1, 1)` 会删掉最后一个元素——起始代码多次调用取消函数就会误删别人的注册。
 
 遍历时，监听函数可能修改注册列表。如果直接遍历原数组，取消自己会让后面的元素前移一位，下一个监听函数被跳过。所以 `emit` 先复制一份本轮名单；同时用 `active` 标记处理“本轮中被取消、还没轮到”的情况。
 
@@ -369,6 +369,54 @@ export function createEmitter(): Emitter {
       registrations = registrations.filter((r) => !r.once);
       for (const r of round) r.listener(message);
       return round.length;
+    },
+  };
+}
+```
+:::
+
+:::variant{kind=wrong name=optional-message fails=types reason="回调类型把 message 写成了可选参数，每个监听函数都被迫处理 undefined"}
+```ts file=emitter.ts
+export type Listener = (message?: string) => void;
+
+export type Emitter = {
+  on: (listener: Listener) => () => void;
+  once: (listener: Listener) => () => void;
+  emit: (message: string) => number;
+};
+
+type Registration = { listener: Listener; once: boolean; active: boolean };
+
+export function createEmitter(): Emitter {
+  let registrations: Registration[] = [];
+
+  function add(listener: Listener, once: boolean): () => void {
+    const registration: Registration = { listener, once, active: true };
+    registrations.push(registration);
+    return () => {
+      registration.active = false;
+      registrations = registrations.filter((r) => r !== registration);
+    };
+  }
+
+  return {
+    on: (listener) => add(listener, false),
+    once: (listener) => add(listener, true),
+    emit: (message) => {
+      const snapshot = [...registrations];
+      let called = 0;
+      for (const registration of snapshot) {
+        if (!registration.active) {
+          continue;
+        }
+        if (registration.once) {
+          registration.active = false;
+          registrations = registrations.filter((r) => r !== registration);
+        }
+        registration.listener(message);
+        called++;
+      }
+      return called;
     },
   };
 }

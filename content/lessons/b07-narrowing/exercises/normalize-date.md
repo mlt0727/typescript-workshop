@@ -165,7 +165,13 @@ export function toDate(input: DateInput): Date | null {
 export function isSameDay(a: DateInput, b: DateInput): boolean {
   const x = toDate(a);
   const y = toDate(b);
-  return x !== null && y !== null && x.toISOString().slice(0, 10) === y.toISOString().slice(0, 10);
+  return (
+    x !== null &&
+    y !== null &&
+    x.getUTCFullYear() === y.getUTCFullYear() &&
+    x.getUTCMonth() === y.getUTCMonth() &&
+    x.getUTCDate() === y.getUTCDate()
+  );
 }
 ```
 :::
@@ -191,7 +197,13 @@ export function toDate(input: DateInput): Date | null {
 export function isSameDay(a: DateInput, b: DateInput): boolean {
   const x = toDate(a);
   const y = toDate(b);
-  return x !== null && y !== null && x.toISOString().slice(0, 10) === y.toISOString().slice(0, 10);
+  return (
+    x !== null &&
+    y !== null &&
+    x.getUTCFullYear() === y.getUTCFullYear() &&
+    x.getUTCMonth() === y.getUTCMonth() &&
+    x.getUTCDate() === y.getUTCDate()
+  );
 }
 ```
 :::
@@ -238,7 +250,13 @@ export function toDate(input: DateInput): Date | null {
 export function isSameDay(a: DateInput, b: DateInput): boolean {
   const x = toDate(a);
   const y = toDate(b);
-  return x !== null && y !== null && x.toISOString().slice(0, 10) === y.toISOString().slice(0, 10);
+  return (
+    x !== null &&
+    y !== null &&
+    x.getUTCFullYear() === y.getUTCFullYear() &&
+    x.getUTCMonth() === y.getUTCMonth() &&
+    x.getUTCDate() === y.getUTCDate()
+  );
 }
 ```
 :::

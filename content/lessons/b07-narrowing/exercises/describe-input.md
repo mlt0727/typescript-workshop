@@ -94,7 +94,7 @@ test('null', () => {
 :::
 
 :::explanation
-`typeof` 只能区分基本类型，对象一律是 `'object'`（`null` 也是）。所以对象类的成员要用更精确的检查：`instanceof Date` 识别日期，`Array.isArray` 识别数组，`=== null` 识别空值。
+`typeof` 只能区分基本类型，除函数外的对象一律是 `'object'`（`null` 也是）。所以对象类的成员要用更精确的检查：`instanceof Date` 识别日期，`Array.isArray` 识别数组，`=== null` 识别空值。
 
 每个 `if` 都提前 `return`，TypeScript 的控制流分析会从后续代码中去掉已处理的类型，最后一行的 `value` 只剩 `number`。把鼠标停在不同位置的 `value` 上，可以看到类型一步步变窄。
 :::

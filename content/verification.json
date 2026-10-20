@@ -2854,8 +2854,8 @@
       ]
     },
     "b07-narrowing": {
-      "verifiedAt": "2026-10-20T10:23:40.415Z",
-      "sourceHash": "2c8dad0397907090",
+      "verifiedAt": "2026-10-20T10:44:28.146Z",
+      "sourceHash": "868160f8a42d36ae",
       "ok": true,
       "checks": [
         {
@@ -2966,8 +2966,8 @@
       ]
     },
     "b08-type-guards": {
-      "verifiedAt": "2026-10-20T10:26:14.277Z",
-      "sourceHash": "a24599c5ae67a124",
+      "verifiedAt": "2026-10-20T10:44:28.593Z",
+      "sourceHash": "60f6d3b91e78c8b3",
       "ok": true,
       "checks": [
         {
@@ -3063,8 +3063,8 @@
       ]
     },
     "b09-discriminated-unions": {
-      "verifiedAt": "2026-10-20T10:29:03.824Z",
-      "sourceHash": "8362c9d0e77fb083",
+      "verifiedAt": "2026-10-20T10:44:45.016Z",
+      "sourceHash": "49752a141ce3f081",
       "ok": true,
       "checks": [
         {
@@ -3170,8 +3170,8 @@
       ]
     },
     "b10-function-types": {
-      "verifiedAt": "2026-10-20T10:31:31.803Z",
-      "sourceHash": "8cfc2cd6af6860be",
+      "verifiedAt": "2026-10-20T10:44:29.593Z",
+      "sourceHash": "ae90adddb616d52c",
       "ok": true,
       "checks": [
         {
@@ -3273,6 +3273,11 @@
           "target": "exercise:emitter:wrong:snapshot-without-active",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createEmitter › 被前面的监听函数取消的，本轮不再调用)"
+        },
+        {
+          "target": "exercise:emitter:wrong:optional-message",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@emitter.test-d.ts:4 Type '(message: string) => void' does not satisfy the constraint '\"Expected: function, Actual: never\"'.) rules=ok tests=ok"
         }
       ]
     },

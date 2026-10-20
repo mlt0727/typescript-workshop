@@ -14,10 +14,10 @@ type Config = { name: string; port: number; tags: string[] };
 | --- | --- |
 | 是对象（不是 `null`，也不是数组） | `TypeError('配置必须是对象')` |
 | `name` 是去掉空格后不为空的字符串 | `TypeError('name 必须是非空字符串')` |
-| `port` 是 1 到 65535 的整数 | `RangeError('port 必须是 1–65535 的整数')` |
+| `port` 是 1 到 65535 的整数 | `RangeError('port 必须是 1–65535 的整数')`（为了简化，类型不是数字时也抛出这个错误） |
 | `tags` 是数组，并且每个元素都是字符串 | `TypeError('tags 必须是字符串数组')` |
 
-再实现 `loadConfig(json)`：解析 JSON，调用 `assertConfig`，返回一个**只包含** `name`、`port`、`tags` 的新对象（`name` 去掉首尾空格，`tags` 复制一份）。
+再实现 `loadConfig(json)`：解析 JSON，调用 `assertConfig`，返回一个**只包含** `name`、`port`、`tags` 的新对象（`name` 去掉首尾空格）。
 
 :::files{role=starter}
 ```ts file=config.ts

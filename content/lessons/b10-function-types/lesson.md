@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 回调无处不在：数组方法、事件监听、定时器、React 的事件处理。要写一个接收回调的函数，就要描述“参数是什么样的函数”。函数类型的兼容规则和对象有些不同：少写参数可以，参数类型却不能随便放宽或收紧。理解这些规则，才能看懂 TypeScript 关于回调的报错。
 objectives:
   - "用函数类型表达式 (参数: 类型) => 返回类型 描述回调，并给它起类型别名"
@@ -23,7 +23,7 @@ references:
 
 ## 函数类型
 
-a13 用过 `(n: number) => number` 这样的**函数类型表达式**。它和箭头函数长得很像，但它是类型：参数名只是为了可读，真正有意义的是参数和返回值的类型。常用的函数类型可以起一个别名。
+a13 用过 `(n: number) => number` 这样的**函数类型表达式**。它和箭头函数长得很像，但它是类型：参数名只是为了可读，真正有意义的是参数和返回值的类型。不过参数名不能省略：`(number) => string` 里的 `number` 会被当成参数**名**，参数类型变成了隐式 `any`（严格模式下报 TS7051）。Java/C++ 用户尤其容易这样写。常用的函数类型可以起一个别名。
 
 :::playground{#function-types}
 ```ts file=main.ts
@@ -67,7 +67,7 @@ const cb: Callback = needsIndex;
 
 如果一个函数类型承诺“可以处理 `string | number`”，那赋给它的函数就必须**真的能处理**字符串和数字。只能处理字符串的函数不行：调用方可能会传入数字。反过来，一个能处理任何值的函数，当然可以用在只传字符串的地方。
 
-这条规则由 `strict` 中的 `strictFunctionTypes` 选项检查。但有一个历史遗留的例外：用**方法写法**（`handle(value: …): void`）声明的成员不按这条规则严格检查，用**属性写法**（`handle: (value: …) => void`）声明的才会检查。
+这条规则由 `strict` 中的 `strictFunctionTypes` 选项检查。但有一个历史遗留的例外：用**方法写法**（`handle(value: …): void`）声明的成员只做**双向**检查——参数类型在任一方向上兼容就通过（完全无关的类型仍然报错），所以更窄的参数类型也能混过去；用**属性写法**（`handle: (value: …) => void`）声明的才按上面的规则严格检查。（保留这个例外，是为了让 `Array<T>` 这类内置类型的方法可以协变。）
 
 :::playground{#parameter-types expect="2322@main.ts:4, 2322@main.ts:17" run=error}
 ```ts file=main.ts

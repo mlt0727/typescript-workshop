@@ -34,7 +34,7 @@
       explain: 读取 `undefined.length` 会抛出 `TypeError`，不会输出 `undefined`。
 - id: assertion
   type: single
-  prompt: "`function assertIsString(v: unknown): asserts v is string` 被调用后，如果函数正常返回，接下来的代码中 `v` 是什么类型？"
+  prompt: "`function assertIsString(v: unknown): asserts v is string`。对 `x: unknown` 调用 `assertIsString(x)` 并正常返回后，`x` 是什么类型？"
   options:
     - text: "`string`"
       correct: true

@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 一个请求可能处于“加载中”“成功”“失败”三种状态，成功时有数据，失败时有错误信息。用一个带很多可选属性的对象来表示，会出现“既有数据又有错误”这种不可能的组合，每次使用都得猜哪些属性有值。可辨识联合给每种情况一个标签，让 TypeScript 精确知道当前是哪一种、有哪些属性；配合穷尽检查，新增一种情况时编译器会指出所有需要修改的地方。
 objectives:
   - 用一个共同的字面量属性（标签）组成可辨识联合，用 switch 或 if 按标签收窄
@@ -12,9 +12,6 @@ objectives:
 references:
   - title: Narrowing（Discriminated unions、Exhaustiveness checking）— TypeScript Handbook
     url: https://www.typescriptlang.org/docs/handbook/2/narrowing.html
-    checked: 2026-10-20
-  - title: TypeScript 4.6 Release Notes（Control-Flow Analysis for Destructured Discriminated Unions）
-    url: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-6.html
     checked: 2026-10-20
 ---
 
@@ -43,7 +40,7 @@ function radiusOf(shape: Shape): number {
 
 console.log(area({ kind: 'rect', width: 3, height: 4 }), area({ kind: 'circle', radius: 1 }));
 ```
-- 第 1 行开头的 `|` 只是为了排版整齐，可以省略。
+- 第 2 行开头的 `|`（第一个成员前面的那个）只是为了排版整齐，可以省略。
 - 第 8 行：在 `case 'circle'` 里，`shape` 被收窄成圆形，可以读取 `radius`。
 - 第 15 行：没有检查 `kind`，`shape` 可能是矩形，矩形没有 `radius`，报 TS2339。
 - 两个 `case` 覆盖了所有情况，函数不需要额外的 `return`（b04 的练习见过）。

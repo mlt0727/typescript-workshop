@@ -58,6 +58,6 @@
       correct: true
       explain: TypeScript 只在变量之后不再被赋值时，才在回调中保留收窄。这里报的是一个真实的 bug：运行时确实会抛出 `TypeError`。
     - text: TypeScript 从不在回调中保留收窄
-      explain: TypeScript 5.4 起，参数、`const` 和之后不再赋值的 `let` 在回调中都会保留收窄。
+      explain: "`const` 在箭头函数回调中一直保留收窄；TypeScript 5.4 起，参数和 `let` 只要在创建回调后不再被赋值，也会保留。"
     - text: "`setTimeout` 的回调不能访问外部变量"
       explain: 回调可以访问外部变量（a14 的闭包），问题在于变量的值会变。

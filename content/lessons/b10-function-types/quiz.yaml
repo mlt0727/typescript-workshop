@@ -11,7 +11,7 @@
       explain: 一个参数都不用也可以。
 - id: param-direction
   type: single
-  prompt: "`type Handler = (value: string | number) => void;` 为什么 `const h: Handler = (value: string) => {};` 报错？"
+  prompt: "`type Handler = (value: string | number) => void;` 为什么 `const h: Handler = (text: string) => {};` 报错？"
   options:
     - text: "`Handler` 的调用方可能传入数字，而这个函数只能处理字符串"
       correct: true
@@ -26,10 +26,10 @@
   type: single
   prompt: 写一个接收回调的函数，而且你总是会把下标传给回调。回调类型应该怎么写？
   options:
-    - text: "`(item: T, index: number) => void`"
+    - text: "`(item: string, index: number) => void`"
       correct: true
       explain: 总会传的参数就写成必需参数；不需要下标的回调可以直接少写参数。
-    - text: "`(item: T, index?: number) => void`"
+    - text: "`(item: string, index?: number) => void`"
       explain: 可选参数会迫使每个实现回调的人处理 `undefined`，而实际上你总会传。
     - text: "`(...args: any[]) => void`"
       explain: 这样会失去所有类型检查。
