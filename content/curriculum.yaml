@@ -96,7 +96,7 @@ stages:
       - { id: d05-dom-query, title: DOM 查询、null 检查与元素类型收窄, status: draft, prerequisites: [d01-html-semantics, b07-narrowing] }
       - { id: d06-dom-create-update, title: 创建与更新节点, status: draft, prerequisites: [d05-dom-query] }
       - { id: d07-events, title: 事件监听、target 与 currentTarget, status: published, prerequisites: [d06-dom-create-update, b10-function-types] }
-      - { id: d08-bubbling-delegation, title: 冒泡、委托、preventDefault 与清理监听器, status: planned, prerequisites: [d07-events] }
+      - { id: d08-bubbling-delegation, title: 冒泡、委托、preventDefault 与清理监听器, status: draft, prerequisites: [d07-events] }
       - { id: d09-form-validation, title: 类型安全的表单输入与验证, status: planned, prerequisites: [d08-bubbling-delegation, d02-html-forms] }
       - { id: d10-state-and-render, title: 状态与渲染：从数据到界面, status: planned, prerequisites: [d09-form-validation, b09-discriminated-unions] }
 

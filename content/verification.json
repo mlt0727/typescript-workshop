@@ -4764,6 +4764,113 @@
         }
       ]
     },
+    "d08-bubbling-delegation": {
+      "verifiedAt": "2026-10-20T11:58:41.396Z",
+      "sourceHash": "162bee460a7a2b30",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:phases:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:phases:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:delegation:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:delegation:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:prevent-default:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:prevent-default:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:todo-delegation:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点击“完成”切换 done 和 aria-pressed,点击按钮里的图标同样生效,点击“删除”删除这一项,提交表单：阻止默认行为，添加到末尾并清空输入框,新添加的项也能完成和删除,空白输入不添加；文字原样显示)"
+        },
+        {
+          "target": "exercise:todo-delegation:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-delegation:alt:switch-on-action",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-delegation:wrong:per-button-listeners",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(新添加的项也能完成和删除)"
+        },
+        {
+          "target": "exercise:todo-delegation:wrong:target-without-closest",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点击按钮里的图标同样生效)"
+        },
+        {
+          "target": "exercise:todo-delegation:wrong:no-prevent-default",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(提交表单：阻止默认行为，添加到末尾并清空输入框)"
+        },
+        {
+          "target": "exercise:todo-delegation:wrong:toggle-without-aria",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点击“完成”切换 done 和 aria-pressed)"
+        },
+        {
+          "target": "exercise:delegate-helper:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点击匹配的元素（包括它里面的子元素）时调用 handler,之后动态添加的元素同样生效,返回的函数移除监听器,配合 focusin 委托焦点事件)"
+        },
+        {
+          "target": "exercise:delegate-helper:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:delegate-helper:alt:remove-event-listener",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:delegate-helper:wrong:no-contains-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(匹配的元素在 root 外面或者就是 root 时，不调用 handler)"
+        },
+        {
+          "target": "exercise:delegate-helper:wrong:matches-target-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点击匹配的元素（包括它里面的子元素）时调用 handler)"
+        },
+        {
+          "target": "exercise:delegate-helper:wrong:new-function-on-remove",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(返回的函数移除监听器)"
+        },
+        {
+          "target": "exercise:delegate-helper:wrong:string-event-type",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@delegate.test-d.ts:7 Type 'PointerEvent' does not satisfy the constraint '{ button: \"Expected: number, Actual: never\"; view: \"Expected: ..., Actual: never\" | \"Expected: null, Actual: never\"; type: string; bubbles: boolean; cancelBubble: boolean; cancelable: boolean; ... 57 more ...; initUIEve) rules=ok tests=ok"
+        }
+      ]
+    },
     "e01-event-loop": {
       "verifiedAt": "2026-10-20T11:45:19.956Z",
       "sourceHash": "883cb12fb24c3566",

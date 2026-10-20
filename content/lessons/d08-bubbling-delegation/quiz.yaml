@@ -1,0 +1,47 @@
+- id: bubble-order
+  type: single
+  prompt: "`<div id=\"outer\"><button id=\"btn\">…</button></div>`，两个元素上都用默认方式（不加 capture）监听了 click。点击按钮时，监听器的调用顺序是？"
+  options:
+    - text: 先 `btn`，后 `outer`
+      correct: true
+      explain: 默认的监听器在冒泡阶段调用，事件从目标向外传播。
+    - text: 先 `outer`，后 `btn`
+      explain: "这是捕获阶段的顺序，只有加了 `{ capture: true }` 的监听器才在那时调用。"
+    - text: 只调用 `btn` 的监听器
+      explain: click 事件会冒泡，外层的监听器也会被调用。
+- id: delegation-benefits
+  type: multiple
+  prompt: 在列表上挂一个监听器、用事件委托处理每一项的按钮，有哪些好处？
+  options:
+    - text: 之后动态添加的项不需要再挂监听器
+      correct: true
+      explain: 新元素的事件同样会冒泡到列表上。
+    - text: 删除某一项时不用操心它的监听器
+      correct: true
+      explain: 监听器挂在列表上，与每一项无关。
+    - text: 可以不再检查 event.target
+      explain: 正好相反，委托必须通过 `event.target` 和 `closest` 判断点中的是什么。
+    - text: focus 和 blur 事件也能这样委托
+      explain: 它们不冒泡，委托时要改用 focusin 和 focusout。
+- id: closest-contains
+  type: single
+  prompt: 事件委托中，为什么要在 `closest(…)` 之后再检查 `list.contains(found)`？
+  options:
+    - text: "`closest` 会一直向上找到文档的根，找到的元素可能在列表外面"
+      correct: true
+      explain: 例如选择器恰好也匹配列表的某个祖先，点击列表里不匹配的地方时就会找到那个祖先。
+    - text: "`closest` 可能返回文本节点"
+      explain: "`closest` 只返回元素（或 null）。"
+    - text: 为了让 TypeScript 收窄类型
+      explain: "`contains` 返回布尔值，不会收窄 `found` 的类型；它检查的是位置。"
+- id: stop-propagation
+  type: single
+  prompt: 为什么说 `event.stopPropagation()` 要慎用？
+  options:
+    - text: 外层依赖冒泡的逻辑（事件委托、点击外部关闭菜单、统计代码）会悄悄失效
+      correct: true
+      explain: 通常应该在外层的监听器里判断 event.target，而不是阻止传播。
+    - text: 它会同时阻止浏览器的默认行为
+      explain: 阻止默认行为的是 `preventDefault()`，两者互不影响。
+    - text: 它在 TypeScript 中会报类型错误
+      explain: 它是 Event 上的普通方法，不会报错。
