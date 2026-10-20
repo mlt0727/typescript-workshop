@@ -913,7 +913,7 @@
       ]
     },
     "a09-control-flow": {
-      "verifiedAt": "2026-10-20T09:51:10.912Z",
+      "verifiedAt": "2026-10-20T10:18:36.989Z",
       "sourceHash": "d0adb89f20612ea7",
       "ok": true,
       "checks": [
@@ -1448,8 +1448,8 @@
       ]
     },
     "a14-scope-closures": {
-      "verifiedAt": "2026-10-20T09:51:13.112Z",
-      "sourceHash": "de6ab12b42d4c2df",
+      "verifiedAt": "2026-10-20T10:18:37.494Z",
+      "sourceHash": "2ae5b2e3638a5b49",
       "ok": true,
       "checks": [
         {
@@ -1570,8 +1570,8 @@
       ]
     },
     "a15-this": {
-      "verifiedAt": "2026-10-20T09:51:13.479Z",
-      "sourceHash": "7674ab276dee3e11",
+      "verifiedAt": "2026-10-20T10:18:37.793Z",
+      "sourceHash": "a880078bef84a31e",
       "ok": true,
       "checks": [
         {
@@ -1672,8 +1672,8 @@
       ]
     },
     "a16-array-methods": {
-      "verifiedAt": "2026-10-20T09:53:58.569Z",
-      "sourceHash": "2945560f1efc16ae",
+      "verifiedAt": "2026-10-20T10:18:38.273Z",
+      "sourceHash": "9011a3f39f0b8a88",
       "ok": true,
       "checks": [
         {
@@ -1794,8 +1794,8 @@
       ]
     },
     "a17-sort-and-mutation": {
-      "verifiedAt": "2026-10-20T09:56:14.938Z",
-      "sourceHash": "c601746cd492091c",
+      "verifiedAt": "2026-10-20T10:18:38.709Z",
+      "sourceHash": "e93fd6b7286514ce",
       "ok": true,
       "checks": [
         {
@@ -1906,8 +1906,8 @@
       ]
     },
     "a18-map-set": {
-      "verifiedAt": "2026-10-20T09:58:17.984Z",
-      "sourceHash": "b520e047ffcd3ece",
+      "verifiedAt": "2026-10-20T10:18:39.262Z",
+      "sourceHash": "4394bd40180ec60d",
       "ok": true,
       "checks": [
         {
@@ -2023,8 +2023,8 @@
       ]
     },
     "a19-modules": {
-      "verifiedAt": "2026-10-20T10:01:18.750Z",
-      "sourceHash": "3b6c99ad793f3e1c",
+      "verifiedAt": "2026-10-20T10:18:39.667Z",
+      "sourceHash": "d867938cbbec323c",
       "ok": true,
       "checks": [
         {
@@ -2130,8 +2130,8 @@
       ]
     },
     "a20-errors": {
-      "verifiedAt": "2026-10-20T10:03:51.943Z",
-      "sourceHash": "6a5ca6e512cb269a",
+      "verifiedAt": "2026-10-20T10:18:40.110Z",
+      "sourceHash": "23006d6d51a93994",
       "ok": true,
       "checks": [
         {
@@ -2743,6 +2743,113 @@
           "target": "exercise:parse-range:wrong:strict-overlap",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(overlap › 只有一页重叠)"
+        }
+      ]
+    },
+    "b06-any-unknown-never-void": {
+      "verifiedAt": "2026-10-20T10:17:28.376Z",
+      "sourceHash": "65cfc49d71dc0473",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:any:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:any:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of null (reading 'address')）；输出：[error] Uncaught TypeError: Cannot read properties of null (reading 'address')\n    at main.ts:2:24"
+        },
+        {
+          "target": "playground:unknown:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:unknown:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] HELLO | [log] 3"
+        },
+        {
+          "target": "playground:never:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:never:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 0 4"
+        },
+        {
+          "target": "playground:void:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:void:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 42 [ 1, 2, 3 ] | [log] 完成"
+        },
+        {
+          "target": "exercise:unknown-config:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=fail(any@4) tests=fail(不合法的主题回到 light,不是对象)"
+        },
+        {
+          "target": "exercise:unknown-config:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:unknown-config:alt:record-cast-free",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:unknown-config:wrong:keep-any",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(any@4) tests=ok"
+        },
+        {
+          "target": "exercise:unknown-config:wrong:no-object-check",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18046@theme.ts:5 'config' is of type 'unknown'.) rules=ok tests=fail(不是对象)"
+        },
+        {
+          "target": "exercise:unknown-config:wrong:string-check-only",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@theme.ts:10 Type 'string' is not assignable to type 'Theme'.) rules=ok tests=fail(不合法的主题回到 light)"
+        },
+        {
+          "target": "exercise:assert-never:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2534@units.ts:3 A function returning 'never' cannot have a reachable end point.) rules=ok tests=fail(toMillimeters › 2 m = 2000 mm,toMillimeters › 1.5 km = 1500000 mm,convert › 各种组合,assertNever › 运行时抛出错误并说明是哪个值)"
+        },
+        {
+          "target": "exercise:assert-never:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:assert-never:alt:lookup-table",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:assert-never:wrong:missing-case",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@units.ts:16 Argument of type '\"km\"' is not assignable to parameter of type 'never'.) rules=ok tests=fail(toMillimeters › 1.5 km = 1500000 mm,convert › 各种组合)"
+        },
+        {
+          "target": "exercise:assert-never:wrong:string-param",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2554@units.test-d.ts:4 Expected 1 arguments, but got 0.；TS2578@units.test-d.ts:9 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:assert-never:wrong:wrong-direction",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(convert › 各种组合)"
         }
       ]
     },

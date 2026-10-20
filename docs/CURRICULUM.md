@@ -3,9 +3,9 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 15 / 规划总数 126**（草稿 12，规划中 99）
+**已发布 22 / 规划总数 126**（草稿 6，规划中 98）
 
-## A. 起步与 JavaScript 共同语法（已发布 13 / 20）
+## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
 从第一天写 TypeScript，补齐 JS 特有的语法与运行语义。
 
@@ -19,18 +19,18 @@
 | `a06-operators-equality` 运算符、=== 与类型转换 | ✅ 已发布 | `a05-null-undefined` |
 | `a07-truthy-falsy` truthy 与 falsy | ✅ 已发布 | `a06-operators-equality` |
 | `a08-optional-chaining-nullish` ?.、?? 与 || 的区别 | ✅ 已发布 | `a07-truthy-falsy` |
-| `a09-control-flow` 条件与循环的快速迁移 | ✅ 已发布 | `a07-truthy-falsy` |
+| `a09-control-flow` 条件与循环的快速迁移 | ✅ 已发布 | `a08-optional-chaining-nullish` |
 | `a10-arrays` 数组基础与越界访问 | ✅ 已发布 | `a09-control-flow` |
 | `a11-objects-references` 对象、引用与浅拷贝 | ✅ 已发布 | `a10-arrays` |
 | `a12-destructuring-spread` 解构与展开 | ✅ 已发布 | `a11-objects-references` |
 | `a13-functions` 普通函数、箭头函数与参数 | ✅ 已发布 | `a12-destructuring-spread` |
-| `a14-scope-closures` 作用域与闭包 | 📝 草稿 | `a13-functions` |
-| `a15-this` this 的关键差异 | 📝 草稿 | `a14-scope-closures` |
-| `a16-array-methods` map、filter、reduce、find 的实际用法 | 📝 草稿 | `a13-functions` |
-| `a17-sort-and-mutation` sort 与变异行为的常见误区 | 📝 草稿 | `a16-array-methods` |
-| `a18-map-set` Map 与 Set | 📝 草稿 | `a11-objects-references` |
-| `a19-modules` ESM 导入与导出 | 📝 草稿 | `a13-functions` |
-| `a20-errors` 错误处理：throw、try/catch 与 unknown | 📝 草稿 | `a13-functions` |
+| `a14-scope-closures` 作用域与闭包 | ✅ 已发布 | `a13-functions` |
+| `a15-this` this 的关键差异 | ✅ 已发布 | `a14-scope-closures` |
+| `a16-array-methods` map、filter、reduce、find 的实际用法 | ✅ 已发布 | `a13-functions` |
+| `a17-sort-and-mutation` sort 与变异行为的常见误区 | ✅ 已发布 | `a16-array-methods` |
+| `a18-map-set` Map 与 Set | ✅ 已发布 | `a17-sort-and-mutation` |
+| `a19-modules` ESM 导入与导出 | ✅ 已发布 | `a13-functions` |
+| `a20-errors` 错误处理：throw、try/catch 与 unknown | ✅ 已发布 | `a13-functions` |
 
 ## B. 日常 TypeScript（已发布 0 / 17）
 
@@ -43,7 +43,7 @@
 | `b03-optional-readonly` 可选属性与 readonly | 📝 草稿 | `b02-structural-typing` |
 | `b04-union-literal` 联合类型与字面量类型 | 📝 草稿 | `b03-optional-readonly` |
 | `b05-intersection-tuple` 交叉类型与元组 | 📝 草稿 | `b04-union-literal` |
-| `b06-any-unknown-never-void` any、unknown、never 与 void | ⬜ 规划中 | `b04-union-literal` |
+| `b06-any-unknown-never-void` any、unknown、never 与 void | 📝 草稿 | `b04-union-literal` |
 | `b07-narrowing` 类型收窄 | ⬜ 规划中 | `b06-any-unknown-never-void` |
 | `b08-type-guards` 自定义类型守卫与断言函数 | ⬜ 规划中 | `b07-narrowing` |
 | `b09-discriminated-unions` 可辨识联合与穷尽检查 | ⬜ 规划中 | `b08-type-guards` |

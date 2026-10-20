@@ -2,12 +2,12 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: "[10, 9, 1].sort() 的结果是 [1, 10, 9]，而且 sort 会直接改掉原数组。前一个问题让排序结果出错，后一个问题会悄悄改掉调用方或界面状态里的数据。ES2023 增加了 toSorted 等不修改原数组的版本，TypeScript 的 readonly 数组则能在编译期挡住意外的修改。"
 objectives:
   - 知道 sort 默认按字符串比较，排序数字时一定要写比较函数
   - 写出升序、降序和多个条件的比较函数，用 localeCompare 比较文字
-  - 知道 sort、reverse、splice 会修改原数组并返回它，改用 toSorted、toReversed、toSpliced、with
+  - 知道 sort、reverse 原地修改并返回原数组，splice 原地修改并返回被删除的元素；改用 toSorted、toReversed、toSpliced、with
   - 用 readonly 数组类型防止函数修改传入的数组
 references:
   - title: Array.prototype.sort() — MDN
@@ -53,9 +53,9 @@ console.log(words.sort((a, b) => a.localeCompare(b)));
 
 ## sort 会修改原数组
 
-`sort` **在原数组上**排序，并且返回**同一个数组**。`const sorted = arr.sort(…)` 看起来像得到了一个新数组，其实 `sorted` 和 `arr` 是同一个对象（a11 的引用）。`reverse` 和 a10 的 `splice` 也是这样。
+`sort` **在原数组上**排序，并且返回**同一个数组**。`const sorted = arr.sort(…)` 看起来像得到了一个新数组，其实 `sorted` 和 `arr` 是同一个对象（a11 的引用）。`reverse` 也是这样。a10 的 `splice` 同样会修改原数组，但它返回的是**被删除的元素**。
 
-ES2023 为它们增加了**不修改原数组**的版本：`toSorted`、`toReversed`、`toSpliced`，以及替换单个元素的 `with(下标, 值)`。旧代码里常见的写法是先复制再排序：`[...arr].sort(…)`。
+ES2023 为它们增加了**不修改原数组**的版本：`toSorted`、`toReversed`、`toSpliced`，以及替换单个元素的 `with(下标, 值)`。注意 `toSpliced` 返回的是删除或插入**之后**的新数组：`[1, 2, 3, 4].toSpliced(1, 2)` 得到 `[1, 4]`，而 `splice(1, 2)` 返回的是被删除的 `[2, 3]`。旧代码里常见的写法是先复制再排序：`[...arr].sort(…)`。
 
 :::playground{#mutation}
 ```ts file=main.ts
@@ -98,11 +98,11 @@ const byAgeDescThenName = people.toSorted((a, b) => {
 });
 console.log(byAgeDescThenName.map((p) => p.name));
 
-console.log(['张三', '李四', '王五'].toSorted());
+console.log(['王五', '张三', '李四'].toSorted());
 ```
 - 第 8 行：`[ '李四', '张三', '王五' ]`。张三和王五同岁，保持了原来的顺序（稳定排序）。
 - 第 16 行：先按年龄降序；同岁的张三和王五再按拼音比较，王（wang）排在张（zhang）前面，输出 `[ '王五', '张三', '李四' ]`。
-- 第 18 行：不传比较函数时按编码排序，汉字的编码顺序和拼音无关。
+- 第 18 行：不传比较函数时按编码排序，得到 `[ '张三', '李四', '王五' ]`；按拼音应该是李、王、张。汉字的编码顺序和拼音无关。
 :::
 
 ## 用 readonly 防止修改

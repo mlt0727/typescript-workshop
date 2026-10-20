@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: 上一课的 makeLabeler 返回了一个函数，这个函数在 makeLabeler 执行完很久之后被调用，却仍然能用到 prefix。这种“函数记住了它被创建时周围的变量”的能力叫闭包。事件处理、React 的 Hook、各种回调都依赖它；循环里创建函数时，它也是一类经典 bug 的来源。
 objectives:
   - 理解词法作用域：函数能访问它被定义的位置周围的变量

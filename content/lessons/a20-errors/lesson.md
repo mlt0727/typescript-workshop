@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 程序总会遇到无法继续的情况：配置文件格式错误、参数超出范围、网络断开。JavaScript 用 throw 抛出错误、用 try/catch 处理，写法和 Java 很像，但有三个关键不同：任何值都能被抛出、catch 不能按类型分开写、TypeScript 也不知道一个函数会抛出什么。所以 catch 到的错误类型是 unknown，你必须先检查再使用。
 objectives:
   - 用 throw new Error(...) 抛出错误，用 try/catch/finally 处理
@@ -57,9 +57,9 @@ try {
 
 ## catch 到的是 unknown
 
-JavaScript 允许 `throw` 任何值：字符串、数字、普通对象都可以。所以 `catch (err)` 里的 `err` 可能是任何东西。在严格模式下（`useUnknownInCatchVariables`），TypeScript 把它的类型定为 **`unknown`**：不能直接读取属性，必须先检查。最常用的检查是 `err instanceof Error`。
+JavaScript 允许 `throw` 任何值：字符串、数字、普通对象都可以。所以 `catch (err)` 里的 `err` 可能是任何东西。在 TypeScript 的 `strict` 选项下（它包含 `useUnknownInCatchVariables`），TypeScript 把它的类型定为 **`unknown`**：不能直接读取属性，必须先检查。最常用的检查是 `err instanceof Error`。
 
-也因为如此，JavaScript 不能像 Java 那样写多个 `catch (IOException e)`、`catch (ParseException e)`，只能写一个 `catch`，在里面按需判断。
+另外，JavaScript 既没有 Java 那样的多个 `catch (IOException e)`，也没有 Python 那样的 `except ValueError:`：只能写一个 `catch`，在里面按需判断。
 
 :::playground{#unknown-catch expect="18046@main.ts:4"}
 ```ts file=main.ts

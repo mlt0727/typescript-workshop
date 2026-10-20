@@ -28,22 +28,26 @@ type Entry = { name: string; score: number | null };
 type Summary = { taken: number; average: number | null; best: string | null; failed: string[] };
 
 export function summarize(records: Entry[]): Summary {
-  const taken = records.filter((r) => r.score !== null);
-  const scores = taken.map((r) => r.score ?? 0);
+  const scored: { name: string; score: number }[] = [];
+  for (const { name, score } of records) {
+    if (score !== null) {
+      scored.push({ name: name, score: score });
+    }
+  }
 
-  const total = scores.reduce((sum, s) => sum + s, 0);
-  const average = scores.length === 0 ? null : total / scores.length;
+  const total = scored.reduce((sum, r) => sum + r.score, 0);
+  const average = scored.length === 0 ? null : total / scored.length;
 
-  let best: Entry | undefined = undefined;
-  for (const r of taken) {
-    if (best === undefined || (r.score ?? 0) > (best.score ?? 0)) {
+  let best: { name: string; score: number } | null = null;
+  for (const r of scored) {
+    if (best === null || r.score > best.score) {
       best = r;
     }
   }
 
-  const failed = taken.filter((r) => r.score !== null && r.score < 60).map((r) => r.name);
+  const failed = scored.filter((r) => r.score < 60).map((r) => r.name);
 
-  return { taken: taken.length, average: average, best: best?.name ?? null, failed: failed };
+  return { taken: scored.length, average: average, best: best === null ? null : best.name, failed: failed };
 }
 ```
 :::
@@ -119,19 +123,19 @@ describe('summarize', () => {
 :::
 
 :::hint{level=1}
-先用 `filter` 得到参加考试的记录，后面三项都基于它计算。注意 0 分是有效成绩，判断缺考要用 `=== null`，不要用真假检查。
+先得到参加考试的记录，后面三项都基于它计算。注意 0 分是有效成绩，判断缺考要用 `=== null`，不要用真假检查。
 :::
 
 :::hint{level=2}
-平均分：用 `reduce` 求和（初始值 `0`），人数为 0 时返回 `null`。最高分：遍历时只在“严格大于”当前最高分时才替换，这样并列时保留先出现的。不及格：`filter` 出分数小于 60 的，再 `map` 出名字。在回调里使用 `r.score` 前，TypeScript 仍认为它可能是 `null`，需要再判断一次或用 `?? 0`。
+先用 `for...of` 把 `score !== null` 的记录整理成元素类型为 `{ name: string; score: number }` 的新数组，后面就不用再处理 `null`。平均分：用 `reduce` 求和（初始值 `0`），人数为 0 时返回 `null`。最高分：遍历时只在“严格大于”当前最高分时才替换，这样并列时保留先出现的。不及格：`filter` 出分数小于 60 的，再 `map` 出名字。
 :::
 
 :::explanation
-`records.filter((r) => r.score !== null)` 筛出了参加考试的记录。不过它的元素类型仍是 `{ name: string; score: number | null }`：TypeScript 能收窄 `filter` 后的**元素本身**（例如 `(number | null)[]` 变成 `number[]`），却不会收窄元素的**属性**。所以参考答案在回调里用 `?? 0` 或再检查一次 `!== null`，让类型检查通过。
+参考答案先把参加考试的记录整理成一个新数组 `scored`，它的元素类型是 `{ name: string; score: number }`：在 `if (score !== null)` 的分支里，`score` 已经被收窄成 `number`。之后的平均分、最高分、不及格名单都在这个“已经排除了缺考”的数组上计算，不再需要处理 `null`。
 
-并列时取最先出现的，关键在于比较用 `>` 而不是 `>=`：只有严格更高的分数才替换当前的最佳记录。
+为什么不直接用 `records.filter((r) => r.score !== null)`？TypeScript 能收窄 `filter` 后的**元素本身**（例如 `(number | null)[]` 变成 `number[]`），却不会收窄元素的**属性**：结果的类型仍然是 `{ name: string; score: number | null }[]`。用 `?? 0` 之类的写法绕过去虽然能通过检查，却把“这里不可能是 null”的假设藏进了一个看起来有意义的默认值里——而这道题的要点恰恰是 0 分是有效成绩。
 
-缺考和 0 分要区分开：`score === null` 才是缺考；如果用 `!r.score` 判断，0 分的学生就被当成了缺考。另外，JavaScript 中 `null < 60` 的结果是 `true`（`null` 被转换成 0），TypeScript 会阻止你直接这样比较。
+并列时取最先出现的，关键在于比较用 `>` 而不是 `>=`。缺考和 0 分要区分开：`score === null` 才是缺考；用 `!r.score` 判断，0 分的学生就被当成了缺考。另外，JavaScript 中 `null < 60` 的结果是 `true`（`null` 被转换成 0），TypeScript 会阻止你直接这样比较。
 :::
 
 :::variant{kind=alt name=single-loop}

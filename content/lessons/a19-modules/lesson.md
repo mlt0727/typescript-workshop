@@ -2,8 +2,8 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
-problem: 代码一多就要拆成多个文件。现代 JavaScript 用 ES 模块（ESM）组织代码：每个文件是一个模块，用 export 决定对外公开什么，用 import 使用别的模块。TypeScript 还要求你分清“导入的是值还是类型”，因为类型在编译后会被擦除。
+review: self-reviewed
+problem: 代码一多就要拆成多个文件。现代 JavaScript 用 ES 模块（ESM）组织代码：每个文件是一个模块，用 export 决定对外公开什么，用 import 使用别的模块。开启 verbatimModuleSyntax 时（现代项目推荐），TypeScript 还要求你标明“导入的是值还是类型”，因为类型在编译后会被擦除。
 objectives:
   - 用具名导出和默认导出公开模块内容，用对应的 import 语法导入
   - 理解每个模块有自己的作用域，导入的绑定是只读的
@@ -87,7 +87,7 @@ export function whisper(s: string): string {
 
 ## 导入类型：import type
 
-TypeScript 的类型也可以导出和导入。本平台开启了 `verbatimModuleSyntax`（新项目推荐的设置）：**只用作类型的导入必须写成 `import type`**，或者在名字前加 `type`。原因是编译时 TypeScript 只删除标明了 `type` 的导入，其余导入原样保留；如果一个类型被当作普通导入保留下来，运行时就会去找一个并不存在的值。
+TypeScript 的类型也可以导出和导入。本平台开启了 `verbatimModuleSyntax`（新项目推荐的设置）：**只用作类型的导入必须写成 `import type`**，或者在名字前加 `type`。原因是编译时 TypeScript 只删除标明了 `type` 的导入，其余导入原样保留；如果一个类型被当作普通导入保留下来，运行时就会去找一个并不存在的值。为什么要这样设计？Vite、esbuild 这类工具逐个文件转换代码，看不到其他文件，无法判断一个导入的名字是不是类型，所以要求源码自己标明。（不开启这个选项时，`tsc` 会自动删除只作类型用的导入。）
 
 :::playground{#import-type expect="1484@main.ts:1" run=error}
 ```ts file=main.ts

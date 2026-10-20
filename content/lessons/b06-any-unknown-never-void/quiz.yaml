@@ -1,0 +1,61 @@
+- id: any-vs-unknown
+  type: multiple
+  prompt: "`const a: any = JSON.parse(text);` 和 `const u: unknown = JSON.parse(text);` 之后，下列哪些写法能通过类型检查？"
+  options:
+    - text: "`a.name.toUpperCase()`"
+      correct: true
+      explain: "`any` 关闭了检查，任何操作都能通过——包括运行时会出错的操作。"
+    - text: "`const n: number = a;`"
+      correct: true
+      explain: "`any` 可以赋给任何类型，这正是它危险的地方。"
+    - text: "`u.name`"
+      explain: "`unknown` 必须先收窄才能读取属性（TS18046）。"
+    - text: "`const n: number = u;`"
+      explain: "`unknown` 只能赋给 `unknown` 和 `any`，要先检查是数字。"
+- id: never-function
+  type: single
+  prompt: 下列哪个函数的返回类型应该写成 `never`？
+  options:
+    - text: "`function fail(msg: string) { throw new Error(msg); }`"
+      correct: true
+      explain: 它总是抛出错误，永远不会正常返回。
+    - text: "`function log(msg: string) { console.log(msg); }`"
+      explain: 它会正常返回（只是没有返回值），返回类型是 `void`。
+    - text: "`function maybe(n: number) { if (n < 0) throw new Error('负数'); return n; }`"
+      explain: 它在大多数情况下正常返回数字，返回类型是 `number`。
+- id: exhaustive
+  type: single
+  prompt: |
+    `type Color = 'red' | 'green';`。下面的 `switch` 中，如果给 `Color` 加上 `'blue'`，会发生什么？
+
+    ```ts
+    function hex(c: Color): string {
+      switch (c) {
+        case 'red': return '#f00';
+        case 'green': return '#0f0';
+        default: {
+          const never: never = c;
+          return never;
+        }
+      }
+    }
+    ```
+  options:
+    - text: "TypeScript 在 `const never: never = c;` 这一行报错，提醒 `'blue'` 还没有处理"
+      correct: true
+      explain: 加入 `'blue'` 后，`default` 里的 `c` 类型变成 `'blue'`，不能赋给 `never`。这就是穷尽检查。
+    - text: 没有任何报错，运行时返回 `undefined`
+      explain: 正是 `never` 赋值让 TypeScript 能发现遗漏。
+    - text: TypeScript 在 `type Color` 的声明处报错
+      explain: 联合类型可以随意增加成员，报错出现在没有处理新成员的地方。
+- id: void-callback
+  type: single
+  prompt: "为什么 `const f: () => void = () => 42;` 不报错，而 `function g(): void { return 42; }` 报错？"
+  options:
+    - text: 函数类型里的 `void` 表示“调用方不使用返回值”，所以有返回值的函数也可以赋给它；声明返回 `void` 的函数则不能返回值
+      correct: true
+      explain: 这让 `list.forEach((x) => other.push(x))` 这样的回调可以通过检查。不要使用 `void` 函数的返回值。
+    - text: 箭头函数不检查返回类型
+      explain: 箭头函数同样检查返回类型，区别在于 `void` 出现在函数类型中还是函数声明中。
+    - text: 这是 TypeScript 的 bug
+      explain: 这是有意的设计，Handbook 中有专门说明。

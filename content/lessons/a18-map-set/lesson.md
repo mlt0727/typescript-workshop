@@ -2,8 +2,8 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
-problem: 统计每个单词出现了几次、按城市给用户分组、给一列标签去重——这些任务需要“字典”和“集合”。a11 讲过，普通对象当字典用有不少限制。JavaScript 提供了专门的 Map 和 Set，相当于 Python 的 dict / set、Java 的 HashMap / HashSet，但有几处容易踩的不同。
+review: self-reviewed
+problem: 统计每个单词出现了几次、按城市给用户分组、给一列标签去重——这些任务需要“字典”和“集合”。a11 讲过，普通对象当字典用有不少限制。JavaScript 提供了专门的 Map 和 Set，相当于 Python 的 dict / set、Java 的 LinkedHashMap / LinkedHashSet（保持插入顺序），但有几处容易踩的不同。
 objectives:
   - 用 Map 存取键值对，知道 get 返回 V | undefined，会用 ?? 处理不存在的键
   - 用 Set 去重和判断成员，认识 union、intersection、difference 等集合方法
@@ -78,7 +78,7 @@ console.log(countWords(['to', 'be', 'or', 'not', 'to', 'be']));
 
 `new Set(可迭代对象)` 创建集合，重复的值只保留一个，并保持第一次出现的顺序。`[...new Set(arr)]` 是数组去重的常用写法。
 
-ES2025 为 Set 增加了集合运算方法：`union`（并集）、`intersection`（交集）、`difference`（差集）、`symmetricDifference`、`isSubsetOf` 等，它们都返回新的 Set，不修改原集合。
+ES2025 为 Set 增加了集合运算方法：`union`（并集）、`intersection`（交集）、`difference`（差集）、`symmetricDifference` 返回新的 Set；`isSubsetOf`、`isSupersetOf`、`isDisjointFrom` 返回布尔值。它们都不修改原集合。
 
 :::playground{#set}
 ```ts file=main.ts
@@ -150,7 +150,7 @@ console.log(byCity.get('伦敦')?.map((p) => p.name));
 
 ## 常见错误
 
-- **忘了 `get` 可能返回 `undefined`**：用 `??` 提供默认值，或先 `has` 再处理。
+- **忘了 `get` 可能返回 `undefined`**：用 `??` 提供默认值，或者先 `const v = map.get(k)` 再判断 `v !== undefined`。注意 `has(k)` 为真并不会让 TypeScript 收窄 `get(k)` 的类型。
 - **用新写的对象字面量去 `get`**：对象键按引用比较。
 - **直接 `JSON.stringify(map)`**：得到 `{}`。先用 `Object.fromEntries` 或展开成数组。
 - **用 `map.size()`**：`size` 是属性，不是方法。

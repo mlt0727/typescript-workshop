@@ -15,18 +15,18 @@ stages:
       - { id: a06-operators-equality, title: 运算符、=== 与类型转换, status: published, prerequisites: [a05-null-undefined] }
       - { id: a07-truthy-falsy, title: truthy 与 falsy, status: published, prerequisites: [a06-operators-equality] }
       - { id: a08-optional-chaining-nullish, title: ?.、?? 与 || 的区别, status: published, prerequisites: [a07-truthy-falsy] }
-      - { id: a09-control-flow, title: 条件与循环的快速迁移, status: published, prerequisites: [a07-truthy-falsy] }
+      - { id: a09-control-flow, title: 条件与循环的快速迁移, status: published, prerequisites: [a08-optional-chaining-nullish] }
       - { id: a10-arrays, title: 数组基础与越界访问, status: published, prerequisites: [a09-control-flow] }
       - { id: a11-objects-references, title: 对象、引用与浅拷贝, status: published, prerequisites: [a10-arrays] }
       - { id: a12-destructuring-spread, title: 解构与展开, status: published, prerequisites: [a11-objects-references] }
       - { id: a13-functions, title: 普通函数、箭头函数与参数, status: published, prerequisites: [a12-destructuring-spread] }
-      - { id: a14-scope-closures, title: 作用域与闭包, status: draft, prerequisites: [a13-functions] }
-      - { id: a15-this, title: this 的关键差异, status: draft, prerequisites: [a14-scope-closures] }
-      - { id: a16-array-methods, title: map、filter、reduce、find 的实际用法, status: draft, prerequisites: [a13-functions] }
-      - { id: a17-sort-and-mutation, title: sort 与变异行为的常见误区, status: draft, prerequisites: [a16-array-methods] }
-      - { id: a18-map-set, title: Map 与 Set, status: draft, prerequisites: [a11-objects-references] }
-      - { id: a19-modules, title: ESM 导入与导出, status: draft, prerequisites: [a13-functions] }
-      - { id: a20-errors, title: 错误处理：throw、try/catch 与 unknown, status: draft, prerequisites: [a13-functions] }
+      - { id: a14-scope-closures, title: 作用域与闭包, status: published, prerequisites: [a13-functions] }
+      - { id: a15-this, title: this 的关键差异, status: published, prerequisites: [a14-scope-closures] }
+      - { id: a16-array-methods, title: map、filter、reduce、find 的实际用法, status: published, prerequisites: [a13-functions] }
+      - { id: a17-sort-and-mutation, title: sort 与变异行为的常见误区, status: published, prerequisites: [a16-array-methods] }
+      - { id: a18-map-set, title: Map 与 Set, status: published, prerequisites: [a17-sort-and-mutation] }
+      - { id: a19-modules, title: ESM 导入与导出, status: published, prerequisites: [a13-functions] }
+      - { id: a20-errors, title: 错误处理：throw、try/catch 与 unknown, status: published, prerequisites: [a13-functions] }
 
   - id: B
     title: 日常 TypeScript
@@ -37,7 +37,7 @@ stages:
       - { id: b03-optional-readonly, title: 可选属性与 readonly, status: draft, prerequisites: [b02-structural-typing] }
       - { id: b04-union-literal, title: 联合类型与字面量类型, status: draft, prerequisites: [b03-optional-readonly] }
       - { id: b05-intersection-tuple, title: 交叉类型与元组, status: draft, prerequisites: [b04-union-literal] }
-      - { id: b06-any-unknown-never-void, title: any、unknown、never 与 void, status: planned, prerequisites: [b04-union-literal] }
+      - { id: b06-any-unknown-never-void, title: any、unknown、never 与 void, status: draft, prerequisites: [b04-union-literal] }
       - { id: b07-narrowing, title: 类型收窄, status: planned, prerequisites: [b06-any-unknown-never-void] }
       - { id: b08-type-guards, title: 自定义类型守卫与断言函数, status: planned, prerequisites: [b07-narrowing] }
       - { id: b09-discriminated-unions, title: 可辨识联合与穷尽检查, status: planned, prerequisites: [b08-type-guards] }

@@ -1,6 +1,6 @@
 - id: catch-type
   type: single
-  prompt: 在严格模式下，`catch (err)` 中 `err` 的类型是什么？为什么？
+  prompt: 在 TypeScript 的 `strict` 选项下，`catch (err)` 中 `err` 的类型是什么？为什么？
   options:
     - text: "`unknown`，因为 JavaScript 可以抛出任何值"
       correct: true
@@ -8,7 +8,7 @@
     - text: "`Error`，因为只有 Error 能被抛出"
       explain: "`throw '出错了'` 也是合法的 JavaScript。"
     - text: "`any`，可以直接读取 `message`"
-      explain: 关闭 `useUnknownInCatchVariables` 时是 `any`；严格模式下是 `unknown`。
+      explain: 关闭 `useUnknownInCatchVariables` 时是 `any`；开启 `strict` 时是 `unknown`。
 - id: finally-order
   type: single
   prompt: |

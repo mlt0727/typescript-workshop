@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: 在 Java 里，方法中的 this 永远是当前对象；在 Python 里，self 是显式写出的参数。JavaScript 的 this 不同：普通函数里的 this 由“怎么调用”决定，同一个方法换一种调用方式，this 就可能变成 undefined。箭头函数又完全没有自己的 this。把方法当作回调传出去时，这个差异就会变成运行时错误，而且 TypeScript 往往发现不了。
 objectives:
   - 知道普通函数的 this 由调用方式决定：obj.method() 时 this 是 obj
@@ -28,7 +28,7 @@ references:
 
 对象里可以定义**方法**：`increment() { … }` 是 `increment: function () { … }` 的简写。用 `对象.方法()` 调用时，方法里的 `this` 就是点号前面的那个对象。
 
-关键在于：`this` 是在**调用时**确定的，不是在定义时。把方法取出来单独调用，点号前面没有对象了，`this` 就是 `undefined`（在模块和严格模式下；本平台的代码都是模块）：
+关键在于：`this` 是在**调用时**确定的，不是在定义时。把方法取出来单独调用，点号前面没有对象了，`this` 就是 `undefined`。（这是 JavaScript **严格模式**的规则；模块代码自动启用严格模式，本平台的代码都是模块。注意它和 TypeScript 的 `strict` 编译选项不是一回事。）
 
 :::playground{#method-this run=error}
 ```ts file=main.ts
@@ -52,7 +52,7 @@ console.log(inc());
 
 ## 作为回调传递时丢失 this
 
-把方法直接传给 `forEach`、`map`、`setTimeout` 或事件监听器，和上面的“取出来单独调用”是一回事：调用它的是别的代码，不会以 `对象.方法()` 的形式调用。
+把方法直接传给 `forEach`、`map`、`setTimeout` 或事件监听器时，调用它的是别的代码，不会以 `对象.方法()` 的形式调用，`this` 由那段代码决定：`forEach`、`map` 不传 `thisArg` 时是 `undefined`，`setTimeout` 给的是全局对象，事件监听器给的是触发事件的元素。总之都不再是原来的对象。
 
 修复方法有两种：
 
@@ -81,8 +81,8 @@ messages.forEach(logger.log);
 
 箭头函数不会根据调用方式确定 `this`，它直接使用**定义位置外层的 `this`**（和 a14 的词法作用域一样）。这带来两个结论：
 
-1. **不要用箭头函数写对象的方法**：外层是模块顶层，那里的 `this` 是 `undefined`。
-2. **在方法内部的回调里，用箭头函数**：它使用的正是方法的 `this`。用普通 `function` 写回调，回调会有自己的 `this`，而它在被调用时是 `undefined`。
+1. **不要用箭头函数写对象的方法**：对象字面量的花括号不会形成新的 `this`，箭头函数用的是对象所在位置的 `this`。对象写在模块顶层时，那里的 `this` 是 `undefined`。
+2. **在方法内部的回调里，用箭头函数**：它使用的正是方法的 `this`。用普通 `function` 写回调，回调会有自己的 `this`，由调用回调的代码决定（`map` 中是 `undefined`），不再是方法的 `this`。
 
 :::playground{#arrow-this expect="2532@main.ts:4, 2683@main.ts:13"}
 ```ts file=main.ts

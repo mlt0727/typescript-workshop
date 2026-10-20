@@ -132,7 +132,7 @@ test('不修改传入的数组', () => {
 
 `pages.get(user) ?? new Set<string>()` 处理了第一次遇到某个用户的情况。Set 是对象，`seen.add(page)` 修改的就是 Map 里保存的那一个（a11 的引用），最后的 `pages.set` 只在新建时才是必要的，写上也没有坏处。
 
-交集的结果顺序取决于集合内部的实现细节，规格要求排序，所以最后用 `toSorted` 排一次。
+交集的结果顺序由规范规定，但取决于两个集合哪个更小，不一定是你期望的顺序，所以规格要求最后用 `toSorted` 排一次。
 :::
 
 :::variant{kind=alt name=arrays-and-includes}

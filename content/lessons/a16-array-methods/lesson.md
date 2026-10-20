@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 处理数组时，大多数循环都在做几件固定的事：把每个元素变成另一个值、挑出满足条件的元素、找到第一个符合的元素、把所有元素汇总成一个值。JavaScript 为它们提供了 map、filter、find、reduce 等方法。用对了，代码短而清楚；用错了，会遇到回调参数错位、find 返回 undefined、reduce 在空数组上抛异常这类问题。
 objectives:
   - 用 map 转换、filter 筛选、find/findIndex 查找、some/every 判断，知道它们都不修改原数组
@@ -64,7 +64,7 @@ console.log(texts.map(Number.parseInt));
 console.log(texts.map((s) => Number.parseInt(s, 10)));
 console.log(texts.map(Number));
 ```
-- 第 3 行输出 `[ 1, NaN, NaN ]`：实际调用的是 `parseInt('1', 0)`、`parseInt('2', 1)`、`parseInt('3', 2)`。进制 1 不合法，二进制里也没有 `3`。TypeScript 不会报错，因为多出来的参数类型恰好兼容。
+- 第 3 行输出 `[ 1, NaN, NaN ]`：实际调用的是 `parseInt('1', 0)`、`parseInt('2', 1)`、`parseInt('3', 2)`。进制 `0` 按“未指定”处理（即十进制），所以第一个碰巧正确；进制 1 不合法，二进制里也没有 `3`。TypeScript 不会报错，因为多出来的参数类型恰好兼容。
 - 第 4 行：写一个箭头函数，明确地只传需要的参数。这是最稳妥的习惯。
 - 第 5 行：`Number` 只用第一个参数，所以直接传入没问题——但要确认这一点，不如统一写箭头函数。
 :::
