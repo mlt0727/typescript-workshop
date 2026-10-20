@@ -14,7 +14,7 @@ export function devApiPlugin(): Plugin {
     name: 'tsw-dev-api',
     configureServer(server) {
       const env = loadEnv(server.config.mode, server.config.root, '');
-      const store = new FileStore(path.join(server.config.root, '.data', 'sync.json'));
+      const store = new FileStore(env.TSW_SYNC_FILE || path.join(server.config.root, '.data', 'sync.json'));
       server.middlewares.use(async (req, res, next) => {
         if (!req.url?.startsWith('/api/')) return next();
         try {

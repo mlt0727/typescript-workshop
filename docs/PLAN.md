@@ -12,28 +12,30 @@
 ## M1 最小完整学习闭环（依赖 M0）
 
 平台：
-- [ ] 项目骨架：Vite + React + TS 配置、ESLint、Prettier、Vitest、Playwright
-- [ ] 课程内容管线：`content/` → zod schema 校验 → `src/generated/`（目录 + 每课 JSON 按需加载）
-- [ ] 编译器 Worker：TS 6.0.3 + @typescript/vfs、lib/依赖 `.d.ts` 自托管、诊断、补全、悬停、发射、AST 规则、循环保护转换器
-- [ ] 沙箱运行时：模块链接、ts/dom/react 三种模式、测试框架（describe/test/expect）、模拟 fetch/localStorage、Testing Library
-- [ ] 沙箱宿主：iframe 生命周期、MessageChannel 协议、schema 校验、运行编号、超时、看门狗、停止
-- [ ] 判题：快照哈希、类型诊断、预期诊断、类型测试、行为测试、规则检查、结果汇总与中文诊断解释
-- [ ] 编辑器：CodeMirror 6、多文件标签、诊断/补全/悬停、浅深色
-- [ ] 课页：步骤渲染、Playground、小任务、挑战、提示三级展开、答案、测验、参考资料
-- [ ] 存储：IndexedDB 草稿与进度、内容版本识别（不静默覆盖草稿）、存储失败提示
-- [ ] 进度导出/导入（schema、大小上限、版本检查）
-- [ ] 首页“继续学习/课程路线”、目录搜索、先修提醒、已发布/规划数量
-- [ ] 代表课：纯 TS ×1、DOM ×1、React ×1（标注为代表案例）
-- [ ] 测试：单元测试、e2e（核心验收清单）、课程验证（浏览器内跑全部变体）
+- [x] 项目骨架：Vite + React + TS 配置、ESLint、Prettier、Vitest、Playwright
+- [x] 课程内容管线：`content/` → zod schema 校验 → `src/generated/`（目录 + 每课 JSON 按需加载）
+- [x] 编译器 Worker：TS 6.0.3、lib/依赖 `.d.ts` 自托管、诊断、补全、悬停、转译、AST 规则、循环保护转换器
+- [x] 沙箱运行时：模块链接、ts/dom/react 三种模式、测试框架、模拟 fetch/localStorage、Testing Library
+- [x] 沙箱宿主：iframe 生命周期、MessageChannel 协议、schema 校验、运行编号、超时、看门狗、停止
+- [x] 判题：快照哈希、类型诊断、预期诊断、类型测试、行为测试、规则检查、中文诊断解释
+- [x] 编辑器：CodeMirror 6、多文件标签、诊断/补全/悬停、浅深色
+- [x] 课页：步骤渲染、示例、小任务、挑战、提示三级展开、答案、测验、参考资料
+- [x] 存储：IndexedDB 草稿与进度、内容版本识别（不静默覆盖草稿）、存储失败提示
+- [x] 进度导出/导入（schema、大小上限、版本检查）
+- [x] 首页“继续学习/课程路线”、目录搜索、先修提醒、已发布/规划数量
+- [x] 代表课：纯 TS（a08）、DOM（d07）、React（g03）——已发布，标注为代表案例
+- [x] 测试：单元测试、e2e（核心验收清单）、课程验证（浏览器内跑全部变体）
+- [ ] “课程更新后草稿处理”的专门 e2e
 
 ## M2 同步、AI、部署（依赖 M1；学习者追加要求）
 
-- [ ] `server/`：同步处理器（密码哈希校验、CAS、大小上限）、存储接口（Neon / 内存 / 文件）
-- [ ] `/api/sync`、`/api/ai`、`/api/health` Vercel Functions + 单元测试
-- [ ] 客户端同步：拉取、合并、推送、冲突重试、离线、状态显示
-- [ ] “问 AI”面板（未配置时降级）
-- [ ] 生成同步密码，Neon 数据库，Vercel 项目与环境变量
-- [ ] 推送 GitHub、部署 Vercel、线上验证（深层路由、Worker、类型库、沙箱、同步）
+- [x] `server/`：同步处理器（密码哈希校验、CAS、大小上限）、存储接口（Neon / 文件 / 内存）
+- [x] `/api/sync`、`/api/ai`、`/api/health` + 单元测试
+- [x] 客户端同步：拉取、合并、推送、冲突重试、离线、状态显示（本地 e2e 验证）
+- [~] “问 AI”面板（已实现；等待学习者提供 API 密钥后做真实调用验证）
+- [x] 生成同步密码，Neon 数据库，Vercel 项目与环境变量
+- [x] 推送 GitHub、部署 Vercel、线上验证（深层路由、Worker、类型库、沙箱、同步接口）
+- [ ] Vercel 项目与 GitHub 的自动部署关联（需要学习者在控制台操作，见 STATUS）
 
 ## M3 TypeScript 主线（依赖 M1）
 
@@ -62,4 +64,4 @@
 
 ## 每阶段固定检查
 
-`npm run typecheck` · `npm run lint` · `npm test` · `npm run content:check` · `npm run content:verify` · `npm run test:e2e` · `npm run build` · 浏览器人工检查（桌面 + 窄屏）
+`npm run typecheck` · `npm run lint` · `npm test` · `npm run content:check` · `npm run build` · `npm run content:verify` · `npm run test:e2e` · 浏览器人工检查（桌面 + 窄屏）
