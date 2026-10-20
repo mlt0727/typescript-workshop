@@ -370,7 +370,14 @@ function buildAssertion(actual: unknown, negate: boolean, asyncMode: AsyncMode, 
           if (asyncMode === 'resolves') {
             throw new AssertionError(`expect(…).resolves：期望 Promise 成功，但它被拒绝了：${show(err)}`);
           }
-          evaluate(err);
+          // 与 Vitest 一致：rejects.toThrow(…) 检查的是拒绝原因本身
+          if (name === 'toThrow' || name === 'toThrowError') {
+            evaluate(() => {
+              throw err;
+            });
+          } else {
+            evaluate(err);
+          }
           return;
         }
         if (asyncMode === 'rejects') {

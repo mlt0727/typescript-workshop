@@ -1,0 +1,60 @@
+- id: then-order
+  type: single
+  prompt: |
+    下面的代码按什么顺序输出？
+
+    ```ts
+    const p = Promise.resolve('A');
+    p.then((v) => console.log(v));
+    console.log('B');
+    ```
+  options:
+    - text: "`B`、`A`"
+      correct: true
+      explain: 即使 Promise 已经兑现，`then` 的回调也作为微任务，在当前同步代码结束后执行。
+    - text: "`A`、`B`"
+      explain: "`then` 不会立刻调用回调，它只是登记回调。"
+    - text: 只输出 `B`
+      explain: 回调会执行，只是晚一点。
+- id: chain-type
+  type: single
+  prompt: "`Promise.resolve(2).then((n) => String(n)).then((s) => s.length)` 的类型是什么？"
+  options:
+    - text: "`Promise<number>`"
+      correct: true
+      explain: 每个 `then` 返回新的 Promise，类型是回调的返回值类型：`number` → `string` → `number`。
+    - text: "`Promise<string>`"
+      explain: 最后一个 `then` 返回 `s.length`，是数字。
+    - text: "`Promise<Promise<number>>`"
+      explain: "`then` 返回的 Promise 不会嵌套。"
+- id: error-skip
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    Promise.resolve(1)
+      .then(() => { throw new Error('坏了'); })
+      .then(() => console.log('第二步'))
+      .catch(() => console.log('捕获'))
+      .then(() => console.log('最后'));
+    ```
+  options:
+    - text: "`捕获`、`最后`"
+      correct: true
+      explain: 抛出的错误让链进入拒绝状态，跳过“第二步”，被 `catch` 处理；`catch` 返回的 Promise 兑现，链继续执行“最后”。
+    - text: "`第二步`、`捕获`、`最后`"
+      explain: 拒绝会跳过中间的 `then` 回调。
+    - text: 只输出 `捕获`
+      explain: "`catch` 处理完错误后，后面的 `then` 会继续执行。"
+- id: forgot-return
+  type: single
+  prompt: "`fetchUser().then((user) => { saveUser(user); }).then((result) => …)` 中，如果 `saveUser` 返回 `Promise<boolean>`，`result` 是什么？"
+  options:
+    - text: "`undefined`：第一个回调用了花括号却没有 `return`"
+      correct: true
+      explain: 回调没有返回值，下一步拿到的是 `undefined`，而且 `saveUser` 的失败也不会沿链传递。写成 `return saveUser(user)`。
+    - text: "`saveUser` 兑现的布尔值"
+      explain: 只有把那个 Promise 返回出来，链才会等待并采用它的结果。
+    - text: 一个 `Promise<boolean>`
+      explain: 即使返回了 Promise，下一步拿到的也是兑现后的值；这里根本没有返回。

@@ -4184,6 +4184,118 @@
         }
       ]
     },
+    "e02-promises": {
+      "verifiedAt": "2026-10-20T10:56:43.252Z",
+      "sourceHash": "dc15916fa9136083",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 开始 | [log] 同步代码结束 | [log] 等了 50 毫秒 | [log] 掷出 4 | [log] 掷骰子结束"
+        },
+        {
+          "target": "playground:chaining:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:chaining:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 得分：30"
+        },
+        {
+          "target": "playground:always-async:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:always-async:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 1 同步代码 | [log] 2 已经有结果了"
+        },
+        {
+          "target": "playground:errors:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:errors:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（Error: 不是价格：oops）；输出：[log] 出错了： 不是价格：abc | [log] 继续执行，值是 0 | [error] 未处理的 Promise 拒绝（Unhandled promise rejection）：Error: 不是价格：oops\n    at main.ts:5:13"
+        },
+        {
+          "target": "exercise:delay-helpers:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2339@delay.test.ts:14 Property 'then' does not exist on type 'void'.；TS7006@delay.test.ts:14 Parameter 'value' implicitly has an 'any' type.；TS2339@delay.test.ts:25 Property 'catch' does not exist on type 'void'.；TS2339@delay.test.ts:33 Property 'catch' does not exist on type 'void'.；TS2344@delay.) rules=ok tests=fail(delay 在指定时间后兑现,failAfter 在指定时间后拒绝,调用时不会立即抛出)"
+        },
+        {
+          "target": "exercise:delay-helpers:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:delay-helpers:alt:named-executor",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:delay-helpers:wrong:sync-throw",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(failAfter 在指定时间后拒绝,调用时不会立即抛出)"
+        },
+        {
+          "target": "exercise:delay-helpers:wrong:unknown-value",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@delay.test.ts:15 Type 'unknown' is not assignable to type 'string | undefined'.；TS2344@delay.test-d.ts:4 Type 'Promise<string>' does not satisfy the constraint '{ [toStringTag]: string; then: \"Expected: function, Actual: function\"; catch: <TResult = never>(onrejected?: ((reason: any) => TResu) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:delay-helpers:wrong:resolve-immediately",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(delay 在指定时间后兑现)"
+        },
+        {
+          "target": "exercise:retry:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(retry › 失败两次后成功,retry › 全部失败时以最后一次的错误拒绝,retry › 次数无效时返回被拒绝的 Promise，不调用 task)"
+        },
+        {
+          "target": "exercise:retry:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:retry:alt:loop-with-then",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:retry:wrong:first-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(retry › 全部失败时以最后一次的错误拒绝)"
+        },
+        {
+          "target": "exercise:retry:wrong:off-by-one",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(retry › 全部失败时以最后一次的错误拒绝,retry › 只尝试一次)"
+        },
+        {
+          "target": "exercise:retry:wrong:sync-throw",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(retry › 次数无效时返回被拒绝的 Promise，不调用 task,retry › 参数无效时不会同步抛出)"
+        },
+        {
+          "target": "exercise:retry:wrong:swallow-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=fail(TS2344@retry.test-d.ts:5 Type 'Promise<number[]>' does not satisfy the constraint '{ [toStringTag]: string; then: \"Expected: function, Actual: function\"; catch: <TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null | undefined) => Promise<...>; finally: \"Expected: f) rules=ok tests=fail(retry › 全部失败时以最后一次的错误拒绝,retry › 只尝试一次)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T08:56:49.878Z",
       "sourceHash": "0a98baee8e519cd3",

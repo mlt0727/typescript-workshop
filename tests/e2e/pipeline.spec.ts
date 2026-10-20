@@ -116,6 +116,29 @@ test.describe('纯 TS 模式', () => {
     expect(out).toEqual({ correct: true, reduce: true, wrongBehavior: false, typeError: false, usesAny: false, tsIgnore: false });
   });
 
+  test('异步断言：resolves / rejects，以及 rejects.toThrow 检查拒绝原因', async ({ page }) => {
+    await open(page);
+    const tests = {
+      'p.test.ts': [
+        'import { test, expect } from "vitest";',
+        'import { ok, fail } from "./p";',
+        'test("resolves", async () => { await expect(ok()).resolves.toBe(1); });',
+        'test("rejects 消息", async () => { await expect(fail()).rejects.toThrow("坏了"); });',
+        'test("rejects 类型", async () => { await expect(fail()).rejects.toThrow(RangeError); });',
+        'test("rejects 原因对象", async () => { await expect(fail()).rejects.toBeInstanceOf(RangeError); });',
+      ].join('\n'),
+    };
+    const good = 'export const ok = () => Promise.resolve(1);\nexport const fail = () => Promise.reject(new RangeError("坏了"));';
+    const wrongType = 'export const ok = () => Promise.resolve(1);\nexport const fail = () => Promise.reject(new TypeError("坏了"));';
+    const resolvesInstead = 'export const ok = () => Promise.resolve(1);\nexport const fail = () => Promise.resolve(new RangeError("坏了"));';
+    const r1 = await judge(page, baseSpec('ts', 'p.ts'), { student: { 'p.ts': good }, support: {}, tests });
+    expect(r1.tests.results.map((t) => t.status)).toEqual(['pass', 'pass', 'pass', 'pass']);
+    const r2 = await judge(page, baseSpec('ts', 'p.ts'), { student: { 'p.ts': wrongType }, support: {}, tests });
+    expect(r2.tests.results.map((t) => t.status)).toEqual(['pass', 'pass', 'fail', 'fail']);
+    const r3 = await judge(page, baseSpec('ts', 'p.ts'), { student: { 'p.ts': resolvesInstead }, support: {}, tests });
+    expect(r3.tests.results.map((t) => t.status)).toEqual(['pass', 'fail', 'fail', 'fail']);
+  });
+
   test('测试中的死循环在超时后被终止并报告', async ({ page }) => {
     await open(page);
     const r = await judge(page, { ...baseSpec('ts', 'f.ts'), timeoutMs: 1500 }, {
