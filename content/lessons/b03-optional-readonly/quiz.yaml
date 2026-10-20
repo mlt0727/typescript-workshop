@@ -1,0 +1,45 @@
+- id: optional-type
+  type: single
+  prompt: "`interface User { name: string; phone?: string }` 中，`user.phone` 的类型是什么？"
+  options:
+    - text: "`string | undefined`"
+      correct: true
+      explain: 可选属性可能没有提供，读取结果包含 `undefined`，使用前要检查。
+    - text: "`string`"
+      explain: "`?` 表示这个属性可以没有，所以类型包含 `undefined`。"
+    - text: "`string | null`"
+      explain: 缺失的属性读出来是 `undefined`，不是 `null`。
+- id: shallow-readonly
+  type: multiple
+  prompt: |
+    `const box: { readonly tags: string[] } = { tags: [] };` 之后，下列哪些语句会被 TypeScript 拒绝？
+  options:
+    - text: "`box.tags = ['a'];`"
+      correct: true
+      explain: "`tags` 是只读属性，不能重新赋值（TS2540）。"
+    - text: "`box.tags.push('a');`"
+      explain: "`readonly` 是浅的，只保护属性本身，不保护数组内容。要禁止 `push`，类型要写成 `readonly string[]`。"
+    - text: "`box.tags.length = 0;`"
+      explain: 普通数组的 `length` 可以修改（这会清空数组），只有 `readonly string[]` 的 `length` 是只读的。
+- id: freeze-runtime
+  type: single
+  prompt: 关于 `readonly` 和 `Object.freeze`，哪个说法正确？
+  options:
+    - text: "`readonly` 只在编译期检查；`Object.freeze` 会在运行时阻止修改，但两者都只作用于一层"
+      correct: true
+      explain: 类型在编译后被擦除；`Object.freeze` 冻结的是对象本身，嵌套的对象和数组不受影响。
+    - text: "`readonly` 会在运行时冻结对象"
+      explain: "`readonly` 编译后完全消失，运行时什么也不做。"
+    - text: "`Object.freeze` 会冻结嵌套的所有对象"
+      explain: "`Object.freeze` 是浅的，嵌套对象需要分别冻结。"
+- id: partial
+  type: single
+  prompt: "`interface Settings { theme: string; size: number }`。下列哪个值可以赋给 `Partial<Settings>`？"
+  options:
+    - text: "`{}`、`{ size: 12 }`、`{ theme: 'dark', size: 12 }` 都可以"
+      correct: true
+      explain: "`Partial<T>` 把所有属性变成可选，提供其中任意几个（包括一个都不提供）都可以。"
+    - text: "只有 `{ theme: 'dark', size: 12 }`"
+      explain: 那是 `Settings` 本身的要求。`Partial` 让每个属性都变成可选。
+    - text: "`{ color: 'red' }` 也可以"
+      explain: "`color` 不是 `Settings` 的属性，直接写对象字面量会触发多余属性检查（b02）。"

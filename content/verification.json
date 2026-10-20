@@ -2430,6 +2430,113 @@
         }
       ]
     },
+    "b03-optional-readonly": {
+      "verifiedAt": "2026-10-20T10:10:45.746Z",
+      "sourceHash": "2753dcb82d0f3e1e",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:optional:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:optional:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Ada（36 岁） C（0 岁） | [log] false true"
+        },
+        {
+          "target": "playground:readonly:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:readonly:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { id: 'B1', items: [ '钢笔', '笔记本' ], status: '已付款' } { id: 'A2', items: [ '墨水', '笔记本' ] }"
+        },
+        {
+          "target": "playground:freeze:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:freeze:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot assign to read only property 'theme' of object '#<Object>'）；输出：[error] Uncaught TypeError: Cannot assign to read only property 'theme' of object '#<Object>'\n    at main.ts:3:15"
+        },
+        {
+          "target": "playground:utility-types:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:utility-types:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { theme: 'light', fontSize: 18 } | [log] { theme: 'dark', fontSize: 16, language: 'zh-CN' } { theme: 'light', fontSize: 14 }"
+        },
+        {
+          "target": "exercise:profile-label:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(0 岁也显示,空昵称也是用户设置的昵称)"
+        },
+        {
+          "target": "exercise:profile-label:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:profile-label:alt:destructure-defaults",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:profile-label:wrong:truthy-age",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(0 岁也显示)"
+        },
+        {
+          "target": "exercise:profile-label:wrong:or-nickname",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(空昵称也是用户设置的昵称)"
+        },
+        {
+          "target": "exercise:profile-label:wrong:unchecked-nickname",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18048@profile.ts:9 'profile.nickname' is possibly 'undefined'.) rules=ok tests=fail(只有名字,0 岁也显示,vip 为 false 时不加星号,空昵称也是用户设置的昵称)"
+        },
+        {
+          "target": "exercise:immutable-order:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2554@order.test-d.ts:4 Expected 1 arguments, but got 0.；TS2344@order.test-d.ts:5 Type 'readonly OrderItem[]' does not satisfy the constraint '{ sku?: \"Expected: never, Actual: string\" | undefined; quantity?: \"Expected: never, Actual: number\" | undefined; }[]'.；TS2344@order.test-d.ts:6 Type '{ read) rules=ok tests=fail(addItem › 不修改原订单和原来的商品项,addItem › 数量必须是正整数,addItem › 已取消的订单不能添加,removeItem › 不存在时返回内容相同的新订单,removeItem › 不修改原订单,cancelOrder › 返回已取消的新订单)"
+        },
+        {
+          "target": "exercise:immutable-order:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:immutable-order:alt:findIndex-with",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:immutable-order:wrong:mutable-types",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2554@order.test-d.ts:4 Expected 1 arguments, but got 0.；TS2344@order.test-d.ts:5 Type 'readonly OrderItem[]' does not satisfy the constraint '{ sku?: \"Expected: never, Actual: string\" | undefined; quantity?: \"Expected: never, Actual: number\" | undefined; }[]'.；TS2344@order.test-d.ts:6 Type '{ read) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:immutable-order:wrong:shallow-item-mutation",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2540@order.ts:17 Cannot assign to 'quantity' because it is a read-only property.) rules=ok tests=fail(addItem › 不修改原订单和原来的商品项)"
+        },
+        {
+          "target": "exercise:immutable-order:wrong:no-cancel-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addItem › 已取消的订单不能添加)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",
