@@ -1,0 +1,44 @@
+- id: side-effect-import
+  type: single
+  prompt: 开启了 verbatimModuleSyntax。`plugins.ts` 在被加载时注册插件，`app.ts` 只用到它导出的类型 `PluginName`。下面哪种写法能保证 `plugins.ts` 被加载执行？
+  options:
+    - text: "`import { type PluginName } from './plugins';`"
+      correct: true
+      explain: 输出中留下 import {} from './plugins'，模块仍然会被加载。更清楚的写法是另加一行 import './plugins'。
+    - text: "`import type { PluginName } from './plugins';`"
+      explain: import type 整行都会被去掉，plugins.ts 不会被加载，注册也就不会发生。
+    - text: 两种写法都会加载 plugins.ts
+      explain: 两者的输出不同：import type 什么都不留下，import { type … } 留下一个空的导入。
+- id: nodenext-extension
+  type: single
+  prompt: 项目的 moduleResolution 是 nodenext，用 tsc 编译后由 Node.js 运行，没有开启 allowImportingTsExtensions。`main.ts` 要导入同一文件夹中的 `util.ts`，应该怎样写？
+  options:
+    - text: "`import { add } from './util.js';`"
+      correct: true
+      explain: tsc 不改写导入路径，编译后 Node.js 找的是 util.js；检查时 TypeScript 把 .js 对应回 util.ts。
+    - text: "`import { add } from './util';`"
+      explain: TS2835。Node.js 的 ES 模块不会补扩展名，TypeScript 按这个规则检查。
+    - text: "`import { add } from './util.ts';`"
+      explain: TS5097，需要 allowImportingTsExtensions（只能和 noEmit 一起用）；而且编译后的代码会去找 util.ts，而 tsc 输出的是 util.js。
+- id: lib-option
+  type: single
+  prompt: tsconfig 中 lib 是 ["ES2023", "DOM"]，代码中用了 ES2024 的 `Promise.withResolvers`。下面哪个说法正确？
+  options:
+    - text: 报 TS2550；把 lib 改成 ES2024 后类型错误消失，但运行时有没有这个方法仍然取决于浏览器
+      correct: true
+      explain: lib 只决定 TypeScript 认识哪些内置 API 的类型，不会补上运行时缺少的功能。
+    - text: TypeScript 会自动为旧浏览器补上这个方法
+      explain: TypeScript 不提供 polyfill，Vite 默认也不提供。
+    - text: 没有错误，lib 只影响输出的语法
+      explain: 输出的语法由 target（或 Vite 的 build.target）决定；lib 影响的是类型检查。
+- id: types-default
+  type: single
+  prompt: TypeScript 6.0 的项目装了 `@types/node`，tsconfig 中没有写 types 选项。浏览器代码中写 `process.env.API_URL` 会怎样？
+  options:
+    - text: 报错：找不到 process
+      correct: true
+      explain: 6.0 起 types 默认是 []，node_modules/@types 中的包不再自动包含。浏览器中本来就没有 process，这个错误是有益的。
+    - text: 能通过检查，因为装了 @types/node
+      explain: 这是 6.0 以前的行为（默认自动包含所有 @types 包）。
+    - text: 能通过检查，运行时 Vite 会提供 process
+      explain: Vite 不在浏览器中提供 process；前端读取配置用 import.meta.env（e13）。

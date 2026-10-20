@@ -7508,6 +7508,389 @@
         }
       ]
     },
+    "f02-vite-project": {
+      "verifiedAt": "2026-10-20T22:30:54.369Z",
+      "sourceHash": "f8dbf1c28428363c",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:base-url:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:base-url:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] /       //icons.svg /icons.svg | [log] /repo/  /repo//icons.svg /repo/icons.svg | [log] /repo   /repo/icons.svg /repo/icons.svg | [log] ./      .//icons.svg ./icons.svg"
+        },
+        {
+          "target": "exercise:public-url:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(publicUrl › 根路径 ⟶ expect(…).toBe('/icons.svg#github-icon'),publicUrl › 子路径：有没有结尾的斜杠都一样 ⟶ expect(…).toBe('/repo/icons.svg'),publicUrl › 相对的 base ⟶ expect(…).toBe('./favicon.svg'),publicUrl › 完整网址的 base ⟶ expect(…).toBe('https://cdn.example.com/app/img/a.png?v=2'),publicUrl › path 为空时返回 base 本身 ⟶ expect(…).toBe('/repo/'),publicUrl › 已经是完整地址的 path 原样返回 ⟶ https://example.com/logo.png)"
+        },
+        {
+          "target": "exercise:public-url:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:public-url:alt:strip-slashes",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:public-url:wrong:concat",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(publicUrl › 根路径 ⟶ expect(…).toBe('/icons.svg#github-icon'),publicUrl › 子路径：有没有结尾的斜杠都一样 ⟶ expect(…).toBe('/repo/icons.svg'),publicUrl › 相对的 base ⟶ expect(…).toBe('./favicon.svg'),publicUrl › 完整网址的 base ⟶ expect(…).toBe('https://cdn.example.com/app/img/a.png?v=2'),publicUrl › path 为空时返回 base 本身 ⟶ expect(…).toBe('/repo/'))"
+        },
+        {
+          "target": "exercise:public-url:wrong:prefix-absolute-urls",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(publicUrl › 已经是完整地址的 path 原样返回 ⟶ https://example.com/logo.png)"
+        },
+        {
+          "target": "exercise:public-url:wrong:any-colon",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(publicUrl › 只是看起来像协议的路径不算完整地址 ⟶ expect(…).toBe('/repo/docs/a:b.txt'))"
+        },
+        {
+          "target": "exercise:public-url:wrong:empty-base-root",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(publicUrl › 相对的 base ⟶ expect(…).toBe('./favicon.svg'),publicUrl › path 为空时返回 base 本身 ⟶ expect(…).toBe('./'))"
+        },
+        {
+          "target": "exercise:serve-static:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(找文件 › 存在的文件直接返回 ⟶ expect(…).toEqual({,找文件 › 以 / 结尾时找 index.html ⟶ expect(…).toEqual({ status: 200, file: '/index.html', cacheControl: 'no-cache' }),找文件 › 去掉查询和片段 ⟶ expect(…).toEqual({ status: 200, file: '/index.html', cacheControl: 'no-cache' }),找文件 › 前端路由的地址返回 /index.html ⟶ expect(…).toEqual({ status: 200, file: '/index.html', cacheControl: 'no-cache' }),找文件 › 解码；解码失败或者有 .. 时是 404 ⟶ expect(…).toMatchObject({ status: 200, file: '/中文 说明.txt' }),缓存头 › 带哈希的资源可以长期缓存 ⟶ /assets/index-BN902Ne_.js,缓存头 › 没有哈希的、不在 /assets/ 中的文件只缓存一小时 ⟶ expect(…).toMatchObject({ cacheControl: 'public, max-age=3600' }))"
+        },
+        {
+          "target": "exercise:serve-static:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:serve-static:alt:url-parts",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:serve-static:wrong:fallback-everything",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(找文件 › 找不到的资源是 404，不是 index.html ⟶ expect(…).toEqual({ status: 404 }))"
+        },
+        {
+          "target": "exercise:serve-static:wrong:no-route-fallback",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(找文件 › 前端路由的地址返回 /index.html ⟶ expect(…).toEqual({ status: 200, file: '/index.html', cacheControl: 'no-cache' }))"
+        },
+        {
+          "target": "exercise:serve-static:wrong:hash-anywhere",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(缓存头 › 没有哈希的、不在 /assets/ 中的文件只缓存一小时 ⟶ expect(…).toMatchObject({ cacheControl: 'public, max-age=3600' }))"
+        },
+        {
+          "target": "exercise:serve-static:wrong:check-before-decode",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(找文件 › 解码；解码失败或者有 .. 时是 404 ⟶ expect(…).toEqual({ status: 404 }))"
+        },
+        {
+          "target": "exercise:serve-static:wrong:immutable-html",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(找文件 › 存在的文件直接返回 ⟶ expect(…).toEqual({ status: 200, file: '/docs/guide.html', cacheControl: 'no-cache' }),找文件 › 以 / 结尾时找 index.html ⟶ expect(…).toEqual({ status: 200, file: '/index.html', cacheControl: 'no-cache' }),找文件 › 去掉查询和片段 ⟶ expect(…).toEqual({ status: 200, file: '/index.html', cacheControl: 'no-cache' }),找文件 › 前端路由的地址返回 /index.html ⟶ expect(…).toEqual({ status: 200, file: '/index.html', cacheControl: 'no-cache' }),缓存头 › 没有哈希的、不在 /assets/ 中的文件只缓存一小时 ⟶ expect(…).toMatchObject({ cacheControl: 'public, max-age=3600' }))"
+        }
+      ]
+    },
+    "f03-tsconfig": {
+      "verifiedAt": "2026-10-20T22:22:27.302Z",
+      "sourceHash": "42eb754e80fa7c1c",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:import-type:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:import-type:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（SyntaxError: The requested module './types.ts' does not provide an export named 'User'）；输出：[error] Uncaught SyntaxError: The requested module './types.ts' does not provide an export named 'User'"
+        },
+        {
+          "target": "exercise:fix-imports:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS1484@app.ts:1 'Formatter' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.；TS1484@app.ts:2 'PluginName' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.) rules=ok tests=fail(SyntaxError: The requested module './registry.ts' does not provide an export named 'Formatter')"
+        },
+        {
+          "target": "exercise:fix-imports:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-imports:alt:explicit-side-effect",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-imports:wrong:import-type-plugins",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(依次应用格式化函数 ⟶ Error: 没有注册格式化函数：trim)"
+        },
+        {
+          "target": "exercise:fix-imports:wrong:import-type-value",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS1361@app.ts:6 'format' cannot be used as a value because it was imported using 'import type'.) rules=ok tests=fail(依次应用格式化函数 ⟶ ReferenceError: format is not defined)"
+        },
+        {
+          "target": "exercise:fix-imports:wrong:drop-the-type",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@app.test-d.ts:6 Type 'readonly PluginName[]' does not satisfy the constraint 'never[]'.；TS2578@app.test-d.ts:8 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:resolve-import:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(两种模式相同的部分 › 写出 .js / .jsx 时对应到 .ts / .tsx ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),两种模式相同的部分 › . 和 .. 按文件夹移动 ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),两种模式相同的部分 › 写出 .ts / .tsx：找到了文件，但没有开启 allowTsExtensions 时是 5097 ⟶ expect(…).toEqual({ ok: false, code: 5097 }),bundler：可以省略扩展名，可以导入文件夹 › 省略扩展名 ⟶ expect(…).toEqual({ ok: true, file: 'src/view.tsx' }),bundler：可以省略扩展名，可以导入文件夹 › 导入文件夹 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib/index.ts' }),bundler：可以省略扩展名，可以导入文件夹 › 同名的文件优先于文件夹 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib/index.ts' }),nodenext：必须写出扩展名 › 省略扩展名：能猜到时是 2835 加上建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './util.js' }),nodenext：必须写出扩展名 › 猜不到（文件夹、不存在的文件）时是 2834 ⟶ ./lib,nodenext：必须写出扩展名 › 同名的文件存在时给出建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './lib.js' }))"
+        },
+        {
+          "target": "exercise:resolve-import:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:resolve-import:alt:candidates-or-error",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:resolve-import:wrong:ignore-mode",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(nodenext：必须写出扩展名 › 省略扩展名：能猜到时是 2835 加上建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './util.js' }),nodenext：必须写出扩展名 › 猜不到（文件夹、不存在的文件）时是 2834 ⟶ ./lib,nodenext：必须写出扩展名 › 同名的文件存在时给出建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './lib.js' }))"
+        },
+        {
+          "target": "exercise:resolve-import:wrong:js-taken-literally",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(两种模式相同的部分 › 写出 .js / .jsx 时对应到 .ts / .tsx ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),两种模式相同的部分 › . 和 .. 按文件夹移动 ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),nodenext：必须写出扩展名 › 同名的文件存在时给出建议 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib.ts' }))"
+        },
+        {
+          "target": "exercise:resolve-import:wrong:index-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(bundler：可以省略扩展名，可以导入文件夹 › 同名的文件优先于文件夹 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib.ts' }))"
+        },
+        {
+          "target": "exercise:resolve-import:wrong:ts-extension-always-allowed",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(两种模式相同的部分 › 写出 .ts / .tsx：找到了文件，但没有开启 allowTsExtensions 时是 5097 ⟶ expect(…).toEqual({ ok: false, code: 5097 }))"
+        },
+        {
+          "target": "exercise:resolve-import:wrong:always-suggest-js",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(nodenext：必须写出扩展名 › 省略扩展名：能猜到时是 2835 加上建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './view.jsx' }))"
+        },
+        {
+          "target": "exercise:resolve-import:wrong:no-dot-segments",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(两种模式相同的部分 › . 和 .. 按文件夹移动 ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),bundler：可以省略扩展名，可以导入文件夹 › 省略扩展名 ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),nodenext：必须写出扩展名 › 省略扩展名：能猜到时是 2835 加上建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: '../util.js' }))"
+        }
+      ]
+    },
+    "f04-devtools": {
+      "verifiedAt": "2026-10-20T22:30:54.927Z",
+      "sourceHash": "a652c94b11d57a77",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:console-methods:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:console-methods:run",
+          "ok": true,
+          "detail": "期望 error，实际 done；输出：[log] ┌─────────┬───────┬──────────┬────────┐\n│ (index) │ name  │ role     │ visits │\n├─────────┼───────┼──────────┼────────┤\n│ 0       │ 'Ada' │ 'admin'  │ 12     │\n│ 1       │ 'Lin' │ 'editor' │ 3      │\n└─────────┴───────┴──────────┴────────┘ | [log] 加载用户 | [log]   请求 /api/users | [warn]   响应慢：1200ms | [info] admin: 1 | [info] other: 1 | [error] Assertion failed: 期望 3 个用户，实际 2 | [log] 之前 { items: 1 }"
+        },
+        {
+          "target": "exercise:parse-stack:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseStackLine：Chromium › 有名字的函数 ⟶ expect(…).toEqual({,parseStackLine：Chromium › 构造函数、方法、async ⟶ expect(…).toMatchObject({ fn: 'new Point', line: 3, column: 44 }),parseStackLine：Chromium › 没有名字：只有位置 ⟶ expect(…).toEqual({,parseStackLine：Chromium › Node.js 的路径 ⟶ expect(…).toEqual({ fn: 'add', url: 'C:\\\\Users\\\\ada\\\\app\\\\math.js', line: 2, column: 29 }),parseStackLine：Chromium › 不是调用栈的一层时返回 null ⟶ \"Error: in map\",parseStackLine：Safari › 函数名@位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({,parseStackLine：Safari › 内置函数返回 null ⟶ expect(…).toBeNull(),parseStack › Chromium：跳过错误信息和内置函数 ⟶ expect(…).toEqual([,parseStack › Safari ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:parse-stack:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-stack:alt:two-regexes",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-stack:wrong:split-on-colons",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Chromium › 有名字的函数 ⟶ expect(…).toEqual({,parseStackLine：Chromium › 构造函数、方法、async ⟶ expect(…).toMatchObject({ fn: 'new Point', line: 3, column: 44 }),parseStackLine：Chromium › 没有名字：只有位置 ⟶ expect(…).toEqual({,parseStackLine：Chromium › Node.js 的路径 ⟶ expect(…).toEqual({ fn: 'add', url: 'C:\\\\Users\\\\ada\\\\app\\\\math.js', line: 2, column: 29 }),parseStackLine：Safari › 函数名@位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({,parseStack › Chromium：跳过错误信息和内置函数 ⟶ expect(…).toEqual([,parseStack › Safari ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:parse-stack:wrong:chromium-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Safari › 函数名@位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({,parseStack › Safari ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:parse-stack:wrong:keeps-async",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Chromium › 构造函数、方法、async ⟶ expect(…).toEqual({,parseStackLine：Chromium › 没有名字：只有位置 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:parse-stack:wrong:last-at",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:parse-stack:wrong:module-code-as-name",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStack › Safari ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:source-map:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(decodeVlq › 单个数 ⟶ C,decodeVlq › 一段中的几个数 ⟶ expect(…).toEqual([ 9, 0, 0, 28 ]),decodeVlq › 无效的输入抛出错误 ⟶ expect(…).toThrow(),decodeMappings › Vite 生成的 source map ⟶ expect(…).toEqual([,decodeMappings › 名字、多个源文件、空行 ⟶ expect(…).toEqual([,decodeMappings › 只有 1 个数的段 ⟶ expect(…).toEqual([,decodeMappings › 空的 mappings 与连续的分号 ⟶ expect(…).toEqual([ [] ]),decodeMappings › 长度不对的段抛出错误 ⟶ expect(…).toThrow(),originalPositionFor（行从 1 开始，列从 0 开始） › Vite 的 source map ⟶ 1:0,originalPositionFor（行从 1 开始，列从 0 开始） › 名字与多个源文件 ⟶ expect(…).toEqual({ source: 'a.ts', line: 1, column: 0, name: 'greet' }),originalPositionFor（行从 1 开始，列从 0 开始） › 落在只有 1 个数的段上时是 null ⟶ expect(…).toEqual({ source: 'x.ts', line: 1, column: 0, name: null }))"
+        },
+        {
+          "target": "exercise:source-map:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:source-map:alt:bitwise-and-state",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:source-map:wrong:one-char-one-value",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(decodeVlq › 单个数 ⟶ gB,decodeVlq › 一段中的几个数 ⟶ expect(…).toEqual([ 9, 0, 0, 28 ]),decodeVlq › 无效的输入抛出错误 ⟶ expect(…).toThrow(),decodeMappings › Vite 生成的 source map ⟶ Error: 一段应该有 1、4 或 5 个数：iBAAiB,originalPositionFor（行从 1 开始，列从 0 开始） › Vite 的 source map ⟶ Error: 一段应该有 1、4 或 5 个数：iBAAiB,originalPositionFor（行从 1 开始，列从 0 开始） › 超出范围时是 null ⟶ Error: 一段应该有 1、4 或 5 个数：iBAAiB)"
+        },
+        {
+          "target": "exercise:source-map:wrong:no-sign",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(decodeVlq › 单个数 ⟶ D,decodeVlq › 一段中的几个数 ⟶ expect(…).toEqual([ 2, 0, 3, -7, -1 ]),decodeMappings › Vite 生成的 source map ⟶ expect(…).toEqual([,decodeMappings › 名字、多个源文件、空行 ⟶ expect(…).toEqual([,decodeMappings › 只有 1 个数的段 ⟶ expect(…).toEqual([,originalPositionFor（行从 1 开始，列从 0 开始） › Vite 的 source map ⟶ 2:1,originalPositionFor（行从 1 开始，列从 0 开始） › 名字与多个源文件 ⟶ expect(…).toEqual({ source: 'a.ts', line: 4, column: 2, name: 'greet' }),originalPositionFor（行从 1 开始，列从 0 开始） › 落在只有 1 个数的段上时是 null ⟶ expect(…).toEqual({ source: 'x.ts', line: 6, column: 1, name: null }))"
+        },
+        {
+          "target": "exercise:source-map:wrong:reset-everything",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(decodeMappings › Vite 生成的 source map ⟶ expect(…).toEqual([,decodeMappings › 名字、多个源文件、空行 ⟶ expect(…).toEqual([,decodeMappings › 只有 1 个数的段 ⟶ expect(…).toEqual([,originalPositionFor（行从 1 开始，列从 0 开始） › Vite 的 source map ⟶ 2:1,originalPositionFor（行从 1 开始，列从 0 开始） › 名字与多个源文件 ⟶ expect(…).toEqual({ source: 'a.ts', line: 4, column: 2, name: 'greet' }),originalPositionFor（行从 1 开始，列从 0 开始） › 落在只有 1 个数的段上时是 null ⟶ expect(…).toEqual({ source: 'x.ts', line: 6, column: 1, name: null }))"
+        },
+        {
+          "target": "exercise:source-map:wrong:column-not-reset",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(decodeMappings › Vite 生成的 source map ⟶ expect(…).toEqual([,decodeMappings › 名字、多个源文件、空行 ⟶ expect(…).toEqual([,decodeMappings › 只有 1 个数的段 ⟶ expect(…).toEqual([,originalPositionFor（行从 1 开始，列从 0 开始） › Vite 的 source map ⟶ 2:1,originalPositionFor（行从 1 开始，列从 0 开始） › 落在只有 1 个数的段上时是 null ⟶ expect(…).toEqual({ source: 'x.ts', line: 6, column: 1, name: null }))"
+        },
+        {
+          "target": "exercise:source-map:wrong:exact-column-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(originalPositionFor（行从 1 开始，列从 0 开始） › Vite 的 source map ⟶ 1:30,originalPositionFor（行从 1 开始，列从 0 开始） › 名字与多个源文件 ⟶ expect(…).toEqual({ source: 'a.ts', line: 1, column: 0, name: 'greet' }),originalPositionFor（行从 1 开始，列从 0 开始） › 落在只有 1 个数的段上时是 null ⟶ expect(…).toEqual({ source: 'x.ts', line: 1, column: 0, name: null }))"
+        },
+        {
+          "target": "exercise:source-map:wrong:zero-based-line",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(originalPositionFor（行从 1 开始，列从 0 开始） › Vite 的 source map ⟶ 1:0,originalPositionFor（行从 1 开始，列从 0 开始） › 名字与多个源文件 ⟶ expect(…).toEqual({ source: 'a.ts', line: 1, column: 0, name: 'greet' }),originalPositionFor（行从 1 开始，列从 0 开始） › 落在只有 1 个数的段上时是 null ⟶ expect(…).toEqual({ source: 'x.ts', line: 1, column: 0, name: null }))"
+        }
+      ]
+    },
+    "f05-debugging-practice": {
+      "verifiedAt": "2026-10-20T22:34:58.985Z",
+      "sourceHash": "577db278ef1bd2af",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:foreach-async:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:foreach-async:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] forEach 之后： [] | [log] Promise.all： [ 30, 10, 20 ] | [log] 稍后： [ 10, 20, 30 ]"
+        },
+        {
+          "target": "exercise:fix-cart:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@cart.test-d.ts:5 Type 'readonly Item[]' does not satisfy the constraint '{ name?: \"Expected: never, Actual: string\" | undefined; priceCents?: \"Expected: never, Actual: number\" | undefined; quantity?: \"Expected: never, Actual: number\" | undefined; }[]'.) rules=ok tests=fail(报告 1：sortByPrice › 从贵到便宜；单价相同时保持原来的顺序 ⟶ expect(…).toEqual([ '钢笔', '笔记本', '尺子', '橡皮' ]),报告 2：totalCents › 一件、多件、没有 ⟶ expect(…).toBe(1230),报告 3：分页 › pageCount：正好整除时没有多余的空页，没有商品时是 1 页 ⟶ expect(…).toBe(2),报告 3：分页 › page：页码从 1 开始 ⟶ expect(…).toEqual([ '笔记本', '钢笔', '尺子' ]),报告 3：分页 › page：页码不是从 1 开始的整数时抛出 RangeError ⟶ expect(…).toThrow([Function: RangeError]),报告 4：formatYuan › 固定两位小数 ⟶ expect(…).toBe('¥12.30'),报告 4：formatYuan › 负数：负号在 ¥ 前面 ⟶ expect(…).toBe('-¥5.00'))"
+        },
+        {
+          "target": "exercise:fix-cart:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-cart:alt:reduce-and-integers",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-cart:wrong:mutating-sort",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@cart.test-d.ts:5 Type 'readonly Item[]' does not satisfy the constraint '{ name?: \"Expected: never, Actual: string\" | undefined; priceCents?: \"Expected: never, Actual: number\" | undefined; quantity?: \"Expected: never, Actual: number\" | undefined; }[]'.) rules=ok tests=fail(报告 2：totalCents › 一件、多件、没有 ⟶ expect(…).toBe(1230),报告 3：分页 › page：页码从 1 开始 ⟶ expect(…).toEqual([ '笔记本', '钢笔', '尺子' ]))"
+        },
+        {
+          "target": "exercise:fix-cart:wrong:still-ascending",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(报告 1：sortByPrice › 从贵到便宜；单价相同时保持原来的顺序 ⟶ expect(…).toEqual([ '钢笔', '笔记本', '尺子', '橡皮' ]))"
+        },
+        {
+          "target": "exercise:fix-cart:wrong:ceil-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(报告 3：分页 › pageCount：正好整除时没有多余的空页，没有商品时是 1 页 ⟶ expect(…).toBe(1))"
+        },
+        {
+          "target": "exercise:fix-cart:wrong:fixed-with-sign",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(报告 4：formatYuan › 负数：负号在 ¥ 前面 ⟶ expect(…).toBe('-¥5.00'))"
+        },
+        {
+          "target": "exercise:fix-cart:wrong:no-page-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(报告 3：分页 › page：页码不是从 1 开始的整数时抛出 RangeError ⟶ expect(…).toThrow([Function: RangeError]))"
+        },
+        {
+          "target": "exercise:fix-loader:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(loadUsers › 按 ids 的顺序返回，即使后面的先完成 ⟶ expect(…).toEqual([,loadUsers › 一个失败时，以那个错误拒绝（而不是悄悄地少了一个用户） ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：[ { id: 'u1', name: '用户 u1' } ],createSearch › 先发出的搜索后返回时，不能覆盖新的结果 ⟶ expect(…).toEqual([ [ 'ts 的结果' ] ]),createSearch › 同一个搜索词输入了两次：只显示最后一次请求的结果 ⟶ expect(…).toEqual([ [ '第三次' ] ]))"
+        },
+        {
+          "target": "exercise:fix-loader:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-loader:alt:await-in-order",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-loader:wrong:push-in-completion-order",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadUsers › 按 ids 的顺序返回，即使后面的先完成 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:fix-loader:wrong:one-by-one",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadUsers › 同时发出所有请求，不是一个接一个 ⟶ expect(…).toEqual([ 'a', 'b', 'c' ]))"
+        },
+        {
+          "target": "exercise:fix-loader:wrong:swallow-errors",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadUsers › 一个失败时，以那个错误拒绝（而不是悄悄地少了一个用户） ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：[ { id: 'u1', name: '用户 u1' } ])"
+        },
+        {
+          "target": "exercise:fix-loader:wrong:compare-query-text",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSearch › 同一个搜索词输入了两次：只显示最后一次请求的结果 ⟶ expect(…).toEqual([ [ '第三次' ] ]))"
+        },
+        {
+          "target": "exercise:fix-loader:wrong:no-race-guard",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSearch › 先发出的搜索后返回时，不能覆盖新的结果 ⟶ expect(…).toEqual([ [ 'ts 的结果' ] ]),createSearch › 同一个搜索词输入了两次：只显示最后一次请求的结果 ⟶ expect(…).toEqual([ [ '第三次' ] ]))"
+        }
+      ]
+    },
     "g01-jsx-components": {
       "verifiedAt": "2026-10-20T17:26:38.168Z",
       "sourceHash": "5d8c2030fa5446fd",

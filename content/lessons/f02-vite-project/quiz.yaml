@@ -1,0 +1,44 @@
+- id: no-type-check
+  type: single
+  prompt: "`npm run dev` 正在运行。你在 `counter.ts` 中把 `let counter = 0` 改成 `let counter: number = \"0\"` 并保存，会发生什么？"
+  options:
+    - text: 页面照常更新并运行，开发服务器不报告这个类型错误
+      correct: true
+      explain: Vite 只把 TypeScript 转译成 JavaScript（去掉类型），不做类型检查。类型错误要看编辑器，或者运行 tsc（npm run build 的第一步）。
+    - text: 浏览器中显示一个红色的错误页面，指出 TS2322
+      explain: 那是语法错误时的表现（例如少了一个括号，转译失败）。类型错误不影响转译。
+    - text: 开发服务器自动停止
+      explain: 开发服务器不检查类型，也不会因为类型错误停止。
+- id: hashed-names
+  type: single
+  prompt: 构建后的文件名 `assets/index-wktXvZw9.js` 中，`wktXvZw9` 的作用是什么？
+  options:
+    - text: 它是根据文件内容计算的哈希，内容变了名字就变，所以服务器可以让浏览器长期缓存这个文件
+      correct: true
+      explain: 文件名不变就表示内容不变；发布新版本时，新的 index.html 引用新的文件名，浏览器自然下载新文件。
+    - text: 它是随机生成的，防止别人猜到文件名
+      explain: 不是随机的：内容不变时，每次构建得到的名字都相同。
+    - text: 它是构建的日期
+      explain: 和时间无关，只和内容有关。
+- id: public-dir
+  type: single
+  prompt: 下面哪个文件应该放在 public 文件夹中，而不是放在 src 中由代码导入？
+  options:
+    - text: robots.txt
+      correct: true
+      explain: 它不会被代码引用，而且必须保持原来的名字、放在网站根目录，正是 public 的用途。
+    - text: main.ts 中用 img 显示的商品图片
+      explain: 代码中用到的图片应该导入：构建时会加上哈希（可以长期缓存），小的会被内联，写错路径时构建会报错。
+    - text: style.css
+      explain: 样式由 main.ts 导入，Vite 会处理并打包它。
+- id: base-rewrite
+  type: single
+  prompt: 用 `vite build --base=/my-app/` 构建之后，下面哪个地址**没有**被 Vite 自动改写，部署到子路径后会出错？
+  options:
+    - text: main.ts 中写在模板字符串里的 href="/icons.svg#github-icon"
+      correct: true
+      explain: Vite 不改写你写在字符串中的地址。在代码中拼接地址时要用 import.meta.env.BASE_URL。
+    - text: index.html 中的 script 标签引用的入口模块
+      explain: index.html 中的资源引用会被改写成 /my-app/assets/…。
+    - text: import viteLogo from './assets/vite.svg' 得到的图片地址
+      explain: 导入的资源地址由 Vite 生成，会带上 base（/my-app/assets/vite-….svg）。

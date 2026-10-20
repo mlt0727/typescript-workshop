@@ -105,10 +105,10 @@ stages:
     summary: 在本机搭建真实项目：npm、Vite、tsconfig、调试、测试、Git、构建与 CI。
     lessons:
       - { id: f01-node-npm, title: Node.js、npm、package.json 与锁文件, status: draft, prerequisites: [a19-modules] }
-      - { id: f02-vite-project, title: 用 Vite 创建 TypeScript 项目, status: planned, prerequisites: [f01-node-npm, d06-dom-create-update] }
-      - { id: f03-tsconfig, title: tsconfig、ESM 与模块解析, status: planned, prerequisites: [f02-vite-project] }
-      - { id: f04-devtools, title: DevTools、断点、source map 与网络面板, status: planned, prerequisites: [f02-vite-project] }
-      - { id: f05-debugging-practice, title: 实际排错练习, status: planned, prerequisites: [f04-devtools] }
+      - { id: f02-vite-project, title: 用 Vite 创建 TypeScript 项目, status: draft, prerequisites: [f01-node-npm, d06-dom-create-update] }
+      - { id: f03-tsconfig, title: tsconfig、ESM 与模块解析, status: draft, prerequisites: [f02-vite-project] }
+      - { id: f04-devtools, title: DevTools、断点、source map 与网络面板, status: draft, prerequisites: [f02-vite-project] }
+      - { id: f05-debugging-practice, title: 实际排错练习, status: draft, prerequisites: [f04-devtools] }
       - { id: f06-unit-tests, title: 用 Vitest 写单元测试, status: planned, prerequisites: [f03-tsconfig] }
       - { id: f07-type-tests, title: 类型测试, status: planned, prerequisites: [f06-unit-tests, b14-generics] }
       - { id: f08-dom-tests, title: DOM 与组件测试, status: planned, prerequisites: [f06-unit-tests, d08-bubbling-delegation] }

@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 89 / 规划总数 126**（草稿 1，规划中 36）
+**已发布 89 / 规划总数 126**（草稿 5，规划中 32）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -119,10 +119,10 @@
 | 课时 | 状态 | 先修 |
 |---|---|---|
 | `f01-node-npm` Node.js、npm、package.json 与锁文件 | 📝 草稿 | `a19-modules` |
-| `f02-vite-project` 用 Vite 创建 TypeScript 项目 | ⬜ 规划中 | `f01-node-npm`、`d06-dom-create-update` |
-| `f03-tsconfig` tsconfig、ESM 与模块解析 | ⬜ 规划中 | `f02-vite-project` |
-| `f04-devtools` DevTools、断点、source map 与网络面板 | ⬜ 规划中 | `f02-vite-project` |
-| `f05-debugging-practice` 实际排错练习 | ⬜ 规划中 | `f04-devtools` |
+| `f02-vite-project` 用 Vite 创建 TypeScript 项目 | 📝 草稿 | `f01-node-npm`、`d06-dom-create-update` |
+| `f03-tsconfig` tsconfig、ESM 与模块解析 | 📝 草稿 | `f02-vite-project` |
+| `f04-devtools` DevTools、断点、source map 与网络面板 | 📝 草稿 | `f02-vite-project` |
+| `f05-debugging-practice` 实际排错练习 | 📝 草稿 | `f04-devtools` |
 | `f06-unit-tests` 用 Vitest 写单元测试 | ⬜ 规划中 | `f03-tsconfig` |
 | `f07-type-tests` 类型测试 | ⬜ 规划中 | `f06-unit-tests`、`b14-generics` |
 | `f08-dom-tests` DOM 与组件测试 | ⬜ 规划中 | `f06-unit-tests`、`d08-bubbling-delegation` |

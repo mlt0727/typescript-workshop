@@ -1,0 +1,44 @@
+- id: first-step
+  type: single
+  prompt: 用户报告“购物车的合计有时候不对”。下面哪一步应该最先做？
+  options:
+    - text: 找到每次都能让合计出错的操作或数据（例如只有一件商品时）
+      correct: true
+      explain: 稳定的复现是后面所有步骤的基础：没有它，就无法确认假设，也无法确认是否修好了。
+    - text: 把合计的代码重写一遍
+      explain: 不知道原因就重写，可能把 bug 带进新代码，也可能引入新的 bug。
+    - text: 在显示合计的地方加上 Number.isNaN 检查，出错时显示 0
+      explain: 这是在症状处打补丁，问题仍然存在，只是被藏起来了。
+- id: undefined-name
+  type: single
+  prompt: "控制台报 `TypeError: Cannot read properties of undefined (reading 'name')`，堆栈指向 `render(user)` 中的 `user.name`。下一步最应该查什么？"
+  options:
+    - text: 调用 render 的地方传入的 user 为什么是 undefined（例如 find 没有找到、数组越界）
+      correct: true
+      explain: 出错的那一行只是读取了一个 undefined；原因在把它传进来的地方。顺着调用栈往下找。
+    - text: 在 render 中写 user?.name ?? ''，让错误消失
+      explain: 这样页面上会少了名字却没有任何提示，原因仍然存在。
+    - text: name 这个属性名是不是拼错了
+      explain: 拼错属性名会得到 undefined 的值，而不是这个错误；这个错误说明的是 user 本身是 undefined。
+- id: foreach-await
+  type: single
+  prompt: "`const users: User[] = []; ids.forEach(async (id) => users.push(await fetchUser(id))); return users;` 返回的是什么？"
+  options:
+    - text: 通常是空数组；用户在之后才陆续加进这个数组，顺序是请求完成的顺序
+      correct: true
+      explain: forEach 不等待回调返回的 Promise。用 Promise.all(ids.map(fetchUser)) 等待全部完成并保持顺序。
+    - text: 所有用户，按 ids 的顺序
+      explain: 函数在任何请求完成之前就返回了。
+    - text: 编译错误，forEach 的回调不能是 async 函数
+      explain: TypeScript 允许这样写（回调的返回值类型是 void，返回 Promise 也可以），所以这个 bug 很常见；lint 规则 no-misused-promises 能发现它（f11）。
+- id: race-guard
+  type: single
+  prompt: 搜索框中依次输入了 a、ab、a，三个请求同时在路上。为了只显示最后一次搜索的结果，应该怎样判断一个结果是否过时？
+  options:
+    - text: 给每次搜索一个递增的编号，结果回来时比较它的编号是不是最新的
+      correct: true
+      explain: 编号区分的是“哪一次请求”，与搜索词无关，同一个词输入两次也能区分开。
+    - text: 比较结果对应的搜索词和输入框中当前的搜索词
+      explain: 第一次搜索 a 的结果回来时，当前的搜索词也是 a，过时的结果会被显示出来。
+    - text: 不需要判断，最后返回的结果就是最后一次搜索的
+      explain: 网络请求完成的顺序不确定，先发出的请求可能最后才返回。

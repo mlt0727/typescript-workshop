@@ -1,0 +1,44 @@
+- id: live-object
+  type: single
+  prompt: "在 Chrome 中执行 `const cart = { items: 1 }; console.log(cart); cart.items = 2;`，然后在控制台中展开输出的对象，看到的 items 是多少？"
+  options:
+    - text: "2"
+      correct: true
+      explain: 控制台保存的是对象的引用，展开时才读取属性，读到的是当时的值。需要快照时输出 JSON.stringify(cart) 或 structuredClone(cart)。
+    - text: "1"
+      explain: 折叠时显示的摘要可能是 1，但展开后显示的是展开那一刻的值。
+    - text: 无法展开，因为 cart 已经被修改
+      explain: 对象可以随时展开，只是显示的是当前的值。
+- id: logpoint
+  type: single
+  prompt: 一个循环有 500 次迭代，你想看每一次的 i 和 total，但不想让代码暂停，也不想修改源代码。用什么？
+  options:
+    - text: 日志点（右键行号 → 添加日志点，输入 'i', i, 'total', total）
+      correct: true
+      explain: 日志点在执行到这一行时向控制台输出，不暂停，也不需要改代码、重新构建。
+    - text: 条件断点
+      explain: 条件断点在条件为真时会暂停，适合“只看某一次迭代”，不适合每次都输出。
+    - text: 在循环中写 debugger;
+      explain: 每次迭代都会暂停，而且要修改代码。
+- id: safari-stack
+  type: single
+  prompt: Safari 的堆栈中有一行 `module code@http://localhost:5173/src/main.ts:8:13`，它表示什么？
+  options:
+    - text: main.ts 这个模块的顶层代码（不在任何函数中）第 8 行第 13 列
+      correct: true
+      explain: Safari 用 module code 表示模块的顶层，Chromium 中同样的一层是 at http://localhost:5173/src/main.ts:8:…（没有函数名）。
+    - text: 一个名叫 module 的函数
+      explain: module code 是 Safari 对顶层的称呼，不是函数名。
+    - text: 浏览器内置的代码
+      explain: 内置的函数在 Safari 中显示为 名字@[native code]，没有文件地址。
+- id: hidden-sourcemap
+  type: single
+  prompt: Vite 中把 `build.sourcemap` 设为 `'hidden'`，会怎样？
+  options:
+    - text: 生成 .map 文件，但 JavaScript 文件末尾没有指向它的注释，浏览器不会去加载它
+      correct: true
+      explain: 适合只把 .map 上传给错误监控服务，用它还原堆栈，而不在网站上公开源代码。
+    - text: 不生成 source map
+      explain: 不生成是默认值 false。
+    - text: 生成 source map，但把其中的源代码隐藏起来
+      explain: hidden 指的是去掉引用它的注释，.map 文件本身的内容（包括 sourcesContent）不变。
