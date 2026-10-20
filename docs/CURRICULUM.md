@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 59 / 规划总数 126**（草稿 7，规划中 60）
+**已发布 66 / 规划总数 126**（草稿 4，规划中 56）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -56,7 +56,7 @@
 | `b16-assertions-as-const-satisfies` 类型断言、as const 与 satisfies | ✅ 已发布 | `b15-generic-constraints` |
 | `b17-enums-and-alternatives` 枚举与可擦除语法 | ✅ 已发布 | `b16-assertions-as-const-satisfies` |
 
-## E. 浏览器机制、异步与数据（已发布 11 / 13）
+## E. 浏览器机制、异步与数据（已发布 12 / 13）
 
 事件循环、Promise、fetch、运行时校验、取消与竞态、存储、URL 与安全边界。
 
@@ -71,7 +71,7 @@
 | `e07-loading-states` 加载、空与失败状态 | ✅ 已发布 | `e06-runtime-validation`、`d06-dom-create-update` |
 | `e08-abort-races` AbortController、取消请求与竞态 | ✅ 已发布 | `e07-loading-states` |
 | `e09-storage-serialization` 浏览器存储与序列化 | ✅ 已发布 | `e06-runtime-validation` |
-| `e10-url-routing` URL、History 与基础路由 | 📝 草稿 | `d10-state-and-render`、`e06-runtime-validation` |
+| `e10-url-routing` URL、History 与基础路由 | ✅ 已发布 | `d10-state-and-render`、`e06-runtime-validation` |
 | `e11-cors` CORS 的真实边界 | ✅ 已发布 | `e05-fetch-json` |
 | `e12-xss` 基础 XSS 防范 | ✅ 已发布 | `d06-dom-create-update` |
 | `e13-env-secrets` 客户端环境变量与密钥边界 | ⬜ 规划中 | `f02-vite-project` |
@@ -131,23 +131,23 @@
 | `f11-lint-format` 格式化与静态检查 | ⬜ 规划中 | `f03-tsconfig` |
 | `f12-build-ci` 生产构建与 CI | ⬜ 规划中 | `f11-lint-format`、`f10-git` |
 
-## G. React + TypeScript（已发布 1 / 15）
+## G. React + TypeScript（已发布 7 / 15）
 
 组件、props、state、表单、Hook、Effect、路由与测试，全部在真实预览中练习。
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `g01-jsx-components` JSX/TSX 与组件 | 📝 草稿 | `d10-state-and-render`、`a19-modules` |
-| `g02-props` Props 与类型 | 📝 草稿 | `g01-jsx-components` |
+| `g01-jsx-components` JSX/TSX 与组件 | ✅ 已发布 | `d10-state-and-render`、`a19-modules` |
+| `g02-props` Props 与类型 | ✅ 已发布 | `g01-jsx-components` |
 | `g03-events-state` 事件与 state | ✅ 已发布 | `g02-props` |
-| `g04-immutable-updates` 不可变更新 | 📝 草稿 | `g03-events-state`、`a12-destructuring-spread` |
-| `g05-lists-keys` 列表渲染与 key | 📝 草稿 | `g04-immutable-updates` |
-| `g06-controlled-forms` 受控表单 | 📝 草稿 | `g05-lists-keys` |
-| `g07-lifting-state` 状态提升与组合 | 📝 草稿 | `g06-controlled-forms` |
-| `g08-custom-hooks` 自定义 Hook | ⬜ 规划中 | `g07-lifting-state` |
-| `g09-refs` ref 的合理用途 | ⬜ 规划中 | `g08-custom-hooks` |
-| `g10-context` Context 的合理用途 | ⬜ 规划中 | `g08-custom-hooks` |
-| `g11-effects` Effect：适用场景、依赖与清理 | ⬜ 规划中 | `g09-refs` |
+| `g04-immutable-updates` 不可变更新 | ✅ 已发布 | `g03-events-state`、`a12-destructuring-spread` |
+| `g05-lists-keys` 列表渲染与 key | ✅ 已发布 | `g04-immutable-updates` |
+| `g06-controlled-forms` 受控表单 | ✅ 已发布 | `g05-lists-keys` |
+| `g07-lifting-state` 状态提升与组合 | ✅ 已发布 | `g06-controlled-forms` |
+| `g08-custom-hooks` 自定义 Hook | 📝 草稿 | `g07-lifting-state` |
+| `g09-refs` ref 的合理用途 | 📝 草稿 | `g08-custom-hooks` |
+| `g10-context` Context 的合理用途 | 📝 草稿 | `g08-custom-hooks` |
+| `g11-effects` Effect：适用场景、依赖与清理 | 📝 草稿 | `g09-refs` |
 | `g12-effect-pitfalls` 避免滥用 Effect 与性能 Hook | ⬜ 规划中 | `g11-effects` |
 | `g13-routing` 用 React Router 组织页面 | ⬜ 规划中 | `g07-lifting-state`、`e10-url-routing` |
 | `g14-async-data` 异步数据与错误状态 | ⬜ 规划中 | `g11-effects`、`e08-abort-races` |

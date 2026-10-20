@@ -6,8 +6,9 @@ title: 新建任务的表单
 
 1. 三个字段：标题（文本框，初始为空）、优先级（下拉框，初始为“普通” `normal`）、置顶（复选框，初始不勾选），都由 state 控制；
 2. 提交时（点“添加”或者在文本框中按回车）阻止浏览器的默认行为；
-3. 标题去掉首尾空白之后为空时，不调用 `onAdd`，在标题下面显示 `<p role="alert">请输入标题</p>`；
-4. 否则调用 `onAdd({ title, priority, pinned })`（标题去掉首尾空白），然后把三个字段恢复成初始值，并去掉错误提示。
+3. 标题最多 30 个字（输入框已经有 `maxLength`），下面实时显示 `<p>还可以输入 N 字</p>`；
+4. 标题去掉首尾空白之后为空时，不调用 `onAdd`，在标题下面显示 `<p id="title-error" role="alert">请输入标题</p>`，并给输入框加上 `aria-invalid="true"` 和 `aria-describedby="title-error"`；
+5. 否则调用 `onAdd({ title, priority, pinned })`（标题去掉首尾空白），然后把三个字段恢复成初始值，并去掉错误提示。
 
 下拉框读到的值是 `string`，要先确认它是 `'low' | 'normal' | 'high'` 之一再保存（不能用类型断言）。
 
@@ -27,7 +28,8 @@ export function NewTaskForm({ onAdd }: { onAdd: (task: NewTask) => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="title">标题</label>
-      <input id="title" />
+      <input id="title" maxLength={30} />
+      <p>还可以输入 30 字</p>
       <label htmlFor="priority">优先级</label>
       <select id="priority">
         <option value="low">低</option>
@@ -65,6 +67,7 @@ export type NewTask = { title: string; priority: Priority; pinned: boolean };
 type Form = NewTask;
 
 const EMPTY: Form = { title: '', priority: 'normal', pinned: false };
+const TITLE_LIMIT = 30;
 
 function isPriority(value: string): value is Priority {
   return value === 'low' || value === 'normal' || value === 'high';
@@ -98,8 +101,20 @@ export function NewTaskForm({ onAdd }: { onAdd: (task: NewTask) => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="title">标题</label>
-      <input id="title" value={form.title} onChange={(e) => update('title', e.currentTarget.value)} />
-      {error !== null && <p role="alert">{error}</p>}
+      <input
+        id="title"
+        maxLength={TITLE_LIMIT}
+        value={form.title}
+        onChange={(e) => update('title', e.currentTarget.value)}
+        aria-invalid={error !== null}
+        aria-describedby={error !== null ? 'title-error' : undefined}
+      />
+      <p>还可以输入 {TITLE_LIMIT - form.title.length} 字</p>
+      {error !== null && (
+        <p id="title-error" role="alert">
+          {error}
+        </p>
+      )}
       <label htmlFor="priority">优先级</label>
       <select id="priority" value={form.priority} onChange={handlePriority}>
         <option value="low">低</option>
@@ -153,6 +168,7 @@ function setup() {
 test('初始状态：空标题、普通优先级、不置顶', () => {
   const { title, priority, pinned } = setup();
   expect(title()).toHaveValue('');
+  expect(screen.getByText('还可以输入 30 字')).toBeInTheDocument();
   expect(priority()).toHaveValue('normal');
   expect(pinned()).not.toBeChecked();
 });
@@ -160,6 +176,7 @@ test('初始状态：空标题、普通优先级、不置顶', () => {
 test('在标题中按回车提交：标题去掉首尾空白，提交后清空表单', async () => {
   const { onAdd, user, title, priority, pinned } = setup();
   await user.type(title(), '  写周报 ');
+  expect(screen.getByText('还可以输入 24 字')).toBeInTheDocument();
   await user.selectOptions(priority(), 'high');
   await user.click(pinned());
   await user.type(title(), '{Enter}');
@@ -185,11 +202,15 @@ test('标题为空时显示错误、不提交；改正后提交，错误消失',
   await user.type(title(), '   ');
   await user.click(screen.getByRole('button', { name: '添加' }));
   expect(screen.getByRole('alert')).toHaveTextContent('请输入标题');
+  expect(title()).toHaveAttribute('aria-invalid', 'true');
+  expect(title()).toHaveAttribute('aria-describedby', 'title-error');
+  expect(document.getElementById('title-error')).toBe(screen.getByRole('alert'));
   expect(onAdd).not.toHaveBeenCalled();
   expect(submits).toEqual([true]);
   await user.type(title(), '读书{Enter}');
   expect(onAdd).toHaveBeenCalledWith({ title: '读书', priority: 'normal', pinned: false });
   expect(screen.queryByRole('alert')).toBeNull();
+  expect(title()).not.toHaveAttribute('aria-invalid', 'true');
 });
 ```
 :::
@@ -241,8 +262,20 @@ export function NewTaskForm({ onAdd }: { onAdd: (task: NewTask) => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="title">标题</label>
-      <input id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
-      {showError ? <p role="alert">请输入标题</p> : null}
+      <input
+        id="title"
+        maxLength={30}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        aria-invalid={showError}
+        aria-describedby={showError ? 'title-error' : undefined}
+      />
+      <p>还可以输入 {30 - title.length} 字</p>
+      {showError ? (
+        <p id="title-error" role="alert">
+          请输入标题
+        </p>
+      ) : null}
       <label htmlFor="priority">优先级</label>
       <select
         id="priority"
@@ -276,6 +309,7 @@ export type NewTask = { title: string; priority: Priority; pinned: boolean };
 type Form = NewTask;
 
 const EMPTY: Form = { title: '', priority: 'normal', pinned: false };
+const TITLE_LIMIT = 30;
 
 function isPriority(value: string): value is Priority {
   return value === 'low' || value === 'normal' || value === 'high';
@@ -308,8 +342,20 @@ export function NewTaskForm({ onAdd }: { onAdd: (task: NewTask) => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="title">标题</label>
-      <input id="title" value={form.title} onChange={(e) => update('title', e.currentTarget.value)} />
-      {error !== null && <p role="alert">{error}</p>}
+      <input
+        id="title"
+        maxLength={TITLE_LIMIT}
+        value={form.title}
+        onChange={(e) => update('title', e.currentTarget.value)}
+        aria-invalid={error !== null}
+        aria-describedby={error !== null ? 'title-error' : undefined}
+      />
+      <p>还可以输入 {TITLE_LIMIT - form.title.length} 字</p>
+      {error !== null && (
+        <p id="title-error" role="alert">
+          {error}
+        </p>
+      )}
       <label htmlFor="priority">优先级</label>
       <select id="priority" value={form.priority} onChange={handlePriority}>
         <option value="low">低</option>
@@ -336,6 +382,7 @@ export type NewTask = { title: string; priority: Priority; pinned: boolean };
 type Form = NewTask;
 
 const EMPTY: Form = { title: '', priority: 'normal', pinned: false };
+const TITLE_LIMIT = 30;
 
 function isPriority(value: string): value is Priority {
   return value === 'low' || value === 'normal' || value === 'high';
@@ -368,8 +415,20 @@ export function NewTaskForm({ onAdd }: { onAdd: (task: NewTask) => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="title">标题</label>
-      <input id="title" value={form.title} onChange={(e) => update('title', e.currentTarget.value)} />
-      {error !== null && <p role="alert">{error}</p>}
+      <input
+        id="title"
+        maxLength={TITLE_LIMIT}
+        value={form.title}
+        onChange={(e) => update('title', e.currentTarget.value)}
+        aria-invalid={error !== null}
+        aria-describedby={error !== null ? 'title-error' : undefined}
+      />
+      <p>还可以输入 {TITLE_LIMIT - form.title.length} 字</p>
+      {error !== null && (
+        <p id="title-error" role="alert">
+          {error}
+        </p>
+      )}
       <label htmlFor="priority">优先级</label>
       <select id="priority" value={form.priority} onChange={handlePriority}>
         <option value="low">低</option>
@@ -396,6 +455,7 @@ export type NewTask = { title: string; priority: Priority; pinned: boolean };
 type Form = NewTask;
 
 const EMPTY: Form = { title: '', priority: 'normal', pinned: false };
+const TITLE_LIMIT = 30;
 
 function isPriority(value: string): value is Priority {
   return value === 'low' || value === 'normal' || value === 'high';
@@ -428,8 +488,20 @@ export function NewTaskForm({ onAdd }: { onAdd: (task: NewTask) => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="title">标题</label>
-      <input id="title" value={form.title} onChange={(e) => update('title', e.currentTarget.value)} />
-      {error !== null && <p role="alert">{error}</p>}
+      <input
+        id="title"
+        maxLength={TITLE_LIMIT}
+        value={form.title}
+        onChange={(e) => update('title', e.currentTarget.value)}
+        aria-invalid={error !== null}
+        aria-describedby={error !== null ? 'title-error' : undefined}
+      />
+      <p>还可以输入 {TITLE_LIMIT - form.title.length} 字</p>
+      {error !== null && (
+        <p id="title-error" role="alert">
+          {error}
+        </p>
+      )}
       <label htmlFor="priority">优先级</label>
       <select id="priority" value={form.priority} onChange={handlePriority}>
         <option value="low">低</option>
@@ -456,6 +528,7 @@ export type NewTask = { title: string; priority: Priority; pinned: boolean };
 type Form = NewTask;
 
 const EMPTY: Form = { title: '', priority: 'normal', pinned: false };
+const TITLE_LIMIT = 30;
 
 function isPriority(value: string): value is Priority {
   return value === 'low' || value === 'normal' || value === 'high';
@@ -489,8 +562,20 @@ export function NewTaskForm({ onAdd }: { onAdd: (task: NewTask) => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="title">标题</label>
-      <input id="title" value={form.title} onChange={(e) => update('title', e.currentTarget.value)} />
-      {error !== null && <p role="alert">{error}</p>}
+      <input
+        id="title"
+        maxLength={TITLE_LIMIT}
+        value={form.title}
+        onChange={(e) => update('title', e.currentTarget.value)}
+        aria-invalid={error !== null}
+        aria-describedby={error !== null ? 'title-error' : undefined}
+      />
+      <p>还可以输入 {TITLE_LIMIT - form.title.length} 字</p>
+      {error !== null && (
+        <p id="title-error" role="alert">
+          {error}
+        </p>
+      )}
       <label htmlFor="priority">优先级</label>
       <select id="priority" value={form.priority} onChange={handlePriority}>
         <option value="low">低</option>
@@ -517,6 +602,7 @@ export type NewTask = { title: string; priority: Priority; pinned: boolean };
 type Form = NewTask;
 
 const EMPTY: Form = { title: '', priority: 'normal', pinned: false };
+const TITLE_LIMIT = 30;
 
 function isPriority(value: string): value is Priority {
   return value === 'low' || value === 'normal' || value === 'high';
@@ -549,8 +635,20 @@ export function NewTaskForm({ onAdd }: { onAdd: (task: NewTask) => void }) {
   return (
     <form onSubmit={handleSubmit}>
       <label htmlFor="title">标题</label>
-      <input id="title" value={form.title} onChange={(e) => update('title', e.currentTarget.value)} />
-      {error !== null && <p role="alert">{error}</p>}
+      <input
+        id="title"
+        maxLength={TITLE_LIMIT}
+        value={form.title}
+        onChange={(e) => update('title', e.currentTarget.value)}
+        aria-invalid={error !== null}
+        aria-describedby={error !== null ? 'title-error' : undefined}
+      />
+      <p>还可以输入 {TITLE_LIMIT - form.title.length} 字</p>
+      {error !== null && (
+        <p id="title-error" role="alert">
+          {error}
+        </p>
+      )}
       <label htmlFor="priority">优先级</label>
       <select id="priority" value={form.priority} onChange={handlePriority}>
         <option value="low">低</option>

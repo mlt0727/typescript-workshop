@@ -9,7 +9,7 @@ mode: ts
 
 - `q`：参数 `q` 的值去掉首尾空白；没有时为 `''`；
 - `status`：参数 `status` 是 `'all'`、`'active'`、`'done'` 之一时取它，否则为 `'all'`；
-- `page`：参数 `page` 只由数字组成并且不小于 1 时，转换成数字，否则为 `1`。
+- `page`：参数 `page` 只由数字 0–9 组成（所以一定是整数，`010` 按 10 处理）并且不小于 1 时，转换成数字，否则为 `1`。
 
 **`toSearch(filters)`**：生成查询字符串。只包含**不是默认值**的参数（默认值是 `q: ''`、`status: 'all'`、`page: 1`），按 `q`、`status`、`page` 的顺序；`q` 先去掉首尾空白。全部是默认值时返回空字符串 `''`，否则以 `?` 开头。特殊字符要正确编码（用 `URLSearchParams`）。
 
@@ -143,15 +143,13 @@ describe('toSearch', () => {
 export type Status = 'all' | 'active' | 'done';
 export type Filters = { q: string; status: Status; page: number };
 
-const STATUSES: readonly string[] = ['all', 'active', 'done'];
-
 export function parseFilters(search: string): Filters {
   const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
   const statusText = params.get('status') ?? 'all';
   const status: Status = statusText === 'active' || statusText === 'done' ? statusText : 'all';
   const pageText = params.get('page');
   const page = pageText !== null && /^\d+$/.test(pageText) && Number(pageText) >= 1 ? Number(pageText) : 1;
-  return { q: params.get('q')?.trim() ?? '', status: STATUSES.includes(status) ? status : 'all', page };
+  return { q: params.get('q')?.trim() ?? '', status, page };
 }
 
 export function toSearch(filters: Filters): string {

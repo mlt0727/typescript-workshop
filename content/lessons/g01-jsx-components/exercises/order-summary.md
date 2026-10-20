@@ -147,8 +147,10 @@ describe('orderSummary', () => {
     const labels: Record<OrderStatus, string> = { pending: '待发货', shipped: '已发货', delivered: '已送达', cancelled: '已取消' };
     const statuses: OrderStatus[] = ['pending', 'shipped', 'delivered', 'cancelled'];
     for (const status of statuses) {
-      const badge = show({ ...base, status }).querySelector('.status');
+      const article = show({ ...base, status });
+      const badge = article.querySelector('.status');
       expect(badge, status).toHaveTextContent(labels[status]);
+      expect(article.querySelector('.total s') !== null, `${status} 的金额是否加删除线`).toBe(status === 'cancelled');
       expect(badge?.className, status).toBe(`status status-${status}`);
     }
   });

@@ -16,7 +16,7 @@ mode: ts
 另外两条规则：
 
 1. 结果中**没有变化**的项，必须是原来的对象本身（不要复制它们）；
-2. 操作**没有带来任何变化**时（找不到这个 id、标题去掉空白后为空、已经在第一位），直接返回传入的数组本身。这样 React 用 `Object.is` 比较时会发现 state 没有变，从而跳过渲染。
+2. 操作**没有带来任何变化**时（找不到这个 id、标题去掉空白后为空、新标题和原来的相同、已经在第一位），直接返回传入的数组本身。这样 React 用 `Object.is` 比较时会发现 state 没有变，从而跳过渲染。
 
 测试会把传入的数组和对象冻结（`Object.freeze`），修改它们会抛出错误。
 
@@ -69,8 +69,9 @@ export function toggleTodo(list: TodoList, id: number): TodoList {
 
 export function renameTodo(list: TodoList, id: number, title: string): TodoList {
   const text = title.trim();
-  if (text === '' || !has(list, id)) return list;
-  return list.map((t) => (t.id === id ? { ...t, title: text } : t));
+  const target = list.find((t) => t.id === id);
+  if (text === '' || target === undefined || target.title === text) return list;
+  return list.map((t) => (t === target ? { ...t, title: text } : t));
 }
 
 export function removeTodo(list: TodoList, id: number): TodoList {
@@ -131,6 +132,7 @@ describe('toggleTodo 与 renameTodo', () => {
     expect(next[0]).toBe(list[0]);
     expect(next[2]).toBe(list[2]);
     expect(list[1]?.done).toBe(true);
+    expect(toggleTodo(list, 1)[0]?.done).toBe(true);
 
     const renamed = renameTodo(next, 3, ' 复习 g02 ');
     expect(renamed.map((t) => t.title)).toEqual(['读完 g04', '写练习', '复习 g02']);
@@ -142,6 +144,7 @@ describe('toggleTodo 与 renameTodo', () => {
     expect(toggleTodo(list, 99)).toBe(list);
     expect(renameTodo(list, 99, '新标题')).toBe(list);
     expect(renameTodo(list, 1, '  ')).toBe(list);
+    expect(renameTodo(list, 1, ' 读完 g04 ')).toBe(list);
   });
 });
 
@@ -199,7 +202,8 @@ function update(list: TodoList, id: number, change: (t: Todo) => Todo): TodoList
   const index = list.findIndex((t) => t.id === id);
   const target = list[index];
   if (target === undefined) return list;
-  return list.toSpliced(index, 1, change(target));
+  const next = change(target);
+  return next === target ? list : list.toSpliced(index, 1, next);
 }
 
 export function addTodo(list: TodoList, id: number, title: string): TodoList {
@@ -213,7 +217,7 @@ export function toggleTodo(list: TodoList, id: number): TodoList {
 
 export function renameTodo(list: TodoList, id: number, title: string): TodoList {
   const text = title.trim();
-  return text ? update(list, id, (t) => ({ ...t, title: text })) : list;
+  return text ? update(list, id, (t) => (t.title === text ? t : { ...t, title: text })) : list;
 }
 
 export function removeTodo(list: TodoList, id: number): TodoList {
@@ -332,6 +336,90 @@ export function toggleTodo(list: TodoList, id: number): TodoList {
 export function renameTodo(list: TodoList, id: number, title: string): TodoList {
   if (title === '' || !has(list, id)) return list;
   return list.map((t) => (t.id === id ? { ...t, title } : t));
+}
+
+export function removeTodo(list: TodoList, id: number): TodoList {
+  if (!has(list, id)) return list;
+  return list.filter((t) => t.id !== id);
+}
+
+export function moveUp(list: TodoList, id: number): TodoList {
+  const index = list.findIndex((t) => t.id === id);
+  const previous = list[index - 1];
+  const current = list[index];
+  if (index <= 0 || previous === undefined || current === undefined) return list;
+  return list.with(index - 1, current).with(index, previous);
+}
+```
+:::
+
+:::variant{kind=wrong name=toggle-only-clears fails=tests reason="toggle 只会把 done 改成 false，不会改回 true"}
+```ts file=todos.ts
+export type Todo = Readonly<{ id: number; title: string; done: boolean }>;
+export type TodoList = readonly Todo[];
+
+function has(list: TodoList, id: number): boolean {
+  return list.some((t) => t.id === id);
+}
+
+export function addTodo(list: TodoList, id: number, title: string): TodoList {
+  const text = title.trim();
+  if (text === '') return list;
+  return [...list, { id, title: text, done: false }];
+}
+
+export function toggleTodo(list: TodoList, id: number): TodoList {
+  if (!has(list, id)) return list;
+  return list.map((t) => (t.id === id ? { ...t, done: false } : t));
+}
+
+export function renameTodo(list: TodoList, id: number, title: string): TodoList {
+  const text = title.trim();
+  const target = list.find((t) => t.id === id);
+  if (text === '' || target === undefined || target.title === text) return list;
+  return list.map((t) => (t === target ? { ...t, title: text } : t));
+}
+
+export function removeTodo(list: TodoList, id: number): TodoList {
+  if (!has(list, id)) return list;
+  return list.filter((t) => t.id !== id);
+}
+
+export function moveUp(list: TodoList, id: number): TodoList {
+  const index = list.findIndex((t) => t.id === id);
+  const previous = list[index - 1];
+  const current = list[index];
+  if (index <= 0 || previous === undefined || current === undefined) return list;
+  return list.with(index - 1, current).with(index, previous);
+}
+```
+:::
+
+:::variant{kind=wrong name=rename-same-title fails=tests reason="新标题和原来的相同时仍然返回了新数组"}
+```ts file=todos.ts
+export type Todo = Readonly<{ id: number; title: string; done: boolean }>;
+export type TodoList = readonly Todo[];
+
+function has(list: TodoList, id: number): boolean {
+  return list.some((t) => t.id === id);
+}
+
+export function addTodo(list: TodoList, id: number, title: string): TodoList {
+  const text = title.trim();
+  if (text === '') return list;
+  return [...list, { id, title: text, done: false }];
+}
+
+export function toggleTodo(list: TodoList, id: number): TodoList {
+  if (!has(list, id)) return list;
+  return list.map((t) => (t.id === id ? { ...t, done: !t.done } : t));
+}
+
+export function renameTodo(list: TodoList, id: number, title: string): TodoList {
+  const text = title.trim();
+  const target = list.find((t) => t.id === id);
+  if (text === '' || target === undefined) return list;
+  return list.map((t) => (t === target ? { ...t, title: text } : t));
 }
 
 export function removeTodo(list: TodoList, id: number): TodoList {

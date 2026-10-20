@@ -26,7 +26,7 @@
   options:
     - text: 字符串，计算和提交时再转换并校验
       correct: true
-      explain: 输入框的 value 本来就是字符串。用户在编辑过程中可能把它清空或者暂时输入不合法的内容，存成字符串，输入框才能如实地显示这些中间状态。
+      explain: 输入框的 value 本来就是字符串。用户在编辑过程中常常会先把它清空、再输入新的数字；存成字符串，转换和校验放到使用的时候做，输入框就不会被强行改成 0。
     - text: 数字，在 onChange 里用 Number(e.currentTarget.value) 转换
       explain: 用户清空输入框时，Number('') 是 0，输入框会立刻显示 0，没法删干净。
     - text: 两者没有区别

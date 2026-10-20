@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 上一课的组件每次显示的内容都一样；要显示不同的数据，只能写一个返回 JSX 的普通函数。props 让组件像函数一样接收参数：`<UserCard name="韩梅梅" online />`。这一课讲怎样用 TypeScript 描述组件接受的 props（必填、可选与默认值、children、事件回调），以及怎样写一个“包装”原生元素、透传其余属性的组件。
 objectives:
   - 用对象类型描述 props，在参数中解构，给可选的 props 设置默认值
@@ -144,7 +144,8 @@ if (!container) throw new Error('页面缺少 #root');
 createRoot(container).render(<App />);
 ```
 - 第 5 行：`children` 是必填的。试着写一个 `<Panel title="空" />`，TypeScript 会报告缺少 `children`。
-- 第 6、14 行：`onClose` 是可选的回调。父组件传了它，面板才显示关闭按钮；按钮被点击时，面板只是调用它，真正做什么由父组件决定。
+- 第 6、14–15 行：`onClose` 是可选的回调。父组件传了它，面板才显示关闭按钮；按钮被点击时，面板只是调用它，真正做什么由父组件决定。
+- `onClick={onClose}` 把函数本身交给按钮（不是调用它的结果，下一课详讲）。React 调用点击处理函数时会传入一个**事件对象**；这里 `onClose` 不需要参数，所以可以直接传。如果回调需要别的参数（例如名字），就要包一层箭头函数：`onClick={() => onSelect(name)}`。
 - 第 28–33 行：标签之间的内容就是 `children`，可以是多个元素；第 34 行的 `children` 只是一段文字。
 :::
 
@@ -166,7 +167,7 @@ function Button({ variant = 'primary', type = 'button', className, ...rest }: Bu
 ```
 
 - 解构时用 `...rest` 收集其余的属性（a12），再用 `{...rest}` **展开**到 `<button>` 上，使用者传的 `onClick`、`disabled`、`children` 都原样传了下去；
-- 展开的**位置**决定了谁覆盖谁：写在后面的属性覆盖前面的。`type={type}` 写在 `{...rest}` 之前，`className={classes}` 写在之后，所以 `type` 用的是解构出来的值（默认 `'button'`），而 `className` 一定是合并后的结果；
+- 展开的**位置**决定了谁覆盖谁：写在后面的属性覆盖前面的。例如不解构 `type`，直接写 `<button type="button" {...rest}>`，`'button'` 就成了一个可以被使用者覆盖的默认值；而写成 `<button {...rest} type="button">`，使用者传的 `type` 永远不起作用。上面的代码把 `type` 和 `className` 都从 `rest` 中解构了出来，`rest` 里没有它们，位置也就不再影响结果；但把 `className={classes}` 写在最后，能保证 `class` 一定是合并后的结果；
 - 原生 `<button>` 的 `type` 默认是 `submit`，在表单里会意外地提交表单（d09）。组件把默认值改成 `'button'`，需要提交时再显式写 `type="submit"`。
 
 挑战题会完整地实现这个组件。
@@ -183,7 +184,7 @@ function Button({ variant = 'primary', type = 'button', className, ...rest }: Bu
 
 - **在组件里修改 props**：`props.items.push(x)`、`user.name = …`。props 是只读的，要变化的数据用 state。
 - **可选的 props 不处理 `undefined`**：用解构的默认值，或者在使用前检查。
-- **children 的类型写成 `JSX.Element`**：这样就不能传字符串、数字或多个元素了。一般用 `ReactNode`。
+- **children 的类型写成 `React.JSX.Element`**：这样就不能传字符串、数字或多个元素了。一般用 `ReactNode`。（`@types/react` 19 中已经没有全局的 `JSX` 命名空间，旧资料中的 `JSX.Element` 要写成 `React.JSX.Element`。）
 - **包装组件丢掉了其余的属性**：没有 `{...rest}`，使用者传的 `onClick`、`aria-label` 都会悄悄失效。
 - **展开的顺序写反**：`{...rest}` 写在最后，会覆盖组件自己设置的属性。
 

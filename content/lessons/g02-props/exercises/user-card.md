@@ -155,7 +155,7 @@ interface UserCardProps {
   name: string;
   role?: string;
   online?: boolean;
-  onMessage?(name: string): void;
+  onMessage?: (name: string) => void;
 }
 
 export function UserCard(props: UserCardProps) {

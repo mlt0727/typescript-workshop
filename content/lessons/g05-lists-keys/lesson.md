@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 界面上的列表几乎都来自数组：待办事项、搜索结果、评论。在 React 中把数组变成一组元素只需要一个 map，但每一项都需要一个 key。很多人用数组下标或者随机数凑合，平时看不出问题，直到删除、排序之后，一行的展开状态、输入框里的文字跑到了另一行。这一课讲怎样渲染列表、key 的作用，以及怎样选择一个正确的 key。
 objectives:
   - 用 map 把数组渲染成元素，配合 filter、toSorted 显示筛选和排序后的结果，并处理空列表

@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: 表单要能校验输入、根据输入实时显示提示、提交后清空，有时还要根据一个字段决定另一个字段能不能用。如果输入框里的内容只存在于 DOM 中，这些事情都要先去 DOM 里把值读出来（d09 的做法）。React 更常用的方式是“受控组件”：输入框显示的值来自 state，每次输入都更新 state。这一课讲文本框、多行文本、下拉框、复选框、单选框的受控写法，事件对象的类型，以及提交、校验与重置。
 objectives:
   - 用 value / checked 与 onChange 把输入控件和 state 绑定，理解 React 的 onChange 在每次输入时触发
@@ -89,9 +89,9 @@ createRoot(container).render(<App />);
 
 几点说明：
 
-- **数字**：`<input type="number">` 的 `value` 仍然是字符串。state 也存成字符串，用户才能自由地删改（例如先删成空的，再输入新的数字）；提交或计算时再转换、校验。
+- **数字**：`<input type="number">` 的 `value` 仍然是字符串。state 也存成字符串，用户才能自由地删改（例如先删成空的，再输入新的数字；存成数字的话，`Number('')` 是 0，输入框没法清空）；提交或计算时再转换、校验。只需要整数的字段，也常用 `type="text"` 加 `inputMode="numeric"`，避免浏览器对 `-`、`e` 这类字符的特殊处理。
 - **下拉框的值是 `string`**：如果 state 是联合类型（例如 `'low' | 'normal' | 'high'`），要先检查读到的值属于这个联合，再设置（b07 的类型守卫）。
-- **事件的类型**：处理函数单独写出来时，输入控件用 `ChangeEvent<HTMLInputElement>`（`HTMLSelectElement`、`HTMLTextAreaElement` 同理），表单提交用 `SubmitEvent<HTMLFormElement>`，都从 `react` 导入。很多旧资料中的 `FormEvent`，在 `@types/react` 19 中已经被标为过时。
+- **事件的类型**：处理函数单独写出来时，输入控件用 `ChangeEvent<HTMLInputElement>`（`HTMLSelectElement`、`HTMLTextAreaElement` 同理），表单提交用 `SubmitEvent<HTMLFormElement>`，都从 `react` 导入。很多旧资料中的 `FormEvent`，在较新的 `@types/react` 19（本平台是 19.3）中已经被标为过时。注意 DOM 中也有一个全局的 `SubmitEvent` 类型：忘了从 `react` 导入时，TypeScript 会报告 “Type 'SubmitEvent' is not generic”。
 
 ## 一个对象管理多个字段
 
@@ -178,8 +178,8 @@ createRoot(container).render(<App />);
 
 ```tsx
 const errors = validate(form); // { title?: string; email?: string }
-<input id="email" aria-invalid={errors.email !== undefined} aria-describedby={errors.email ? 'email-error' : undefined} … />
-{errors.email && <p id="email-error">{errors.email}</p>}
+<input id="email" aria-invalid={errors.email !== undefined} aria-describedby={errors.email !== undefined ? 'email-error' : undefined} … />
+{errors.email !== undefined && <p id="email-error">{errors.email}</p>}
 ```
 
 常见的做法是：用户第一次点提交之前不显示错误（还没开始填写就满屏红字很不友好）；点过提交之后，错误随输入实时更新。用一个 `submitted` 布尔 state 记住“是否尝试过提交”就够了。挑战题会完整地实现这些。

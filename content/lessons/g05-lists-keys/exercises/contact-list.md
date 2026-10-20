@@ -117,6 +117,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+// React 对同一个组件的 key 警告只报告一次，所以检查警告的测试要放在最前面。
 test('按名字排序显示全部联系人；每一项都有唯一的 key（没有 React 警告）', () => {
   const errors = vi.spyOn(console, 'error');
   render(<ContactList contacts={contacts} query="" />);

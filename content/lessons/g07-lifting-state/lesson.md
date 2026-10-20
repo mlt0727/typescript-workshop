@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: 两个组件需要同一份数据时，最常见的错误是各存一份：手风琴里每个面板自己记着是否展开，结果“只能展开一个”的规则没处实现；列表记着选中的对象，修改了数据之后，详情里显示的还是旧的那份。这一课讲怎样决定 state 放在哪里：把共享的 state 提升到最近的共同父组件，让子组件变成“受控”的；怎样选择 state 的结构，避免重复和矛盾；以及用 children 组合组件，减少层层传递 props。
 objectives:
   - 把多个组件共享的 state 提升到最近的共同父组件，用 props 传下数据和回调

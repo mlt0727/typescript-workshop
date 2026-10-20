@@ -6079,8 +6079,8 @@
       ]
     },
     "e10-url-routing": {
-      "verifiedAt": "2026-10-20T14:06:57.204Z",
-      "sourceHash": "924fe41f48ae3525",
+      "verifiedAt": "2026-10-20T14:54:58.924Z",
+      "sourceHash": "34a7b0289d2c3a57",
       "ok": true,
       "checks": [
         {
@@ -6136,7 +6136,7 @@
         {
           "target": "exercise:mini-router:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(matchRoute › 匹配普通段和参数段 ⟶ expect(…).toEqual({ id: '42' }),matchRoute › 参数被解码 ⟶ expect(…).toEqual({ name: 'C++' }),createRouter › start 渲染当前地址 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",createRouter › 点击站内链接：不跳转页面，记录到历史中并渲染，焦点移到标题 ⟶ expect(…).toEqual([ true ]),createRouter › 保留链接中的查询参数和片段 ⟶ expect(…).toBe('/users/7?tab=posts#latest'),createRouter › 后退、前进时重新渲染 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",createRouter › 没有匹配的路由；路径参数中的 HTML 只作为文字显示 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",createRouter › 停止之后不再拦截链接，也不再响应后退 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\")"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(matchRoute › 匹配普通段和参数段 ⟶ expect(…).toEqual({ id: '42' }),matchRoute › 参数被解码 ⟶ expect(…).toEqual({ name: 'C++' }),createRouter › start 渲染当前地址，但不移动焦点 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",createRouter › 点击站内链接：不跳转页面，记录到历史中并渲染，焦点移到标题 ⟶ expect(…).toEqual([ true ]),createRouter › 点击链接中的子元素也会被拦截 ⟶ expect(…).toEqual([ true ]),createRouter › 保留链接中的查询参数和片段 ⟶ expect(…).toBe('/users/7?tab=posts#latest'),createRouter › 后退、前进时重新渲染 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",createRouter › 没有匹配的路由；路径参数中的 HTML 只作为文字显示 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",createRouter › 停止之后不再拦截链接，也不再响应后退 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\")"
         },
         {
           "target": "exercise:mini-router:solution:solution",
@@ -6151,7 +6151,7 @@
         {
           "target": "exercise:mini-router:wrong:global-history",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRouter › start 渲染当前地址 ⟶ expect(…).toHaveTextContent('首页'),createRouter › 点击站内链接：不跳转页面，记录到历史中并渲染，焦点移到标题 ⟶ expect(…).toBe('/users/42'),createRouter › 保留链接中的查询参数和片段 ⟶ expect(…).toBe('/users/7?tab=posts#latest'),createRouter › 后退、前进时重新渲染 ⟶ expect(…).toHaveTextContent('首页'),createRouter › 没有匹配的路由；路径参数中的 HTML 只作为文字显示 ⟶ TestingLibraryElementError: Unable to find an element with the text: 没有 /nowhere 这个页面. This could be because the text is broken up by multiple elements. In this)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRouter › start 渲染当前地址，但不移动焦点 ⟶ expect(…).toHaveTextContent('首页'),createRouter › 点击站内链接：不跳转页面，记录到历史中并渲染，焦点移到标题 ⟶ expect(…).toBe('/users/42'),createRouter › 点击链接中的子元素也会被拦截 ⟶ expect(…).toBe('/users/9'),createRouter › 保留链接中的查询参数和片段 ⟶ expect(…).toBe('/users/7?tab=posts#latest'),createRouter › 后退、前进时重新渲染 ⟶ expect(…).toHaveTextContent('首页'),createRouter › 没有匹配的路由；路径参数中的 HTML 只作为文字显示 ⟶ TestingLibraryElementError: Unable to find an element with the text: 没有 /nowhere 这个页面. This could be because the text is broken up by multiple elements. In this)"
         },
         {
           "target": "exercise:mini-router:wrong:intercept-everything",
@@ -6172,6 +6172,16 @@
           "target": "exercise:mini-router:wrong:no-listen",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRouter › 后退、前进时重新渲染 ⟶ expect(…).toHaveTextContent('首页'))"
+        },
+        {
+          "target": "exercise:mini-router:wrong:focus-on-start",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRouter › start 渲染当前地址，但不移动焦点 ⟶ 页面刚打开时不要抢走焦点)"
+        },
+        {
+          "target": "exercise:mini-router:wrong:target-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRouter › 点击链接中的子元素也会被拦截 ⟶ expect(…).toEqual([ true ]))"
         },
         {
           "target": "exercise:mini-router:wrong:inner-html",
@@ -6375,8 +6385,8 @@
       ]
     },
     "g01-jsx-components": {
-      "verifiedAt": "2026-10-20T14:07:01.400Z",
-      "sourceHash": "cd510eebeb00edd2",
+      "verifiedAt": "2026-10-20T14:55:01.348Z",
+      "sourceHash": "911ce54daeec3ad6",
       "ok": true,
       "checks": [
         {
@@ -6467,7 +6477,7 @@
         {
           "target": "exercise:order-summary:wrong:no-strike",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(orderSummary › 金额保留两位小数；只有已取消的订单加删除线 ⟶ toHaveTextContent() 需要一个 DOM 元素，实际收到：null)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(orderSummary › 每种状态的文字和 class ⟶ cancelled 的金额是否加删除线,orderSummary › 金额保留两位小数；只有已取消的订单加删除线 ⟶ toHaveTextContent() 需要一个 DOM 元素，实际收到：null)"
         },
         {
           "target": "exercise:order-summary:wrong:inner-html",
@@ -6477,8 +6487,8 @@
       ]
     },
     "g02-props": {
-      "verifiedAt": "2026-10-20T14:07:03.703Z",
-      "sourceHash": "b9a8eed9e98d5b35",
+      "verifiedAt": "2026-10-20T14:55:03.857Z",
+      "sourceHash": "853cbe3532944ac6",
       "ok": true,
       "checks": [
         {
@@ -6539,7 +6549,7 @@
         {
           "target": "exercise:button-and-card:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2322@ui.test.tsx:16 Type '{ children: string; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps'.；TS2322@ui.test.tsx:27 Type '{ children: string; onClick: Mock<Procedure>; \"aria-label\": string; title: string; }' is not assignable to type 'Intrinsic) rules=ok tests=fail(Button › 默认是 type=\"button\" 的 primary 按钮 ⟶ expect(…).toHaveAttribute('type', 'button'),Button › variant 和使用者的 className 合并在一起 ⟶ expect(…).toBe('btn btn-danger wide'),Button › 其余的属性都传给了原生按钮 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"关闭对话框\",Button › 可以改成 submit 按钮 ⟶ expect(…).toHaveAttribute('type', 'submit'),Card › 标题、内容和底部 ⟶ toHaveTextContent() 需要一个 DOM 元素，实际收到：null,Card › 没有 footer 时不渲染底部；children 可以是文字 ⟶ toHaveTextContent() 需要一个 DOM 元素，实际收到：null)"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2322@ui.test.tsx:16 Type '{ children: string; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps'.；TS2322@ui.test.tsx:27 Type '{ children: string; onClick: Mock<Procedure>; \"aria-label\": string; title: string; }' is not assignable to type 'Intrinsic) rules=ok tests=fail(Button › 默认是 type=\"button\" 的 primary 按钮 ⟶ expect(…).toHaveAttribute('type', 'button'),Button › variant 和使用者的 className 合并在一起 ⟶ expect(…).toBe('btn btn-danger wide'),Button › 其余的属性都传给了原生按钮 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"关闭对话框\",Button › 可以改成 submit 按钮 ⟶ expect(…).toHaveAttribute('type', 'submit'),Card › 标题、内容和底部 ⟶ expect(…).toEqual([ 'H2', 'DIV', 'FOOTER' ]),Card › 没有 footer 时不渲染底部；children 可以是文字 ⟶ toHaveTextContent() 需要一个 DOM 元素，实际收到：null)"
         },
         {
           "target": "exercise:button-and-card:solution:solution",
@@ -6671,8 +6681,8 @@
       ]
     },
     "g04-immutable-updates": {
-      "verifiedAt": "2026-10-20T14:07:09.995Z",
-      "sourceHash": "261ff444f468f6ef",
+      "verifiedAt": "2026-10-20T14:55:07.477Z",
+      "sourceHash": "189224b1be89db30",
       "ok": true,
       "checks": [
         {
@@ -6718,12 +6728,22 @@
         {
           "target": "exercise:todo-helpers:wrong:deep-clone",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTodo › 在末尾添加，原来的项保持原样 ⟶ expect(…).toBe({ id: 1, title: '读完 g04', done: false }),toggleTodo 与 renameTodo › 只替换被修改的那一项 ⟶ expect(…).toBe({ id: 1, title: '读完 g04', done: false }),removeTodo › 删除一项 ⟶ expect(…).toBe({ id: 3, title: '复习 g03', done: false }),moveUp › 和前一项交换位置 ⟶ expect(…).toBe({ id: 3, title: '复习 g03', done: false }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTodo › 在末尾添加，原来的项保持原样 ⟶ expect(…).toBe({ id: 1, title: '读完 g04', done: false }),toggleTodo 与 renameTodo › 只替换被修改的那一项 ⟶ expect(…).toBe({ id: 1, title: '读完 g04', done: false }),toggleTodo 与 renameTodo › 找不到 id 或标题为空时返回原数组 ⟶ expect(…).toBe([,removeTodo › 删除一项 ⟶ expect(…).toBe({ id: 3, title: '复习 g03', done: false }),moveUp › 和前一项交换位置 ⟶ expect(…).toBe({ id: 3, title: '复习 g03', done: false }))"
         },
         {
           "target": "exercise:todo-helpers:wrong:no-trim",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTodo › 在末尾添加，原来的项保持原样 ⟶ expect(…).toEqual([,addTodo › 标题为空时返回原数组 ⟶ expect(…).toBe([,toggleTodo 与 renameTodo › 只替换被修改的那一项 ⟶ expect(…).toEqual([ '读完 g04', '写练习', '复习 g02' ]),toggleTodo 与 renameTodo › 找不到 id 或标题为空时返回原数组 ⟶ expect(…).toBe([)"
+        },
+        {
+          "target": "exercise:todo-helpers:wrong:toggle-only-clears",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toggleTodo 与 renameTodo › 只替换被修改的那一项 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:todo-helpers:wrong:rename-same-title",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toggleTodo 与 renameTodo › 找不到 id 或标题为空时返回原数组 ⟶ expect(…).toBe([)"
         },
         {
           "target": "exercise:settings-panel:starter:starter",
@@ -6754,12 +6774,17 @@
           "target": "exercise:settings-panel:wrong:undo-with-copy",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(撤销修改：回到初始设置；没有修改时不可用 ⟶ expect(…).toBeDisabled())"
+        },
+        {
+          "target": "exercise:settings-panel:wrong:jump-to-limit",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(字号每次变化 2，范围 12–24，到达边界时按钮禁用 ⟶ expect(…).toHaveTextContent('22'),保存时交出新对象，原来的设置没有被修改 ⟶ expect(…).toEqual({)"
         }
       ]
     },
     "g05-lists-keys": {
-      "verifiedAt": "2026-10-20T14:07:12.801Z",
-      "sourceHash": "64d852ff00e07dff",
+      "verifiedAt": "2026-10-20T14:55:10.884Z",
+      "sourceHash": "43cb5b39f6d96bea",
       "ok": true,
       "checks": [
         {
@@ -6825,7 +6850,7 @@
         {
           "target": "exercise:playlist:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(按顺序显示歌曲，第一首不能上移 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"listitem\",删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“平凡之路”\",上移之后，“喜欢”仍然跟着原来的歌 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“夜空中最亮的星”\",其他歌曲的状态在每次操作后都保留 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“晴天”\",全部删除后显示空列表的提示 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"删除“晴天”\")"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(同名的歌各自记住“喜欢”；key 不重复（没有 React 警告） ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“晴天 - 周杰伦”\",按顺序显示歌曲，第一首不能上移 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"listitem\",删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“平凡之路 - 朴树”\",上移之后，“喜欢”仍然跟着原来的歌 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“夜空中最亮的星 - 逃跑计划”\",其他歌曲的状态在每次操作后都保留 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“晴天 - 周杰伦”\",全部删除后显示空列表的提示 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"删除“晴天 - 周杰伦”\")"
         },
         {
           "target": "exercise:playlist:solution:solution",
@@ -6840,23 +6865,28 @@
         {
           "target": "exercise:playlist:wrong:index-key",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),上移之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(同名的歌各自记住“喜欢”；key 不重复（没有 React 警告） ⟶ expect(…).toHaveAttribute('aria-pressed', 'false'),删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),上移之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
         },
         {
           "target": "exercise:playlist:wrong:index-in-key",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),上移之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(同名的歌各自记住“喜欢”；key 不重复（没有 React 警告） ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),上移之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
         },
         {
           "target": "exercise:playlist:wrong:random-key",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),上移之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),其他歌曲的状态在每次操作后都保留 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(同名的歌各自记住“喜欢”；key 不重复（没有 React 警告） ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),上移之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),其他歌曲的状态在每次操作后都保留 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+        },
+        {
+          "target": "exercise:playlist:wrong:title-key",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(同名的歌各自记住“喜欢”；key 不重复（没有 React 警告） ⟶ expect(…).toHaveAttribute('aria-pressed', 'false'))"
         }
       ]
     },
     "g06-controlled-forms": {
-      "verifiedAt": "2026-10-20T14:12:59.708Z",
-      "sourceHash": "83e9bb749da6b98b",
+      "verifiedAt": "2026-10-20T14:55:21.748Z",
+      "sourceHash": "16245a5e69f74d3f",
       "ok": true,
       "checks": [
         {
@@ -6882,7 +6912,7 @@
         {
           "target": "exercise:new-task-form:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(初始状态：空标题、普通优先级、不置顶 ⟶ expect(…).toHaveValue('normal'),在标题中按回车提交：标题去掉首尾空白，提交后清空表单 ⟶ expect(…).toHaveBeenCalledTimes(1),点击“添加”同样提交；复选框可以来回切换 ⟶ expect(…).toHaveBeenCalledWith({ title: '买菜', priority: 'normal', pinned: false }),标题为空时显示错误、不提交；改正后提交，错误消失 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\")"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(初始状态：空标题、普通优先级、不置顶 ⟶ expect(…).toHaveValue('normal'),在标题中按回车提交：标题去掉首尾空白，提交后清空表单 ⟶ TestingLibraryElementError: Unable to find an element with the text: 还可以输入 24 字. This could be because the text is broken up by multiple elements. In this case,,点击“添加”同样提交；复选框可以来回切换 ⟶ expect(…).toHaveBeenCalledWith({ title: '买菜', priority: 'normal', pinned: false }),标题为空时显示错误、不提交；改正后提交，错误消失 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\")"
         },
         {
           "target": "exercise:new-task-form:solution:solution",
@@ -6907,7 +6937,7 @@
         {
           "target": "exercise:new-task-form:wrong:assert-priority",
           "ok": true,
-          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@23) tests=ok"
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@24) tests=ok"
         },
         {
           "target": "exercise:new-task-form:wrong:checkbox-value",
@@ -6922,7 +6952,7 @@
         {
           "target": "exercise:shipping-form:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS17002@ShippingForm.tsx:37 Expected corresponding JSX closing tag for 'div'.；TS17002@ShippingForm.tsx:41 Expected corresponding JSX closing tag for 'div'.；TS17002@ShippingForm.tsx:45 Expected corresponding JSX closing tag for 'div'.；TS17002@ShippingForm.tsx:58 Expected corresponding JSX closing tag) rules=ok tests=fail(初始状态：没有错误提示，数量为 1，合计按单价计算 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\" and name \"合计\",合计随数量和配送方式变化；数量不合法时显示“—” ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\" and name \"合计\",提交空表单：显示错误并关联到输入框，不调用 onSubmit ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'),尝试提交之后，错误随输入实时更新 ⟶ TestingLibraryElementError: Unable to find an element with the text: 请填写 11 位手机号. This could be because the text is broken up by multiple elements. In this case,备注：剩余字数，超过 100 字时提交报错 ⟶ TestingLibraryElementError: Unable to find an element with the text: 还可以输入 -1 字. This could be because the text is broken up by multiple elements. In this case,,合法时提交整理好的数据，然后重置表单 ⟶ expect(…).toHaveBeenCalledWith({)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(初始状态：没有错误提示，数量为 1，合计按单价计算 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\" and name \"合计\",合计随数量和配送方式变化；数量不合法时显示“—” ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\" and name \"合计\",提交空表单：显示错误并关联到输入框，焦点移到第一个出错的字段，不调用 onSubmit ⟶ expect(…).toHaveFocus(),尝试提交之后，错误随输入实时更新 ⟶ TestingLibraryElementError: Unable to find an element with the text: 请填写 11 位手机号. This could be because the text is broken up by multiple elements. In this case,备注：剩余字数，超过 100 字时提交报错 ⟶ TestingLibraryElementError: Unable to find an element with the text: 还可以输入 -1 字. This could be because the text is broken up by multiple elements. In this case,,合法时提交整理好的数据，然后重置表单（包括“还没有尝试提交”的状态） ⟶ expect(…).toHaveBeenCalledWith({)"
         },
         {
           "target": "exercise:shipping-form:solution:solution",
@@ -6937,33 +6967,43 @@
         {
           "target": "exercise:shipping-form:wrong:errors-immediately",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(初始状态：没有错误提示，数量为 1，合计按单价计算 ⟶ expect(…).toHaveLength(0))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(初始状态：没有错误提示，数量为 1，合计按单价计算 ⟶ expect(…).toHaveLength(0),合法时提交整理好的数据，然后重置表单（包括“还没有尝试提交”的状态） ⟶ 重置之后不应该显示错误)"
         },
         {
           "target": "exercise:shipping-form:wrong:no-aria",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(提交空表单：显示错误并关联到输入框，不调用 onSubmit ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(提交空表单：显示错误并关联到输入框，焦点移到第一个出错的字段，不调用 onSubmit ⟶ expect(…).toBe('请填写收件人'))"
         },
         {
           "target": "exercise:shipping-form:wrong:no-reset",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(合法时提交整理好的数据，然后重置表单 ⟶ expect(…).toHaveValue(''))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(提交空表单：显示错误并关联到输入框，焦点移到第一个出错的字段，不调用 onSubmit ⟶ expect(…).toHaveFocus(),合法时提交整理好的数据，然后重置表单（包括“还没有尝试提交”的状态） ⟶ expect(…).toHaveValue(''))"
+        },
+        {
+          "target": "exercise:shipping-form:wrong:keep-submitted",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(合法时提交整理好的数据，然后重置表单（包括“还没有尝试提交”的状态） ⟶ 重置之后不应该显示错误)"
+        },
+        {
+          "target": "exercise:shipping-form:wrong:no-focus",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(提交空表单：显示错误并关联到输入框，焦点移到第一个出错的字段，不调用 onSubmit ⟶ expect(…).toHaveFocus())"
         },
         {
           "target": "exercise:shipping-form:wrong:string-math",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2363@ShippingForm.tsx:56 The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.) rules=ok tests=ok"
+          "detail": "被拒绝（types）；types=fail(TS2363@ShippingForm.tsx:58 The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.) rules=ok tests=ok"
         },
         {
           "target": "exercise:shipping-form:wrong:untrimmed",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(合法时提交整理好的数据，然后重置表单 ⟶ expect(…).toHaveBeenCalledWith({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(提交空表单：显示错误并关联到输入框，焦点移到第一个出错的字段，不调用 onSubmit ⟶ expect(…).toHaveFocus(),合法时提交整理好的数据，然后重置表单（包括“还没有尝试提交”的状态） ⟶ expect(…).toHaveBeenCalledWith({)"
         }
       ]
     },
     "g07-lifting-state": {
-      "verifiedAt": "2026-10-20T14:16:57.596Z",
-      "sourceHash": "6f729c6991bdbe7e",
+      "verifiedAt": "2026-10-20T14:55:25.796Z",
+      "sourceHash": "ea105fb0f49f469a",
       "ok": true,
       "checks": [
         {
@@ -6999,7 +7039,7 @@
         {
           "target": "exercise:faq:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2578@Faq.test-d.tsx:3 Unused '@ts-expect-error' directive.；TS2322@Faq.test-d.tsx:5 Type '{ id: string; question: string; answer: string; isOpen: boolean; onToggle: () => void; }' is not assignable to type 'IntrinsicAttributes & FaqItemProps'.) rules=ok tests=fail(一开始都是收起的；答案在页面中，但被隐藏 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,同时只展开一个 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,展开的答案是一个以问题命名的区域 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"多久发货？\")"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2578@Faq.test-d.tsx:3 Unused '@ts-expect-error' directive.；TS2322@Faq.test-d.tsx:5 Type '{ id: string; question: string; answer: string; isOpen: boolean; onToggle: () => void; }' is not assignable to type 'IntrinsicAttributes & FaqItemProps'.) rules=ok tests=fail(结构：标题中的按钮，id 按约定命名 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,一开始都是收起的；答案在页面中，但被隐藏 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,同时只展开一个 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,展开的答案是一个以问题命名的区域 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"多久发货？\")"
         },
         {
           "target": "exercise:faq:solution:solution",
@@ -7024,12 +7064,12 @@
         {
           "target": "exercise:faq:wrong:conditional-panel",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(一开始都是收起的；答案在页面中，但被隐藏 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,同时只展开一个 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(结构：标题中的按钮，id 按约定命名 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,一开始都是收起的；答案在页面中，但被隐藏 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,同时只展开一个 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素)"
         },
         {
           "target": "exercise:segmented-control:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2322@report.test.tsx:15 Type '{ label: string; options: readonly [{ readonly value: \"s\"; readonly label: \"小\"; }, { readonly value: \"m\"; readonly label: \"中\"; }, { readonly value: \"l\"; readonly label: \"大\"; }]; value: string; onChange: () => void; }' is not assignable to type 'IntrinsicAttributes & S) rules=ok tests=fail(SegmentedControl › 按 value 显示选中的选项 ⟶ expect(…).toEqual([ 'false', 'true', 'false' ]),SegmentedControl › 点击时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).toHaveBeenCalledWith('l'),ReportPanel › 默认是本周的销售额，“恢复默认”不可用 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),ReportPanel › 两个选择器的值都由 ReportPanel 保存，标题随之变化 ⟶ expect(…).toHaveTextContent(/^本月的销售额$/),ReportPanel › 恢复默认 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2322@report.test.tsx:21 Type '{ label: string; options: readonly [{ readonly value: \"s\"; readonly label: \"小\"; }, { readonly value: \"m\"; readonly label: \"中\"; }, { readonly value: \"l\"; readonly label: \"大\"; }]; value: string; onChange: () => void; }' is not assignable to type 'IntrinsicAttributes & S) rules=ok tests=fail(SegmentedControl › 是一组单选框：fieldset 和 legend 给出组名，按 value 显示选中的选项 ⟶ expect(…).toEqual([ false, true, false ]),SegmentedControl › 选择时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).toHaveBeenCalledWith('l'),SegmentedControl › 可以用方向键选择 ⟶ expect(…).toHaveBeenLastCalledWith('l'),ReportPanel › 默认是本周的销售额，“恢复默认”不可用 ⟶ expect(…).toBeChecked(),ReportPanel › 两个选择器的值都由 ReportPanel 保存，标题随之变化 ⟶ expect(…).toHaveTextContent(/^本月的销售额$/),ReportPanel › 恢复默认 ⟶ expect(…).toBeChecked())"
         },
         {
           "target": "exercise:segmented-control:solution:solution",
@@ -7052,9 +7092,14 @@
           "detail": "被拒绝（types）；types=fail(TS2322@ReportPanel.tsx:30 Type 'Dispatch<SetStateAction<Period>>' is not assignable to type '(value: string) => void'.；TS2322@ReportPanel.tsx:31 Type 'Dispatch<SetStateAction<Metric>>' is not assignable to type '(value: string) => void'.；TS2578@report.test-d.tsx:9 Unused '@ts-expect-error' directive) rules=ok tests=ok"
         },
         {
-          "target": "exercise:segmented-control:wrong:notify-when-selected",
+          "target": "exercise:segmented-control:wrong:toggle-buttons",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(SegmentedControl › 点击时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(SegmentedControl › 是一组单选框：fieldset 和 legend 给出组名，按 value 显示选中的选项 ⟶ expect(…).toBe('FIELDSET'),SegmentedControl › 选择时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"radio\" and name \"大\",SegmentedControl › 可以用方向键选择 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"radio\" and name \"中\",ReportPanel › 默认是本周的销售额，“恢复默认”不可用 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"radio\" and name \"本周\",ReportPanel › 两个选择器的单选框属于不同的组（name 不同） ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"radio\",ReportPanel › 两个选择器的值都由 ReportPanel 保存，标题随之变化 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"radio\" and name \"本月\",ReportPanel › 恢复默认 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"radio\" and name \"今天\")"
+        },
+        {
+          "target": "exercise:segmented-control:wrong:notify-on-click",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(SegmentedControl › 选择时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).toHaveBeenCalledTimes(1))"
         },
         {
           "target": "exercise:segmented-control:wrong:method-syntax",
@@ -7062,9 +7107,14 @@
           "detail": "被拒绝（types）；types=fail(TS2578@report.test-d.tsx:23 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
         },
         {
+          "target": "exercise:segmented-control:wrong:shared-name",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(ReportPanel › 默认是本周的销售额，“恢复默认”不可用 ⟶ expect(…).toBeChecked(),ReportPanel › 两个选择器的单选框属于不同的组（name 不同） ⟶ expect(…).not.toBe('segmented'),ReportPanel › 两个选择器的值都由 ReportPanel 保存，标题随之变化 ⟶ expect(…).toBeChecked(),ReportPanel › 恢复默认 ⟶ expect(…).toBeChecked())"
+        },
+        {
           "target": "exercise:segmented-control:wrong:local-copy",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(SegmentedControl › 点击时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).toHaveAttribute('aria-pressed', 'false'),ReportPanel › 恢复默认 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(SegmentedControl › 选择时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).not.toBeChecked(),ReportPanel › 恢复默认 ⟶ expect(…).toBeChecked())"
         }
       ]
     },

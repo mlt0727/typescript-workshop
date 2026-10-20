@@ -11,7 +11,7 @@ title: 设置面板
 界面（测试依赖这些文字和可访问名称）：
 
 1. `<p>主题：浅色</p>`（或“深色”）和一个“切换主题”按钮；
-2. `<output aria-label="字号">` 显示字号；“缩小字号”（`A-`）和“放大字号”（`A+`）两个按钮，每次变化 2，范围是 12 到 24，到达边界时对应的按钮禁用；
+2. `<output aria-label="字号">` 显示字号；“缩小字号”和“放大字号”两个按钮，每次变化 2，范围是 12 到 24，到达边界时对应的按钮禁用；
 3. “邮件通知”“推送通知”两个开关按钮，用 `aria-pressed` 表示是否开启，点击时切换；
 4. “保存”按钮：用当前的设置调用 `onSave`；
 5. “撤销修改”按钮：回到 `initial`。当前的设置**就是** `initial` 这个对象时（还没有修改过，或者刚刚撤销），按钮禁用。
@@ -106,11 +106,11 @@ export function SettingsPanel({ initial, onSave }: SettingsPanelProps) {
       <p>
         字号：<output aria-label="字号">{settings.fontSize}</output>
       </p>
-      <button type="button" aria-label="缩小字号" disabled={settings.fontSize <= 12} onClick={() => changeFontSize(-2)}>
-        A-
+      <button type="button" disabled={settings.fontSize <= 12} onClick={() => changeFontSize(-2)}>
+        缩小字号
       </button>
-      <button type="button" aria-label="放大字号" disabled={settings.fontSize >= 24} onClick={() => changeFontSize(2)}>
-        A+
+      <button type="button" disabled={settings.fontSize >= 24} onClick={() => changeFontSize(2)}>
+        放大字号
       </button>
       <p>通知：</p>
       <button type="button" aria-pressed={settings.notifications.email} onClick={() => toggleNotification('email')}>
@@ -176,7 +176,9 @@ test('字号每次变化 2，范围 12–24，到达边界时按钮禁用', asyn
   expect(screen.getByRole('status', { name: '字号' })).toHaveTextContent('24');
   expect(bigger).toBeDisabled();
   const smaller = screen.getByRole('button', { name: '缩小字号' });
-  for (let i = 0; i < 6; i++) await user.click(smaller);
+  await user.click(smaller);
+  expect(screen.getByRole('status', { name: '字号' })).toHaveTextContent('22');
+  for (let i = 0; i < 5; i++) await user.click(smaller);
   expect(screen.getByRole('status', { name: '字号' })).toHaveTextContent('12');
   expect(smaller).toBeDisabled();
 });
@@ -283,11 +285,11 @@ export function SettingsPanel({ initial, onSave }: SettingsPanelProps) {
       <p>
         字号：<output aria-label="字号">{fontSize}</output>
       </p>
-      <button type="button" aria-label="缩小字号" disabled={fontSize === 12} onClick={() => update({ fontSize: clamp(fontSize - 2) })}>
-        A-
+      <button type="button" disabled={fontSize === 12} onClick={() => update({ fontSize: clamp(fontSize - 2) })}>
+        缩小字号
       </button>
-      <button type="button" aria-label="放大字号" disabled={fontSize === 24} onClick={() => update({ fontSize: clamp(fontSize + 2) })}>
-        A+
+      <button type="button" disabled={fontSize === 24} onClick={() => update({ fontSize: clamp(fontSize + 2) })}>
+        放大字号
       </button>
       <p>通知：</p>
       {(['email', 'push'] as const).map((channel) => (
@@ -349,11 +351,11 @@ export function SettingsPanel({ initial, onSave }: SettingsPanelProps) {
       <p>
         字号：<output aria-label="字号">{settings.fontSize}</output>
       </p>
-      <button type="button" aria-label="缩小字号" disabled={settings.fontSize <= 12} onClick={() => changeFontSize(-2)}>
-        A-
+      <button type="button" disabled={settings.fontSize <= 12} onClick={() => changeFontSize(-2)}>
+        缩小字号
       </button>
-      <button type="button" aria-label="放大字号" disabled={settings.fontSize >= 24} onClick={() => changeFontSize(2)}>
-        A+
+      <button type="button" disabled={settings.fontSize >= 24} onClick={() => changeFontSize(2)}>
+        放大字号
       </button>
       <p>通知：</p>
       <button type="button" aria-pressed={settings.notifications.email} onClick={() => toggleNotification('email')}>
@@ -418,11 +420,11 @@ export function SettingsPanel({ initial, onSave }: SettingsPanelProps) {
       <p>
         字号：<output aria-label="字号">{settings.fontSize}</output>
       </p>
-      <button type="button" aria-label="缩小字号" disabled={settings.fontSize <= 12} onClick={() => changeFontSize(-2)}>
-        A-
+      <button type="button" disabled={settings.fontSize <= 12} onClick={() => changeFontSize(-2)}>
+        缩小字号
       </button>
-      <button type="button" aria-label="放大字号" disabled={settings.fontSize >= 24} onClick={() => changeFontSize(2)}>
-        A+
+      <button type="button" disabled={settings.fontSize >= 24} onClick={() => changeFontSize(2)}>
+        放大字号
       </button>
       <p>通知：</p>
       <button type="button" aria-pressed={settings.notifications.email} onClick={() => toggleNotification('email')}>
@@ -487,11 +489,11 @@ export function SettingsPanel({ initial, onSave }: SettingsPanelProps) {
       <p>
         字号：<output aria-label="字号">{settings.fontSize}</output>
       </p>
-      <button type="button" aria-label="缩小字号" disabled={settings.fontSize <= 12} onClick={() => changeFontSize(-2)}>
-        A-
+      <button type="button" disabled={settings.fontSize <= 12} onClick={() => changeFontSize(-2)}>
+        缩小字号
       </button>
-      <button type="button" aria-label="放大字号" disabled={settings.fontSize >= 24} onClick={() => changeFontSize(2)}>
-        A+
+      <button type="button" disabled={settings.fontSize >= 24} onClick={() => changeFontSize(2)}>
+        放大字号
       </button>
       <p>通知：</p>
       <button type="button" aria-pressed={settings.notifications.email} onClick={() => toggleNotification('email')}>
@@ -505,6 +507,75 @@ export function SettingsPanel({ initial, onSave }: SettingsPanelProps) {
           保存
         </button>
         <button type="button" disabled={settings === initial} onClick={() => setSettings({ ...initial })}>
+          撤销修改
+        </button>
+      </p>
+    </section>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=jump-to-limit fails=tests reason="点一次就把字号设成了上限或下限"}
+```tsx file=SettingsPanel.tsx
+import { useState } from 'react';
+
+export type Settings = Readonly<{
+  theme: 'light' | 'dark';
+  fontSize: number;
+  notifications: Readonly<{ email: boolean; push: boolean }>;
+}>;
+
+type SettingsPanelProps = {
+  initial: Settings;
+  onSave: (settings: Settings) => void;
+};
+
+export function SettingsPanel({ initial, onSave }: SettingsPanelProps) {
+  const [settings, setSettings] = useState(initial);
+
+  function toggleTheme() {
+    setSettings({ ...settings, theme: settings.theme === 'dark' ? 'light' : 'dark' });
+  }
+
+  function changeFontSize(delta: number) {
+    setSettings({ ...settings, fontSize: delta > 0 ? 24 : 12 });
+  }
+
+  function toggleNotification(channel: 'email' | 'push') {
+    setSettings({
+      ...settings,
+      notifications: { ...settings.notifications, [channel]: !settings.notifications[channel] },
+    });
+  }
+
+  return (
+    <section aria-label="设置">
+      <p>主题：{settings.theme === 'dark' ? '深色' : '浅色'}</p>
+      <button type="button" onClick={toggleTheme}>
+        切换主题
+      </button>
+      <p>
+        字号：<output aria-label="字号">{settings.fontSize}</output>
+      </p>
+      <button type="button" disabled={settings.fontSize <= 12} onClick={() => changeFontSize(-2)}>
+        缩小字号
+      </button>
+      <button type="button" disabled={settings.fontSize >= 24} onClick={() => changeFontSize(2)}>
+        放大字号
+      </button>
+      <p>通知：</p>
+      <button type="button" aria-pressed={settings.notifications.email} onClick={() => toggleNotification('email')}>
+        邮件通知
+      </button>
+      <button type="button" aria-pressed={settings.notifications.push} onClick={() => toggleNotification('push')}>
+        推送通知
+      </button>
+      <p>
+        <button type="button" onClick={() => onSave(settings)}>
+          保存
+        </button>
+        <button type="button" disabled={settings === initial} onClick={() => setSettings(initial)}>
           撤销修改
         </button>
       </p>

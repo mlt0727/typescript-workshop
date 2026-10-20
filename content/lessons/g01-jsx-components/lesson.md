@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: d10 用“状态 → 渲染函数 → DOM”的方式写界面，但渲染函数里满是 createElement、textContent、replaceChildren，结构很难一眼看出来。React 让你直接写出界面应该是什么样子：在 TypeScript 中写类似 HTML 的 JSX，由 React 负责更新 DOM。这一课讲 JSX 的规则（它和 HTML 的几处关键差别）、在 JSX 中嵌入表达式与条件渲染，以及怎样把界面拆成组件。
 objectives:
   - 知道 JSX 是函数调用的语法糖，.tsx 文件中的 JSX 同样经过类型检查
@@ -100,7 +100,7 @@ JSX 看起来像 HTML，但有几条规则不同。从 HTML 复制过来的代�
 
 | HTML | JSX | 原因 |
 | --- | --- | --- |
-| `class="card"` | `className="card"` | JSX 的属性对应 DOM 属性，`class` 在 DOM 中叫 `className` |
+| `class="card"` | `className="card"` | JSX 的属性名是 JavaScript 对象的键，`class` 是保留字，所以沿用 DOM 属性的名字 `className` |
 | `<label for="email">` | `<label htmlFor="email">` | 同理，DOM 属性是 `htmlFor` |
 | `style="color: gray"` | `style={{ color: 'gray' }}` | `style` 接收一个对象，属性名用驼峰：`fontSize`、`backgroundColor` |
 | `onclick="…"`、`tabindex="0"` | `onClick={函数}`、`tabIndex={0}` | 属性名用驼峰；事件处理函数传**函数**，不传字符串（g03） |
@@ -174,6 +174,8 @@ const name = '<img src=x onerror=alert(1)>';
 ```
 
 只有专门的 `dangerouslySetInnerHTML` 属性才会把字符串当作 HTML 插入。它的名字就是警告，本课程不会用到它。
+
+注意，自动转义保护的是**文字**。用户提供的**链接地址**放进 `href={url}` 时，仍然要用 e12 的协议白名单检查：React 19 会拦截 `javascript:` 开头的地址，但 `data:` 等其他协议它不管。
 
 ## 拆分组件
 

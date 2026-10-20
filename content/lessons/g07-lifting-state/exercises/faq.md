@@ -128,6 +128,15 @@ function panelOf(name: string): HTMLElement {
   return panel;
 }
 
+test('结构：标题中的按钮，id 按约定命名', () => {
+  render(<FaqList items={items} />);
+  for (const item of items) {
+    expect(screen.getByRole('heading', { level: 3, name: item.question })).toContainElement(button(item.question));
+    expect(button(item.question)).toHaveAttribute('id', `faq-button-${item.id}`);
+    expect(panelOf(item.question)).toHaveAttribute('id', `faq-panel-${item.id}`);
+  }
+});
+
 test('一开始都是收起的；答案在页面中，但被隐藏', () => {
   render(<FaqList items={items} />);
   for (const item of items) {
@@ -186,7 +195,7 @@ console.log(uncontrolled, controlled);
 :::
 
 :::explanation
-把 state 从每个 `FaqItem` 提升到 `FaqList` 之后，“同时只展开一个”这条规则就有了一个负责的地方：`openId` 只有一个值，不可能同时等于两个 id。规则不是靠代码“维护”出来的，而是 state 的结构本身就保证了它（g04 讲过的“让错误的状态表示不出来”）。
+把 state 从每个 `FaqItem` 提升到 `FaqList` 之后，“同时只展开一个”这条规则就有了一个负责的地方：`openId` 只有一个值，不可能同时等于两个 id。规则不是靠代码“维护”出来的，而是 state 的结构本身就保证了它（b09 讲过的“消除不可能的状态”，本课正文中的手风琴也是这样做的）。
 
 `FaqItem` 变成了受控组件：它不再自己决定是否展开，只负责显示 `isOpen` 并在点击时调用 `onToggle`。类型测试检查的正是这个“接口”：漏传 `isOpen` 就编译不过。
 

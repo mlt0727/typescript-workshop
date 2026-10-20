@@ -11,7 +11,7 @@ title: 一个小型前端路由
 
 **`createRouter({ outlet, routes, history })`** 返回 `{ navigate, start }`。路由**只通过 `history` 读写地址**（类型见只读的 `history.ts`），不直接使用 `location.pathname` 和 `window.history`：
 
-1. **渲染**：从 `history.location` 中取出路径部分（`new URL(地址, 任意基准地址).pathname`），找到第一个匹配的路由，调用它的 `render(params)` 得到 `{ title, content }`。把 `outlet` 的内容换成 `<h1 tabindex="-1">标题</h1><p>内容</p>`（文字用 `textContent` 设置），把 `document.title` 设为 `标题 · 示例站`，并把焦点移到这个 `<h1>`。没有匹配的路由时，标题是 `页面不存在`，内容是 `没有 /路径 这个页面`；
+1. **渲染**：从 `history.location` 中取出路径部分（`new URL(地址, 任意基准地址).pathname`），找到第一个匹配的路由，调用它的 `render(params)` 得到 `{ title, content }`。把 `outlet` 的内容换成 `<h1 tabindex="-1">标题</h1><p>内容</p>`（文字用 `textContent` 设置），把 `document.title` 设为 `标题 · 示例站`，并把焦点移到这个 `<h1>`（`start()` 中的第一次渲染除外）。没有匹配的路由时，标题是 `页面不存在`，内容是 `没有 /路径 这个页面`；
 2. `navigate(path)`：`history.push(path)`，然后渲染；
 3. `start()`：渲染一次；用 `history.listen` 在后退、前进时重新渲染；在 `document` 上委托 `click`，拦截**站内链接**：`<a>` 的地址与当前页面同源，没有 `target`、`download` 属性，点击的是左键，并且没有按住 Ctrl、⌘（`metaKey`）、Shift、Alt。拦截时阻止默认行为，然后 `navigate(路径 + 查询参数 + 片段)`。其他链接一律交给浏览器。`start()` 返回一个函数，调用它会停止监听（包括 `history.listen`）。
 
@@ -27,6 +27,7 @@ title: 一个小型前端路由
       <a href="/users/42">用户 42</a>
       <a href="/users/%E9%98%BF%E8%BE%BE">用户阿达</a>
       <a href="/users/7?tab=posts#latest">用户 7 的帖子</a>
+      <a href="/users/9"><strong>用户 9</strong> 的主页</a>
       <a href="/about" target="_blank">关于（新窗口）</a>
       <a href="/report.pdf" download>下载报告</a>
       <a href="https://example.com/elsewhere">外部网站</a>
@@ -62,7 +63,7 @@ export function createBrowserHistory(): RouterHistory {
   };
 }
 
-/** 把地址放在 # 之后：/index.html#/users/42。不需要服务器配置，本平台的预览也用它。 */
+/** 把地址放在 # 之后：/index.html#/users/42。不需要服务器配置。 */
 export function createHashHistory(): RouterHistory {
   return {
     get location() {
@@ -191,7 +192,7 @@ function isPlainLeftClick(event: MouseEvent): boolean {
 }
 
 export function createRouter(options: RouterOptions): Router {
-  function render(): void {
+  function render(moveFocus = true): void {
     const { pathname } = new URL(options.history.location, 'https://router.invalid');
     let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
     for (const route of options.routes) {
@@ -208,7 +209,7 @@ export function createRouter(options: RouterOptions): Router {
     paragraph.textContent = page.content;
     options.outlet.replaceChildren(heading, paragraph);
     document.title = `${page.title} · 示例站`;
-    heading.focus();
+    if (moveFocus) heading.focus();
   }
 
   function navigate(path: string): void {
@@ -232,7 +233,7 @@ export function createRouter(options: RouterOptions): Router {
       },
       { signal: controller.signal },
     );
-    render();
+    render(false);
     return () => {
       controller.abort();
       unlisten();
@@ -309,10 +310,11 @@ describe('createRouter', () => {
   const heading = () => screen.getByRole('heading', { level: 1 });
   const link = (name: string) => screen.getByRole('link', { name });
 
-  test('start 渲染当前地址', () => {
+  test('start 渲染当前地址，但不移动焦点', () => {
     startAt('/');
     expect(heading()).toHaveTextContent('首页');
     expect(heading()).toHaveAttribute('tabindex', '-1');
+    expect(heading(), '页面刚打开时不要抢走焦点').not.toHaveFocus();
     expect(document.title).toBe('首页 · 示例站');
   });
 
@@ -329,6 +331,14 @@ describe('createRouter', () => {
     expect(heading()).toHaveTextContent('用户 阿达');
   });
 
+  test('点击链接中的子元素也会被拦截', async () => {
+    startAt('/');
+    await userEvent.setup().click(screen.getByText('用户 9'));
+    expect(clicks).toEqual([true]);
+    expect(memory.location).toBe('/users/9');
+    expect(heading()).toHaveTextContent('用户 9');
+  });
+
   test('保留链接中的查询参数和片段', async () => {
     startAt('/');
     await userEvent.setup().click(link('用户 7 的帖子'));
@@ -341,6 +351,7 @@ describe('createRouter', () => {
     await userEvent.setup().click(link('用户 42'));
     memory.back();
     expect(heading()).toHaveTextContent('首页');
+    expect(heading()).toHaveFocus();
     memory.forward();
     expect(heading()).toHaveTextContent('用户 42');
   });
@@ -389,7 +400,7 @@ describe('createRouter', () => {
 :::
 
 :::hint{level=2}
-拦截链接：`event.target` 收窄后用 `closest('a')` 找到链接（d08），检查 `button`、`ctrlKey`、`metaKey`、`shiftKey`、`altKey`，以及 `target`、`download` 属性；`new URL(link.href)` 得到 `origin`、`pathname`、`search`、`hash`。点击监听用 `AbortController` 的 `signal` 注册；`start()` 返回的函数里调用 `controller.abort()` 和 `history.listen` 返回的取消函数。标题要先设置 `tabIndex = -1` 才能用 `focus()` 聚焦。
+拦截链接：`event.target` 收窄后用 `closest('a')` 找到链接（d08），检查 `button`、`ctrlKey`、`metaKey`、`shiftKey`、`altKey`，以及 `target`、`download` 属性；`new URL(link.href)` 得到 `origin`、`pathname`、`search`、`hash`。点击监听用 `AbortController` 的 `signal` 注册；`start()` 返回的函数里调用 `controller.abort()` 和 `history.listen` 返回的取消函数。标题要先设置 `tabIndex = -1` 才能用 `focus()` 聚焦；可以给 `render` 加一个参数，决定这一次要不要移动焦点。
 :::
 
 :::explanation
@@ -397,10 +408,10 @@ describe('createRouter', () => {
 
 - **地址是唯一的数据来源**：`render` 只看 `history.location`，所以无论是点击链接、调用 `navigate`、还是按后退键，最后都走同一条渲染路径；
 - **拦截链接要克制**：只有普通的左键点击、同源、没有 `target` 和 `download` 的链接才由路由处理；用户按住 Ctrl/⌘ 或 Shift 想在新标签页、新窗口中打开，按住 Alt 想下载，或者要去别的网站时，都要交给浏览器，否则就破坏了用户熟悉的操作；
-- **可访问性**：真实的页面跳转时，屏幕阅读器会读出新页面的标题；前端路由切换内容时它什么都不知道。更新 `document.title`，并把焦点移到新内容的主标题（`tabindex="-1"` 让标题可以被脚本聚焦，但不会出现在 Tab 顺序中），用户就能感知到“页面”变了；
+- **可访问性**：真实的页面跳转时，屏幕阅读器会读出新页面的标题；前端路由切换内容时它什么都不知道。更新 `document.title`，并把焦点移到新内容的主标题（`tabindex="-1"` 让标题可以被脚本聚焦，但不会出现在 Tab 顺序中），用户就能感知到“页面”变了。页面刚打开时则不要移动焦点：这时浏览器本来就从页面的开头开始，把焦点移到标题反而让用户跳过了导航；
 - **路径参数来自地址，也就是来自用户**：任何人都可以构造一个 `/users/<img src=x onerror=…>` 的链接发给别人。用 `textContent` 显示，它只是一串文字（e12）。
 
-把 `history` 作为参数传入，是 e05 讲过的**依赖注入**：路由只依赖一个小小的接口（`location`、`push`、`listen`），不关心地址实际存在哪里。React Router 也是这样设计的：同一套路由，可以配合 `createBrowserRouter`（真实地址）、`createHashRouter`（`#` 之后的地址）或 `createMemoryRouter`（测试和服务端渲染）使用。
+把 `history` 作为参数传入，是 e05 讲过的**依赖注入**：路由只依赖一个小小的接口（`location`、`push`、`listen`），不关心地址实际存在哪里。React Router 也是这样设计的：同一套路由，可以配合 `createBrowserRouter`（真实地址）、`createHashRouter`（`#` 之后的地址）或 `createMemoryRouter`（测试等没有浏览器地址栏的环境）使用。
 
 `start()` 返回清理函数，这是 d08 讲过的约定：路由不再需要时（例如在测试之间），一次移除所有监听器。
 
@@ -448,14 +459,14 @@ export function matchRoute(pattern: string, pathname: string): Params | null {
 }
 
 export function createRouter({ outlet, routes, history: source }: RouterOptions): Router {
-  const show = (): void => {
-    const path = new URL(source.location, location.href).pathname;
+  const show = (moveFocus = true): void => {
+    const path = new URL(source.location, 'https://example.invalid').pathname;
     const found = routes.map((r) => ({ r, p: matchRoute(r.pattern, path) })).find((x) => x.p !== null);
     const page = found?.p ? found.r.render(found.p) : { title: '页面不存在', content: `没有 ${path} 这个页面` };
     const h1 = Object.assign(document.createElement('h1'), { tabIndex: -1, textContent: page.title });
     outlet.replaceChildren(h1, Object.assign(document.createElement('p'), { textContent: page.content }));
     document.title = `${page.title} · 示例站`;
-    h1.focus();
+    if (moveFocus) h1.focus();
   };
   const navigate = (path: string): void => {
     source.push(path);
@@ -474,7 +485,7 @@ export function createRouter({ outlet, routes, history: source }: RouterOptions)
     start() {
       const unlisten = source.listen(show);
       document.addEventListener('click', onClick);
-      show();
+      show(false);
       return () => {
         unlisten();
         document.removeEventListener('click', onClick);
@@ -532,7 +543,7 @@ function isPlainLeftClick(event: MouseEvent): boolean {
 }
 
 export function createRouter(options: RouterOptions): Router {
-  function render(): void {
+  function render(moveFocus = true): void {
     const { pathname } = new URL(location.href);
     let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
     for (const route of options.routes) {
@@ -549,7 +560,7 @@ export function createRouter(options: RouterOptions): Router {
     paragraph.textContent = page.content;
     options.outlet.replaceChildren(heading, paragraph);
     document.title = `${page.title} · 示例站`;
-    heading.focus();
+    if (moveFocus) heading.focus();
   }
 
   function navigate(path: string): void {
@@ -573,7 +584,7 @@ export function createRouter(options: RouterOptions): Router {
       },
       { signal: controller.signal },
     );
-    render();
+    render(false);
     return () => {
       controller.abort();
       unlisten();
@@ -632,7 +643,7 @@ function isPlainLeftClick(event: MouseEvent): boolean {
 }
 
 export function createRouter(options: RouterOptions): Router {
-  function render(): void {
+  function render(moveFocus = true): void {
     const { pathname } = new URL(options.history.location, 'https://router.invalid');
     let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
     for (const route of options.routes) {
@@ -649,7 +660,7 @@ export function createRouter(options: RouterOptions): Router {
     paragraph.textContent = page.content;
     options.outlet.replaceChildren(heading, paragraph);
     document.title = `${page.title} · 示例站`;
-    heading.focus();
+    if (moveFocus) heading.focus();
   }
 
   function navigate(path: string): void {
@@ -671,7 +682,7 @@ export function createRouter(options: RouterOptions): Router {
       },
       { signal: controller.signal },
     );
-    render();
+    render(false);
     return () => {
       controller.abort();
       unlisten();
@@ -730,7 +741,7 @@ function isPlainLeftClick(event: MouseEvent): boolean {
 }
 
 export function createRouter(options: RouterOptions): Router {
-  function render(): void {
+  function render(moveFocus = true): void {
     const { pathname } = new URL(options.history.location, 'https://router.invalid');
     let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
     for (const route of options.routes) {
@@ -747,7 +758,7 @@ export function createRouter(options: RouterOptions): Router {
     paragraph.textContent = page.content;
     options.outlet.replaceChildren(heading, paragraph);
     document.title = `${page.title} · 示例站`;
-    heading.focus();
+    if (moveFocus) heading.focus();
   }
 
   function navigate(path: string): void {
@@ -771,7 +782,7 @@ export function createRouter(options: RouterOptions): Router {
       },
       { signal: controller.signal },
     );
-    render();
+    render(false);
     return () => {
       controller.abort();
       unlisten();
@@ -830,7 +841,7 @@ function isPlainLeftClick(event: MouseEvent): boolean {
 }
 
 export function createRouter(options: RouterOptions): Router {
-  function render(): void {
+  function render(moveFocus = true): void {
     const { pathname } = new URL(options.history.location, 'https://router.invalid');
     let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
     for (const route of options.routes) {
@@ -847,7 +858,7 @@ export function createRouter(options: RouterOptions): Router {
     paragraph.textContent = page.content;
     options.outlet.replaceChildren(heading, paragraph);
     document.title = `${page.title} · 示例站`;
-    heading.focus();
+    if (moveFocus) heading.focus();
   }
 
   function navigate(path: string): void {
@@ -871,7 +882,7 @@ export function createRouter(options: RouterOptions): Router {
       },
       { signal: controller.signal },
     );
-    render();
+    render(false);
     return () => {
       controller.abort();
       unlisten();
@@ -930,7 +941,7 @@ function isPlainLeftClick(event: MouseEvent): boolean {
 }
 
 export function createRouter(options: RouterOptions): Router {
-  function render(): void {
+  function render(moveFocus = true): void {
     const { pathname } = new URL(options.history.location, 'https://router.invalid');
     let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
     for (const route of options.routes) {
@@ -947,7 +958,7 @@ export function createRouter(options: RouterOptions): Router {
     paragraph.textContent = page.content;
     options.outlet.replaceChildren(heading, paragraph);
     document.title = `${page.title} · 示例站`;
-    heading.focus();
+    if (moveFocus) heading.focus();
   }
 
   function navigate(path: string): void {
@@ -970,9 +981,209 @@ export function createRouter(options: RouterOptions): Router {
       },
       { signal: controller.signal },
     );
+    render(false);
+    return () => {
+      controller.abort();
+    };
+  }
+
+  return { navigate, start };
+}
+```
+:::
+
+:::variant{kind=wrong name=focus-on-start fails=tests reason="页面刚打开时也把焦点移到了标题"}
+```ts file=router.ts
+import type { RouterHistory } from './history';
+
+export type Params = Record<string, string>;
+export type Page = { title: string; content: string };
+export type Route = { pattern: string; render: (params: Params) => Page };
+export type RouterOptions = { outlet: HTMLElement; routes: readonly Route[]; history: RouterHistory };
+export type Router = { navigate(path: string): void; start(): () => void };
+
+function segments(path: string): string[] {
+  const trimmed = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+  return trimmed.split('/');
+}
+
+function decode(value: string): string | null {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return null;
+  }
+}
+
+export function matchRoute(pattern: string, pathname: string): Params | null {
+  const expected = segments(pattern);
+  const actual = segments(pathname);
+  if (expected.length !== actual.length) return null;
+  const params: Params = {};
+  for (const [i, part] of expected.entries()) {
+    const value = actual[i];
+    if (value === undefined) return null;
+    if (part.startsWith(':')) {
+      const decoded = value === '' ? null : decode(value);
+      if (decoded === null) return null;
+      params[part.slice(1)] = decoded;
+    } else if (part !== value) {
+      return null;
+    }
+  }
+  return params;
+}
+
+function isPlainLeftClick(event: MouseEvent): boolean {
+  return event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey;
+}
+
+export function createRouter(options: RouterOptions): Router {
+  function render(moveFocus = true): void {
+    const { pathname } = new URL(options.history.location, 'https://router.invalid');
+    let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
+    for (const route of options.routes) {
+      const params = matchRoute(route.pattern, pathname);
+      if (params !== null) {
+        page = route.render(params);
+        break;
+      }
+    }
+    const heading = document.createElement('h1');
+    heading.tabIndex = -1;
+    heading.textContent = page.title;
+    const paragraph = document.createElement('p');
+    paragraph.textContent = page.content;
+    options.outlet.replaceChildren(heading, paragraph);
+    document.title = `${page.title} · 示例站`;
+    if (moveFocus) heading.focus();
+  }
+
+  function navigate(path: string): void {
+    options.history.push(path);
+    render();
+  }
+
+  function start(): () => void {
+    const controller = new AbortController();
+    const unlisten = options.history.listen(render);
+    document.addEventListener(
+      'click',
+      (event) => {
+        if (event.defaultPrevented || !isPlainLeftClick(event)) return;
+        const link = event.target instanceof Element ? event.target.closest('a') : null;
+        if (link === null || link.hasAttribute('target') || link.hasAttribute('download')) return;
+        const url = new URL(link.href);
+        if (url.origin !== location.origin) return;
+        event.preventDefault();
+        navigate(url.pathname + url.search + url.hash);
+      },
+      { signal: controller.signal },
+    );
     render();
     return () => {
       controller.abort();
+      unlisten();
+    };
+  }
+
+  return { navigate, start };
+}
+```
+:::
+
+:::variant{kind=wrong name=target-only fails=tests reason="只检查了 event.target 本身是不是链接，点击链接中的子元素时没有拦截"}
+```ts file=router.ts
+import type { RouterHistory } from './history';
+
+export type Params = Record<string, string>;
+export type Page = { title: string; content: string };
+export type Route = { pattern: string; render: (params: Params) => Page };
+export type RouterOptions = { outlet: HTMLElement; routes: readonly Route[]; history: RouterHistory };
+export type Router = { navigate(path: string): void; start(): () => void };
+
+function segments(path: string): string[] {
+  const trimmed = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+  return trimmed.split('/');
+}
+
+function decode(value: string): string | null {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return null;
+  }
+}
+
+export function matchRoute(pattern: string, pathname: string): Params | null {
+  const expected = segments(pattern);
+  const actual = segments(pathname);
+  if (expected.length !== actual.length) return null;
+  const params: Params = {};
+  for (const [i, part] of expected.entries()) {
+    const value = actual[i];
+    if (value === undefined) return null;
+    if (part.startsWith(':')) {
+      const decoded = value === '' ? null : decode(value);
+      if (decoded === null) return null;
+      params[part.slice(1)] = decoded;
+    } else if (part !== value) {
+      return null;
+    }
+  }
+  return params;
+}
+
+function isPlainLeftClick(event: MouseEvent): boolean {
+  return event.button === 0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey;
+}
+
+export function createRouter(options: RouterOptions): Router {
+  function render(moveFocus = true): void {
+    const { pathname } = new URL(options.history.location, 'https://router.invalid');
+    let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
+    for (const route of options.routes) {
+      const params = matchRoute(route.pattern, pathname);
+      if (params !== null) {
+        page = route.render(params);
+        break;
+      }
+    }
+    const heading = document.createElement('h1');
+    heading.tabIndex = -1;
+    heading.textContent = page.title;
+    const paragraph = document.createElement('p');
+    paragraph.textContent = page.content;
+    options.outlet.replaceChildren(heading, paragraph);
+    document.title = `${page.title} · 示例站`;
+    if (moveFocus) heading.focus();
+  }
+
+  function navigate(path: string): void {
+    options.history.push(path);
+    render();
+  }
+
+  function start(): () => void {
+    const controller = new AbortController();
+    const unlisten = options.history.listen(render);
+    document.addEventListener(
+      'click',
+      (event) => {
+        if (event.defaultPrevented || !isPlainLeftClick(event)) return;
+        const link = event.target instanceof HTMLAnchorElement ? event.target : null;
+        if (link === null || link.hasAttribute('target') || link.hasAttribute('download')) return;
+        const url = new URL(link.href);
+        if (url.origin !== location.origin) return;
+        event.preventDefault();
+        navigate(url.pathname + url.search + url.hash);
+      },
+      { signal: controller.signal },
+    );
+    render(false);
+    return () => {
+      controller.abort();
+      unlisten();
     };
   }
 
@@ -1028,7 +1239,7 @@ function isPlainLeftClick(event: MouseEvent): boolean {
 }
 
 export function createRouter(options: RouterOptions): Router {
-  function render(): void {
+  function render(moveFocus = true): void {
     const { pathname } = new URL(options.history.location, 'https://router.invalid');
     let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
     for (const route of options.routes) {
@@ -1040,7 +1251,7 @@ export function createRouter(options: RouterOptions): Router {
     }
     options.outlet.innerHTML = `<h1 tabindex="-1">${page.title}</h1><p>${page.content}</p>`;
     document.title = `${page.title} · 示例站`;
-    options.outlet.querySelector('h1')?.focus();
+    if (moveFocus) options.outlet.querySelector('h1')?.focus();
   }
 
   function navigate(path: string): void {
@@ -1064,7 +1275,7 @@ export function createRouter(options: RouterOptions): Router {
       },
       { signal: controller.signal },
     );
-    render();
+    render(false);
     return () => {
       controller.abort();
       unlisten();
@@ -1119,7 +1330,7 @@ function isPlainLeftClick(event: MouseEvent): boolean {
 }
 
 export function createRouter(options: RouterOptions): Router {
-  function render(): void {
+  function render(moveFocus = true): void {
     const { pathname } = new URL(options.history.location, 'https://router.invalid');
     let page: Page = { title: '页面不存在', content: `没有 ${pathname} 这个页面` };
     for (const route of options.routes) {
@@ -1136,7 +1347,7 @@ export function createRouter(options: RouterOptions): Router {
     paragraph.textContent = page.content;
     options.outlet.replaceChildren(heading, paragraph);
     document.title = `${page.title} · 示例站`;
-    heading.focus();
+    if (moveFocus) heading.focus();
   }
 
   function navigate(path: string): void {
@@ -1160,7 +1371,7 @@ export function createRouter(options: RouterOptions): Router {
       },
       { signal: controller.signal },
     );
-    render();
+    render(false);
     return () => {
       controller.abort();
       unlisten();

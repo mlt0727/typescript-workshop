@@ -63,7 +63,7 @@ stages:
       - { id: e07-loading-states, title: 加载、空与失败状态, status: published, prerequisites: [e06-runtime-validation, d06-dom-create-update] }
       - { id: e08-abort-races, title: AbortController、取消请求与竞态, status: published, prerequisites: [e07-loading-states] }
       - { id: e09-storage-serialization, title: 浏览器存储与序列化, status: published, prerequisites: [e06-runtime-validation] }
-      - { id: e10-url-routing, title: URL、History 与基础路由, status: draft, prerequisites: [d10-state-and-render, e06-runtime-validation] }
+      - { id: e10-url-routing, title: URL、History 与基础路由, status: published, prerequisites: [d10-state-and-render, e06-runtime-validation] }
       - { id: e11-cors, title: CORS 的真实边界, status: published, prerequisites: [e05-fetch-json] }
       - { id: e12-xss, title: 基础 XSS 防范, status: published, prerequisites: [d06-dom-create-update] }
       - { id: e13-env-secrets, title: 客户端环境变量与密钥边界, status: planned, prerequisites: [f02-vite-project] }
@@ -121,13 +121,13 @@ stages:
     title: React + TypeScript
     summary: 组件、props、state、表单、Hook、Effect、路由与测试，全部在真实预览中练习。
     lessons:
-      - { id: g01-jsx-components, title: JSX/TSX 与组件, status: draft, prerequisites: [d10-state-and-render, a19-modules] }
-      - { id: g02-props, title: Props 与类型, status: draft, prerequisites: [g01-jsx-components] }
+      - { id: g01-jsx-components, title: JSX/TSX 与组件, status: published, prerequisites: [d10-state-and-render, a19-modules] }
+      - { id: g02-props, title: Props 与类型, status: published, prerequisites: [g01-jsx-components] }
       - { id: g03-events-state, title: 事件与 state, status: published, prerequisites: [g02-props] }
-      - { id: g04-immutable-updates, title: 不可变更新, status: draft, prerequisites: [g03-events-state, a12-destructuring-spread] }
-      - { id: g05-lists-keys, title: 列表渲染与 key, status: draft, prerequisites: [g04-immutable-updates] }
-      - { id: g06-controlled-forms, title: 受控表单, status: draft, prerequisites: [g05-lists-keys] }
-      - { id: g07-lifting-state, title: 状态提升与组合, status: draft, prerequisites: [g06-controlled-forms] }
+      - { id: g04-immutable-updates, title: 不可变更新, status: published, prerequisites: [g03-events-state, a12-destructuring-spread] }
+      - { id: g05-lists-keys, title: 列表渲染与 key, status: published, prerequisites: [g04-immutable-updates] }
+      - { id: g06-controlled-forms, title: 受控表单, status: published, prerequisites: [g05-lists-keys] }
+      - { id: g07-lifting-state, title: 状态提升与组合, status: published, prerequisites: [g06-controlled-forms] }
       - { id: g08-custom-hooks, title: 自定义 Hook, status: draft, prerequisites: [g07-lifting-state] }
       - { id: g09-refs, title: ref 的合理用途, status: draft, prerequisites: [g08-custom-hooks] }
       - { id: g10-context, title: Context 的合理用途, status: draft, prerequisites: [g08-custom-hooks] }

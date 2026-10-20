@@ -10,7 +10,7 @@ title: 播放列表
 4. 列表为空时只显示 `<p>播放列表是空的。</p>`；
 5. 上移、删除之后，每首歌的“喜欢”状态都要跟着这首歌走。
 
-注意：不同的歌可能同名（预览中就有两首《晴天》）。
+注意：不同的歌可能同名（预览中就有两首《晴天》），所以 `SongRow` 的按钮名字里同时写了歌名和歌手。
 
 :::files{role=starter}
 ```tsx file=Playlist.tsx
@@ -32,13 +32,13 @@ function SongRow({ song, isFirst, onMoveUp, onRemove }: SongRowProps) {
       <span>
         {song.title} - {song.artist}
       </span>{' '}
-      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title}”`} onClick={() => setLiked(!liked)}>
+      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title} - ${song.artist}”`} onClick={() => setLiked(!liked)}>
         {liked ? '♥' : '♡'}
       </button>
-      <button type="button" aria-label={`上移“${song.title}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
+      <button type="button" aria-label={`上移“${song.title} - ${song.artist}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
         ↑
       </button>
-      <button type="button" aria-label={`删除“${song.title}”`} onClick={() => onRemove(song.id)}>
+      <button type="button" aria-label={`删除“${song.title} - ${song.artist}”`} onClick={() => onRemove(song.id)}>
         ×
       </button>
     </li>
@@ -92,13 +92,13 @@ function SongRow({ song, isFirst, onMoveUp, onRemove }: SongRowProps) {
       <span>
         {song.title} - {song.artist}
       </span>{' '}
-      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title}”`} onClick={() => setLiked(!liked)}>
+      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title} - ${song.artist}”`} onClick={() => setLiked(!liked)}>
         {liked ? '♥' : '♡'}
       </button>
-      <button type="button" aria-label={`上移“${song.title}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
+      <button type="button" aria-label={`上移“${song.title} - ${song.artist}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
         ↑
       </button>
-      <button type="button" aria-label={`删除“${song.title}”`} onClick={() => onRemove(song.id)}>
+      <button type="button" aria-label={`删除“${song.title} - ${song.artist}”`} onClick={() => onRemove(song.id)}>
         ×
       </button>
     </li>
@@ -135,7 +135,7 @@ export function Playlist({ initialSongs }: { initialSongs: readonly Song[] }) {
 
 :::files{role=tests}
 ```tsx file=Playlist.test.tsx
-import { expect, test } from 'vitest';
+import { afterEach, expect, test, vi } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Playlist, type Song } from './Playlist';
@@ -154,51 +154,78 @@ function titles(): string[] {
 
 const like = (title: string) => screen.getByRole('button', { name: `喜欢“${title}”` });
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+// React 对同一个组件的 key 警告只报告一次，所以检查警告的测试要放在最前面。
+test('同名的歌各自记住“喜欢”；key 不重复（没有 React 警告）', async () => {
+  const errors = vi.spyOn(console, 'error');
+  const user = userEvent.setup();
+  render(
+    <Playlist
+      initialSongs={[
+        { id: 's1', title: '晴天', artist: '周杰伦' },
+        { id: 's2', title: '平凡之路', artist: '朴树' },
+        { id: 's4', title: '晴天', artist: '孙燕姿' },
+      ]}
+    />,
+  );
+  await user.click(like('晴天 - 周杰伦'));
+  await user.click(screen.getByRole('button', { name: '上移“晴天 - 孙燕姿”' }));
+  await user.click(screen.getByRole('button', { name: '上移“晴天 - 孙燕姿”' }));
+  expect(titles()).toEqual(['晴天 - 孙燕姿', '晴天 - 周杰伦', '平凡之路 - 朴树']);
+  expect(like('晴天 - 孙燕姿')).toHaveAttribute('aria-pressed', 'false');
+  expect(like('晴天 - 周杰伦')).toHaveAttribute('aria-pressed', 'true');
+  const keyWarnings = errors.mock.calls.filter((args) => args.join(' ').includes('key'));
+  expect(keyWarnings, '控制台出现了关于 key 的警告').toEqual([]);
+});
+
 test('按顺序显示歌曲，第一首不能上移', () => {
   render(<Playlist initialSongs={songs} />);
   expect(titles()).toEqual(['晴天 - 周杰伦', '平凡之路 - 朴树', '夜空中最亮的星 - 逃跑计划']);
-  expect(screen.getByRole('button', { name: '上移“晴天”' })).toBeDisabled();
-  expect(screen.getByRole('button', { name: '上移“平凡之路”' })).toBeEnabled();
+  expect(screen.getByRole('button', { name: '上移“晴天 - 周杰伦”' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: '上移“平凡之路 - 朴树”' })).toBeEnabled();
 });
 
 test('删除前面的歌曲之后，“喜欢”仍然跟着原来的歌', async () => {
   const user = userEvent.setup();
   render(<Playlist initialSongs={songs} />);
-  await user.click(like('平凡之路'));
-  await user.click(screen.getByRole('button', { name: '删除“晴天”' }));
+  await user.click(like('平凡之路 - 朴树'));
+  await user.click(screen.getByRole('button', { name: '删除“晴天 - 周杰伦”' }));
   expect(titles()).toEqual(['平凡之路 - 朴树', '夜空中最亮的星 - 逃跑计划']);
-  expect(like('平凡之路')).toHaveAttribute('aria-pressed', 'true');
-  expect(like('夜空中最亮的星')).toHaveAttribute('aria-pressed', 'false');
+  expect(like('平凡之路 - 朴树')).toHaveAttribute('aria-pressed', 'true');
+  expect(like('夜空中最亮的星 - 逃跑计划')).toHaveAttribute('aria-pressed', 'false');
 });
 
 test('上移之后，“喜欢”仍然跟着原来的歌', async () => {
   const user = userEvent.setup();
   render(<Playlist initialSongs={songs} />);
-  await user.click(like('夜空中最亮的星'));
-  await user.click(screen.getByRole('button', { name: '上移“夜空中最亮的星”' }));
+  await user.click(like('夜空中最亮的星 - 逃跑计划'));
+  await user.click(screen.getByRole('button', { name: '上移“夜空中最亮的星 - 逃跑计划”' }));
   expect(titles()).toEqual(['晴天 - 周杰伦', '夜空中最亮的星 - 逃跑计划', '平凡之路 - 朴树']);
-  expect(like('夜空中最亮的星')).toHaveAttribute('aria-pressed', 'true');
-  expect(like('平凡之路')).toHaveAttribute('aria-pressed', 'false');
-  await user.click(screen.getByRole('button', { name: '上移“夜空中最亮的星”' }));
+  expect(like('夜空中最亮的星 - 逃跑计划')).toHaveAttribute('aria-pressed', 'true');
+  expect(like('平凡之路 - 朴树')).toHaveAttribute('aria-pressed', 'false');
+  await user.click(screen.getByRole('button', { name: '上移“夜空中最亮的星 - 逃跑计划”' }));
   expect(titles()[0]).toBe('夜空中最亮的星 - 逃跑计划');
-  expect(like('夜空中最亮的星')).toHaveAttribute('aria-pressed', 'true');
-  expect(screen.getByRole('button', { name: '上移“夜空中最亮的星”' })).toBeDisabled();
+  expect(like('夜空中最亮的星 - 逃跑计划')).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByRole('button', { name: '上移“夜空中最亮的星 - 逃跑计划”' })).toBeDisabled();
 });
 
 test('其他歌曲的状态在每次操作后都保留', async () => {
   const user = userEvent.setup();
   render(<Playlist initialSongs={songs} />);
-  await user.click(like('晴天'));
-  await user.click(screen.getByRole('button', { name: '上移“夜空中最亮的星”' }));
-  await user.click(screen.getByRole('button', { name: '删除“平凡之路”' }));
-  expect(like('晴天')).toHaveAttribute('aria-pressed', 'true');
-  expect(like('夜空中最亮的星')).toHaveAttribute('aria-pressed', 'false');
+  await user.click(like('晴天 - 周杰伦'));
+  await user.click(screen.getByRole('button', { name: '上移“夜空中最亮的星 - 逃跑计划”' }));
+  await user.click(screen.getByRole('button', { name: '删除“平凡之路 - 朴树”' }));
+  expect(like('晴天 - 周杰伦')).toHaveAttribute('aria-pressed', 'true');
+  expect(like('夜空中最亮的星 - 逃跑计划')).toHaveAttribute('aria-pressed', 'false');
 });
 
 test('全部删除后显示空列表的提示', async () => {
   const user = userEvent.setup();
   render(<Playlist initialSongs={songs} />);
-  for (const song of songs) await user.click(screen.getByRole('button', { name: `删除“${song.title}”` }));
+  for (const song of songs) await user.click(screen.getByRole('button', { name: `删除“${song.title} - ${song.artist}”` }));
   expect(screen.getByText('播放列表是空的。')).toBeInTheDocument();
   expect(screen.queryByRole('list')).toBeNull();
 });
@@ -241,13 +268,13 @@ function SongRow({ song, isFirst, onMoveUp, onRemove }: SongRowProps) {
       <span>
         {song.title} - {song.artist}
       </span>{' '}
-      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title}”`} onClick={() => setLiked(!liked)}>
+      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title} - ${song.artist}”`} onClick={() => setLiked(!liked)}>
         {liked ? '♥' : '♡'}
       </button>
-      <button type="button" aria-label={`上移“${song.title}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
+      <button type="button" aria-label={`上移“${song.title} - ${song.artist}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
         ↑
       </button>
-      <button type="button" aria-label={`删除“${song.title}”`} onClick={() => onRemove(song.id)}>
+      <button type="button" aria-label={`删除“${song.title} - ${song.artist}”`} onClick={() => onRemove(song.id)}>
         ×
       </button>
     </li>
@@ -298,13 +325,13 @@ function SongRow({ song, isFirst, onMoveUp, onRemove }: SongRowProps) {
       <span>
         {song.title} - {song.artist}
       </span>{' '}
-      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title}”`} onClick={() => setLiked(!liked)}>
+      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title} - ${song.artist}”`} onClick={() => setLiked(!liked)}>
         {liked ? '♥' : '♡'}
       </button>
-      <button type="button" aria-label={`上移“${song.title}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
+      <button type="button" aria-label={`上移“${song.title} - ${song.artist}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
         ↑
       </button>
-      <button type="button" aria-label={`删除“${song.title}”`} onClick={() => onRemove(song.id)}>
+      <button type="button" aria-label={`删除“${song.title} - ${song.artist}”`} onClick={() => onRemove(song.id)}>
         ×
       </button>
     </li>
@@ -359,13 +386,13 @@ function SongRow({ song, isFirst, onMoveUp, onRemove }: SongRowProps) {
       <span>
         {song.title} - {song.artist}
       </span>{' '}
-      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title}”`} onClick={() => setLiked(!liked)}>
+      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title} - ${song.artist}”`} onClick={() => setLiked(!liked)}>
         {liked ? '♥' : '♡'}
       </button>
-      <button type="button" aria-label={`上移“${song.title}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
+      <button type="button" aria-label={`上移“${song.title} - ${song.artist}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
         ↑
       </button>
-      <button type="button" aria-label={`删除“${song.title}”`} onClick={() => onRemove(song.id)}>
+      <button type="button" aria-label={`删除“${song.title} - ${song.artist}”`} onClick={() => onRemove(song.id)}>
         ×
       </button>
     </li>
@@ -420,13 +447,13 @@ function SongRow({ song, isFirst, onMoveUp, onRemove }: SongRowProps) {
       <span>
         {song.title} - {song.artist}
       </span>{' '}
-      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title}”`} onClick={() => setLiked(!liked)}>
+      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title} - ${song.artist}”`} onClick={() => setLiked(!liked)}>
         {liked ? '♥' : '♡'}
       </button>
-      <button type="button" aria-label={`上移“${song.title}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
+      <button type="button" aria-label={`上移“${song.title} - ${song.artist}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
         ↑
       </button>
-      <button type="button" aria-label={`删除“${song.title}”`} onClick={() => onRemove(song.id)}>
+      <button type="button" aria-label={`删除“${song.title} - ${song.artist}”`} onClick={() => onRemove(song.id)}>
         ×
       </button>
     </li>
@@ -454,6 +481,67 @@ export function Playlist({ initialSongs }: { initialSongs: readonly Song[] }) {
     <ol aria-label="播放列表">
       {songs.map((song, index) => (
         <SongRow key={crypto.randomUUID()} song={song} isFirst={index === 0} onMoveUp={moveUp} onRemove={remove} />
+      ))}
+    </ol>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=title-key fails=tests reason="用标题作 key，同名的歌 key 重复，上移之后“喜欢”跑到了另一首《晴天》上"}
+```tsx file=Playlist.tsx
+import { useState } from 'react';
+
+export type Song = { id: string; title: string; artist: string };
+
+type SongRowProps = {
+  song: Song;
+  isFirst: boolean;
+  onMoveUp: (id: string) => void;
+  onRemove: (id: string) => void;
+};
+
+function SongRow({ song, isFirst, onMoveUp, onRemove }: SongRowProps) {
+  const [liked, setLiked] = useState(false);
+  return (
+    <li>
+      <span>
+        {song.title} - {song.artist}
+      </span>{' '}
+      <button type="button" aria-pressed={liked} aria-label={`喜欢“${song.title} - ${song.artist}”`} onClick={() => setLiked(!liked)}>
+        {liked ? '♥' : '♡'}
+      </button>
+      <button type="button" aria-label={`上移“${song.title} - ${song.artist}”`} disabled={isFirst} onClick={() => onMoveUp(song.id)}>
+        ↑
+      </button>
+      <button type="button" aria-label={`删除“${song.title} - ${song.artist}”`} onClick={() => onRemove(song.id)}>
+        ×
+      </button>
+    </li>
+  );
+}
+
+export function Playlist({ initialSongs }: { initialSongs: readonly Song[] }) {
+  const [songs, setSongs] = useState(initialSongs);
+
+  function moveUp(id: string) {
+    const index = songs.findIndex((s) => s.id === id);
+    const previous = songs[index - 1];
+    const current = songs[index];
+    if (previous === undefined || current === undefined) return;
+    setSongs(songs.with(index - 1, current).with(index, previous));
+  }
+
+  function remove(id: string) {
+    setSongs(songs.filter((s) => s.id !== id));
+  }
+
+  if (songs.length === 0) return <p>播放列表是空的。</p>;
+
+  return (
+    <ol aria-label="播放列表">
+      {songs.map((song, index) => (
+        <SongRow key={song.title} song={song} isFirst={index === 0} onMoveUp={moveUp} onRemove={remove} />
       ))}
     </ol>
   );

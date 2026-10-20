@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: 用户在一个筛选过的列表里点进某条记录，再按“后退”，结果回到了没有筛选的首页；把当前页面的链接发给同事，对方打开看到的也不是同一个视图。原因是界面的状态只存在于 JavaScript 变量里，URL 对此一无所知。这一课讲 URL 的组成、用查询参数保存界面状态，以及用 History API 实现不刷新页面的前端路由，包括后退按钮、链接拦截和刷新时服务器需要做的配置。
 objectives:
   - 用 URL 和 URLSearchParams 读取、构造地址的各个部分

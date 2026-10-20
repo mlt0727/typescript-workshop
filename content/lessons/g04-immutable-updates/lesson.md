@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: state 是数字、字符串时，设置一个新值很自然。state 是对象或数组时，很多人会写 `todos.push(item); setTodos(todos)`，结果界面纹丝不动；或者界面更新了，旧的数据却被悄悄改掉。原因是 React 靠“是不是同一个对象”来判断 state 有没有变化。这一课讲为什么要把对象和数组 state 当作只读的，怎样用展开语法和不修改原数组的方法创建新值，以及怎样让 TypeScript 帮你阻止意外的修改。
 objectives:
   - 理解 React 用 Object.is 比较新旧 state，修改原对象再设置回去不会触发渲染
@@ -26,7 +26,7 @@ references:
 
 ## 修改原对象，React 看不到
 
-调用 `setX(新值)` 时，React 用 `Object.is(旧值, 新值)` 比较两者。对象和数组比较的是**引用**（a11）：如果你修改了原来的数组，再把**同一个数组**交给 `setX`，在 React 看来什么都没有变，它会跳过这次渲染。
+调用 `setX(新值)` 时，React 用 `Object.is(旧值, 新值)` 比较两者。对象和数组比较的是**引用**（a11）：如果你修改了原来的数组，再把**同一个数组**交给 `setX`，在 React 看来什么都没有变，它会跳过这次更新（有时 React 仍会先调用一次组件函数，但不会更新界面）。
 
 :::playground{#mutation-bug}
 ```tsx file=App.tsx
@@ -87,7 +87,9 @@ setProfile({ ...profile, name: '韩梅梅' });
 setProfile({ ...profile, address: { ...profile.address, city: '上海' } });
 ```
 
-这样得到的新对象中，**没有改变的部分仍然是原来的对象**（第一行中的 `address` 还是同一个）。这不是缺点，而是优点：复制的东西少，而且之后可以用引用是否相同，快速判断某一部分有没有变化（g12）。
+这样得到的新对象中，**没有改变的部分仍然是原来的对象**（改名字的那一行中，`address` 还是同一个）。这不是缺点，而是优点：复制的东西少，而且之后可以用引用是否相同，快速判断某一部分有没有变化（g12）。
+
+要改的属性名放在变量里时，可以用**计算属性名**：`{ ...profile, [key]: value }`，方括号中的表达式的值就是属性名（g06、g07 会用到）。
 
 新值依赖旧值，或者在一个事件中连续更新时，同样可以用更新函数：`setProfile((p) => ({ ...p, name }))`。注意箭头函数直接返回对象时，要用圆括号把对象包起来。
 
@@ -168,8 +170,8 @@ const container = document.getElementById('root');
 if (!container) throw new Error('页面缺少 #root');
 createRoot(container).render(<App />);
 ```
-- 第 11 行：state 的类型从初始值推断，是 `readonly Todo[]`。
-- 在 `toggle` 中加一行 `todos.push({ id: 3, title: 'x', done: false });`，或者 `first.done = true;`：TypeScript 都会报错。
+- 第 11 行：state 的类型从初始值推断，是 `readonly Todo[]`（悬停时显示的是把 `Todo` 展开之后的 `readonly Readonly<{ … }>[]`）。
+- 在 `toggle` 中加一行 `todos.push({ id: 3, title: 'x', done: false });`，或者把 `map` 的回调改成 `(t) => { t.done = !t.done; return t; }`：TypeScript 都会报错。
 - 第 18 行用 `toSorted` 返回排好序的新数组（`localeCompare` 的 `'zh-CN'` 按拼音排序，“读”排在“写”前面）。改成 `todos.sort(…)` 试试：只读数组上没有 `sort` 方法。
 - 列表的渲染下一课再讲，这里先把它拼成一行文字。
 :::

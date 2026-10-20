@@ -161,6 +161,7 @@ describe('Card', () => {
       </Card>,
     );
     const card = container.querySelector('section.card');
+    expect([...(card?.children ?? [])].map((el) => el.tagName)).toEqual(['H2', 'DIV', 'FOOTER']);
     expect(card?.querySelector('h2.card-title')).toHaveTextContent(/^删除项目$/);
     expect(card?.querySelector('.card-body > p')).toHaveTextContent('无法恢复');
     expect(card?.querySelector('footer.card-footer button')).toHaveTextContent('确定');
