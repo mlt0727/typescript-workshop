@@ -29,7 +29,7 @@
       explain: 默认的方法是 GET，GET 请求不能带请求体。
     - text: "`body: JSON.stringify(data)`"
       correct: true
-      explain: 请求体要是字符串（或其他可发送的类型），直接传对象会被转成 "[object Object]"。
+      explain: 请求体要是字符串（或其他可发送的类型）。在 TypeScript 中直接传对象会编译失败；在 JavaScript 中它会被转成 "[object Object]"。
     - text: "`headers: { 'Content-Type': 'application/json' }`"
       correct: true
       explain: 告诉服务器请求体是 JSON。

@@ -36,7 +36,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+  return Array.isArray(value) && value.every((item: unknown) => typeof item === 'string');
 }
 
 export function parseProduct(value: unknown): Result<Product> {
@@ -78,7 +78,7 @@ describe('parseProduct', () => {
   });
 
   test('结果是只包含已知字段的新对象', () => {
-    const input = { ...good, isAdmin: true, __proto_hack: 1 };
+    const input = { ...good, isAdmin: true, role: 'admin' };
     const result = parseProduct(input);
     if (!result.ok) throw new Error(result.error);
     expect(result.value).toEqual(good);
@@ -190,7 +190,7 @@ export function parseProduct(value: unknown): Result<Product> {
   if (typeof id !== 'string' || id === '') return { ok: false, error: 'id 应该是非空字符串' };
   if (typeof name !== 'string') return { ok: false, error: 'name 应该是字符串' };
   if (typeof price !== 'number' || price < 0) return { ok: false, error: 'price 应该是不小于 0 的数字' };
-  if (!Array.isArray(tags) || !tags.every((t) => typeof t === 'string')) return { ok: false, error: 'tags 应该是字符串数组' };
+  if (!Array.isArray(tags) || !tags.every((t: unknown) => typeof t === 'string')) return { ok: false, error: 'tags 应该是字符串数组' };
   if (discount !== undefined && (typeof discount !== 'number' || !(discount >= 0 && discount <= 1))) {
     return { ok: false, error: 'discount 应该是 0 到 1 之间的数字' };
   }
@@ -238,7 +238,7 @@ function isProduct(value: unknown): value is Product {
   return (
     typeof v.id === 'string' && v.id !== '' && typeof v.name === 'string' &&
     typeof v.price === 'number' && Number.isFinite(v.price) && v.price >= 0 &&
-    Array.isArray(v.tags) && v.tags.every((t) => typeof t === 'string') &&
+    Array.isArray(v.tags) && v.tags.every((t: unknown) => typeof t === 'string') &&
     (v.discount === undefined || (typeof v.discount === 'number' && v.discount >= 0 && v.discount <= 1))
   );
 }
@@ -249,7 +249,7 @@ export function parseProduct(value: unknown): Result<Product> {
   if (typeof v.id !== 'string' || v.id === '') return { ok: false, error: 'id 应该是非空字符串' };
   if (typeof v.name !== 'string') return { ok: false, error: 'name 应该是字符串' };
   if (typeof v.price !== 'number' || !Number.isFinite(v.price) || v.price < 0) return { ok: false, error: 'price 应该是不小于 0 的数字' };
-  if (!Array.isArray(v.tags) || !v.tags.every((t) => typeof t === 'string')) return { ok: false, error: 'tags 应该是字符串数组' };
+  if (!Array.isArray(v.tags) || !v.tags.every((t: unknown) => typeof t === 'string')) return { ok: false, error: 'tags 应该是字符串数组' };
   if (!isProduct(value)) return { ok: false, error: 'discount 应该是 0 到 1 之间的数字' };
   return { ok: true, value };
 }
@@ -271,7 +271,7 @@ export function parseProduct(value: unknown): Result<Product> {
   if (typeof id !== 'string' || id === '') return { ok: false, error: 'id 应该是非空字符串' };
   if (typeof name !== 'string') return { ok: false, error: 'name 应该是字符串' };
   if (typeof price !== 'number' || !Number.isFinite(price) || price < 0) return { ok: false, error: 'price 应该是不小于 0 的数字' };
-  if (!Array.isArray(tags) || !tags.every((t) => typeof t === 'string')) return { ok: false, error: 'tags 应该是字符串数组' };
+  if (!Array.isArray(tags) || !tags.every((t: unknown) => typeof t === 'string')) return { ok: false, error: 'tags 应该是字符串数组' };
   const product: Product = { id, name, price, tags: tags.filter((t) => typeof t === 'string') };
   if (discount) {
     if (typeof discount !== 'number' || discount > 1) return { ok: false, error: 'discount 应该是 0 到 1 之间的数字' };

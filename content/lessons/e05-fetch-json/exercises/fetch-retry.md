@@ -51,6 +51,7 @@ export async function fetchWithRetry(url: string, options: RetryOptions, fetchIm
         return response;
       }
       wait = retryAfterMs(response) ?? wait;
+      await response.body?.cancel();
     } catch (err) {
       if (isLast) throw err;
     }
@@ -124,6 +125,15 @@ describe('fetchWithRetry', () => {
     expect(times).toEqual([0, 2000]);
   });
 
+  test('5xx 同样遵守 Retry-After', async () => {
+    const unavailable = new Response(null, { status: 503, headers: { 'Retry-After': '1' } });
+    const { fn, times } = scripted([unavailable, 200]);
+    const pending = fetchWithRetry('/x', { retries: 1, baseDelayMs: 50 }, fn);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect((await pending).status).toBe(200);
+    expect(times).toEqual([0, 1000]);
+  });
+
   test('Retry-After 不是整数秒时，仍按指数退避', async () => {
     const tooMany = new Response(null, { status: 503, headers: { 'Retry-After': 'Wed, 21 Oct 2026 07:28:00 GMT' } });
     const { fn, times } = scripted([tooMany, 200]);
@@ -133,12 +143,13 @@ describe('fetchWithRetry', () => {
     expect(times).toEqual([0, 50]);
   });
 
-  test('网络失败也会重试；次数用完时抛出最后一次的错误', async () => {
-    const { fn } = scripted([new TypeError('第 1 次'), new TypeError('第 2 次'), new TypeError('第 3 次')]);
+  test('网络失败也会按指数退避重试；次数用完时抛出最后一次的错误', async () => {
+    const { fn, times } = scripted([new TypeError('第 1 次'), new TypeError('第 2 次'), new TypeError('第 3 次')]);
     const assertion = expect(fetchWithRetry('/x', { retries: 2, baseDelayMs: 10 }, fn)).rejects.toThrow('第 3 次');
     await vi.advanceTimersByTimeAsync(1000);
     await assertion;
     expect(fn).toHaveBeenCalledTimes(3);
+    expect(times).toEqual([0, 10, 30]);
   });
 
   test('次数用完时返回最后一个响应', async () => {
@@ -169,7 +180,14 @@ describe('fetchWithRetry', () => {
 :::explanation
 重试的关键是**只重试有希望成功的失败**：网络抖动、429、5xx 都可能是暂时的；400、404 这类错误再试多少次结果也一样，重试只会浪费时间、加重服务器负担。
 
-**指数退避**让等待时间成倍增长：服务器过载时，大量客户端如果都在固定的短时间后重试，会让服务器更难恢复。真实的实现通常还会加上随机的“抖动”（jitter），让不同客户端的重试时间错开。服务器通过 `Retry-After` 明确告诉了等待多久时，应该听它的。
+**指数退避**让等待时间成倍增长：服务器过载时，大量客户端如果都在固定的短时间后重试，会让服务器更难恢复。服务器通过 `Retry-After` 明确告诉了等待多久时，应该听它的。
+
+真实的实现还会多考虑几点：
+
+- 加上随机的“抖动”（jitter），让不同客户端的重试时间错开；给等待时间设一个上限，避免 `Retry-After` 或者指数增长让用户等上几分钟；
+- `Retry-After` 也可以是一个 HTTP 日期（测试中就有一个），完整的实现要解析它；
+- 不是所有 5xx 都是暂时的：501 Not Implemented、505 HTTP Version Not Supported 表示服务器根本不支持，重试也没用；
+- 放弃一个响应、准备重试之前，用 `await response.body?.cancel()` 丢弃它的响应体，连接等资源可以立即释放，而不用等垃圾回收。
 
 `fetchImpl` 参数是依赖注入：函数不再直接依赖全局的 `fetch`，测试时就能传入一个完全受控的假函数，按顺序返回 500、503、200，再配合假计时器，精确地检查每次请求发出的时刻（`times`），而不用真的等待。
 

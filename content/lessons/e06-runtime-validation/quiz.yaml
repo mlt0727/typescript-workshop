@@ -19,7 +19,7 @@
   options:
     - text: 不能，NaN 和 Infinity 的 typeof 也是 'number'，还要用 Number.isFinite 检查
       correct: true
-      explain: 对于价格还要检查不小于 0。
+      explain: 对于价格还要检查不小于 0。JSON 产生不了 NaN，但能产生 Infinity：`JSON.parse('1e999')` 得到的就是 Infinity。
     - text: 能，typeof 已经排除了所有非数字的值
       explain: NaN（Not a Number）的 typeof 偏偏是 'number'。
     - text: 不能，还要用 Number.isInteger 检查

@@ -121,7 +121,7 @@ expectTypeOf(getJson('/x')).toEqualTypeOf<Promise<unknown>>();
 
 起始代码的问题：404 时，服务器返回的错误信息 `{ message: '没有这个资源' }` 被当成了正常的数据返回；204 时，空的响应体让 `json()` 抛出 `SyntaxError`。
 
-`response.json()` 的类型是 `Promise<any>`，把结果先赋给 `unknown` 类型的变量再返回，保证 `any` 不会通过这个函数流出去。返回类型写成 `Promise<unknown>` 也提醒调用方：拿到的数据还没有经过验证。
+`response.json()` 的类型是 `Promise<any>`。挡住 `any` 的是函数的返回类型 `Promise<unknown>`：即使直接写 `return response.json()`，调用方拿到的也是 `unknown`。先赋给 `unknown` 类型的变量，是为了在函数内部也不会不小心使用 `any`。返回类型同时提醒调用方：拿到的数据还没有经过验证。
 
 这里没有用 `try/catch` 包住任何东西：不知道如何处理的错误，就不要捕获，让它传给知道如何处理的调用方。
 :::
@@ -141,8 +141,8 @@ export class HttpError extends Error {
 export async function getJson(url: string): Promise<unknown> {
   const response = await fetch(url);
   if (response.status < 200 || response.status > 299) throw new HttpError(response.status);
-  const text = await response.text();
   if (response.status === 204) return null;
+  const text = await response.text();
   const parsed: unknown = JSON.parse(text);
   return parsed;
 }

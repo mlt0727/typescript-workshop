@@ -8,7 +8,7 @@ objectives:
   - 理解 HTTP 请求与响应的组成，认识常见的状态码
   - 用 fetch 发出 GET 和带 JSON 请求体的 POST 请求
   - 区分“网络失败”（fetch 被拒绝）和“HTTP 错误”（response.ok 为 false），两者都要处理
-  - 把 response.json() 的结果当作 unknown，用 URL 和 URLSearchParams 构造带查询参数的地址
+  - 把 response.json() 的结果当作 unknown，用 URL、URLSearchParams 和 encodeURIComponent 构造地址
 references:
   - title: Using the Fetch API — MDN
     url: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
@@ -59,6 +59,7 @@ await show('/api/users/999');
 ```
 - 第 8 行：成功，状态码 200，`ok` 为 `true`。
 - 第 9 行：用户不存在，状态码 404，`ok` 为 `false`，但 `fetch` 没有被拒绝，代码照常往下执行，还读到了服务器返回的错误信息。不检查 `ok`，就会把这个错误信息当成用户数据。
+- 第 3 行的 `statusText` 是状态码后面的说明文字（例如 `Not Found`）。HTTP/2 和 HTTP/3 不再传输它，真实网页中它常常是空字符串，不要依赖它，判断时看 `status`。
 - 第 4 行：把鼠标停在 `response.json` 上，它的返回类型是 `Promise<any>`。这里把结果赋给 `unknown` 类型的变量，强制自己在使用前检查（下一课详讲）。直接使用 `any`，TypeScript 就不再帮你检查任何东西。
 :::
 
@@ -69,7 +70,7 @@ await show('/api/users/999');
 - **网络失败**：`fetch` 被拒绝，通常是 `TypeError`；
 - **HTTP 错误**：`fetch` 成功，但 `response.ok` 为 `false`。
 
-另外，响应体不一定是 JSON：服务器出错时，常常返回一段 HTML 错误页面，这时 `response.json()` 会以 `SyntaxError` 拒绝。响应体只能读取**一次**：读过之后再调用 `json()` 或 `text()` 会报错。
+另外，响应体不一定是 JSON：服务器出错时，常常返回一段 HTML 错误页面，这时 `response.json()` 会以 `SyntaxError` 拒绝。响应体只能读取**一次**：读过之后再调用 `json()` 或 `text()`，返回的 Promise 会以 `TypeError` 拒绝。确实需要读两次时，先用 `response.clone()` 复制一份。
 
 :::playground{#failures fixtures=users}
 ```ts file=main.ts
@@ -130,13 +131,15 @@ console.log(url.href);
 console.log('读取参数：', url.searchParams.get('q'));
 
 const wrong = `https://api.example.com/search?q=${'TypeScript & React'}&page=2`;
-console.log('直接拼接：', new URL(wrong).searchParams.get('q'));
+console.log('直接拼接：', [...new URL(wrong).searchParams]);
+console.log('编码单个值：', `/api/books?topic=${encodeURIComponent('TypeScript & React')}`);
 
 const response = await fetch(url);
 console.log('请求成功：', response.ok);
 ```
 - 第 5 行：`&` 被编码成 `%26`，空格编码成 `+`，中文按 UTF-8 编码。
-- 第 9 行：直接拼接时，`&` 截断了参数，服务器只会收到 `q=TypeScript `。
+- 第 9 行：直接拼接时，`&` 截断了参数：`q` 的值变成了 `TypeScript `（末尾带一个空格），` React` 则变成了一个没有值的参数。
+- 第 10 行：只需要编码**一个值**、把它放进手写的地址（查询参数或者路径，例如 `/users/${encodeURIComponent(name)}`）时，用 `encodeURIComponent`。它把空格编码成 `%20`，`URLSearchParams` 编码成 `+`，在查询参数中两者都表示空格。不要用 `encodeURI`：它不编码 `&`、`=`、`?`。
 - `fetch` 可以直接接受 `URL` 对象。
 :::
 
@@ -153,8 +156,8 @@ console.log('请求成功：', response.ok);
 - **不检查 `response.ok`**：404、500 时把错误信息当成了数据。
 - **以为 `catch` 能捕获 404**：fetch 只在网络失败时被拒绝。
 - **`const data = await response.json()` 之后直接使用**：`data` 是 `any`，拼错的属性名也不会报错。赋给 `unknown`，验证之后再用。
-- **POST JSON 时忘了 `JSON.stringify` 或 `Content-Type`**：服务器收到的是 `[object Object]`，或者不知道如何解析。
-- **用字符串拼接查询参数**：特殊字符会破坏 URL。用 `URLSearchParams`。
+- **POST JSON 时忘了 `JSON.stringify` 或 `Content-Type`**：在 TypeScript 中，直接把对象传给 `body` 会编译失败（它不是允许的请求体类型）；在 JavaScript 中或者值是 `any` 时，服务器收到的是 `[object Object]`。忘了 `Content-Type`，服务器可能不知道如何解析请求体。
+- **用字符串拼接查询参数**：特殊字符会破坏 URL。用 `URLSearchParams`，或者用 `encodeURIComponent` 编码每一个值。
 
 ## 下一步
 

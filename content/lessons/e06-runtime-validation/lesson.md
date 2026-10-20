@@ -91,7 +91,7 @@ for (const id of [1, 2, 3]) {
 
 - **可选字段**：JSON 中可能干脆没有这个键。`value.nickname === undefined` 表示没有；有的话再检查类型。注意不要用真假检查，`0`、`''` 都是合法的值；
 - **null**：JSON 有 `null` 但没有 `undefined`。服务器用 `null` 表示“没有”时，类型就写成 `string | null`，并单独检查；
-- **日期**：JSON 中没有日期类型，日期通常是 ISO 格式的字符串，例如 `"2026-10-20T08:00:00Z"`。解析时转换成 `Date`，并用 `Number.isNaN(date.getTime())` 检查是否有效。
+- **日期**：JSON 中没有日期类型，日期通常是 ISO 格式的字符串，例如 `"2026-10-20T08:00:00Z"`。只检查 `new Date(text)` 是否有效还不够：ISO 格式之外的字符串，各浏览器有自己的解析规则，不存在的日期（2 月 30 日）也可能被悄悄顺延。所以先用正则确认格式，再转换成 `Date`，最后把它转换回字符串和原文比较。另外，带时间但不带时区（没有 `Z` 或 `+08:00`）的字符串按**本地时间**解析，同一份数据在不同时区的电脑上会得到不同的时刻，接口应该总是带上时区。
 
 :::playground{#optional-and-dates}
 ```ts file=main.ts
@@ -102,13 +102,22 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+const ISO_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/;
+
+function parseIsoDate(text: string): Date | null {
+  if (!ISO_UTC.test(text)) return null;
+  const date = new Date(text);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString().slice(0, 19) === text.slice(0, 19) ? date : null;
+}
+
 function parseMeetup(value: unknown): Result<Meetup> {
   if (!isRecord(value)) return { ok: false, error: '应该是对象' };
   const { title, startsAt, location, capacity } = value;
   if (typeof title !== 'string') return { ok: false, error: 'title 应该是字符串' };
   if (typeof startsAt !== 'string') return { ok: false, error: 'startsAt 应该是日期字符串' };
-  const date = new Date(startsAt);
-  if (Number.isNaN(date.getTime())) return { ok: false, error: 'startsAt 不是有效的日期' };
+  const date = parseIsoDate(startsAt);
+  if (date === null) return { ok: false, error: 'startsAt 不是有效的 ISO 日期' };
   if (location !== null && typeof location !== 'string') return { ok: false, error: 'location 应该是字符串或 null' };
   if (capacity !== undefined && typeof capacity !== 'number') return { ok: false, error: 'capacity 应该是数字' };
   const meetup: Meetup = { title, startsAt: date, location };
@@ -117,11 +126,16 @@ function parseMeetup(value: unknown): Result<Meetup> {
 }
 
 console.log(parseMeetup(JSON.parse('{ "title": "分享会", "startsAt": "2026-11-01T10:00:00Z", "location": null, "capacity": 0 }')));
-console.log(parseMeetup(JSON.parse('{ "title": "分享会", "startsAt": "下周一", "location": "A 厅" }')));
+const show = (date: Date): string => (Number.isNaN(date.getTime()) ? '无效日期' : date.toDateString());
+console.log('只看 NaN：', show(new Date('下周一')), show(new Date('1')), show(new Date('2026-02-30T10:00:00Z')));
+for (const startsAt of ['下周一', '1', '2026-02-30T10:00:00Z']) {
+  console.log(startsAt, parseMeetup({ title: '分享会', startsAt, location: 'A 厅' }));
+}
 ```
-- 第 14 行：`new Date('下周一')` 不会抛出错误，而是得到一个无效的日期，要用 `getTime()` 是否为 `NaN` 来判断。
-- 第 16 行：`capacity` 是可选的，没有时为 `undefined`。第一个例子的 `capacity` 是 `0`，用 `!== undefined` 判断才不会把它当成“没有”。
-- 第 18 行：只有存在时才设置 `capacity`，结果中不会出现值为 `undefined` 的键。
+- 第 32–33 行：`new Date('下周一')` 不会抛出错误，而是得到一个无效的日期（`getTime()` 是 `NaN`）；但在 Chrome 中，`new Date('1')` 是 2001 年 1 月 1 日，`2026-02-30` 被顺延成了 3 月 2 日（各浏览器的结果不一定相同）。只检查 `NaN` 拦不住后两种。
+- 第 8–15 行：先用正则确认是完整的 ISO 格式（这里只接受以 `Z` 结尾的 UTC 时间），再检查是否有效；第 14 行把日期转换回字符串和原文比较，不存在的日期在这里被发现。
+- 第 25 行：`capacity` 是可选的，没有时为 `undefined`。第一个例子的 `capacity` 是 `0`，用 `!== undefined` 判断才不会把它当成“没有”。
+- 第 27 行：只有存在时才设置 `capacity`，结果中不会出现值为 `undefined` 的键。
 :::
 
 ## 用校验库
@@ -132,10 +146,11 @@ console.log(parseMeetup(JSON.parse('{ "title": "分享会", "startsAt": "下周�
 import { z } from 'zod';
 
 const User = z.object({
-  id: z.number().int(),
+  id: z.int(),
   name: z.string(),
   email: z.email(),
 });
+// 值 User（模式）和类型 User 同名：值和类型各在自己的命名空间里，互不冲突
 type User = z.infer<typeof User>; // { id: number; name: string; email: string }
 
 const result = User.safeParse(data);
@@ -145,6 +160,8 @@ if (result.success) {
   console.log(result.error.issues); // 每个问题都带有路径和说明
 }
 ```
+
+`z.object` 默认会丢掉模式中没有声明的字段（和上面手写的解析函数一样只保留已知字段），需要把多余的字段当作错误时用 `z.strictObject`。日期可以用 `z.iso.datetime()`，它只接受完整的 ISO 格式，默认还要求以 `Z` 结尾。
 
 本平台只提供课程需要的几个依赖，不能安装 npm 包，所以上面的代码不能在这里运行；F 阶段的本地项目中可以使用。本课程平台本身就用 Zod 验证页面与沙箱之间传递的每一条消息。
 
@@ -162,7 +179,7 @@ if (result.success) {
 - **在程序各处零散地检查**：在数据进入的边界验证一次，之后只使用验证过的数据。
 - **把整个输入对象原样返回**：多余的、甚至恶意的字段也跟着进了程序。只复制已知的字段。
 - **用真假检查可选字段**：`0`、`''`、`false` 会被当作“没有”。用 `=== undefined`。
-- **`new Date(text)` 之后不检查**：无效的日期不会抛出错误。
+- **`new Date(text)` 之后只检查 `NaN`**：无效的日期不会抛出错误，非 ISO 格式的字符串在不同浏览器中结果不同，不存在的日期可能被顺延。先检查格式，再往返比较。
 
 ## 下一步
 

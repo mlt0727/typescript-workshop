@@ -132,7 +132,7 @@ describe('isSameDay', () => {
 :::explanation
 `DateInput` 有五种可能，`toDate` 用四种不同的检查依次排除：`=== null || === undefined`、`instanceof Date`、`typeof === 'number'`，最后剩下 `string`。每一步之后，TypeScript 都知道 `input` 剩下哪些可能。
 
-`new Date(…)` 遇到无法解析的输入不会抛出异常，而是返回一个“无效日期”，它的 `getTime()` 是 `NaN`。所以每种情况都要检查有效性。
+`new Date(…)` 遇到无法解析的输入不会抛出异常，而是返回一个“无效日期”，它的 `getTime()` 是 `NaN`。所以每种情况都要检查有效性。另外要知道：只有 ISO 格式（例如 `2026-10-20T08:30:00Z`）的解析规则是标准规定的，其他格式的字符串由各浏览器自己决定，例如 Chrome 把 `new Date('1')` 解析成 2001 年 1 月 1 日。处理来自程序外部的日期字符串时，还要先检查格式（e06）。
 
 返回新的 `Date` 而不是原对象，是因为 `Date` 是可变的（`setFullYear` 等方法会修改它，a11）。
 

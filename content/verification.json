@@ -2854,8 +2854,8 @@
       ]
     },
     "b07-narrowing": {
-      "verifiedAt": "2026-10-20T11:44:59.044Z",
-      "sourceHash": "868160f8a42d36ae",
+      "verifiedAt": "2026-10-20T13:06:36.285Z",
+      "sourceHash": "11b9c7c5911ecd78",
       "ok": true,
       "checks": [
         {
@@ -5559,8 +5559,8 @@
       ]
     },
     "e05-fetch-json": {
-      "verifiedAt": "2026-10-20T12:54:18.905Z",
-      "sourceHash": "5a4194dc844e44f5",
+      "verifiedAt": "2026-10-20T13:06:40.264Z",
+      "sourceHash": "8be7b367d907a625",
       "ok": true,
       "checks": [
         {
@@ -5601,7 +5601,7 @@
         {
           "target": "playground:url:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] https://api.example.com/search?q=TypeScript+%26+React+%E5%85%A5%E9%97%A8&page=2 | [log] 读取参数： TypeScript & React 入门 | [log] 直接拼接： TypeScript  | [log] 请求成功： true"
+          "detail": "期望 done，实际 done；输出：[log] https://api.example.com/search?q=TypeScript+%26+React+%E5%85%A5%E9%97%A8&page=2 | [log] 读取参数： TypeScript & React 入门 | [log] 直接拼接： [ [ 'q', 'TypeScript ' ], [ ' React', '' ], [ 'page', '2' ] ] | [log] 编码单个值： /api/books?topic=TypeScript%20%26%20React | [log] 请求成功： true"
         },
         {
           "target": "exercise:get-json:starter:starter",
@@ -5641,7 +5641,7 @@
         {
           "target": "exercise:fetch-retry:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(fetchWithRetry › 5xx 时按指数退避重试，成功后返回,fetchWithRetry › 429 时按 Retry-After 等待,fetchWithRetry › Retry-After 不是整数秒时，仍按指数退避,fetchWithRetry › 网络失败也会重试；次数用完时抛出最后一次的错误,fetchWithRetry › 次数用完时返回最后一个响应)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(fetchWithRetry › 5xx 时按指数退避重试，成功后返回,fetchWithRetry › 429 时按 Retry-After 等待,fetchWithRetry › 5xx 同样遵守 Retry-After,fetchWithRetry › Retry-After 不是整数秒时，仍按指数退避,fetchWithRetry › 网络失败也会按指数退避重试；次数用完时抛出最后一次的错误,fetchWithRetry › 次数用完时返回最后一个响应)"
         },
         {
           "target": "exercise:fetch-retry:solution:solution",
@@ -5661,23 +5661,23 @@
         {
           "target": "exercise:fetch-retry:wrong:constant-delay",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 5xx 时按指数退避重试，成功后返回)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 5xx 时按指数退避重试，成功后返回,fetchWithRetry › 网络失败也会按指数退避重试；次数用完时抛出最后一次的错误)"
         },
         {
           "target": "exercise:fetch-retry:wrong:ignore-retry-after",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 429 时按 Retry-After 等待)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 429 时按 Retry-After 等待,fetchWithRetry › 5xx 同样遵守 Retry-After)"
         },
         {
           "target": "exercise:fetch-retry:wrong:generic-final-error",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 网络失败也会重试；次数用完时抛出最后一次的错误)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 网络失败也会按指数退避重试；次数用完时抛出最后一次的错误)"
         }
       ]
     },
     "e06-runtime-validation": {
-      "verifiedAt": "2026-10-20T12:15:16.798Z",
-      "sourceHash": "608da8734cbe110c",
+      "verifiedAt": "2026-10-20T13:05:15.331Z",
+      "sourceHash": "d19f65d2ad9bffbd",
       "ok": true,
       "checks": [
         {
@@ -5698,7 +5698,7 @@
         {
           "target": "playground:optional-and-dates:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] {\n  ok: true,\n  value: {\n     title: '分享会',\n     startsAt: 2026-11-01T10:00:00.000Z,\n     location: null,\n     capacity: 0\n   }\n} | [log] { ok: false, error: 'startsAt 不是有效的日期' }"
+          "detail": "期望 done，实际 done；输出：[log] {\n  ok: true,\n  value: {\n    title: '分享会',\n    startsAt: 2026-11-01T10:00:00.000Z,\n    location: null,\n    capacity: 0\n  }\n} | [log] 只看 NaN： 无效日期 Mon Jan 01 2001 Mon Mar 02 2026 | [log] 下周一 { ok: false, error: 'startsAt 不是有效的 ISO 日期' } | [log] 1 { ok: false, error: 'startsAt 不是有效的 ISO 日期' } | [log] 2026-02-30T10:00:00Z { ok: false, error: 'startsAt 不是有效的 ISO 日期' }"
         },
         {
           "target": "exercise:parse-product:starter:starter",
@@ -5773,8 +5773,8 @@
       ]
     },
     "e07-loading-states": {
-      "verifiedAt": "2026-10-20T13:02:46.460Z",
-      "sourceHash": "2382c11047c1aeb4",
+      "verifiedAt": "2026-10-20T13:07:18.826Z",
+      "sourceHash": "356bf6e22df54a9c",
       "ok": true,
       "checks": [
         {
