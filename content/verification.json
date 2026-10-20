@@ -7067,6 +7067,98 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(SegmentedControl › 点击时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).toHaveAttribute('aria-pressed', 'false'),ReportPanel › 恢复默认 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
         }
       ]
+    },
+    "g08-custom-hooks": {
+      "verifiedAt": "2026-10-20T14:24:31.900Z",
+      "sourceHash": "a9f9070eb909a639",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:use-toggle:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:use-toggle:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:use-counter:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(useCounter › 初始值、增加、减少、重置 ⟶ expect(…).toBe(7),useCounter › 不超出范围；到达边界时 canIncrement / canDecrement 为 false ⟶ expect(…).toBe(true),useCounter › 默认从 min 开始、步长为 1；超出范围的初始值被限制在范围内 ⟶ expect(…).toBe(9),useCounter › 同一个事件中连续调用两次，两次都生效 ⟶ expect(…).toBe(20),useCounter › 每次调用都有自己的 state ⟶ expect(…).toBe(1),Stepper 组件使用这个 Hook ⟶ expect(…).toHaveTextContent('5'))"
+        },
+        {
+          "target": "exercise:use-counter:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:use-counter:alt:move-helper",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:use-counter:wrong:stale-value",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useCounter › 同一个事件中连续调用两次，两次都生效 ⟶ expect(…).toBe(20))"
+        },
+        {
+          "target": "exercise:use-counter:wrong:no-clamp",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useCounter › 默认从 min 开始、步长为 1；超出范围的初始值被限制在范围内 ⟶ expect(…).toBe(9))"
+        },
+        {
+          "target": "exercise:use-counter:wrong:ignore-step",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useCounter › 初始值、增加、减少、重置 ⟶ expect(…).toBe(7),useCounter › 不超出范围；到达边界时 canIncrement / canDecrement 为 false ⟶ expect(…).toBe(0),useCounter › 同一个事件中连续调用两次，两次都生效 ⟶ expect(…).toBe(20),Stepper 组件使用这个 Hook ⟶ expect(…).toHaveTextContent('5'))"
+        },
+        {
+          "target": "exercise:use-counter:wrong:wrong-flags",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useCounter › 不超出范围；到达边界时 canIncrement / canDecrement 为 false ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:use-undo:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(useUndoable › 设置、撤销、重做 ⟶ expect(…).toMatchObject({ value: 3, canUndo: true, canRedo: false }),useUndoable › 撤销之后再设置新值，重做的记录被清空 ⟶ expect(…).toBe('a'),useUndoable › 同一个事件中连续设置两次，两次都被记录 ⟶ expect(…).toBe(1),useUndoable › 最多保留 limit 条可撤销的记录，丢弃最早的 ⟶ expect(…).toBe(2),useUndoable › T 本身包含 undefined 时也能撤销到 undefined ⟶ expect(…).toMatchObject({ value: undefined, canUndo: false, canRedo: true }),useUndoable › 值可以是对象，历史中保存的是同一个对象 ⟶ expect(…).toBe({ title: '草稿' }),TitleEditor：输入之后可以撤销 ⟶ TestingLibraryElementError: Unable to find an element with the text: 当前标题：周. This could be because the text is broken up by multiple elements. In this case, you)"
+        },
+        {
+          "target": "exercise:use-undo:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:use-undo:alt:destructured-history",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:use-undo:wrong:three-states",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useUndoable › 同一个事件中连续设置两次，两次都被记录 ⟶ expect(…).toBe(1),useUndoable › T 本身包含 undefined 时也能撤销到 undefined ⟶ expect(…).toMatchObject({ value: undefined, canUndo: false, canRedo: true }))"
+        },
+        {
+          "target": "exercise:use-undo:wrong:mutate-past",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2339@useUndoable.ts:27 Property 'push' does not exist on type 'readonly T[]'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:use-undo:wrong:no-limit",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useUndoable › 最多保留 limit 条可撤销的记录，丢弃最早的 ⟶ expect(…).toBe(2))"
+        },
+        {
+          "target": "exercise:use-undo:wrong:keep-future",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useUndoable › 撤销之后再设置新值，重做的记录被清空 ⟶ expect(…).toMatchObject({ value: 'c', canRedo: false }))"
+        },
+        {
+          "target": "exercise:use-undo:wrong:widened-type",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@useUndoable.test-d.tsx:6 Type '{ title: string; words: number; }' does not satisfy the constraint '\"Expected: ..., Actual: string\"'.；TS2344@useUndoable.test-d.tsx:11 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: string\"'.；TS2578@useUndoable.test-d.tsx:12 Unused '@t) rules=ok tests=ok"
+        }
+      ]
     }
   }
 }

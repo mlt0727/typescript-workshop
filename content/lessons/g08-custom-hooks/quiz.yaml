@@ -1,0 +1,47 @@
+- id: shared-state
+  type: single
+  prompt: 两个组件都调用了同一个自定义 Hook `useToggle()`。点击第一个组件的按钮，第二个组件会怎样？
+  options:
+    - text: 不受影响：每次调用 Hook 都有自己独立的 state
+      correct: true
+      explain: 自定义 Hook 复用的是逻辑，不是 state。要让两个组件共享 state，把它提升到共同的父组件（g07）或者使用 Context（g10）。
+    - text: 跟着切换，因为它们用的是同一个 Hook
+      explain: 同一个 Hook 只是同一段代码，每次调用都会创建自己的 state。
+    - text: 报错，同一个 Hook 不能在两个组件中使用
+      explain: Hook 可以在任意多个组件中调用。
+- id: rules
+  type: multiple
+  prompt: 下面哪些写法违反了 Hook 的规则？
+  options:
+    - text: "`if (loggedIn) { const [name, setName] = useState(''); }`"
+      correct: true
+      explain: 放在条件里，每次渲染调用 Hook 的顺序可能不同。
+    - text: 在点击事件的处理函数中调用 `useState`
+      correct: true
+      explain: Hook 只能在组件或自定义 Hook 的顶层调用，事件处理函数是普通函数。
+    - text: 在自定义 Hook `useForm` 的顶层调用 `useState` 和另一个自定义 Hook `useToggle`
+      explain: 这正是自定义 Hook 的用法。
+    - text: 在组件顶层调用 `useToggle()` 三次
+      explain: 只要每次渲染都以同样的顺序调用，调用多次没有问题。
+- id: tuple-type
+  type: single
+  prompt: "`function useToggle() { const [on, setOn] = useState(false); return [on, () => setOn(!on)]; }` 的返回类型是什么？"
+  options:
+    - text: "`(boolean | (() => void))[]`，解构出来的每一项都是这个联合类型"
+      correct: true
+      explain: 数组字面量默认被推断成数组而不是元组。加上 as const（得到 readonly [boolean, () => void]），或者写出返回类型。
+    - text: "`[boolean, () => void]`"
+      explain: 只有加上 as const 或者明确写出返回类型时才是元组。
+    - text: "`any[]`"
+      explain: TypeScript 会推断出元素的联合类型，而不是 any。
+- id: render-hook
+  type: single
+  prompt: 用 `renderHook` 测试 Hook 时，为什么要把改变 state 的调用放进 `act()`，并且每次都从 `result.current` 读取？
+  options:
+    - text: act 保证 React 处理完更新并重新渲染；result.current 指向最新一次渲染的返回值
+      correct: true
+      explain: 提前把 result.current 的某一项存进变量，存的是那一刻的快照，之后不会变。
+    - text: act 让 Hook 在测试中同步执行，否则 Hook 不会运行
+      explain: Hook 在 renderHook 时就运行了；act 处理的是之后的更新。
+    - text: result.current 是 Hook 的源代码，读取它可以检查实现
+      explain: result.current 是 Hook 最近一次的返回值。
