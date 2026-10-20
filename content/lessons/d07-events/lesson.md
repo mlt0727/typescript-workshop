@@ -3,10 +3,10 @@ version: 1
 mode: dom
 representative: true
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 网页要响应点击、输入、按键等用户操作。你需要知道监听器拿到的事件对象是什么类型，分清“被点中的元素”和“挂监听器的元素”，并在不再需要时移除监听器。
 objectives:
-  - 用 addEventListener 监听事件，读懂 TypeScript 为事件对象推断的类型（MouseEvent、KeyboardEvent 等）
+  - 用 addEventListener 监听事件，读懂 TypeScript 为事件对象推断的类型（PointerEvent、KeyboardEvent、InputEvent 等）
   - 区分 event.target（事件发生的元素）与 event.currentTarget（监听器所在的元素）
   - 不用断言，用 instanceof 把 EventTarget 收窄成具体的元素类型
   - 用 once、AbortController 的 signal 或 removeEventListener 移除监听器
@@ -32,7 +32,7 @@ references:
 
 浏览器在用户操作时**派发事件**（dispatch an event）。`element.addEventListener(type, listener)` 注册一个**监听器**（listener）：事件发生时，浏览器调用这个函数，并传入描述这次事件的**事件对象**。
 
-这和 Java Swing 的 `addActionListener`、或 Python GUI 库的回调很像，区别在于 TypeScript 会根据事件名推断参数类型：`'click'` 对应 `MouseEvent`，`'keydown'` 对应 `KeyboardEvent`，`'input'` 对应 `Event`。
+这和 Java Swing 的 `addActionListener`、或 Python GUI 库的回调很像，区别在于 TypeScript 会根据事件名推断参数类型：在 TypeScript 6.0 自带的 DOM 类型中，`'click'` 对应 `PointerEvent`（它继承自 `MouseEvent`，所以有 `button`、`clientX` 等鼠标属性），`'keydown'` 对应 `KeyboardEvent`，`'input'` 对应 `InputEvent`。
 
 :::playground{#first-listener}
 ```html file=index.html
@@ -60,7 +60,7 @@ button.addEventListener('click', (event) => {
 });
 ```
 - 点击“运行”，再点几下预览里的按钮，观察页面和输出。
-- 把鼠标停在第 8 行的 `event` 上：类型是 `MouseEvent`，所以能读到 `event.button`。把 `'click'` 改成 `'keydown'`，`event.button` 会立刻报错——`KeyboardEvent` 上没有这个属性。
+- 把鼠标停在第 8 行的 `event` 上：类型是 `PointerEvent`，所以能读到 `event.button`。把 `'click'` 改成 `'keydown'`，`event.button` 会立刻报错——`KeyboardEvent` 上没有这个属性。
 - `querySelector('#like')` 的返回类型是 `Element | null`：TypeScript 不可能知道 id 对应的是什么元素。第 3 行用 `instanceof` 同时排除了 `null` 和“类型不对”两种情况，之后 `button`、`count` 就是具体的元素类型。
 :::
 
@@ -69,9 +69,9 @@ button.addEventListener('click', (event) => {
 点击一个元素时，事件会从它开始向外层元素**冒泡**（bubble），外层元素上的监听器也会被调用（下一课详细讲）。所以在一个监听器里有两个不同的元素：
 
 - `event.target`：事件**发生**的那个元素，可能是监听器所在元素内部的某个子元素。
-- `event.currentTarget`：**挂着当前监听器**的那个元素。它只在监听器执行期间有值，之后再读取会得到 `null`。
+- `event.currentTarget`：**挂着当前监听器**的那个元素。它只在事件派发过程中有值（事件冒泡经过哪一层的监听器，它就指向那一层的元素），派发结束后再读取会得到 `null`。
 
-两者的类型都是 `EventTarget | null`：TypeScript 不知道事件具体从哪个元素来，所以使用元素的属性之前要先收窄。
+两者的类型都是 `EventTarget | null`：DOM 的 `Event` 类型并不记录“是哪种元素派发、挂在哪种元素上”，TypeScript 只能给出最宽泛的类型。所以使用元素的属性之前要先收窄（或者直接用闭包里已经收窄过的元素变量）。之后学 React 时你会看到，React 的事件类型把元素类型作为类型参数带上了。
 
 :::playground{#target-vs-current}
 ```html file=index.html
@@ -165,9 +165,10 @@ stop.addEventListener('click', () => {
 
 ## 常见错误
 
-- **到处写 `!` 或 `as HTMLButtonElement`**：它们只是让编译器闭嘴。元素不存在或类型不对时，错误会在运行时以更难理解的方式出现。用 `instanceof` 检查，或者在找不到元素时尽早抛出清楚的错误。
+- **到处写 `!`、`as HTMLButtonElement` 或 `querySelector<HTMLButtonElement>(…)`**：它们只是让编译器闭嘴——带类型参数的 `querySelector` 同样不做任何检查，本质上也是断言。元素不存在或类型不对时，错误会在运行时以更难理解的方式出现。用 `instanceof` 检查，或者在找不到元素时尽早抛出清楚的错误。（平台的规则检查会把这三种写法都当作断言拒绝。）
+- **在没有收窄的元素上监听 `'click'`**：`querySelectorAll` 返回的元素类型是 `Element`，它上面 `'click'` 的事件参数只被推断为 `Event`，读取 `event.button` 会报错。先用 `instanceof HTMLButtonElement` 收窄，事件类型才会变成 `PointerEvent`。
 - **把 `event.target` 当成挂监听器的元素**：用户点中的可能是按钮里的图标。需要监听器所在的元素时用 `currentTarget`（或闭包里已经拿到的元素变量）。
-- **用 `'change'` 代替 `'input'` 做实时反馈**：文本框的 `change` 一般在失去焦点或提交时才触发，`input` 才是每次输入都触发。
+- **用 `'change'` 代替 `'input'` 做实时反馈**：文本框的 `change` 在值改变后失去焦点、或按 Enter 时才触发，`input` 才是每次内容变化（输入、删除、粘贴）都触发。
 - **想用 `removeEventListener` 移除内联箭头函数**：每次写 `() => …` 都是新函数，引用不同就移除不掉。用 `signal` 或保存函数引用。
 
 ## 下一步

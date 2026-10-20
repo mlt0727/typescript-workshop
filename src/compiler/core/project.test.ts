@@ -108,6 +108,23 @@ describe('规则（AST，而非关键词搜索）', () => {
       'ts-directive@6',
     ]);
   });
+
+  test('带类型参数的 querySelector / querySelectorAll / closest 视为断言', async () => {
+    const src = [
+      'const a = document.querySelector<HTMLButtonElement>("#a");',
+      'const b = document.querySelectorAll<HTMLInputElement>("input");',
+      'const c = document.body.closest<HTMLElement>("main");',
+      'const d = document.querySelector("#d");',
+      'const e = new Map<string, number>();',
+      'console.log(a, b, c, d, e);',
+    ].join('\n');
+    const p = await service.open('r2', { mode: 'dom', files: { 'main.ts': src } });
+    expect(p.rules(['main.ts'], ['type-assertion']).map((x) => `${x.rule}@${x.line}`)).toEqual([
+      'type-assertion@1',
+      'type-assertion@2',
+      'type-assertion@3',
+    ]);
+  });
 });
 
 describe('运行包', () => {

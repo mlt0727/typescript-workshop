@@ -147,9 +147,9 @@ test.describe('DOM 模式', () => {
     ].join('\n'),
   };
   const good = [
-    'const button = document.querySelector<HTMLButtonElement>("#b");',
-    'const out = document.querySelector<HTMLOutputElement>("#o");',
-    'if (!button || !out) throw new Error("页面结构不完整");',
+    'const button = document.querySelector("#b");',
+    'const out = document.querySelector("#o");',
+    'if (!(button instanceof HTMLButtonElement) || !(out instanceof HTMLOutputElement)) throw new Error("页面结构不完整");',
     'let count = 0;',
     'button.addEventListener("click", () => {',
     '  count++;',

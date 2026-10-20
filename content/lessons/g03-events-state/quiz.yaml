@@ -33,11 +33,14 @@
 - id: null-state
   type: single
   prompt: |
-    下面的代码在第二行报类型错误。最合适的修改是什么？
+    组件里有下面两段代码，点击处理函数中的那一行报类型错误。最合适的修改是什么？
 
     ```tsx
     const [selected, setSelected] = useState(null);
-    setSelected('ts');
+
+    function handlePick() {
+      setSelected('ts');
+    }
     ```
   options:
     - text: 改成 `useState<string | null>(null)`
@@ -46,6 +49,6 @@
     - text: 改成 `useState<any>(null)`
       explain: "`any` 会关闭类型检查，之后把数字甚至对象设置进去也不会报错。"
     - text: 改成 `setSelected('ts' as null)`
-      explain: 断言骗过了编译器，却让 state 的类型与真实的值不一致。
+      explain: "TypeScript 会直接拒绝这个断言（TS2352：string 与 null 没有重叠，转换很可能是错误的）。即使写成 `as unknown as null` 强行绕过，state 的类型也会与真实的值不一致。"
     - text: 这是 React 的 bug，无法修复
       explain: 这是类型推断的正常行为：初始值决定了推断出的类型。

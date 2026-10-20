@@ -3,7 +3,7 @@ version: 1
 mode: ts
 representative: true
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: 读取可能缺失的嵌套数据时，直接访问会在中途遇到 undefined 而抛出 TypeError；用 || 设默认值又会把 0、空字符串和 false 这些“有意义的值”也替换掉。
 objectives:
   - 用 ?. 安全地读取可能为 null 或 undefined 的属性、下标与方法，并理解它的短路行为
@@ -97,8 +97,10 @@ console.log(typeof nick);
 
 给缺失的值一个默认值，常见写法有两种：
 
-- `a || b`：`a` 为 **falsy** 时取 `b`。falsy 值包括 `false`、`0`、`-0`、`0n`、`''`、`null`、`undefined`、`NaN`。
-- `a ?? b`：只有 `a` 为 `null` 或 `undefined` 时取 `b`。这个运算符叫**空值合并**（nullish coalescing）。
+- `a || b`：`a` 为 **falsy** 时取 `b`，否则结果就是 `a` 本身。falsy 值包括 `false`、`0`、`-0`、`0n`、`''`、`null`、`undefined`、`NaN`。
+- `a ?? b`：只有 `a` 为 `null` 或 `undefined` 时取 `b`，否则结果是 `a`。这个运算符叫**空值合并**（nullish coalescing）。
+
+注意 `||` 和 `&&` 返回的是**某个操作数本身**，而不是 `true`/`false`：这一点与 Python 的 `or`/`and` 相同，与 Java、C++ 的逻辑运算符不同。正因为如此，`||` 才能用来写默认值。
 
 如果 `0`、空字符串或 `false` 是合法的数据（比如“音量为 0”“标题故意留空”“关闭静音”），用 `||` 就会把它们错误地换成默认值。
 
@@ -125,9 +127,11 @@ console.log('?? 的结果：', {
 });
 
 const empty: Settings = {};
-console.log('字段缺失时：', { volume: empty.volume ?? 50, title: empty.title ?? '未命名' });
+const volume = empty.volume ?? 50;
+console.log('字段缺失时：', { volume, title: empty.title ?? '未命名' });
 ```
 - 第一行输出里，用户保存的 `0`、`''`、`false` 全被替换了；第二行原样保留。只有字段真正缺失时，`??` 才会使用默认值。
+- 把鼠标停在第 22 行的 `volume` 上：类型是 `number`。`empty.volume` 本身是 `number | undefined`，`??` 提供默认值后，`undefined` 就从结果类型中去掉了。
 - 这两种写法在 TypeScript 看来**都没有类型错误**：选错运算符是逻辑错误，类型系统抓不到，只能靠理解和测试。
 :::
 
@@ -142,13 +146,13 @@ console.log('字段缺失时：', { volume: empty.volume ?? 50, title: empty.tit
 :::playground{#mixing expect="5076@main.ts:2" run=error}
 ```ts file=main.ts
 function pick(a: string | undefined, b: string | undefined): string {
-  return a || b ?? '默认';
+  return a ?? b || '默认';
 }
 
-console.log(pick(undefined, 'B'));
+console.log('结果：', [pick('', undefined)]);
 ```
 - TypeScript 报 TS5076，运行时 JavaScript 引擎也会以 `SyntaxError` 拒绝这个文件，所以连第 5 行都执行不到。
-- 改成 `(a || b) ?? '默认'` 或 `a || (b ?? '默认')` 再运行。两种括号的含义不同，想一想 `pick('', undefined)` 在两种写法下分别返回什么。
+- 先改成 `(a ?? b) || '默认'` 运行，再改成 `a ?? (b || '默认')` 运行。两种括号的含义不同：运行前先预测 `pick('', undefined)` 在两种写法下分别返回什么。
 :::
 
 给对象的属性补默认值时，可以用**空值合并赋值** `??=`：`x ??= y` 只在 `x` 为 `null` 或 `undefined` 时才把 `y` 赋给 `x`。
@@ -181,4 +185,4 @@ console.log(opts);
 
 ## 下一步
 
-下一课会系统地迁移条件与循环语法，并用类型收窄（narrowing）把 `string | undefined` 这样的类型安全地“缩小”成 `string`。
+下一课快速迁移条件与循环语法。本课反复出现的 `string | undefined` 这类“可能缺失”的类型，会在 B 阶段的“类型收窄”（narrowing）一课中系统讲解：如何用条件判断让 TypeScript 把它安全地缩小成 `string`。

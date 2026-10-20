@@ -4,7 +4,7 @@ title: 可以结束的投票卡片
 ---
 完成一个投票卡片（页面结构见只读的 `index.html`）：
 
-1. 点击三个选项按钮之一，该选项票数加 1，并把 `#result` 的文字更新为固定顺序的汇总，例如：`TypeScript 2 · JavaScript 0 · Python 1`。每个按钮的 `data-option` 属性给出选项名。
+1. 点击三个选项按钮之一，该选项票数加 1，并把 `#result` 的文字更新为固定顺序的汇总，例如：`TypeScript 2 · JavaScript 0 · Python 1`。每个按钮的 `data-option` 属性给出选项名，在 TypeScript 中可以用 `button.dataset.option` 读取（类型是 `string | undefined`）。
 2. 选项按钮里有一个 `<span>` 图标。**点击图标也必须算作给这个按钮投票。**
 3. 点击 `#close`（结束投票）后：之后再点选项按钮不再计票；`#result` 末尾追加 `（已结束）`，例如 `TypeScript 2 · JavaScript 0 · Python 1（已结束）`；`#close` 按钮变为禁用。
 4. 页面加载后 `#result` 立即显示 `TypeScript 0 · JavaScript 0 · Python 0`。
@@ -139,7 +139,7 @@ test('每个选项只有一个监听器（一次点击只加一票）', async ()
 :::explanation
 关键点有三个：
 
-1. **用监听器所在的按钮，而不是 `event.target`**：点击图标时 `target` 是 `<span>`，它没有 `data-option`。参考答案在循环里给每个按钮单独注册监听器，监听器通过闭包直接使用 `button`，这与使用 `event.currentTarget` 等价。
+1. **用监听器所在的按钮，而不是 `event.target`**：点击图标时 `target` 是 `<span>`，它没有 `data-option`。参考答案在循环里给每个按钮单独注册监听器，监听器通过闭包直接使用 `button`，这与使用 `event.currentTarget` 等价。`for...of` 每次迭代都会创建一个新的 `button` 绑定，所以每个监听器拿到的是各自的按钮（不会像 Python 闭包延迟绑定那样全都指向最后一个）。
 2. **用 signal 统一移除**：所有选项监听器共享一个 `AbortController` 的 `signal`，结束投票时一次 `abort()` 全部移除。
 3. **类型收窄而不是断言**：`querySelectorAll` 返回的元素类型是 `Element`，用 `instanceof HTMLButtonElement` 收窄后才能读 `dataset` 与设置 `disabled`。
 

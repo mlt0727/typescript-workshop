@@ -70,13 +70,14 @@ function remaining() {
   return el;
 }
 
+// 用 /^…$/ 精确匹配：字符串参数是“包含”匹配，'1' 也会匹配 '-1' 或 '19'
 test('每输入一个字符就更新剩余字数', async () => {
   const user = userEvent.setup();
   const input = screen.getByLabelText('昵称');
   await user.type(input, 'A');
-  expect(remaining()).toHaveTextContent('19');
+  expect(remaining()).toHaveTextContent(/^19$/);
   await user.type(input, 'da');
-  expect(remaining()).toHaveTextContent('17');
+  expect(remaining()).toHaveTextContent(/^17$/);
 });
 
 test('删除字符时剩余字数增加', async () => {
@@ -84,14 +85,31 @@ test('删除字符时剩余字数增加', async () => {
   const input = screen.getByLabelText('昵称');
   await user.type(input, 'TypeScript');
   await user.type(input, '{Backspace}{Backspace}');
-  expect(remaining()).toHaveTextContent('12');
+  expect(remaining()).toHaveTextContent(/^12$/);
+});
+
+test('粘贴文字时同样更新', async () => {
+  const user = userEvent.setup();
+  await user.click(screen.getByLabelText('昵称'));
+  await user.paste('TypeScript');
+  expect(remaining()).toHaveTextContent(/^10$/);
+});
+
+test('正好 20 个字符时显示 0，不算超出', async () => {
+  const user = userEvent.setup();
+  await user.type(screen.getByLabelText('昵称'), 'abcdefghijklmnopqrst');
+  expect(remaining()).toHaveTextContent(/^0$/);
+  expect(remaining()).not.toHaveClass('over');
 });
 
 test('超出上限时显示负数并加上 over', async () => {
   const user = userEvent.setup();
-  await user.type(screen.getByLabelText('昵称'), 'abcdefghijklmnopqrstuv');
-  expect(remaining()).toHaveTextContent('-2');
+  const input = screen.getByLabelText('昵称');
+  await user.type(input, 'abcdefghijklmnopqrstu');
+  expect(remaining()).toHaveTextContent(/^-1$/);
   expect(remaining()).toHaveClass('over');
+  await user.type(input, 'v');
+  expect(remaining()).toHaveTextContent(/^-2$/);
 });
 
 test('回到上限内时去掉 over', async () => {
@@ -99,7 +117,7 @@ test('回到上限内时去掉 over', async () => {
   const input = screen.getByLabelText('昵称');
   await user.type(input, 'abcdefghijklmnopqrstuv');
   await user.type(input, '{Backspace}{Backspace}{Backspace}');
-  expect(remaining()).toHaveTextContent('1');
+  expect(remaining()).toHaveTextContent(/^1$/);
   expect(remaining()).not.toHaveClass('over');
 });
 ```
@@ -114,7 +132,9 @@ test('回到上限内时去掉 over', async () => {
 :::
 
 :::explanation
-`input` 事件在文本框内容每次变化（输入、删除、粘贴）时触发；`change` 事件对文本框来说一般要等失去焦点才触发，不适合实时反馈。
+`input` 事件在文本框内容每次变化（输入、删除、粘贴）时触发；`change` 事件对文本框来说要等值改变后失去焦点（或按 Enter）才触发，不适合实时反馈。`keyup` 也不行：粘贴、拖放、输入法上屏等不经过按键的修改不会触发它。
+
+关于“字符数”：`input.value.length` 统计的是 UTF-16 码元。常用汉字算 1 个，但很多 emoji 算 2 个（和 Python 的 `len` 不同）；用中文输入法拼音组字的过程中，`input` 事件也会触发（事件对象的 `isComposing` 为 `true`）。真实产品里如果要精确限制，需要额外处理这些情况，本题不要求。
 
 监听器里直接使用外层的 `input` 与 `remaining`：它们是 `const`，并且已经用 `instanceof` 收窄过，TypeScript 在箭头函数里仍然认得它们的具体类型。`classList.toggle('over', left < 0)` 一行同时处理“加上”和“去掉”。
 :::
@@ -157,6 +177,42 @@ input.addEventListener('change', () => {
   const left = MAX - input.value.length;
   remaining.textContent = String(left);
   remaining.classList.toggle('over', left < 0);
+});
+```
+:::
+
+:::variant{kind=wrong name=keyup-event fails=tests reason="用 keyup 事件：粘贴等不经过按键的修改不会触发"}
+```ts file=main.ts
+const MAX = 20;
+
+const input = document.querySelector('#nickname');
+const remaining = document.querySelector('#remaining');
+if (!(input instanceof HTMLInputElement) || !(remaining instanceof HTMLSpanElement)) {
+  throw new Error('页面结构不完整');
+}
+
+input.addEventListener('keyup', () => {
+  const left = MAX - input.value.length;
+  remaining.textContent = String(left);
+  remaining.classList.toggle('over', left < 0);
+});
+```
+:::
+
+:::variant{kind=wrong name=off-by-one fails=tests reason="把正好 20 个字符也当作超出（<= 0）"}
+```ts file=main.ts
+const MAX = 20;
+
+const input = document.querySelector('#nickname');
+const remaining = document.querySelector('#remaining');
+if (!(input instanceof HTMLInputElement) || !(remaining instanceof HTMLSpanElement)) {
+  throw new Error('页面结构不完整');
+}
+
+input.addEventListener('input', () => {
+  const left = MAX - input.value.length;
+  remaining.textContent = String(left);
+  remaining.classList.toggle('over', left <= 0);
 });
 ```
 :::

@@ -3,9 +3,9 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 0 / 规划总数 126**（草稿 3，规划中 123）
+**已发布 3 / 规划总数 126**（草稿 0，规划中 123）
 
-## A. 起步与 JavaScript 共同语法（已发布 0 / 20）
+## A. 起步与 JavaScript 共同语法（已发布 1 / 20）
 
 从第一天写 TypeScript，补齐 JS 特有的语法与运行语义。
 
@@ -18,7 +18,7 @@
 | `a05-null-undefined` null 与 undefined | ⬜ 规划中 | `a04-primitives-strings` |
 | `a06-operators-equality` 运算符、=== 与类型转换 | ⬜ 规划中 | `a05-null-undefined` |
 | `a07-truthy-falsy` truthy 与 falsy | ⬜ 规划中 | `a06-operators-equality` |
-| `a08-optional-chaining-nullish` ?.、?? 与 || 的区别 | 📝 草稿 | `a07-truthy-falsy` |
+| `a08-optional-chaining-nullish` ?.、?? 与 || 的区别 | ✅ 已发布 | `a07-truthy-falsy` |
 | `a09-control-flow` 条件与循环的快速迁移 | ⬜ 规划中 | `a07-truthy-falsy` |
 | `a10-arrays` 数组基础与越界访问 | ⬜ 规划中 | `a09-control-flow` |
 | `a11-objects-references` 对象、引用与浅拷贝 | ⬜ 规划中 | `a10-arrays` |
@@ -95,7 +95,7 @@
 | `c11-strict-options` strict、strictNullChecks 与 noUncheckedIndexedAccess | ⬜ 规划中 | `c10-avoid-any` |
 | `c12-modules-dts` 模块与 .d.ts 基础 | ⬜ 规划中 | `c11-strict-options`、`f03-tsconfig` |
 
-## D. HTML、CSS 与 DOM（已发布 0 / 10）
+## D. HTML、CSS 与 DOM（已发布 1 / 10）
 
 足以完成项目的 HTML/CSS，以及类型安全的 DOM 操作、事件与表单。
 
@@ -107,7 +107,7 @@
 | `d04-responsive-a11y` 响应式与可访问性基础 | ⬜ 规划中 | `d03-css-layout`、`d02-html-forms` |
 | `d05-dom-query` DOM 查询、null 检查与元素类型收窄 | ⬜ 规划中 | `d01-html-semantics`、`b07-narrowing` |
 | `d06-dom-create-update` 创建与更新节点 | ⬜ 规划中 | `d05-dom-query` |
-| `d07-events` 事件监听、target 与 currentTarget | 📝 草稿 | `d06-dom-create-update`、`b10-function-types` |
+| `d07-events` 事件监听、target 与 currentTarget | ✅ 已发布 | `d06-dom-create-update`、`b10-function-types` |
 | `d08-bubbling-delegation` 冒泡、委托、preventDefault 与清理监听器 | ⬜ 规划中 | `d07-events` |
 | `d09-form-validation` 类型安全的表单输入与验证 | ⬜ 规划中 | `d08-bubbling-delegation`、`d02-html-forms` |
 | `d10-state-and-render` 状态与渲染：从数据到界面 | ⬜ 规划中 | `d09-form-validation`、`b09-discriminated-unions` |
@@ -131,7 +131,7 @@
 | `f11-lint-format` 格式化与静态检查 | ⬜ 规划中 | `f03-tsconfig` |
 | `f12-build-ci` 生产构建与 CI | ⬜ 规划中 | `f11-lint-format`、`f10-git` |
 
-## G. React + TypeScript（已发布 0 / 15）
+## G. React + TypeScript（已发布 1 / 15）
 
 组件、props、state、表单、Hook、Effect、路由与测试，全部在真实预览中练习。
 
@@ -139,7 +139,7 @@
 |---|---|---|
 | `g01-jsx-components` JSX/TSX 与组件 | ⬜ 规划中 | `d10-state-and-render`、`a19-modules` |
 | `g02-props` Props 与类型 | ⬜ 规划中 | `g01-jsx-components` |
-| `g03-events-state` 事件与 state | 📝 草稿 | `g02-props` |
+| `g03-events-state` 事件与 state | ✅ 已发布 | `g02-props` |
 | `g04-immutable-updates` 不可变更新 | ⬜ 规划中 | `g03-events-state`、`a12-destructuring-spread` |
 | `g05-lists-keys` 列表渲染与 key | ⬜ 规划中 | `g04-immutable-updates` |
 | `g06-controlled-forms` 受控表单 | ⬜ 规划中 | `g05-lists-keys` |

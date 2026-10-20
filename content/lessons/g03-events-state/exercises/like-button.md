@@ -74,7 +74,7 @@ import { LikeButton } from './LikeButton';
 test('初始未点赞', () => {
   render(<LikeButton initialCount={10} />);
   const button = screen.getByRole('button');
-  expect(button).toHaveTextContent('赞 10');
+  expect(button).toHaveTextContent(/^赞 10$/);
   expect(button).toHaveAttribute('aria-pressed', 'false');
 });
 
@@ -82,7 +82,7 @@ test('点击后已点赞并加 1', async () => {
   const user = userEvent.setup();
   render(<LikeButton initialCount={10} />);
   await user.click(screen.getByRole('button'));
-  expect(screen.getByRole('button')).toHaveTextContent('已赞 11');
+  expect(screen.getByRole('button')).toHaveTextContent(/^已赞 11$/);
   expect(screen.getByRole('button')).toHaveAttribute('aria-pressed', 'true');
 });
 
@@ -92,10 +92,10 @@ test('再次点击取消点赞并减 1，可以反复切换', async () => {
   const button = screen.getByRole('button');
   await user.click(button);
   await user.click(button);
-  expect(button).toHaveTextContent('赞 3');
+  expect(button).toHaveTextContent(/^赞 3$/);
   expect(button).toHaveAttribute('aria-pressed', 'false');
   await user.click(button);
-  expect(button).toHaveTextContent('已赞 4');
+  expect(button).toHaveTextContent(/^已赞 4$/);
 });
 ```
 :::

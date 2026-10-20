@@ -90,6 +90,14 @@ test('保留其他明确设置的值', () => {
 test('每个字段独立处理', () => {
   expect(withDefaults({ label: '' })).toEqual({ pageSize: 20, label: '', showHidden: true });
 });
+
+test('显式传入 undefined 也使用默认值', () => {
+  expect(withDefaults({ pageSize: undefined, label: undefined, showHidden: undefined })).toEqual({
+    pageSize: 20,
+    label: '全部',
+    showHidden: true,
+  });
+});
 ```
 :::
 
@@ -151,6 +159,26 @@ export function withDefaults(options: ListOptions): ResolvedOptions {
     label: options.label ?? '全部',
     showHidden: options.showHidden ?? true,
   };
+}
+```
+:::
+
+:::variant{kind=wrong name=spread-defaults fails=tests reason="用对象展开覆盖默认值：显式传入的 undefined 也会覆盖默认值"}
+```ts file=defaults.ts
+export type ListOptions = {
+  pageSize?: number;
+  label?: string;
+  showHidden?: boolean;
+};
+
+export type ResolvedOptions = {
+  pageSize: number;
+  label: string;
+  showHidden: boolean;
+};
+
+export function withDefaults(options: ListOptions): ResolvedOptions {
+  return { pageSize: 20, label: '全部', showHidden: true, ...options };
 }
 ```
 :::

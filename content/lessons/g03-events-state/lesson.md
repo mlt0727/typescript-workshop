@@ -3,7 +3,7 @@ version: 1
 mode: react
 representative: true
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 组件需要“记住”用户的操作（计数、开关、输入），并在数据变化时更新界面。普通变量做不到这一点；用 state 时又容易被“state 是快照”这一规则绊倒。
 objectives:
   - 在 JSX 中绑定事件处理函数：传入函数本身，而不是调用它的结果
@@ -74,13 +74,13 @@ createRoot(container).render(<App />);
 - 把鼠标停在 `count` 上：`useState(0)` 让 TypeScript 推断出 `number`。
 :::
 
-注意 `onClick={() => setCount(count + 1)}` 传的是**一个函数**。如果写成 `onClick={setCount(count + 1)}`，`setCount` 会在渲染时立刻执行，而不是在点击时——这是初学者最常见的错误之一。
+注意 `onClick={() => setCount(count + 1)}` 传的是**一个函数**。如果写成 `onClick={setCount(count + 1)}`，花括号里的表达式会在渲染时立刻求值：TypeScript 会先报错（TS2322：`setCount` 返回的 `void` 不能作为点击处理函数）；即使忽略类型错误强行运行，每次渲染都会设置 state、触发新的渲染，React 最终会以“Too many re-renders”报错中止。这是初学者最常见的错误之一。
 
 ::exercise{#like-button}
 
 ## state 是一张快照
 
-设置 state 只影响**下一次**渲染。在当前这次渲染的事件处理函数里，`count` 的值是固定的。所以连续写三次 `setCount(count + 1)`，相当于三次 `setCount(0 + 1)`。
+设置 state 只影响**下一次**渲染。在当前这次渲染的事件处理函数里，`count` 的值是固定的。所以（假设当前 `count` 为 0）连续写三次 `setCount(count + 1)`，相当于三次 `setCount(0 + 1)`。
 
 如果新值依赖旧值，传入一个**更新函数**（updater function）：`setCount((c) => c + 1)`。React 会把这些函数排队，依次用最新的值去计算。
 
@@ -133,7 +133,7 @@ createRoot(container).render(<App />);
 
 **state 的类型**：`useState` 根据初始值推断类型。如果 state 可以取几种值，用类型参数写出联合类型，例如 `useState<'idle' | 'saving' | 'saved'>('idle')`；否则 TypeScript 会推断成宽泛的 `string`，拼错状态名也发现不了。
 
-**事件的类型**：内联写的处理函数，参数类型会自动推断。把处理函数提取出来时需要显式写出类型，它们来自 `react` 包，例如 `ChangeEvent<HTMLInputElement>`。和上一章的原生 DOM 不同，React 事件的 `currentTarget` 已经带有元素类型，可以直接读取 `value`。
+**事件的类型**：内联写的处理函数，参数类型会自动推断。把处理函数提取出来时需要显式写出类型，它们来自 `react` 包，例如 `ChangeEvent<HTMLInputElement>`。和原生 DOM 事件（d07 课）不同，React 事件类型把元素类型作为类型参数，`currentTarget` 已经带有元素类型，可以直接读取 `value`。
 
 :::playground{#typed-events}
 ```tsx file=App.tsx
@@ -191,7 +191,7 @@ createRoot(container).render(<App />);
 - **`onClick={doSomething()}`**：在渲染时就调用了函数。应传函数本身 `onClick={doSomething}`，或包一层 `onClick={() => doSomething(1)}`。
 - **设置 state 后立刻读取，期待得到新值**：state 是当前渲染的快照；新值要到下一次渲染才看得到。
 - **新值依赖旧值却直接用变量**：连续更新或在异步回调里更新时，用 `setX((x) => …)`。
-- **直接修改 state**：`count++` 或修改 state 里的对象/数组都不会触发重新渲染（对象和数组的不可变更新在下一课讲）。
+- **直接修改 state**：例如 `items.push(x)` 或 `user.name = 'x'` 修改的是同一个对象，React 不知道它变了，不会重新渲染（对象和数组的不可变更新在下一课讲）。
 - **`useState(null)` 之后无法设置字符串**：TypeScript 会推断出 `null` 类型；需要写成 `useState<string | null>(null)`。
 
 ## 下一步

@@ -15,12 +15,15 @@ const MESSAGES: Record<RuleId, string> = {
     '本题不允许 @ts-ignore / @ts-nocheck / @ts-expect-error：它们会隐藏真实的类型错误。',
 };
 
+/** 这些 DOM 方法的类型参数只是“相信我”，不做任何运行时检查 */
+const UNCHECKED_GENERIC_CALLS = new Set(['querySelector', 'querySelectorAll', 'closest']);
+
 export function checkRules(sf: ts.SourceFile, forbid: readonly RuleId[]): RuleViolation[] {
   const out: RuleViolation[] = [];
   const file = sf.fileName.startsWith('/') ? sf.fileName.slice(1) : sf.fileName;
-  const report = (rule: RuleId, pos: number) => {
+  const report = (rule: RuleId, pos: number, message = MESSAGES[rule]) => {
     const lc = sf.getLineAndCharacterOfPosition(pos);
-    out.push({ rule, file, line: lc.line + 1, column: lc.character + 1, message: MESSAGES[rule] });
+    out.push({ rule, file, line: lc.line + 1, column: lc.character + 1, message });
   };
   const has = (r: RuleId) => forbid.includes(r);
 
@@ -35,6 +38,18 @@ export function checkRules(sf: ts.SourceFile, forbid: readonly RuleId[]): RuleVi
           ts.isIdentifier(node.type.typeName) &&
           node.type.typeName.text === 'const';
         if (!isConst) report('type-assertion', node.getStart(sf));
+      }
+      // querySelector<HTMLButtonElement>(…) 的类型参数不检查元素的真实类型，本质上也是断言
+      if (ts.isCallExpression(node) && node.typeArguments?.length) {
+        const callee = node.expression;
+        const name = ts.isPropertyAccessExpression(callee) ? callee.name.text : ts.isIdentifier(callee) ? callee.text : '';
+        if (UNCHECKED_GENERIC_CALLS.has(name)) {
+          report(
+            'type-assertion',
+            node.getStart(sf),
+            `本题不允许 ${name}<…>() 这种写法：类型参数不会检查元素的真实类型，本质上也是类型断言。请先取得元素，再用 instanceof 收窄。`,
+          );
+        }
       }
     }
     if (has('non-null-assertion') && ts.isNonNullExpression(node)) {

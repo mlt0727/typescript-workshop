@@ -15,7 +15,7 @@ title: 生成用户资料摘要
 | 显示名 | `user.name` | `null`、`undefined` **或空字符串** | `用户#<id>`，例如 `用户#7` |
 | 帖子数 | `user.stats.posts` | `stats` 或 `posts` 缺失 | `未知` |
 | 关注者数 | `user.stats.followers` | `stats` 缺失，或 `followers` 为 `null`/`undefined` | `未知` |
-| 邮箱 | `user.contact.email` | `contact` 缺失或为 `null`，或 `email` 缺失 | `未填写邮箱` |
+| 邮箱 | `user.contact.email` | `contact` 缺失或为 `null`，或 `email` 缺失**或为空字符串** | `未填写邮箱` |
 
 注意：帖子数和关注者数为 `0` 时要显示 `0`，不算缺失。
 
@@ -64,7 +64,7 @@ export function formatProfile(user: ApiUser): string {
   const name = user.name || `用户#${user.id}`;
   const posts = user.stats?.posts ?? '未知';
   const followers = user.stats?.followers ?? '未知';
-  const email = user.contact?.email ?? '未填写邮箱';
+  const email = user.contact?.email || '未填写邮箱';
   return `${name} · 帖子 ${posts} · 关注者 ${followers} · ${email}`;
 }
 
@@ -113,6 +113,12 @@ describe('formatProfile', () => {
     );
   });
 
+  test('空邮箱算作未填写', () => {
+    expect(formatProfile({ id: 8, name: 'Fu', stats: { posts: 3, followers: 4 }, contact: { email: '' } })).toBe(
+      'Fu · 帖子 3 · 关注者 4 · 未填写邮箱',
+    );
+  });
+
   test('题目中的示例', () => {
     expect(formatProfile({ id: 7, name: 'Ada', stats: { posts: 0 }, contact: null })).toBe(
       'Ada · 帖子 0 · 关注者 未知 · 未填写邮箱',
@@ -130,11 +136,11 @@ expectTypeOf(formatProfile).returns.toEqualTypeOf<string>();
 :::
 
 :::hint{level=1}
-逐个字段问自己：“哪些值算缺失？”显示名把空字符串也当作缺失；帖子数和关注者数的 `0` 却是有效数据。两种情况适合的运算符不同。
+逐个字段问自己：“哪些值算缺失？”显示名和邮箱把空字符串也当作缺失；帖子数和关注者数的 `0` 却是有效数据。两种情况适合的运算符不同。
 :::
 
 :::hint{level=2}
-显示名用 `||`；帖子数、关注者数和邮箱用 `??`。`stats` 和 `contact` 本身可能缺失（`contact` 还可能是 `null`），所以读取它们的属性时要用 `?.`，例如 `user.stats?.posts ?? '未知'`。
+显示名和邮箱用 `||`（空字符串也算缺失）；帖子数和关注者数用 `??`（0 是有效数据）。`stats` 和 `contact` 本身可能缺失（`contact` 还可能是 `null`），所以读取它们的属性时要用 `?.`，例如 `user.stats?.posts ?? '未知'`。
 :::
 
 :::explanation
@@ -142,9 +148,9 @@ expectTypeOf(formatProfile).returns.toEqualTypeOf<string>();
 
 - `user.name || \`用户#${user.id}\``：规则要求空字符串也算缺失，`||` 正好把 `''`、`null`、`undefined` 都替换掉。
 - `user.stats?.posts ?? '未知'`：`?.` 处理 `stats` 缺失；`??` 只替换 `null`/`undefined`，保留 `0`。
-- `user.contact?.email ?? '未填写邮箱'`：`?.` 同时能处理 `contact` 为 `undefined` 和 `null` 的情况。
+- `user.contact?.email || '未填写邮箱'`：`?.` 同时能处理 `contact` 为 `undefined` 和 `null` 的情况；空邮箱也算未填写，所以用 `||`。
 
-模板字符串会把数字转成字符串，所以 `posts` 的类型是 `number | string` 也没关系。全部用 `||` 会把 `0` 变成“未知”；全部用 `??` 会把空名字原样输出——这两种常见错误都会被测试拒绝。
+模板字符串会把数字转成字符串，所以 `posts` 的类型是 `number | string` 也没关系。全部用 `||` 会把 `0` 变成“未知”；全部用 `??` 会把空名字、空邮箱原样输出——这两种常见错误都会被测试拒绝。
 :::
 
 :::variant{kind=alt name=explicit-checks}
@@ -175,7 +181,7 @@ export function formatProfile(user: ApiUser): string {
     }
   }
   let email = '未填写邮箱';
-  if (user.contact && user.contact.email !== undefined) {
+  if (user.contact && user.contact.email) {
     email = user.contact.email;
   }
   return `${name} · 帖子 ${posts} · 关注者 ${followers} · ${email}`;

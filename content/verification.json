@@ -2,8 +2,8 @@
   "tsVersion": "6.0.3",
   "lessons": {
     "a08-optional-chaining-nullish": {
-      "verifiedAt": "2026-10-20T08:42:44.772Z",
-      "sourceHash": "0daf762c12bd945d",
+      "verifiedAt": "2026-10-20T08:56:41.232Z",
+      "sourceHash": "7d438c40c3026e6d",
       "ok": true,
       "checks": [
         {
@@ -44,7 +44,7 @@
         {
           "target": "playground:mixing:run",
           "ok": true,
-          "detail": "期望 error，实际 error（SyntaxError: Unexpected token '??'）；输出：[error] Uncaught SyntaxError: Unexpected token '??'"
+          "detail": "期望 error，实际 error（SyntaxError: Unexpected token '||'）；输出：[error] Uncaught SyntaxError: Unexpected token '||'"
         },
         {
           "target": "playground:nullish-assign:types",
@@ -107,6 +107,11 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保留 0、空字符串和 false)"
         },
         {
+          "target": "exercise:with-defaults:wrong:spread-defaults",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(显式传入 undefined 也使用默认值)"
+        },
+        {
           "target": "exercise:with-defaults:wrong:truthy-ternary",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保留 0、空字符串和 false,每个字段独立处理)"
@@ -114,7 +119,7 @@
         {
           "target": "exercise:format-profile:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(formatProfile › 数据完整,formatProfile › 0 不算缺失,formatProfile › 嵌套对象缺失或为 null,formatProfile › 名字为空字符串时显示编号,formatProfile › 名字为null时显示编号,formatProfile › 名字为缺失时显示编号,formatProfile › 题目中的示例)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(formatProfile › 数据完整,formatProfile › 0 不算缺失,formatProfile › 嵌套对象缺失或为 null,formatProfile › 名字为空字符串时显示编号,formatProfile › 名字为null时显示编号,formatProfile › 名字为缺失时显示编号,formatProfile › 空邮箱算作未填写,formatProfile › 题目中的示例)"
         },
         {
           "target": "exercise:format-profile:solution:solution",
@@ -134,23 +139,23 @@
         {
           "target": "exercise:format-profile:wrong:all-nullish",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 名字为空字符串时显示编号)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 名字为空字符串时显示编号,formatProfile › 空邮箱算作未填写)"
         },
         {
           "target": "exercise:format-profile:wrong:non-null-stats",
           "ok": true,
-          "detail": "被拒绝（rules）；types=ok rules=fail(non-null-assertion@15,non-null-assertion@16) tests=fail(formatProfile › 嵌套对象缺失或为 null)"
+          "detail": "被拒绝（rules）；types=ok rules=fail(non-null-assertion@15,non-null-assertion@16) tests=fail(formatProfile › 嵌套对象缺失或为 null,formatProfile › 空邮箱算作未填写)"
         },
         {
           "target": "exercise:format-profile:wrong:no-defaults",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 嵌套对象缺失或为 null,formatProfile › 题目中的示例)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 嵌套对象缺失或为 null,formatProfile › 空邮箱算作未填写,formatProfile › 题目中的示例)"
         }
       ]
     },
     "d07-events": {
-      "verifiedAt": "2026-10-20T08:42:48.762Z",
-      "sourceHash": "e9133b01a4ba70f6",
+      "verifiedAt": "2026-10-20T08:56:46.792Z",
+      "sourceHash": "5fb16b205d4ef535",
       "ok": true,
       "checks": [
         {
@@ -186,7 +191,7 @@
         {
           "target": "exercise:char-counter:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(每输入一个字符就更新剩余字数,删除字符时剩余字数增加,超出上限时显示负数并加上 over,回到上限内时去掉 over)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(每输入一个字符就更新剩余字数,删除字符时剩余字数增加,粘贴文字时同样更新,正好 20 个字符时显示 0，不算超出,超出上限时显示负数并加上 over,回到上限内时去掉 over)"
         },
         {
           "target": "exercise:char-counter:solution:solution",
@@ -201,7 +206,17 @@
         {
           "target": "exercise:char-counter:wrong:change-event",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每输入一个字符就更新剩余字数,删除字符时剩余字数增加,超出上限时显示负数并加上 over,回到上限内时去掉 over)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每输入一个字符就更新剩余字数,删除字符时剩余字数增加,粘贴文字时同样更新,正好 20 个字符时显示 0，不算超出,超出上限时显示负数并加上 over,回到上限内时去掉 over)"
+        },
+        {
+          "target": "exercise:char-counter:wrong:keyup-event",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(粘贴文字时同样更新)"
+        },
+        {
+          "target": "exercise:char-counter:wrong:off-by-one",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(正好 20 个字符时显示 0，不算超出)"
         },
         {
           "target": "exercise:char-counter:wrong:never-removes-class",
@@ -241,13 +256,13 @@
         {
           "target": "exercise:poll:wrong:asserted-elements",
           "ok": true,
-          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@3,type-assertion@4) tests=ok"
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@3,type-assertion@4,type-assertion@11) tests=ok"
         }
       ]
     },
     "g03-events-state": {
-      "verifiedAt": "2026-10-20T08:42:51.849Z",
-      "sourceHash": "b59f2f711603f25f",
+      "verifiedAt": "2026-10-20T08:56:49.878Z",
+      "sourceHash": "0a98baee8e519cd3",
       "ok": true,
       "checks": [
         {

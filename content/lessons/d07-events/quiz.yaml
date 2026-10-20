@@ -15,7 +15,7 @@
 - id: target-type
   type: single
   prompt: |
-    下面的代码为什么无法通过类型检查？
+    下面的代码为什么无法通过类型检查？（`input` 已经用 `instanceof` 收窄为 `HTMLInputElement`）
 
     ```ts
     input.addEventListener('input', (event) => {
@@ -34,14 +34,14 @@
       explain: "`any` 会关闭检查，让真正的错误（例如 target 不是输入框）在运行时才暴露。正确做法是收窄类型。"
 - id: removable
   type: multiple
-  prompt: 下面哪些写法能保证之后**不再**收到这个按钮的 `click`？（假设 `handler` 是之前保存的函数引用）
+  prompt: 下面哪些写法能保证 `handler` 之后**不会再因为**这个按钮的 `click` 被调用？（假设 `handler` 是之前保存的函数引用）
   options:
     - text: "`button.addEventListener('click', handler, { once: true })`，并且已经点击过一次"
       correct: true
       explain: "`once: true` 的监听器在第一次调用后会自动移除。"
     - text: "`button.removeEventListener('click', handler)`（注册时也是 `addEventListener('click', handler)`）"
       correct: true
-      explain: 传入同一个函数引用（且 capture 设置一致）才能移除。
+      explain: 传入与注册时**同一个**函数引用才能移除。
     - text: "注册时传了 `{ signal: controller.signal }`，之后调用 `controller.abort()`"
       correct: true
       explain: signal 被中止时，关联的监听器会被移除。
