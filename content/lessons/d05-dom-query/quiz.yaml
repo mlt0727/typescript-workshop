@@ -1,0 +1,47 @@
+- id: return-type
+  type: single
+  prompt: "`document.querySelector('#email')` 的类型是什么？"
+  options:
+    - text: "`Element | null`"
+      correct: true
+      explain: 选择器不是标签名，TypeScript 无法从字符串推断出元素类型；元素也可能不存在。
+    - text: "`HTMLInputElement | null`"
+      explain: 只有选择器正好是标签名（例如 `'input'`）时，TypeScript 才能查到具体类型。
+    - text: "`HTMLInputElement`"
+      explain: TypeScript 不知道页面上有什么，结果总是可能为 `null`。
+- id: why-not-assert
+  type: single
+  prompt: "为什么本课程推荐 `if (!(el instanceof HTMLInputElement)) throw …`，而不是 `document.querySelector<HTMLInputElement>('#email')`？"
+  options:
+    - text: 泛型参数只是让 TypeScript 相信结果是输入框，不做任何检查；instanceof 在运行时真正检查了
+      correct: true
+      explain: "元素不存在或者不是输入框时，前者会把错误推迟到后面某个地方，后者在查询的地方就给出清楚的错误。"
+    - text: 泛型参数的写法在新版 TypeScript 中已经被删除了
+      explain: 它仍然可以用，只是和 `as` 一样属于不做检查的断言。
+    - text: instanceof 的运行速度更快
+      explain: 区别不在性能，而在于有没有真正的检查。
+- id: nodelist
+  type: multiple
+  prompt: "关于 `document.querySelectorAll('.item')` 的返回值，哪些说法正确？"
+  options:
+    - text: 可以用 `for...of` 遍历
+      correct: true
+      explain: NodeList 是可迭代的。
+    - text: 它是静态的，之后新增的 `.item` 元素不会出现在里面
+      correct: true
+      explain: 需要最新的结果时，重新查询一次。
+    - text: 可以直接调用 `.map()`
+      explain: NodeList 不是数组，没有 `map`。先用 `[...list]` 或 `Array.from(list)` 转换。
+    - text: 每个元素的类型都是 `HTMLElement`
+      explain: 选择器不是标签名时，元素类型是 `Element`，要用 instanceof 收窄。
+- id: dataset
+  type: single
+  prompt: "`<li data-price=\"12\">` 中，`li.dataset.price` 的值和类型是什么？"
+  options:
+    - text: 字符串 `\"12\"`，类型是 `string | undefined`
+      correct: true
+      explain: data-* 属性的值总是字符串；属性可能不存在，所以类型包含 `undefined`。需要数字时用 `Number()` 转换并检查。
+    - text: 数字 `12`，类型是 `number`
+      explain: HTML 属性没有数字类型，dataset 不会自动转换。
+    - text: 字符串 `\"12\"`，类型是 `string`
+      explain: TypeScript 不知道页面上的元素有没有这个属性，所以类型包含 `undefined`。

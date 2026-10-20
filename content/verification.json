@@ -4443,6 +4443,113 @@
         }
       ]
     },
+    "d05-dom-query": {
+      "verifiedAt": "2026-10-20T11:51:33.782Z",
+      "sourceHash": "da2e0fffbb2b16fa",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:query-types:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:query-types:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Ada INPUT name 2 | [log] 拼错的选择器： null"
+        },
+        {
+          "target": "playground:assertion-danger:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:assertion-danger:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of null (reading 'textContent')）；输出：[log] #title 不是输入框，而是 H1 | [log] 断言之后 TypeScript 认为它有 value： undefined | [error] Uncaught TypeError: Cannot read properties of null (reading 'textContent')\n    at main.ts:12:20"
+        },
+        {
+          "target": "playground:scoped:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:scoped:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] p1 笔记本 12 元 | [log] p2 铅笔 3.5 元 | [log] p3 橡皮 没有价格 | [log] 第一个按钮所在的商品： p1"
+        },
+        {
+          "target": "exercise:read-settings:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=fail(non-null-assertion@10,type-assertion@10,type-assertion@11,type-assertion@12,type-assertion@13) tests=fail(读取默认值,读取用户修改后的值,只读取 #topics 里面的复选框,#volume 不存在时抛出错误，并指出选择器,#theme 不存在时抛出错误，并指出选择器,#topics 不存在时抛出错误，并指出选择器,#nickname 不存在时抛出错误，并指出选择器,元素类型不对时抛出错误)"
+        },
+        {
+          "target": "exercise:read-settings:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:read-settings:alt:get-element-by-id-and-checked-selector",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:read-settings:wrong:document-wide-checkboxes",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(读取用户修改后的值,只读取 #topics 里面的复选框)"
+        },
+        {
+          "target": "exercise:read-settings:wrong:null-check-only",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2339@settings.ts:21 Property 'value' does not exist on type 'Element'.；TS2339@settings.ts:22 Property 'valueAsNumber' does not exist on type 'Element'.；TS2339@settings.ts:23 Property 'checked' does not exist on type 'Element'.；TS2339@settings.ts:24 Property 'value' does not exist on type 'Element') rules=ok tests=fail(元素类型不对时抛出错误)"
+        },
+        {
+          "target": "exercise:read-settings:wrong:silent-defaults",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(#volume 不存在时抛出错误，并指出选择器,#theme 不存在时抛出错误，并指出选择器,#topics 不存在时抛出错误，并指出选择器,#nickname 不存在时抛出错误，并指出选择器,元素类型不对时抛出错误)"
+        },
+        {
+          "target": "exercise:read-settings:wrong:volume-as-string",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@settings.ts:26 Type 'string' is not assignable to type 'number'.) rules=ok tests=fail(读取默认值,读取用户修改后的值)"
+        },
+        {
+          "target": "exercise:typed-query:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(query › 返回第一个匹配的元素,query › 找不到时抛出 Error，消息包含选择器,query › 类型不对时抛出 TypeError，消息包含选择器和类型名,query › 只在 root 里查找,queryAll › 返回真正的数组,queryAll › 没有匹配时返回空数组,queryAll › 有元素类型不对时抛出 TypeError)"
+        },
+        {
+          "target": "exercise:typed-query:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-query:alt:array-from",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-query:wrong:filter-silently",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(queryAll › 有元素类型不对时抛出 TypeError)"
+        },
+        {
+          "target": "exercise:typed-query:wrong:null-check-only",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@query.ts:7 Type 'Element' is not assignable to type 'T'.) rules=ok tests=fail(query › 类型不对时抛出 TypeError，消息包含选择器和类型名,queryAll › 有元素类型不对时抛出 TypeError)"
+        },
+        {
+          "target": "exercise:typed-query:wrong:ignore-root",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(query › 只在 root 里查找,queryAll › 返回真正的数组)"
+        },
+        {
+          "target": "exercise:typed-query:wrong:return-nodelist",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2740@query.ts:12 Type 'NodeListOf<Element>' is missing the following properties from type 'T[]': pop, push, concat, join, and 29 more.) rules=ok tests=fail(queryAll › 返回真正的数组,queryAll › 没有匹配时返回空数组,queryAll › 有元素类型不对时抛出 TypeError)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T11:45:19.120Z",
       "sourceHash": "5fb16b205d4ef535",
