@@ -5655,6 +5655,103 @@
         }
       ]
     },
+    "e06-runtime-validation": {
+      "verifiedAt": "2026-10-20T12:15:16.798Z",
+      "sourceHash": "608da8734cbe110c",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:parse-user:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:parse-user:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 用户 1： { id: 1, name: 'Ada', email: 'ada@example.com' } | [log] 用户 2 的数据有问题：id 应该是整数 | [log] 用户 3 的数据有问题：用户应该是对象"
+        },
+        {
+          "target": "playground:optional-and-dates:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:optional-and-dates:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] {\n  ok: true,\n  value: {\n     title: '分享会',\n     startsAt: 2026-11-01T10:00:00.000Z,\n     location: null,\n     capacity: 0\n   }\n} | [log] { ok: false, error: 'startsAt 不是有效的日期' }"
+        },
+        {
+          "target": "exercise:parse-product:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseProduct › 合法的数据,parseProduct › 结果是只包含已知字段的新对象,parseProduct › 不是对象,parseProduct › id 与 name,parseProduct › price 必须是不小于 0 的有限数字,parseProduct › tags 必须是字符串数组,parseProduct › discount 可选，存在时在 0 到 1 之间,parseProduct › 按顺序报告第一个问题)"
+        },
+        {
+          "target": "exercise:parse-product:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-product:alt:check-list",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-product:wrong:typeof-number-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProduct › price 必须是不小于 0 的有限数字)"
+        },
+        {
+          "target": "exercise:parse-product:wrong:array-without-items",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProduct › tags 必须是字符串数组)"
+        },
+        {
+          "target": "exercise:parse-product:wrong:return-input",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProduct › 结果是只包含已知字段的新对象)"
+        },
+        {
+          "target": "exercise:parse-product:wrong:truthy-discount",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProduct › 合法的数据,parseProduct › discount 可选，存在时在 0 到 1 之间)"
+        },
+        {
+          "target": "exercise:parse-order:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseOrder › 合法的订单：只保留已知字段,parseOrder › 不是合法的 JSON,parseOrder › 顶层不是对象,parseOrder › 收集所有错误，带有路径,parseOrder › items 不是数组或为空,parseOrder › note 为 null 也不合法)"
+        },
+        {
+          "target": "exercise:parse-order:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-order:alt:path-functions",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-order:wrong:first-error-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseOrder › 收集所有错误，带有路径)"
+        },
+        {
+          "target": "exercise:parse-order:wrong:uncaught-json",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseOrder › 不是合法的 JSON)"
+        },
+        {
+          "target": "exercise:parse-order:wrong:no-paths",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseOrder › 收集所有错误，带有路径)"
+        },
+        {
+          "target": "exercise:parse-order:wrong:keep-extra-fields",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseOrder › 合法的订单：只保留已知字段)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",

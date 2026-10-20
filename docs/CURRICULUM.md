@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 43 / 规划总数 126**（草稿 4，规划中 79）
+**已发布 43 / 规划总数 126**（草稿 11，规划中 72）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -66,8 +66,8 @@
 | `e02-promises` Promise 基础 | ✅ 已发布 | `e01-event-loop`、`b14-generics`、`a20-errors` |
 | `e03-async-await` async/await 与错误传播 | ✅ 已发布 | `e02-promises`、`a20-errors` |
 | `e04-promise-combinators` Promise.all、allSettled、race 与 any | ✅ 已发布 | `e03-async-await`、`b09-discriminated-unions`、`b13-inheritance-implements` |
-| `e05-fetch-json` fetch、HTTP 状态与 JSON | ⬜ 规划中 | `e04-promise-combinators` |
-| `e06-runtime-validation` 运行时数据校验 | ⬜ 规划中 | `e05-fetch-json`、`b08-type-guards` |
+| `e05-fetch-json` fetch、HTTP 状态与 JSON | 📝 草稿 | `e04-promise-combinators` |
+| `e06-runtime-validation` 运行时数据校验 | 📝 草稿 | `e05-fetch-json`、`b08-type-guards` |
 | `e07-loading-states` 加载、空与失败状态 | ⬜ 规划中 | `e06-runtime-validation`、`d06-dom-create-update` |
 | `e08-abort-races` AbortController、取消请求与竞态 | ⬜ 规划中 | `e07-loading-states` |
 | `e09-storage-serialization` 浏览器存储与序列化 | ⬜ 规划中 | `e06-runtime-validation` |
@@ -105,12 +105,12 @@
 | `d02-html-forms` 表单元素与标签 | 📝 草稿 | `d01-html-semantics` |
 | `d03-css-layout` CSS 布局：Flexbox 与 Grid | 📝 草稿 | `d01-html-semantics` |
 | `d04-responsive-a11y` 响应式与可访问性基础 | 📝 草稿 | `d03-css-layout`、`d02-html-forms` |
-| `d05-dom-query` DOM 查询、null 检查与元素类型收窄 | ⬜ 规划中 | `d01-html-semantics`、`b07-narrowing` |
-| `d06-dom-create-update` 创建与更新节点 | ⬜ 规划中 | `d05-dom-query` |
+| `d05-dom-query` DOM 查询、null 检查与元素类型收窄 | 📝 草稿 | `d01-html-semantics`、`b07-narrowing` |
+| `d06-dom-create-update` 创建与更新节点 | 📝 草稿 | `d05-dom-query` |
 | `d07-events` 事件监听、target 与 currentTarget | ✅ 已发布 | `d06-dom-create-update`、`b10-function-types` |
-| `d08-bubbling-delegation` 冒泡、委托、preventDefault 与清理监听器 | ⬜ 规划中 | `d07-events` |
-| `d09-form-validation` 类型安全的表单输入与验证 | ⬜ 规划中 | `d08-bubbling-delegation`、`d02-html-forms` |
-| `d10-state-and-render` 状态与渲染：从数据到界面 | ⬜ 规划中 | `d09-form-validation`、`b09-discriminated-unions` |
+| `d08-bubbling-delegation` 冒泡、委托、preventDefault 与清理监听器 | 📝 草稿 | `d07-events` |
+| `d09-form-validation` 类型安全的表单输入与验证 | 📝 草稿 | `d08-bubbling-delegation`、`d02-html-forms` |
+| `d10-state-and-render` 状态与渲染：从数据到界面 | 📝 草稿 | `d09-form-validation`、`b09-discriminated-unions` |
 
 ## F. 工程化、测试与调试（已发布 0 / 12）
 

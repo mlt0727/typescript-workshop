@@ -59,7 +59,7 @@ stages:
       - { id: e03-async-await, title: async/await 与错误传播, status: published, prerequisites: [e02-promises, a20-errors] }
       - { id: e04-promise-combinators, title: Promise.all、allSettled、race 与 any, status: published, prerequisites: [e03-async-await, b09-discriminated-unions, b13-inheritance-implements] }
       - { id: e05-fetch-json, title: fetch、HTTP 状态与 JSON, status: draft, prerequisites: [e04-promise-combinators] }
-      - { id: e06-runtime-validation, title: 运行时数据校验, status: planned, prerequisites: [e05-fetch-json, b08-type-guards] }
+      - { id: e06-runtime-validation, title: 运行时数据校验, status: draft, prerequisites: [e05-fetch-json, b08-type-guards] }
       - { id: e07-loading-states, title: 加载、空与失败状态, status: planned, prerequisites: [e06-runtime-validation, d06-dom-create-update] }
       - { id: e08-abort-races, title: AbortController、取消请求与竞态, status: planned, prerequisites: [e07-loading-states] }
       - { id: e09-storage-serialization, title: 浏览器存储与序列化, status: planned, prerequisites: [e06-runtime-validation] }

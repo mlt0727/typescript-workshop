@@ -66,6 +66,9 @@ const values: [string, unknown][] = [
   ['typed array', new Uint8Array([1, 2, 3])],
   ['symbol key', { [Symbol('k')]: 1 }],
   ['big array', Array.from({ length: 120 }, (_, i) => i)],
+  ['nested multi-line object', { ok: true, value: { title: '分享会', startsAt: new Date('2026-11-01T10:00:00Z'), location: null, capacity: 0 } }],
+  ['multi-line inside array', [{ id: 1, description: 'x'.repeat(40), tags: ['a', 'b'], owner: { name: 'Ada', email: 'ada@example.com' } }]],
+  ['deep multi-line', { a: { b: { c: 'x'.repeat(40), d: 'y'.repeat(40) } } }],
 ];
 
 describe('inspect 与 Node util.inspect 一致', () => {

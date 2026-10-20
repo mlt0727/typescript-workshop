@@ -266,7 +266,8 @@ function formatProperty(ctx: Ctx, obj: object, recurseTimes: number, key: string
   const desc = Object.getOwnPropertyDescriptor(obj, key) ?? { value: (obj as Record<string | symbol, unknown>)[key], enumerable: true };
   let str: string;
   if (desc.value !== undefined || !('get' in desc || 'set' in desc)) {
-    const diff = ctx.compact !== 3 ? 2 : 3;
+    // Node 中是 `ctx.compact !== true ? 2 : 3`；默认的 compact 是数字 3，所以缩进总是 2
+    const diff = 2;
     ctx.indentationLvl += diff;
     str = formatValue(ctx, desc.value, recurseTimes);
     ctx.indentationLvl -= diff;

@@ -1,0 +1,5 @@
+[
+  { "url": "/api/users/1", "body": { "id": 1, "name": "Ada", "email": "ada@example.com", "isAdmin": true } },
+  { "url": "/api/users/2", "body": { "id": "2", "name": "Grace" } },
+  { "url": "/api/users/3", "body": ["不是对象"] }
+]

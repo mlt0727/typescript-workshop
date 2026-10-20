@@ -1,0 +1,48 @@
+- id: where-validate
+  type: multiple
+  prompt: 下列哪些数据需要在运行时验证？
+  options:
+    - text: "`fetch` 返回的 JSON"
+      correct: true
+      explain: 服务器返回什么，TypeScript 在编译期无法知道。
+    - text: "`localStorage` 中读出的数据"
+      correct: true
+      explain: 它可能是旧版本程序写的，也可能被用户修改过。
+    - text: URL 中的查询参数
+      correct: true
+      explain: 任何人都可以手动修改地址栏。
+    - text: 自己代码中用类型注解声明、并由编译器检查过的变量
+      explain: 这些值的类型已经由 TypeScript 保证，不需要再在运行时检查。
+- id: nan-number
+  type: single
+  prompt: "`typeof price === 'number'` 能保证 price 是一个可以正常计算的价格吗？"
+  options:
+    - text: 不能，NaN 和 Infinity 的 typeof 也是 'number'，还要用 Number.isFinite 检查
+      correct: true
+      explain: 对于价格还要检查不小于 0。
+    - text: 能，typeof 已经排除了所有非数字的值
+      explain: NaN（Not a Number）的 typeof 偏偏是 'number'。
+    - text: 不能，还要用 Number.isInteger 检查
+      explain: 价格可以有小数，isInteger 会把 3.5 拒绝掉；需要的是 Number.isFinite。
+- id: copy-fields
+  type: single
+  prompt: 验证通过后，为什么要返回一个只包含已知字段的新对象，而不是输入对象本身？
+  options:
+    - text: 输入中多余的字段不会悄悄进入程序，之后修改结果也不会影响原始数据
+      correct: true
+      explain: 类型里没有声明的数据（甚至是恶意构造的字段）不应该随着验证过的数据流进程序。
+    - text: TypeScript 不允许返回 unknown 类型的对象
+      explain: 收窄之后可以返回，问题在于多余的字段。
+    - text: 新对象的运行速度更快
+      explain: 原因与性能无关。
+- id: array-isarray
+  type: single
+  prompt: "`const items: unknown = data.items; if (Array.isArray(items)) { … }` 中，if 里面 `items[0]` 的类型是什么？"
+  options:
+    - text: "`any`"
+      correct: true
+      explain: Array.isArray 把 unknown 收窄成 any[]。遍历时要把元素重新标注为 unknown，才能保持检查的严格。
+    - text: "`unknown`"
+      explain: 直觉上应该是 unknown，但标准库中 Array.isArray 的声明会得到 any[]。
+    - text: "`never`"
+      explain: 数组可以有元素，不是 never。
