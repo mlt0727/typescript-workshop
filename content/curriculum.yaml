@@ -66,7 +66,7 @@ stages:
       - { id: e10-url-routing, title: URL、History 与基础路由, status: published, prerequisites: [d10-state-and-render, e06-runtime-validation] }
       - { id: e11-cors, title: CORS 的真实边界, status: published, prerequisites: [e05-fetch-json] }
       - { id: e12-xss, title: 基础 XSS 防范, status: published, prerequisites: [d06-dom-create-update] }
-      - { id: e13-env-secrets, title: 客户端环境变量与密钥边界, status: planned, prerequisites: [f02-vite-project] }
+      - { id: e13-env-secrets, title: 客户端环境变量与密钥边界, status: draft, prerequisites: [f02-vite-project] }
 
   - id: C
     title: 进阶类型与类型设计

@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 89 / 规划总数 126**（草稿 13，规划中 24）
+**已发布 89 / 规划总数 126**（草稿 14，规划中 23）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -74,7 +74,7 @@
 | `e10-url-routing` URL、History 与基础路由 | ✅ 已发布 | `d10-state-and-render`、`e06-runtime-validation` |
 | `e11-cors` CORS 的真实边界 | ✅ 已发布 | `e05-fetch-json` |
 | `e12-xss` 基础 XSS 防范 | ✅ 已发布 | `d06-dom-create-update` |
-| `e13-env-secrets` 客户端环境变量与密钥边界 | ⬜ 规划中 | `f02-vite-project` |
+| `e13-env-secrets` 客户端环境变量与密钥边界 | 📝 草稿 | `f02-vite-project` |
 
 ## C. 进阶类型与类型设计（已发布 11 / 12）
 

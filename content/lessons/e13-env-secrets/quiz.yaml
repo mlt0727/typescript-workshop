@@ -1,0 +1,44 @@
+- id: vite-prefix
+  type: single
+  prompt: .env 中有 `VITE_API_BASE=https://api.example.com` 和 `DB_PASSWORD=hunter2`。前端代码中写了 `import.meta.env.DB_PASSWORD`，构建之后是什么？
+  options:
+    - text: undefined：只有 VITE_ 开头的变量会被替换进前端代码
+      correct: true
+      explain: 实测中没有前缀的变量被替换成了 void 0，它的值不会出现在构建产物中。
+    - text: "\"hunter2\"，所有 .env 中的变量都可以在前端使用"
+      explain: Vite 只暴露带 VITE_ 前缀的变量（前缀可以用 envPrefix 修改）。
+    - text: 运行时从服务器读取它的值
+      explain: import.meta.env 在构建时就被替换了，运行时并不存在这个对象。
+- id: public-bundle
+  type: single
+  prompt: 为了在前端直接调用 AI 服务，有人把 API 密钥放进了 `VITE_AI_KEY`。会发生什么？
+  options:
+    - text: 密钥被原样写进打包后的 JavaScript，任何访问网站的人都能拿到它
+      correct: true
+      explain: 前端打包的一切都是公开的。需要密钥的调用要经过服务端，由服务端带上密钥。
+    - text: 构建时 Vite 会把它加密
+      explain: Vite 只做文本替换，不做任何加密。
+    - text: 只要代码压缩过，别人就找不到它
+      explain: 压缩只是让代码难读，字符串仍然原样存在，在开发者工具中一搜就能找到。
+- id: rebuild
+  type: single
+  prompt: 网站已经部署，你在部署平台上修改了 VITE_API_BASE 的值。用户访问时会怎样？
+  options:
+    - text: 还是旧的地址，直到重新构建并部署
+      correct: true
+      explain: VITE_ 变量在构建时被写进代码，修改之后要重新构建。
+    - text: 立即使用新的地址
+      explain: 浏览器中运行的是已经构建好的代码，其中的值是固定的。
+    - text: 用户需要清除缓存才能看到新的地址
+      explain: 问题不在缓存，而在于旧的构建产物中写死了旧的值。
+- id: env-priority
+  type: single
+  prompt: .env 中 `VITE_X=a`，.env.local 中 `VITE_X=b`，.env.production 中 `VITE_X=c`。运行 `vite build`（生产模式）时 VITE_X 是什么？
+  options:
+    - text: "c"
+      correct: true
+      explain: 后加载的覆盖先加载的，顺序是 .env、.env.local、.env.[mode]、.env.[mode].local（编写本课时实测）。
+    - text: "b"
+      explain: .env.local 会覆盖 .env，但 .env.production 在它之后加载。
+    - text: "a"
+      explain: .env 是最先加载、最容易被覆盖的。

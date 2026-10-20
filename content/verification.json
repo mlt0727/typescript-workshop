@@ -7493,6 +7493,103 @@
         }
       ]
     },
+    "e13-env-secrets": {
+      "verifiedAt": "2026-10-20T23:34:12.380Z",
+      "sourceHash": "7ca9b8871a9f1518",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:env-replace:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:env-replace:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] fetch(\"https://api.example.com\" + \"/users\", { headers: { token: void 0 } });"
+        },
+        {
+          "target": "exercise:parse-env:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseEnv：成功 › 默认值 ⟶ expect(…).toBe(5000),parseEnv：成功 › 全部设置；去掉空白，忽略空的名字 ⟶ expect(…).toEqual([ 'dark-mode', 'beta-search' ]),parseEnv：成功 › 空字符串和只有空白都当作没有设置 ⟶ expect(…).toMatchObject({ ok: true, config: { timeoutMs: 5000, sentryDsn: null } }),parseEnv：错误 › 缺少接口地址 ⟶ expect(…).toEqual({ ok: false, errors: [ 'VITE_API_BASE 是必需的' ] }),parseEnv：错误 › 接口地址必须是 http 或 https 的完整网址 ⟶ TypeError: Failed to construct 'URL': Invalid URL,parseEnv：错误 › 超时必须是范围内的整数 ⟶ 99,parseEnv：错误 › 功能名只能是小写字母开头的字母、数字和 - ⟶ expect(…).toEqual({,parseEnv：错误 › 名字像密钥的 VITE_ 变量（不分大小写），按名字排序 ⟶ expect(…).toEqual({,parseEnv：错误 › 收集全部错误，按顺序 ⟶ TypeError: Failed to construct 'URL': Invalid URL)"
+        },
+        {
+          "target": "exercise:parse-env:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-env:alt:try-and-parse",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-env:wrong:number-is-enough",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseEnv：错误 › 超时必须是范围内的整数 ⟶ 1e3)"
+        },
+        {
+          "target": "exercise:parse-env:wrong:any-protocol",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseEnv：错误 › 接口地址必须是 http 或 https 的完整网址 ⟶ ftp://files.example.com)"
+        },
+        {
+          "target": "exercise:parse-env:wrong:case-sensitive-secret",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseEnv：错误 › 名字像密钥的 VITE_ 变量（不分大小写），按名字排序 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:parse-env:wrong:blank-is-value",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseEnv：成功 › 空字符串和只有空白都当作没有设置 ⟶ expect(…).toMatchObject({ ok: true, config: { timeoutMs: 5000, sentryDsn: null } }),parseEnv：错误 › 缺少接口地址 ⟶ expect(…).toEqual({ ok: false, errors: [ 'VITE_API_BASE 是必需的' ] }))"
+        },
+        {
+          "target": "exercise:parse-env:wrong:stop-at-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseEnv：错误 › 收集全部错误，按顺序 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:scan-bundle:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(已知格式的密钥 › 四种格式，位置从 1 开始，详情只显示前 4 个字符 ⟶ expect(…).toEqual([,已知格式的密钥 › 格式不完整或者是可公开的密钥时不报告 ⟶ expect(…).toEqual([]),已知格式的密钥 › 同一个文件中出现多次 ⟶ expect(…).toEqual([ 1, 42 ]),服务端环境变量的值 › 非 VITE_ 变量的值出现在构建产物中 ⟶ expect(…).toEqual([,服务端环境变量的值 › 多个文件：按文件名、行、列排序 ⟶ expect(…).toEqual([ [ 'a.js', 1, 1 ], [ 'a.js', 1, 17 ], [ 'z.js', 2, 1 ] ]))"
+        },
+        {
+          "target": "exercise:scan-bundle:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:scan-bundle:alt:per-line",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:scan-bundle:wrong:full-secret-in-report",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 四种格式，位置从 1 开始，详情只显示前 4 个字符 ⟶ expect(…).toEqual([,服务端环境变量的值 › 非 VITE_ 变量的值出现在构建产物中 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:scan-bundle:wrong:zero-based-column",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 四种格式，位置从 1 开始，详情只显示前 4 个字符 ⟶ expect(…).toEqual([,已知格式的密钥 › 同一个文件中出现多次 ⟶ expect(…).toEqual([ 1, 42 ]),服务端环境变量的值 › 非 VITE_ 变量的值出现在构建产物中 ⟶ expect(…).toEqual([,服务端环境变量的值 › 多个文件：按文件名、行、列排序 ⟶ expect(…).toEqual([ [ 'a.js', 1, 1 ], [ 'a.js', 1, 17 ], [ 'z.js', 2, 1 ] ]))"
+        },
+        {
+          "target": "exercise:scan-bundle:wrong:flags-public-vars",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(服务端环境变量的值 › VITE_ 变量本来就是公开的；太短的值不检查 ⟶ expect(…).toEqual([]))"
+        },
+        {
+          "target": "exercise:scan-bundle:wrong:first-match-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 同一个文件中出现多次 ⟶ expect(…).toEqual([ 1, 42 ]))"
+        },
+        {
+          "target": "exercise:scan-bundle:wrong:no-word-boundary",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 格式不完整或者是可公开的密钥时不报告 ⟶ expect(…).toEqual([]))"
+        }
+      ]
+    },
     "f01-node-npm": {
       "verifiedAt": "2026-10-20T19:57:35.323Z",
       "sourceHash": "3b078fc9f966872d",
