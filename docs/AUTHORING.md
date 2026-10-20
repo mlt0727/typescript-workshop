@@ -123,16 +123,29 @@ DOM 模式的测试：每个测试开始前，平台会把页面恢复成 `index
 - 示例输出以 Node.js 的 `console.log` 格式为准（平台的纯 TS 模式输出与之一致）。
 - 正文中引用行号时，在修改代码后重新核对。
 
+### 跨浏览器注意事项（Chromium 与 WebKit 的实测差异）
+
+学习者可能用 Safari 或 iPhone（iOS 上所有浏览器都是 WebKit）。练习的测试必须在两种引擎中都成立：
+
+- **焦点**：WebKit 不允许跨源 iframe（本平台的沙箱）用脚本移动焦点。测试运行时平台会自动改用“模拟焦点”：`document.activeElement`、focus/blur 事件、Testing Library 的输入与 Tab、`:focus`/`:focus-visible`/`:focus-within` 的计算样式都与真实焦点一致；但 `element.matches(':focus')` 这类选择器查询得不到模拟的焦点，测试中改用 `toHaveFocus()` 或 `document.activeElement`。
+- **地址**：WebKit 不允许沙箱文档用 `pushState`/`replaceState` 修改**路径**（只能改查询参数和 `#` 片段）。DOM 测试和示例中不要修改路径；路由类练习把历史记录作为参数注入（见 e10 的 `RouterHistory`）。沙箱中越界的 `history.back()` 会被平台忽略并提示。
+- **`response.json()` 的错误**：Safari 中解析失败时是 `name` 为 `'SyntaxError'` 的 `DOMException`，不是 `SyntaxError`。测试用 `toMatchObject({ name: 'SyntaxError' })`，不要用 `toBeInstanceOf(SyntaxError)`；`JSON.parse` 在所有浏览器中都抛出 `SyntaxError`。
+- **像素**：行内元素的盒子高度取决于字体，不同引擎会差 1 像素左右；比较文字盒子的位置时，容差至少 2px。
+- **排序**：`localeCompare(…, 'zh-CN')` 把汉字（按拼音）排在拉丁字母前面，写期望值前先实际运行一次。
+
 ## 4. 验证与发布流程
 
 ```bash
 npm run content:check                    # 构建课程 + 静态检查
 npm run build                            # 生产构建
-CONTENT_LESSONS=a09-control-flow npm run content:verify   # 浏览器内运行全部示例与变体
+CONTENT_LESSONS=a09-control-flow npm run content:verify   # 浏览器内运行全部示例与变体（Chromium，写入验证记录）
+CONTENT_LESSONS=a09-control-flow npm run content:verify:webkit   # 同样的检查在 WebKit 中运行（只报告，不写记录）
 npm run content:links                    # 可选：检查参考链接
 ```
 
-1. 状态先设为 `draft`，修到 `content:verify` 全部通过、`content:check` 没有提醒。
+验证运行在开发服务器上：运行期间不要执行 `content:build` 或修改 `src/`、`sandbox/` 中的文件，否则页面会重新加载，验证中断。
+
+1. 状态先设为 `draft`，修到 `content:verify` 和 `content:verify:webkit` 全部通过、`content:check` 没有提醒。
 2. 做一次独立的二次审查（准确性、测验答案、未讲先考、中文表述），记录在 `docs/STATUS.md`。
 3. 把状态改为 `published`，再次运行 `content:check`（会核对验证记录与当前源文件哈希一致）。
 4. 课文修改后验证记录会过期，`content:check` 会报错，需要重新 `content:verify`。

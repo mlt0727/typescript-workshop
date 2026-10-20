@@ -131,6 +131,21 @@ describe('链接', () => {
     expect(html('[图片](data:text/html;base64,PHNjcmlwdD4=)')).toBe('<p>图片</p>');
     expect(html('[文档](/docs)')).toBe('<p>文档</p>');
   });
+
+  test('只放行 http、https、mailto，其他协议和各种变形都不生成链接', () => {
+    const inputs = [
+      '\u0001javascript:stealCookies',
+      'JAVASCRIPT:stealCookies',
+      'vbscript:msgbox',
+      'file:///etc/passwd',
+      'blob:https://ok.example/5f1c',
+      'about:blank',
+      'tel:10086',
+    ];
+    for (const href of inputs) {
+      expect(html(`[链接](${href})`), JSON.stringify(href)).toBe('<p>链接</p>');
+    }
+  });
 });
 
 describe('用户输入只能是文字', () => {
@@ -169,13 +184,15 @@ describe('用户输入只能是文字', () => {
 :::
 
 :::hint{level=2}
-行内格式可以用一个正则一起匹配：`/\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)/g`，配合 `line.matchAll(...)`。每次匹配之前的那一段是普通文字；`match.index` 是匹配开始的位置，`match[0].length` 是长度。第 1 个分组有值就是粗体，否则第 2、3 个分组是链接的文字和地址。检查地址的方法和小任务相同，只是不传基准地址。
+行内格式可以用一个正则一起匹配：`/\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)/g`，配合 `line.matchAll(...)`：它返回一个可以用 `for…of` 遍历的序列，每一项是一次匹配的结果（和 `exec` 的返回值一样，是一个数组）：`match[0]` 是匹配到的整段文字，`match[1]`、`match[2]`、`match[3]` 是三对圆括号（**捕获组**）匹配到的部分，没有参与匹配的组是 `undefined`；`match.index` 是这次匹配开始的位置。两次匹配之间的那一段是普通文字。第 1 个组有值就是粗体，否则第 2、3 个组是链接的文字和地址。检查地址的方法和小任务相同，只是不传基准地址。
 :::
 
 :::explanation
 这道题的关键是**结构由代码决定，数据只是文字**。用户输入里的 `<img onerror=…>` 从头到尾都只是字符串，它只会通过 `append(字符串)` 和 `textContent` 进入页面，变成文本节点；能出现在页面上的元素只有代码亲手 `createElement` 的四种。测试检查的正是这一点：无论输入什么，结果中都只有 `p`、`br`、`strong`、`a`。
 
-链接是唯一由用户决定的“属性”，所以它要经过两道检查：解析成绝对地址，协议在白名单中。最后一个测试中的地址带着 `"`，如果拼接 HTML，它会提前结束 `href` 属性、加上一个 `onmouseover` 事件属性；而 `link.href = …` 设置的是属性的**值**，引号只是值中的一个字符（序列化时会被编码），不可能变成新的属性。
+链接是唯一由用户决定的“属性”，所以它要经过两道检查：解析成绝对地址，协议在白名单中。最后一个测试中的地址带着 `"`，如果拼接 HTML，它会提前结束 `href` 属性、加上一个 `onmouseover` 事件属性；而 `link.href = …` 设置的是属性的**值**，引号只是值中的一个字符，不可能变成新的属性（测试中看到的 `%22`，是 `URL` 解析时对引号做的百分号编码）。
+
+为什么不用黑名单拦截 `javascript:`？测试里的 `\u0001javascript:`（开头藏着一个看不见的控制字符）、`JAVASCRIPT:` 都会被 URL 解析器规范化成 `javascript:` 协议，而 `vbscript:`、`file:`、`blob:` 这些协议，黑名单很容易漏掉。白名单只放行确认安全的三种。
 
 起始代码还有几个功能上的问题：只按 `\n\n` 分段，`\r\n` 和多余的空行都处理不好。
 
@@ -347,6 +364,62 @@ const INLINE = /\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)/g;
 function safeUrl(text: string): string | null {
   if (text.startsWith('javascript:')) return null;
   return URL.parse(text)?.href ?? null;
+}
+
+function appendInline(parent: HTMLElement, line: string): void {
+  let last = 0;
+  for (const match of line.matchAll(INLINE)) {
+    const [whole, bold, label, href] = match;
+    parent.append(line.slice(last, match.index));
+    if (bold !== undefined) {
+      const strong = document.createElement('strong');
+      strong.textContent = bold;
+      parent.append(strong);
+    } else if (label !== undefined && href !== undefined) {
+      const safe = safeUrl(href);
+      if (safe === null) {
+        parent.append(label);
+      } else {
+        const link = document.createElement('a');
+        link.href = safe;
+        link.textContent = label;
+        parent.append(link);
+      }
+    }
+    last = match.index + whole.length;
+  }
+  parent.append(line.slice(last));
+}
+
+export function renderMarkdownLite(source: string): DocumentFragment {
+  const fragment = document.createDocumentFragment();
+  let lines: string[] = [];
+  const flush = (): void => {
+    if (lines.length === 0) return;
+    const paragraph = document.createElement('p');
+    lines.forEach((line, index) => {
+      if (index > 0) paragraph.append(document.createElement('br'));
+      appendInline(paragraph, line);
+    });
+    fragment.append(paragraph);
+    lines = [];
+  };
+  for (const line of source.split(/\r?\n/)) {
+    if (line.trim() === '') flush();
+    else lines.push(line);
+  }
+  flush();
+  return fragment;
+}
+```
+:::
+
+:::variant{kind=wrong name=regex-blacklist fails=tests reason="用正则黑名单拦截 javascript: 和 data:，开头带控制字符的写法和 vbscript:、file: 都能通过"}
+```ts file=markdown.ts
+const INLINE = /\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)/g;
+
+function safeUrl(text: string): string | null {
+  return /^(javascript|data):/i.test(text) ? null : (URL.parse(text)?.href ?? null);
 }
 
 function appendInline(parent: HTMLElement, line: string): void {

@@ -103,7 +103,8 @@ test('网站名称和导航链接在垂直方向居中对齐', () => {
   const [first] = links;
   if (!first) throw new Error('缺少链接');
   expect(rect(logo).height, '网站名称的字更大，盒子应该更高').toBeGreaterThan(rect(first).height);
-  expect(Math.abs(centerY(rect(logo)) - centerY(rect(first)))).toBeLessThan(1);
+  // 链接是行内元素，它的盒子高度取决于字体的上下伸部，不同浏览器、字体会有 1 像素左右的差别
+  expect(Math.abs(centerY(rect(logo)) - centerY(rect(first)))).toBeLessThan(2);
 });
 
 test('三个链接排成一行，间距 16px', () => {

@@ -143,7 +143,7 @@ render();
 一个路由要处理的事情：
 
 1. **匹配路径**：`/users/:id` 这样的模式匹配 `/users/42`，并取出参数 `{ id: '42' }`；
-2. **拦截站内链接**：在 `document` 上委托（d08）`click` 事件，对指向本站的 `<a>`，调用 `preventDefault()`，改用 `pushState` 并渲染。但用户按住 Ctrl/⌘/Shift 点击（想在新标签页打开）、链接带有 `target` 或 `download`、或者指向别的网站时，**不要拦截**；
+2. **拦截站内链接**：在 `document` 上委托（d08）`click` 事件，对指向本站的 `<a>`，调用 `preventDefault()`，改用 `pushState` 并渲染。但用户按住 Ctrl/⌘/Shift/Alt 点击（想在新标签页、新窗口中打开，或者下载）、链接带有 `target` 或 `download`、或者指向别的网站时，**不要拦截**（为了简单，本课把任何 `target` 都当作“交给浏览器”；React Router 会继续处理 `target="_self"`）；
 3. **响应后退和前进**：监听 `popstate`，重新渲染；
 4. **可访问性**：真正的页面跳转时，屏幕阅读器会读出新页面；前端路由切换视图时它什么也不知道。所以要更新 `document.title`，并把焦点移到新内容的主标题上（或者用一个 `role="status"` 的区域报告“已打开：用户 42”）。
 
@@ -152,6 +152,8 @@ render();
 ```json
 { "rewrites": [{ "source": "/learn/:lessonId", "destination": "/index.html" }] }
 ```
+
+较新的浏览器还提供了 **Navigation API**（`navigation.navigate()`、`navigate` 事件），可以在一个地方拦截所有的导航（链接、表单、后退前进），不必自己委托点击事件；它最近才在各主流浏览器中普遍可用，本课仍以兼容性最好的 History API 为主。
 
 另一种做法是**哈希路由**：把路径放在 `#` 之后（`/#/users/42`）。片段不会发送给服务器，所以不需要服务器配置，但地址不那么美观，也不利于搜索引擎。现代应用通常用 History API。React Router 等路由库替你完成了这些工作（G 阶段），但原理就是本课的这些。
 

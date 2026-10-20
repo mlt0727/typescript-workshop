@@ -60,7 +60,15 @@ describe('safeHref', () => {
   });
 
   test('拒绝其他协议', () => {
-    for (const input of ['data:text/html,<script>alert(1)</script>', 'vbscript:msgbox(1)', 'file:///etc/passwd', 'ftp://files.example/a']) {
+    for (const input of [
+      'data:text/html,<script>alert(1)</script>',
+      'vbscript:msgbox(1)',
+      'file:///etc/passwd',
+      'ftp://files.example/a',
+      'blob:https://app.example/5f1c',
+      'about:blank',
+      'tel:10086',
+    ]) {
       expect(safeHref(input, base), input).toBeNull();
     }
   });

@@ -217,6 +217,11 @@ describe('公开数据与凭据', () => {
       kind: 'continue',
       headers: { vary: 'Origin' },
     });
+    expect(handleCors(preflight('https://anyone.example', 'GET'), withCredentials)).toEqual({
+      kind: 'preflight',
+      status: 403,
+      headers: { vary: 'Origin' },
+    });
     expect(handleCors({ method: 'GET', headers: { origin: 'https://app.example.com' } }, withCredentials)).toEqual({
       kind: 'continue',
       headers: {
@@ -248,6 +253,12 @@ describe('公开数据与凭据', () => {
 **不允许的实际请求照常处理。** CORS 不会阻止请求到达服务器：简单请求不需要预检，浏览器直接发送，只在读取响应时检查。所以接口仍然要自己做鉴权，有副作用的接口还要防 CSRF。预检则不同：预检不通过，浏览器就不会发送真正的请求。
 
 **预检的缓存。** `Access-Control-Max-Age` 让浏览器在这段时间内不再重复预检。浏览器会设上限（例如 Chromium 是 2 小时），设得再大也没用。
+
+**真实服务器上还要注意的几点：**
+
+- 方法名区分大小写。浏览器只会把 `GET`、`HEAD`、`POST`、`PUT`、`DELETE`、`OPTIONS` 这六个方法名统一成大写；`fetch(url, { method: 'patch' })` 发出的就是小写的 `patch`，它和 `Access-Control-Allow-Methods: PATCH` 不匹配，预检会失败。所以前端要写大写的 `PATCH`；
+- 预检请求本身**不带**凭据（cookie）。处理 `OPTIONS` 的代码不能要求用户已经登录，否则所有需要预检的请求都会失败；
+- 不要把 `'null'` 放进允许的来源。沙箱 iframe、本地打开的 `file://` 页面发出的请求，`Origin` 都是 `null`，允许它就等于允许了任何能制造这种页面的人。
 :::
 
 :::variant{kind=alt name=lookup-first}

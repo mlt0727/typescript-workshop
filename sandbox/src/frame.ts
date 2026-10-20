@@ -10,6 +10,7 @@ import * as UserEvent from '@testing-library/user-event';
 import {
   hostToSandboxSchema,
   initMessageSchema,
+  LIMITS,
   PROTOCOL_VERSION,
   VIEWPORT_LIMITS,
   type HostToSandbox,
@@ -19,8 +20,10 @@ import {
 import { captureConsole, LogSink } from './console-capture.ts';
 import { formatUncaught, locate, registerModules, serializeError } from './errors.ts';
 import { getDeps, linkBundle } from './linker.ts';
+import { enableFocusEmulation, focusEmulationUsed, focusIsBlocked, resetFocusEmulation } from './focus-emulation.ts';
+import { installHistoryGuard } from './history-guard.ts';
 import { createMemoryStorage, createMockFetch, type SimulatedFeature } from './mocks.ts';
-import { applyPage, installLoopGuard, installTracking } from './page.ts';
+import { applyPage, installLoopGuard, installTracking, listenUntracked, untracked } from './page.ts';
 import { TestCollector } from './testing/runner.ts';
 import { realTimers } from './testing/timers.ts';
 import TsWorker from './worker.ts?worker&inline';
@@ -28,7 +31,16 @@ import type { WorkerMessage } from './worker.ts';
 
 const deps = getDeps();
 deps['@testing-library/dom'] = TLDom;
-deps['@testing-library/user-event'] = UserEvent;
+/** 让测试库第一次使用时注册的 document 监听器不被每个测试前的清理移除（见 page.ts 的 untracked） */
+function untrackedApi<T extends object>(api: T): T {
+  return new Proxy(api, {
+    get(target, prop, receiver) {
+      const value: unknown = Reflect.get(target, prop, receiver);
+      return typeof value === 'function' ? (...args: unknown[]) => untracked(() => Reflect.apply(value, target, args)) : value;
+    },
+  });
+}
+deps['@testing-library/user-event'] = { ...UserEvent, default: untrackedApi(UserEvent.default), userEvent: untrackedApi(UserEvent.userEvent) };
 
 // —— vitest/browser：测试中调整视口，与 Vitest 浏览器模式的 page.viewport(width, height) 相同 ——
 let testRunId: string | undefined;
@@ -179,6 +191,7 @@ function installPageEnvironment(runId: string, fixtures: Parameters<typeof creat
   installLoopGuard();
   const sink = new LogSink((entries) => send({ type: 'logs', runId, entries }));
   captureConsole(sink);
+  installHistoryGuard((t) => sink.push('system', t));
   const onUse = (f: SimulatedFeature) => simulated.add(f);
   Object.defineProperty(window, 'fetch', {
     value: createMockFetch(fixtures, onUse, (t) => sink.push('system', t)),
@@ -195,7 +208,7 @@ function installPageEnvironment(runId: string, fixtures: Parameters<typeof creat
   window.alert = notice('alert') as typeof window.alert;
   window.confirm = notice('confirm') as typeof window.confirm;
   window.prompt = notice('prompt') as typeof window.prompt;
-  document.addEventListener('securitypolicyviolation', (e) => {
+  listenUntracked(document, 'securitypolicyviolation', (e) => {
     if (e.violatedDirective.startsWith('form-action')) {
       sink.push('error', '表单提交被沙箱拦截：页面试图跳转。处理 submit 事件时通常需要调用 event.preventDefault()。');
     } else if (e.violatedDirective.startsWith('connect-src')) {
@@ -241,6 +254,14 @@ async function runPage(cmd: Extract<HostToSandbox, { type: 'run' }>) {
   }
 }
 
+const FOCUS_NOTE =
+  '（这个浏览器不允许沙箱中的脚本移动焦点，平台在测试中模拟了焦点。依赖 :focus、:focus-visible 样式的检查在这里无法通过；如果确认代码正确，可以换用 Chrome、Edge 或 Firefox 再试。）';
+
+function withFocusNote(r: TestResult): TestResult {
+  if (r.error === undefined) return r;
+  return { ...r, error: { ...r.error, message: `${r.error.message}\n${FOCUS_NOTE}`.slice(0, LIMITS.maxLogEntryChars) } };
+}
+
 async function testPage(cmd: Extract<HostToSandbox, { type: 'test' }>) {
   if (pageUsed) return;
   pageUsed = true;
@@ -253,6 +274,9 @@ async function testPage(cmd: Extract<HostToSandbox, { type: 'test' }>) {
   }, cmd.timeoutMs);
   try {
     const page = applyPage(cmd.page);
+    // WebKit 不允许沙箱中的脚本移动焦点：测试中改用模拟的焦点（见 focus-emulation.ts）
+    const emulateFocus = focusIsBlocked();
+    if (emulateFocus) enableFocusEmulation();
     testRunId = cmd.runId;
     const studentEntries = cmd.bundle.entries.filter((e) => !cmd.testEntries.includes(e));
     const collector = new TestCollector();
@@ -271,6 +295,7 @@ async function testPage(cmd: Extract<HostToSandbox, { type: 'test' }>) {
             await setViewport(VIEWPORT_LIMITS.defaultWidth, VIEWPORT_LIMITS.defaultHeight);
           }
           page.reset();
+          resetFocusEmulation();
           simulated.clear();
           if (mode === 'dom' && studentEntries.length > 0) {
             // 每个测试前重新执行学生代码：使用新的 blob URL 得到全新的模块实例
@@ -285,7 +310,7 @@ async function testPage(cmd: Extract<HostToSandbox, { type: 'test' }>) {
         },
       },
       cmd.perTestTimeoutMs,
-      (r) => results.push(r),
+      (r) => results.push(emulateFocus && r.status === 'fail' && focusEmulationUsed() ? withFocusNote(r) : r),
     );
     sink.flush();
     realTimers.clearTimeout(overall);

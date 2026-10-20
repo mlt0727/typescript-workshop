@@ -6,5 +6,7 @@
   {"url": "/api/books?topic=offline", "delayMs": 30, "networkError": true},
   {"url": "/api/books?topic=weird", "delayMs": 30, "body": {"books": "不是数组"}},
   {"url": "/api/books?topic=html", "delayMs": 30, "headers": {"content-type": "text/html; charset=utf-8"}, "body": "<!doctype html><title>维护中</title><p>网站正在维护</p>"},
-  {"url": "/api/books?topic=bad-item", "delayMs": 30, "body": [{"id": 1, "title": "Effective TypeScript"}, {"id": "2", "title": 2}]}
+  {"url": "/api/books?topic=bad-item", "delayMs": 30, "body": [{"id": 1, "title": "Effective TypeScript"}, {"id": "2", "title": 2}]},
+  {"url": "/api/books?topic=slow", "delayMs": 800, "body": [{"id": 3, "title": "TypeScript 编程"}]},
+  {"url": "/api/books?topic=busy", "delayMs": 800, "status": 503, "statusText": "Service Unavailable", "headers": {"retry-after": "30"}, "body": {"message": "服务繁忙"}}
 ]

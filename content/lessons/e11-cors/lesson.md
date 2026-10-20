@@ -49,7 +49,9 @@ for (const target of targets) {
 
 ## CORS 保护的是谁
 
-为什么要限制读取？因为浏览器发请求时，会自动带上**这个用户**在目标网站的 cookie。假设你登录了银行网站，又打开了一个恶意网页；如果恶意网页的脚本可以 `fetch('https://bank.example/account')` 并读到结果，它拿到的就是**你的**账户信息。同源策略阻止了这件事。
+为什么要限制读取？因为请求是从**用户的浏览器**发出的，带着这个用户的身份。假设你登录了银行网站，又打开了一个恶意网页；如果恶意网页的脚本可以用 `fetch('https://bank.example/account', { credentials: 'include' })` 带上你的 cookie 请求账户信息，并且读到结果，它拿到的就是**你的**账户信息。同源策略阻止了这件事。
+
+（现代浏览器默认把没有声明 `SameSite` 的 cookie 当作 `SameSite=Lax`，跨站的 `fetch` 通常不会带上它们；只有服务器明确设置了 `SameSite=None; Secure` 的 cookie 才会被带上。但同源策略保护的不只是 cookie：公司内网中的服务、家里路由器的管理页面、只按 IP 地址认证的接口，都只有“在用户的网络里”才能访问，同样不能让任意网页读取。）
 
 **CORS**（跨源资源共享）是在这个限制上开的口子：被请求的服务器在响应头里声明“允许哪些来源读取我的响应”，浏览器检查之后，才把响应交给页面的脚本。所以：
 
@@ -88,7 +90,9 @@ for (const target of targets) {
 
 - 返回 `Access-Control-Allow-Credentials: true`；
 - `Access-Control-Allow-Origin` 写出**具体的来源**，不能是 `*`；
-- 因为响应随请求的来源而变化，还应该返回 `Vary: Origin`，避免缓存把给 A 的响应交给 B。
+- 不允许把 `Access-Control-Allow-Credentials: true` 和 `*` 一起使用，浏览器会拒绝。
+
+另外，只要 `Access-Control-Allow-Origin` 的值会**随请求的来源变化**（例如按白名单返回请求方的来源，不管带不带凭据），服务器就应该在响应中加上 `Vary: Origin`，包括不放行的响应。否则中间的缓存可能把给 A 的响应交给 B。
 
 ## 正确的解决方式
 

@@ -70,7 +70,7 @@ await show('/api/users/999');
 - **网络失败**：`fetch` 被拒绝，通常是 `TypeError`；
 - **HTTP 错误**：`fetch` 成功，但 `response.ok` 为 `false`。
 
-另外，响应体不一定是 JSON：服务器出错时，常常返回一段 HTML 错误页面，这时 `response.json()` 会以 `SyntaxError` 拒绝。响应体只能读取**一次**：读过之后再调用 `json()` 或 `text()`，返回的 Promise 会以 `TypeError` 拒绝。确实需要读两次时，先用 `response.clone()` 复制一份。
+另外，响应体不一定是 JSON：服务器出错时，常常返回一段 HTML 错误页面，这时 `response.json()` 会被拒绝：Chrome、Firefox 中的拒绝原因是 `SyntaxError`，Safari 中却是一个 `name` 为 `'SyntaxError'` 的 `DOMException`。所以判断时检查 `err.name === 'SyntaxError'`，不要用 `instanceof SyntaxError`；或者先 `response.text()` 再自己 `JSON.parse`，这样在所有浏览器中都是真正的 `SyntaxError`。响应体只能读取**一次**：读过之后再调用 `json()` 或 `text()`，返回的 Promise 会以 `TypeError` 拒绝。确实需要读两次时，先用 `response.clone()` 复制一份。
 
 :::playground{#failures fixtures=users}
 ```ts file=main.ts
@@ -85,12 +85,12 @@ console.log('状态：', response.status, '内容类型：', response.headers.ge
 try {
   await response.json();
 } catch (err) {
-  console.log('响应体不是 JSON：', err instanceof SyntaxError);
+  console.log('响应体不是 JSON：', err instanceof Error ? err.name : err);
 }
 console.log('响应体已经读过了吗？', response.bodyUsed);
 ```
 - 第 2 行：模拟的“断网”，`fetch` 被拒绝。
-- 第 7 行：服务器返回 500 和一段 HTML。第 10 行尝试按 JSON 解析，以 `SyntaxError` 失败。
+- 第 7 行：服务器返回 500 和一段 HTML。第 10 行尝试按 JSON 解析，失败的原因名为 `SyntaxError`（在 Safari 中打开这一页，它是一个 `DOMException`，名字相同）。
 - 第 14 行：即使解析失败，响应体也已经被读取，不能再读第二次。需要两种方式都试一试时，先 `text()`，再自己 `JSON.parse`。
 :::
 

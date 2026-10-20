@@ -39,7 +39,7 @@
     - text: "`fetch(url, { headers: { Accept: 'application/json' } })`"
       explain: Accept 是安全的请求头，这仍然是简单请求。
     - text: 提交一个 `method="post"` 的普通 HTML 表单
-      explain: 表单使用 application/x-www-form-urlencoded 编码，是简单请求。这类请求在 CORS 出现之前就能跨源发送。
+      explain: 普通的表单提交是一次页面导航，根本不经过 CORS，也不会预检；用 fetch 发出同样内容的请求（application/x-www-form-urlencoded 编码的 POST）则是简单请求。这些请求在 CORS 出现之前就能跨源发送。
 - id: credentials-wildcard
   type: single
   prompt: '前端用 `fetch(url, { credentials: ''include'' })` 跨源请求，服务器返回了 `Access-Control-Allow-Origin: *` 和 `Access-Control-Allow-Credentials: true`。结果是？'

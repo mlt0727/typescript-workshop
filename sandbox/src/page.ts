@@ -10,6 +10,15 @@ export interface AppliedPage {
   reset(): void;
 }
 
+import { resetHistoryGuard } from './history-guard.ts';
+
+const nativeAddEventListener = EventTarget.prototype.addEventListener;
+
+/** 平台自己的监听器：不参与跟踪，每个测试前不会被移除。 */
+export function listenUntracked<K extends keyof DocumentEventMap>(target: Document, type: K, listener: (event: DocumentEventMap[K]) => void) {
+  nativeAddEventListener.call(target, type, listener as EventListener);
+}
+
 const DEFAULT_REACT_HTML = '<!doctype html><html lang="zh-CN"><head><title>预览</title></head><body><div id="root"></div></body></html>';
 
 interface TrackedListener {
@@ -24,6 +33,22 @@ const trackedTimeouts = new Set<number>();
 const trackedIntervals = new Set<number>();
 const trackedFrames = new Set<number>();
 let trackingInstalled = false;
+let trackingPaused = 0;
+
+/**
+ * fn 执行期间注册到 window/document 上的监听器不被跟踪。
+ * 测试库（user-event、React）第一次使用时会在 document 上注册监听器并记下“已经准备过”，
+ * 这些监听器必须在测试之间保留；每个测试前清除的只是学生代码的监听器。
+ */
+export function untracked<T>(fn: () => T): T {
+  trackingPaused++;
+  try {
+    return fn();
+  } finally {
+    trackingPaused--;
+  }
+}
+(globalThis as { __tsw_untracked__?: typeof untracked }).__tsw_untracked__ = untracked;
 
 /** 必须在任何学生代码运行之前调用。 */
 export function installTracking() {
@@ -36,7 +61,7 @@ export function installTracking() {
     listener: EventListenerOrEventListenerObject | null,
     options?: boolean | AddEventListenerOptions,
   ) {
-    if (listener && (this === window || this === document)) {
+    if (listener && trackingPaused === 0 && (this === window || this === document)) {
       trackedListeners.push({ target: this, type, listener, options: typeof options === 'object' ? { capture: options.capture } : options });
     }
     return add.call(this, type, listener, options);
@@ -118,6 +143,7 @@ export function applyPage(page: { html?: string; css: Record<string, string> } |
   const reset = () => {
     clearTracked();
     if (location.href !== initialUrl) history.replaceState(null, '', initialUrl);
+    resetHistoryGuard();
     for (const node of [...document.head.childNodes]) {
       if (!(node instanceof HTMLElement && node.dataset.tswKeep !== undefined)) node.remove();
     }

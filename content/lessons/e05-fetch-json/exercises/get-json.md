@@ -8,7 +8,7 @@ fixtures: api
 1. 网络失败时，`fetch` 的拒绝原样传给调用方（不要吞掉）；
 2. 状态码不在 200–299 之间时，抛出 `HttpError`，它的 `status` 是状态码，`message` 是 `请求失败：状态码 404`（数字换成实际的状态码）；
 3. 状态码是 204（No Content）时，返回 `null`，不要读取响应体；
-4. 其他成功的情况，返回 `response.json()` 的结果。响应体不是 JSON 时，`json()` 的 `SyntaxError` 原样传给调用方；
+4. 其他成功的情况，返回 `response.json()` 的结果。响应体不是 JSON 时，`json()` 的拒绝原因（名为 `SyntaxError`；Chrome 中是 `SyntaxError`，Safari 中是同名的 `DOMException`）原样传给调用方；
 5. 返回类型是 `Promise<unknown>`：调用方必须先验证再使用。
 
 `HttpError` 已经写好。测试使用课程提供的模拟响应，例如 `/api/profile` 返回一个用户对象，`/api/missing` 返回 404。
@@ -90,7 +90,7 @@ describe('getJson', () => {
   });
 
   test('响应体不是 JSON 时，SyntaxError 原样传出', async () => {
-    expect(await failure(getJson('/api/not-json'))).toBeInstanceOf(SyntaxError);
+    expect(await failure(getJson('/api/not-json'))).toMatchObject({ name: 'SyntaxError' });
   });
 
   test('网络失败时，fetch 的拒绝原样传出', async () => {

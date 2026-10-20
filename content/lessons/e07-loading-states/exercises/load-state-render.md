@@ -11,7 +11,7 @@ title: 用可辨识联合渲染加载状态
 | --- | --- | --- |
 | `idle` | 空字符串 | 替换为 `<p>选择一个主题开始搜索。</p>` |
 | `loading` | `正在加载…` | 保持不变（上一次的内容留在原处） |
-| `error` | 空字符串 | 替换为 `<div role="alert">`，里面是 `<p>加载失败：错误信息</p>` 和一个“重试”按钮（`type="button"`），点击时调用 `onRetry` |
+| `error` | 空字符串 | 替换为 `<p role="alert">加载失败：错误信息</p>`，后面是一个“重试”按钮（`type="button"`，放在 alert **之外**），点击时调用 `onRetry` |
 | `success`，没有数据 | `没有找到相关的书。` | 清空 |
 | `success`，有数据 | `找到 N 本书` | 替换为 `<ul>`，每本书一个 `<li>`，内容是书名 |
 
@@ -68,14 +68,13 @@ export function renderBooks(view: BookView, state: LoadState<Book[]>, onRetry: (
       return;
     case 'error': {
       view.status.textContent = '';
-      const alert = document.createElement('div');
+      const alert = paragraph(`加载失败：${state.message}`);
       alert.setAttribute('role', 'alert');
       const retry = document.createElement('button');
       retry.type = 'button';
       retry.textContent = '重试';
       retry.addEventListener('click', onRetry);
-      alert.append(paragraph(`加载失败：${state.message}`), retry);
-      view.results.replaceChildren(alert);
+      view.results.replaceChildren(alert, retry);
       return;
     }
     case 'success': {
@@ -141,9 +140,10 @@ test('error：显示原因，重试按钮调用 onRetry', async () => {
   renderBooks(view, { status: 'loading' }, noop);
   renderBooks(view, { status: 'error', message: '服务器出错' }, onRetry);
   const alert = within(view.results).getByRole('alert');
-  expect(alert).toHaveTextContent('加载失败：服务器出错');
-  const retry = within(alert).getByRole('button', { name: '重试' });
+  expect(alert).toHaveTextContent(/^加载失败：服务器出错$/);
+  const retry = within(view.results).getByRole('button', { name: '重试' });
   expect(retry).toHaveAttribute('type', 'button');
+  expect(alert).not.toContainElement(retry);
   await userEvent.setup().click(retry);
   expect(onRetry).toHaveBeenCalledTimes(1);
   expect(view.status.textContent).toBe('');
@@ -218,7 +218,7 @@ console.log(ok, loadingWithData, errorWithoutMessage, successWithoutData);
 - 在 `switch` 的分支里，TypeScript 知道当前是哪种状态，`state.message`、`state.data` 都可以直接使用；
 - `default` 分支的穷尽检查保证：以后加一种状态（例如“刷新中”），忘了渲染它就会编译失败。
 
-**状态提示为什么要一直在页面上。** 屏幕阅读器只读出它已经在关注的区域里发生的变化。新插入一个带 `role="status"` 的元素、同时放进文字，很多读屏软件不会读出来（d09 讲过同样的规则）。所以状态提示的元素写在 HTML 里，之后只改变它的文字。`role="alert"` 不同：新插入的 alert 通常会被立即读出，错误信息可以随错误一起插入。
+**状态提示为什么要一直在页面上。** 屏幕阅读器只读出它已经在关注的区域里发生的变化。新插入一个带 `role="status"` 的元素、同时放进文字，很多读屏软件不会读出来（d09 讲过同样的规则）。所以状态提示的元素写在 HTML 里，之后只改变它的文字。`role="alert"` 不同：新插入的 alert 通常会被立即读出，错误信息可以随错误一起插入。“重试”按钮放在 alert 之外：alert 的全部内容都会被读出，按钮的文字会混在提示里；而且需要用户操作的内容不适合放进 alert（真正需要用户响应的提示，应该用 `role="alertdialog"` 的对话框）。
 
 **`aria-busy` 放在哪里。** `aria-busy="true"` 告诉辅助技术“这块区域正在更新，先别读”。它只放在结果区域上：如果状态提示也在这块区域里，“正在加载…”本身也会被推迟。加载期间保留上一次的结果，并用样式（例如 `[aria-busy='true'] { opacity: 0.6; }`）表示它已经过时，是常见的做法。
 
@@ -255,11 +255,9 @@ export function renderBooks({ status, results }: BookView, state: LoadState<Book
     results.replaceChildren(el('p', '选择一个主题开始搜索。'));
   } else if (state.status === 'error') {
     status.textContent = '';
-    const box = el('div', '', { role: 'alert' });
     const retry = el('button', '重试', { type: 'button' });
     retry.onclick = () => onRetry();
-    box.append(el('p', `加载失败：${state.message}`), retry);
-    results.replaceChildren(box);
+    results.replaceChildren(el('p', `加载失败：${state.message}`, { role: 'alert' }), retry);
   } else {
     status.textContent = state.data.length === 0 ? '没有找到相关的书。' : `找到 ${state.data.length} 本书`;
     const list = el('ul');
@@ -293,14 +291,13 @@ export function renderBooks(view: BookView, state: LoadState<Book[]>, onRetry: (
     view.status.textContent = '正在加载…';
   } else if (state.status === 'error') {
     view.status.textContent = '';
-    const alert = document.createElement('div');
+    const alert = paragraph(`加载失败：${state.message ?? ''}`);
     alert.setAttribute('role', 'alert');
     const retry = document.createElement('button');
     retry.type = 'button';
     retry.textContent = '重试';
     retry.addEventListener('click', onRetry);
-    alert.append(paragraph(`加载失败：${state.message ?? ''}`), retry);
-    view.results.replaceChildren(alert);
+    view.results.replaceChildren(alert, retry);
   } else {
     const data = state.data ?? [];
     view.status.textContent = data.length === 0 ? '没有找到相关的书。' : `找到 ${data.length} 本书`;
@@ -350,14 +347,13 @@ export function renderBooks(view: BookView, state: LoadState<Book[]>, onRetry: (
       view.results.replaceChildren(status('正在加载…'));
       return;
     case 'error': {
-      const alert = document.createElement('div');
+      const alert = paragraph(`加载失败：${state.message}`);
       alert.setAttribute('role', 'alert');
       const retry = document.createElement('button');
       retry.type = 'button';
       retry.textContent = '重试';
       retry.addEventListener('click', onRetry);
-      alert.append(paragraph(`加载失败：${state.message}`), retry);
-      view.results.replaceChildren(alert);
+      view.results.replaceChildren(alert, retry);
       return;
     }
     case 'success': {
@@ -408,14 +404,13 @@ export function renderBooks(view: BookView, state: LoadState<Book[]>, onRetry: (
       return;
     case 'error': {
       view.status.textContent = '';
-      const alert = document.createElement('div');
+      const alert = paragraph(`加载失败：${state.message}`);
       alert.setAttribute('role', 'alert');
       const retry = document.createElement('button');
       retry.type = 'button';
       retry.textContent = '重试';
       retry.addEventListener('click', onRetry);
-      alert.append(paragraph(`加载失败：${state.message}`), retry);
-      view.results.replaceChildren(alert);
+      view.results.replaceChildren(alert, retry);
       return;
     }
     case 'success': {
@@ -517,14 +512,13 @@ export function renderBooks(view: BookView, state: LoadState<Book[]>, onRetry: (
       return;
     case 'error': {
       view.status.textContent = '';
-      const alert = document.createElement('div');
+      const alert = paragraph(`加载失败：${state.message}`);
       alert.setAttribute('role', 'alert');
       const retry = document.createElement('button');
       retry.type = 'button';
       retry.textContent = '重试';
       retry.addEventListener('click', onRetry);
-      alert.append(paragraph(`加载失败：${state.message}`), retry);
-      view.results.replaceChildren(alert);
+      view.results.replaceChildren(alert, retry);
       return;
     }
     case 'success': {

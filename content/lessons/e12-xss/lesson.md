@@ -75,7 +75,7 @@ comments.append(unsafe, safe);
 - 第 15–16 行：`textContent` 把整段内容当作**文字**，尖括号原样显示在页面上，没有产生任何元素。
 :::
 
-同样危险的还有：`outerHTML`、`insertAdjacentHTML()`、`document.write()`，以及把字符串当作代码执行的 `eval()`、`new Function()`、`setTimeout('字符串')`。React 的 `dangerouslySetInnerHTML` 内部用的也是 `innerHTML`，名字就是在提醒你。
+同样会把字符串当作 HTML 解析的还有：`outerHTML`、`insertAdjacentHTML()`、`document.write()`、`setHTMLUnsafe()`、`Range.createContextualFragment()`，以及 `<iframe>` 的 `srcdoc` 属性；把字符串当作代码执行的有 `eval()`、`new Function()`、`setTimeout('字符串')`；用户提供的地址交给 `location.href = …` 或 `window.open()` 时，`javascript:` 地址同样会执行。React 的 `dangerouslySetInnerHTML` 内部用的也是 `innerHTML`，名字就是在提醒你。
 
 ## 默认就安全的写法
 
@@ -92,7 +92,7 @@ d06 介绍的 DOM 方法，正好就是插入用户数据的安全方式：
 
 `<a href="javascript:…">` 被点击时，浏览器会把冒号后面的内容当作脚本执行。所以用户提供的链接（个人主页、评论中的链接）即使用 `setAttribute` 设置，也可能是攻击。
 
-不要用“是不是以 `javascript:` 开头”来判断：`JavaScript:`、` javascript:`（前面有空格）、`java&#10;script:`（中间藏着换行）浏览器都会当作 `javascript:`；还有 `data:`、`vbscript:` 等其他危险的协议。正确的做法是**白名单**：用 `URL` 解析地址（它会像浏览器一样处理大小写、空白和控制字符），然后只允许已知安全的协议：
+不要用“是不是以 `javascript:` 开头”来判断：`JavaScript:`、` javascript:`（前面有空格）、写在 HTML 属性中的 `java&#10;script:`（`&#10;` 是换行符的字符引用，地址中间藏着一个换行）浏览器都会当作 `javascript:`；还有 `data:`、`vbscript:` 等其他危险的协议。正确的做法是**白名单**：用 `URL` 解析地址（它会像浏览器一样处理大小写、空白和控制字符），然后只允许已知安全的协议：
 
 :::playground{#safe-url}
 ```html file=index.html
@@ -117,7 +117,7 @@ for (const input of ['https://developer.mozilla.org/', '/docs/intro', 'mailto:hi
 ```
 - 第 4 行：`URL.parse(地址, 基准地址)` 解析失败时返回 `null`，不像 `new URL` 那样抛出错误。第二个参数让相对地址（`/docs/intro`）以本站为基准解析；示例用了一个虚构的地址，真实页面中用 `location.href`。
 - 第 5 行：返回的是**解析之后**的 `url.href`，而不是用户的原文。检查的和使用的是同一个值。
-- 后四个输入都是攻击：前三个经过大小写、空格、换行的变形，都被 `URL` 规范化成了 `javascript:` 协议；最后一个是 `data:` 协议。白名单拒绝了它们。
+- 后四个输入都是攻击：第一个是原样的 `javascript:`；第二个的大写和前面的空格、第三个中间的换行，经过 `trim()` 和 `URL` 的规范化之后，同样是 `javascript:` 协议；最后一个是 `data:` 协议。白名单拒绝了它们。
 :::
 
 ## 确实需要显示 HTML 时
@@ -128,7 +128,7 @@ for (const input of ['https://developer.mozilla.org/', '/docs/intro', 'mailto:hi
 
 ## 内容安全策略：最后一道防线
 
-**内容安全策略**（Content Security Policy，CSP）是服务器在响应头中声明的规则，告诉浏览器这个页面可以加载、执行哪些脚本。例如：
+**内容安全策略**（Content Security Policy，CSP）是服务器在响应头中声明的规则（也可以写在页面的 `<meta http-equiv="Content-Security-Policy">` 中，本平台的沙箱就是这样做的，但这种方式支持的指令少一些），告诉浏览器这个页面可以加载、执行哪些脚本。例如：
 
 ```
 Content-Security-Policy: script-src 'self'
@@ -136,9 +136,11 @@ Content-Security-Policy: script-src 'self'
 
 它只允许执行本站的脚本文件：页面中的内联脚本、`onerror` 这类事件属性、`javascript:` 链接都不会被执行。即使某处漏掉了转义，注入的代码也很可能跑不起来，上面的示例就被本平台的 CSP 拦了下来。
 
+按域名列出允许的来源，配置起来容易出漏洞（例如允许的 CDN 上恰好有可以利用的脚本）。现在更推荐的“严格 CSP”是用每次请求都不同的随机数（nonce）或者脚本内容的哈希来标记允许执行的脚本，再加上 `object-src 'none'`、`base-uri 'none'`。一些浏览器还支持 **Trusted Types**（`require-trusted-types-for 'script'`）：开启后，把普通字符串交给 `innerHTML` 这类危险的接口会直接报错，必须先经过你指定的清理函数。这些都由服务器配置，H 阶段会再提到。
+
 但 CSP 是**兜底**，不是借口：它要由服务器配置；规则写得太宽（例如加上 `'unsafe-inline'`）就失去了作用；它也挡不住所有的攻击，例如注入一个伪造的登录表单。正确插入数据始终是第一道防线。
 
-**关于框架：** React 等框架默认把 `{text}` 当作文字插入，替你防住了大部分情况；React 19 还会拦截 `javascript:` 链接。但 `dangerouslySetInnerHTML`、用户提供的链接是否可信，仍然要你自己负责（G 阶段）。
+**关于框架：** React 等框架默认把 `{text}` 当作文字插入，替你防住了大部分情况；React 19 还会拦截 `javascript:` 链接，但只拦截这一种，`data:` 等其他协议不管。所以 `dangerouslySetInnerHTML`、用户提供的链接，仍然要你自己检查（G 阶段）。
 
 ::exercise{#safe-href}
 

@@ -61,7 +61,7 @@ console.log('不存在的键：', localStorage.getItem('missing'));
 localStorage.removeItem('theme');
 console.log('删除之后：', localStorage.getItem('theme'), '，还剩', localStorage.length, '项');
 ```
-- 第 2 行：数字 18 被保存成了字符串 `"18"`，第 6 行读出来的也是字符串。
+- 第 2 行：`setItem` 只接受字符串（在 TypeScript 中直接传 `18` 会报错），所以先用 `String(18)` 转换；在 JavaScript 中直接传数字，也会被自动转换成 `"18"`。第 5 行读出来的同样是字符串。
 - 第 4 行：把鼠标停在 `theme` 上，类型是 `string | null`。读取的结果总要处理 `null`。
 :::
 
@@ -99,6 +99,8 @@ console.log(restored);
 - 值为 `undefined` 的属性被省略；`NaN` 变成了 `null`。
 - 类的实例也只剩下自己的数据属性，读回来是普通对象，方法都没有了。
 
+另外，`JSON.stringify` 遇到 `BigInt` 或者循环引用（对象直接或间接地引用了自己）时会抛出 `TypeError`，所以保存数据的代码也要准备好处理错误。
+
 所以保存之前，要把数据转换成 JSON 能表示的形式（例如 `Set` → 数组、`Date` → 字符串）；读取之后，再验证并转换回来（e06）。
 :::
 
@@ -134,7 +136,9 @@ function loadTheme(): 'light' | 'dark' {
 - **大量数据或二进制文件**：同步的 API 会卡住页面，容量也有限。更大、更结构化的数据用 IndexedDB（本课程平台用它保存你的学习进度）；
 - **需要在设备之间同步的数据**：`localStorage` 只在这台设备的这个浏览器里，换一台设备就没有了。
 
-另外，同一个来源打开了多个标签页时，一个标签页修改了 `localStorage`，其他标签页会收到 `storage` 事件，可以据此保持同步。
+另外，同一个来源打开了多个标签页时，一个标签页修改了 `localStorage`，**其他**标签页会收到 `storage` 事件（修改的那个页面自己收不到），可以据此保持同步。
+
+最后，不要把 `localStorage` 当作唯一的一份重要数据：用户可能清除浏览器数据，隐私浏览模式关闭后数据就没了，Safari 还会清除用户一段时间（7 天）没有访问过的网站用脚本写入的存储。它适合保存“丢了也不要紧”的数据，例如偏好设置和草稿。
 
 ::exercise{#persisted-value}
 

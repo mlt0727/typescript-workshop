@@ -13,7 +13,7 @@ title: 带版本迁移的设置存储
 **`loadSettings(storage)`** 返回 `Settings`：
 
 1. 没有保存过、内容不是合法的 JSON、或者存储不可用：返回默认设置；
-2. **第 2 版**（`version` 为 `2`）：`theme` 必须是 `'light'`、`'dark'`、`'system'` 之一，`fontSize` 必须是 10 到 32 之间的整数，`lastOpened` 是 `null` 或者能解析成有效日期的字符串（返回时转换成 `Date`）。任何一项不合格，就返回默认设置；
+2. **第 2 版**（`version` 为 `2`）：`theme` 必须是 `'light'`、`'dark'`、`'system'` 之一，`fontSize` 必须是 10 到 32 之间的整数，`lastOpened` 是 `null`，或者是 `toISOString()` 格式的字符串（例如 `2026-10-20T08:00:00.000Z`），返回时转换成 `Date`。检查方法：转换成 `Date` 后先确认它有效，再调用 `toISOString()`，结果必须和原来的字符串完全相同（e06）。任何一项不合格，就返回默认设置；
 3. **第 1 版**（普通对象、没有 `version`，`darkMode` 是布尔值）：迁移成 `theme: darkMode ? 'dark' : 'light'`，`fontSize` 和 `lastOpened` 用默认值；并且**立即把迁移后的结果按第 2 版的格式写回**存储，下次就不用再迁移；
 4. 其他任何情况（包括未知的版本号）：返回默认设置。
 
@@ -78,7 +78,7 @@ function parseV2(data: Record<string, unknown>): Settings | null {
   if (lastOpened === null) return { theme, fontSize, lastOpened: null };
   if (typeof lastOpened !== 'string') return null;
   const date = new Date(lastOpened);
-  if (Number.isNaN(date.getTime())) return null;
+  if (Number.isNaN(date.getTime()) || date.toISOString() !== lastOpened) return null;
   return { theme, fontSize, lastOpened: date };
 }
 
@@ -153,7 +153,12 @@ describe('loadSettings', () => {
     expect(settings.fontSize).toBe(18);
     expect(settings.lastOpened).toBeInstanceOf(Date);
     expect(settings.lastOpened?.toISOString()).toBe('2026-10-20T08:00:00.000Z');
-    expect(loadSettings(memoryStorage('{"version":2,"theme":"light","fontSize":10,"lastOpened":null}').storage).lastOpened).toBeNull();
+    expect(loadSettings(memoryStorage('{"version":2,"theme":"system","fontSize":10,"lastOpened":null}').storage)).toEqual({
+      theme: 'system',
+      fontSize: 10,
+      lastOpened: null,
+    });
+    expect(loadSettings(memoryStorage('{"version":2,"theme":"light","fontSize":32,"lastOpened":null}').storage).fontSize).toBe(32);
   });
 
   test('第 2 版中任何一项不合格都返回默认设置', () => {
@@ -161,7 +166,10 @@ describe('loadSettings', () => {
       '{"version":2,"theme":"blue","fontSize":18,"lastOpened":null}',
       '{"version":2,"theme":"dark","fontSize":9,"lastOpened":null}',
       '{"version":2,"theme":"dark","fontSize":16.5,"lastOpened":null}',
+      '{"version":2,"theme":"dark","fontSize":33,"lastOpened":null}',
       '{"version":2,"theme":"dark","fontSize":16,"lastOpened":"昨天"}',
+      '{"version":2,"theme":"dark","fontSize":16,"lastOpened":"1"}',
+      '{"version":2,"theme":"dark","fontSize":16,"lastOpened":"2026-02-30T08:00:00.000Z"}',
       '{"version":2,"theme":"dark","fontSize":16}',
     ]) {
       expect(loadSettings(memoryStorage(bad).storage), bad).toEqual(defaultSettings());
@@ -174,6 +182,17 @@ describe('loadSettings', () => {
     const stored: unknown = JSON.parse(data.get('settings') ?? 'null');
     expect(stored).toEqual({ version: 2, theme: 'dark', fontSize: 16, lastOpened: null });
     expect(loadSettings(memoryStorage('{"darkMode":false}').storage).theme).toBe('light');
+  });
+
+  test('写回失败时，仍然返回迁移后的设置', () => {
+    const readOnly: KeyValueStorage = {
+      getItem: () => '{"darkMode":true}',
+      setItem: () => {
+        throw new DOMException('空间已满', 'QuotaExceededError');
+      },
+      removeItem: () => {},
+    };
+    expect(loadSettings(readOnly)).toEqual({ theme: 'dark', fontSize: 16, lastOpened: null });
   });
 
   test('第 1 版格式不对、未知版本、损坏的内容都返回默认设置', () => {
@@ -226,7 +245,7 @@ describe('saveSettings', () => {
 :::
 
 :::hint{level=2}
-日期：`lastOpened` 是 `null` 就保持 `null`；是字符串就 `new Date(...)`，再用 `Number.isNaN(date.getTime())` 检查。迁移之后调用 `saveSettings` 写回。保存时用 `settings.lastOpened?.toISOString() ?? null` 把日期变回字符串。默认设置用一个函数每次返回新对象。
+日期：`lastOpened` 是 `null` 就保持 `null`；是字符串就 `new Date(...)`，先用 `Number.isNaN(date.getTime())` 检查，再确认 `date.toISOString() === lastOpened`（无效的日期调用 `toISOString()` 会抛出错误，所以顺序不能反）。迁移之后调用 `saveSettings` 写回。保存时用 `settings.lastOpened?.toISOString() ?? null` 把日期变回字符串。默认设置用一个函数每次返回新对象。
 :::
 
 :::explanation
@@ -238,7 +257,7 @@ describe('saveSettings', () => {
 - **已知的旧版本**：迁移成当前格式，并写回存储，迁移只发生一次；
 - **无法识别**（未来的版本、损坏的数据）：退回默认值，而不是猜测它的含义。
 
-日期需要两次转换：保存时 `toISOString()` 变成字符串，读取时 `new Date(...)` 变回日期并验证。JSON 本身不会替你做这件事（本课第二节）。
+日期需要两次转换：保存时 `toISOString()` 变成字符串，读取时 `new Date(...)` 变回日期并验证。JSON 本身不会替你做这件事（本课第二节）。验证时只检查 `NaN` 不够：`new Date('1')` 在 Chrome 中是 2001 年，`2026-02-30` 会被顺延成 3 月 2 日（e06）。因为保存的一定是 `toISOString()` 的结果，“往返之后完全相同”是最简单也最严格的检查。
 
 默认设置用函数 `defaultSettings()` 每次返回一个新对象：如果返回同一个对象，调用方修改了它（`settings.theme = 'dark'`），下一次读取到的“默认设置”也就变了。
 :::
@@ -296,7 +315,7 @@ export function loadSettings(storage: KeyValueStorage): Settings {
   const v2 = toV2(data);
   if (v2 === null) return defaultSettings();
   const date = v2.lastOpened === null ? null : new Date(v2.lastOpened);
-  if (date !== null && Number.isNaN(date.getTime())) return defaultSettings();
+  if (date !== null && (Number.isNaN(date.getTime()) || date.toISOString() !== v2.lastOpened)) return defaultSettings();
   const settings: Settings = { theme: v2.theme, fontSize: v2.fontSize, lastOpened: date };
   const wasOld = typeof data === 'object' && data !== null && !('version' in data);
   if (wasOld) saveSettings(storage, settings);

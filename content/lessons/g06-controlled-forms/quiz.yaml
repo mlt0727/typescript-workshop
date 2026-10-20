@@ -1,0 +1,44 @@
+- id: controlled-loop
+  type: single
+  prompt: "`<input value={name} />` 只写了 value、没有写 onChange，会怎样？"
+  options:
+    - text: 输入框变成只读的：用户怎么输入都不会变，React 还会在控制台给出警告
+      correct: true
+      explain: 受控输入框显示的永远是 state 的值。没有 onChange 更新 state，值就不会变。只是想设置初始值时用 defaultValue。
+    - text: 用户可以正常输入，只是 name 不会更新
+      explain: 每次渲染 React 都会把输入框的值设回 name，用户的输入会被“撤销”。
+    - text: TypeScript 会报错
+      explain: 类型上没有问题，这是运行时的行为。
+- id: checkbox-checked
+  type: single
+  prompt: 复选框的 onChange 中，应该读取哪个属性来得到“是否勾选”？
+  options:
+    - text: "`e.currentTarget.checked`"
+      correct: true
+      explain: checked 是布尔值，表示当前是否勾选；绑定时也用 checked={state}。
+    - text: "`e.currentTarget.value`"
+      explain: value 是勾选时提交给服务器的值（默认是 "on"），不管勾没勾选都不会变。
+    - text: "`e.currentTarget.selected`"
+      explain: selected 是 <option> 的属性，复选框没有它。
+- id: number-input-state
+  type: single
+  prompt: 数量输入框（type="number"）的 state 最好存成什么？
+  options:
+    - text: 字符串，计算和提交时再转换并校验
+      correct: true
+      explain: 输入框的 value 本来就是字符串。用户在编辑过程中可能把它清空或者暂时输入不合法的内容，存成字符串，输入框才能如实地显示这些中间状态。
+    - text: 数字，在 onChange 里用 Number(e.currentTarget.value) 转换
+      explain: 用户清空输入框时，Number('') 是 0，输入框会立刻显示 0，没法删干净。
+    - text: 两者没有区别
+      explain: 存数字会和输入框的实际内容不一致，导致上面的问题。
+- id: derived-errors
+  type: single
+  prompt: 表单的错误信息应该怎样得到？
+  options:
+    - text: 每次渲染时用校验函数从表单的 state 算出来；只需要另存一个“是否尝试过提交”的布尔值
+      correct: true
+      explain: 算出来的错误永远和表单的内容一致，不会出现“输入已经改对了，错误还在”的情况。
+    - text: 存成一个单独的 state，每次输入时记得更新它
+      explain: 能算出来的东西另存一份，就要时刻保持同步，很容易漏掉一处。
+    - text: 提交时把错误写进 DOM，下次提交再清除
+      explain: 这样错误不会随输入更新，也绕开了 React 的渲染。

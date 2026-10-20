@@ -280,8 +280,8 @@ test.describe('DOM 模式', () => {
         'let initial = "";',
         'test("修改地址", () => {',
         '  initial = location.href;',
-        '  history.pushState({ step: 1 }, "", "/users/42?tab=info#top");',
-        '  expect(location.pathname).toBe("/users/42");',
+        '  history.pushState({ step: 1 }, "", "?tab=info#top");',
+        '  expect(location.search).toBe("?tab=info");',
         '});',
         'test("下一个测试看到的是初始地址", () => {',
         '  expect(location.href).toBe(initial);',
@@ -293,6 +293,108 @@ test.describe('DOM 模式', () => {
     expect(r.tests.results.map((t) => [t.name, t.status, t.error?.message])).toEqual([
       ['修改地址', 'pass', undefined],
       ['下一个测试看到的是初始地址', 'pass', undefined],
+    ]);
+  });
+
+  test('沙箱中的 history.back() 只在预览自己的记录之间后退，不会让课程页面后退', async ({ page }) => {
+    await open(page);
+    await page.evaluate(() => {
+      history.pushState(null, '', '#outer-1');
+      history.pushState(null, '', '#outer-2');
+    });
+    const r = await run(page, {
+      projectId: 'history-guard',
+      entry: 'main.ts',
+      timeoutMs: 5000,
+      spec: {
+        mode: 'dom',
+        files: {
+          'index.html': '<script type="module" src="./main.ts"></script>',
+          'main.ts': [
+            'const popped = () => new Promise<void>((resolve) => window.addEventListener("popstate", () => resolve(), { once: true }));',
+            'window.addEventListener("popstate", () => console.log("popstate", location.search || "(无)"));',
+            'history.back();',
+            'history.pushState({ n: 1 }, "", "?step=1");',
+            'history.pushState({ n: 2 }, "", "?step=2");',
+            'let next = popped();',
+            'history.back();',
+            'await next;',
+            'next = popped();',
+            'history.back();',
+            'await next;',
+            'history.back();',
+            'console.log("end", location.search || "(无)");',
+            'export {};',
+          ].join('\n'),
+        },
+      },
+    });
+    const texts = r.logs.map((l) => l.text);
+    expect(texts.filter((t) => t.includes('忽略了 history.back()'))).toHaveLength(2);
+    expect(texts.filter((t) => t.startsWith('popstate') || t.startsWith('end'))).toEqual(['popstate ?step=1', 'popstate (无)', 'end (无)']);
+    expect(new URL(page.url()).hash).toBe('#outer-2');
+  });
+
+  test('pushState 修改路径：Chromium 允许；WebKit 拒绝时给出中文说明', async ({ page }, info) => {
+    await open(page);
+    const r = await run(page, {
+      projectId: 'history-path',
+      entry: 'main.ts',
+      timeoutMs: 5000,
+      spec: {
+        mode: 'dom',
+        files: {
+          'index.html': '<script type="module" src="./main.ts"></script>',
+          'main.ts': [
+            'try {',
+            '  history.pushState(null, "", "/users/42");',
+            '  console.log("ok", location.pathname);',
+            '} catch (err) {',
+            '  console.log("error", err instanceof DOMException ? err.name + " " + err.message : String(err));',
+            '}',
+            'export {};',
+          ].join('\n'),
+        },
+      },
+    });
+    const text = r.logs.map((l) => l.text).find((t) => t.startsWith('ok') || t.startsWith('error')) ?? '';
+    if (info.project.name.includes('webkit')) {
+      expect(text).toContain('SecurityError');
+      expect(text).toContain('只能修改 ? 之后的查询参数');
+    } else {
+      expect(text).toBe('ok /users/42');
+    }
+  });
+
+  test('测试中的焦点：输入、Tab、焦点事件的顺序；每个测试开始时没有焦点（WebKit 中为模拟的焦点）', async ({ page }) => {
+    await open(page);
+  const tests = [
+    'import { expect, test } from "vitest";',
+    'import userEvent from "@testing-library/user-event";',
+    'test("type and tab", async () => {',
+    '  const [a, b] = document.querySelectorAll("input");',
+    '  if (!(a instanceof HTMLInputElement) || !(b instanceof HTMLInputElement)) throw new Error("x");',
+    '  const events: string[] = [];',
+    '  for (const t of ["focus", "blur", "focusin", "focusout"]) { a.addEventListener(t, () => events.push("a:" + t)); b.addEventListener(t, () => events.push("b:" + t)); }',
+    '  const user = userEvent.setup();',
+    '  await user.clear(a);',
+    '  await user.type(a, "abc");',
+    '  expect(a.value).toBe("abc");',
+    '  expect(a).toHaveFocus();',
+    '  await user.tab();',
+    '  expect(b).toHaveFocus();',
+    '  await user.keyboard("xy");',
+    '  expect(b.value).toBe("xy");',
+    '  expect(events).toEqual(["a:focus", "a:focusin", "a:blur", "a:focusout", "b:focus", "b:focusin"]);',
+    '});',
+    'test("next test starts unfocused", () => {',
+    '  expect(document.activeElement).toBe(document.body);',
+    '});',
+  ].join('\n');
+    const r = await judge(page, baseSpec('dom', 'index.html'), { student: { 'index.html': '<input value="x"><input value="y">' }, support: {}, tests: { 'a.test.ts': tests } });
+    expect(r.tests.results.map((t) => [t.name, t.status, t.error?.message])).toEqual([
+      ['type and tab', 'pass', undefined],
+      ['next test starts unfocused', 'pass', undefined],
     ]);
   });
 
@@ -335,6 +437,33 @@ test.describe('React 模式', () => {
     const bad = await judge(page, baseSpec('react', 'main.tsx'), { student: { 'Counter.tsx': mutating }, support: {}, tests });
     expect(bad.passed).toBe(false);
     expect(bad.tests.results[0]?.status).toBe('fail');
+  });
+
+  test('受控输入框：每个测试中输入的文字都能更新 state（测试库的监听器在测试之间保留）', async ({ page }) => {
+    await open(page);
+    const tests = {
+      'Box.test.tsx': [
+        'import { test, expect } from "vitest";',
+        'import { render, screen } from "@testing-library/react";',
+        'import userEvent from "@testing-library/user-event";',
+        'import { Box } from "./Box";',
+        'for (const text of ["abc", "第二个测试", "第三个"]) {',
+        '  test(`输入 ${text}`, async () => {',
+        '    render(<Box />);',
+        '    await userEvent.setup().type(screen.getByLabelText("标题"), text);',
+        '    expect(screen.getByText(/^state=/)).toHaveTextContent(`state=${text}`);',
+        '  });',
+        '}',
+      ].join('\n'),
+    };
+    const box =
+      'import { useState } from "react";\nexport function Box() {\n  const [v, setV] = useState("");\n  return (<div><label htmlFor="title">标题</label><input id="title" value={v} onChange={(e) => setV(e.currentTarget.value)} /><p>state={v}</p></div>);\n}\n';
+    const r = await judge(page, baseSpec('react', 'main.tsx'), { student: { 'Box.tsx': box }, support: {}, tests });
+    expect(r.tests.results.map((t) => [t.name, t.status])).toEqual([
+      ['输入 abc', 'pass'],
+      ['输入 第二个测试', 'pass'],
+      ['输入 第三个', 'pass'],
+    ]);
   });
 
   test('React 预览运行并输出开发版警告', async ({ page }) => {

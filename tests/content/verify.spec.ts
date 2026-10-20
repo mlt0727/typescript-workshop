@@ -17,7 +17,9 @@ interface Report {
   lessons: Record<string, { verifiedAt: string; sourceHash: string; ok: boolean; checks: { target: string; ok: boolean; detail: string }[] }>;
 }
 
-test('课程内容在真实浏览器中通过验证', async ({ page }) => {
+test('课程内容在真实浏览器中通过验证', async ({ page }, info) => {
+  // 验证记录（content/verification.json）以 Chromium 的结果为准；其他浏览器只报告失败项
+  const writeReport = info.project.name === 'content';
   page.setDefaultTimeout(120_000);
   await page.goto('/verify.html');
   await page.waitForFunction(() => window.__tsw_verify_ready === true);
@@ -42,6 +44,6 @@ test('课程内容在真实浏览器中通过验证', async ({ page }) => {
   // 删除已不存在的课时记录
   for (const id of Object.keys(report.lessons)) if (!all.includes(id)) delete report.lessons[id];
   report.lessons = Object.fromEntries(Object.entries(report.lessons).sort(([a], [b]) => a.localeCompare(b)));
-  fs.writeFileSync(reportFile, `${JSON.stringify(report, null, 2)}\n`);
+  if (writeReport) fs.writeFileSync(reportFile, `${JSON.stringify(report, null, 2)}\n`);
   expect(failures).toEqual([]);
 });

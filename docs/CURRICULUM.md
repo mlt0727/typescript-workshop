@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 52 / 规划总数 126**（草稿 8，规划中 66）
+**已发布 54 / 规划总数 126**（草稿 11，规划中 61）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -56,7 +56,7 @@
 | `b16-assertions-as-const-satisfies` 类型断言、as const 与 satisfies | ✅ 已发布 | `b15-generic-constraints` |
 | `b17-enums-and-alternatives` 枚举与可擦除语法 | ✅ 已发布 | `b16-assertions-as-const-satisfies` |
 
-## E. 浏览器机制、异步与数据（已发布 4 / 13）
+## E. 浏览器机制、异步与数据（已发布 6 / 13）
 
 事件循环、Promise、fetch、运行时校验、取消与竞态、存储、URL 与安全边界。
 
@@ -66,12 +66,12 @@
 | `e02-promises` Promise 基础 | ✅ 已发布 | `e01-event-loop`、`b14-generics`、`a20-errors` |
 | `e03-async-await` async/await 与错误传播 | ✅ 已发布 | `e02-promises`、`a20-errors` |
 | `e04-promise-combinators` Promise.all、allSettled、race 与 any | ✅ 已发布 | `e03-async-await`、`b09-discriminated-unions`、`b13-inheritance-implements` |
-| `e05-fetch-json` fetch、HTTP 状态与 JSON | 📝 草稿 | `e04-promise-combinators` |
-| `e06-runtime-validation` 运行时数据校验 | 📝 草稿 | `e05-fetch-json`、`b08-type-guards` |
+| `e05-fetch-json` fetch、HTTP 状态与 JSON | ✅ 已发布 | `e04-promise-combinators` |
+| `e06-runtime-validation` 运行时数据校验 | ✅ 已发布 | `e05-fetch-json`、`b08-type-guards` |
 | `e07-loading-states` 加载、空与失败状态 | 📝 草稿 | `e06-runtime-validation`、`d06-dom-create-update` |
 | `e08-abort-races` AbortController、取消请求与竞态 | 📝 草稿 | `e07-loading-states` |
 | `e09-storage-serialization` 浏览器存储与序列化 | 📝 草稿 | `e06-runtime-validation` |
-| `e10-url-routing` URL、History 与基础路由 | 📝 草稿 | `d07-events` |
+| `e10-url-routing` URL、History 与基础路由 | 📝 草稿 | `d10-state-and-render`、`e06-runtime-validation` |
 | `e11-cors` CORS 的真实边界 | 📝 草稿 | `e05-fetch-json` |
 | `e12-xss` 基础 XSS 防范 | 📝 草稿 | `d06-dom-create-update` |
 | `e13-env-secrets` 客户端环境变量与密钥边界 | ⬜ 规划中 | `f02-vite-project` |
@@ -137,12 +137,12 @@
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `g01-jsx-components` JSX/TSX 与组件 | ⬜ 规划中 | `d10-state-and-render`、`a19-modules` |
-| `g02-props` Props 与类型 | ⬜ 规划中 | `g01-jsx-components` |
+| `g01-jsx-components` JSX/TSX 与组件 | 📝 草稿 | `d10-state-and-render`、`a19-modules` |
+| `g02-props` Props 与类型 | 📝 草稿 | `g01-jsx-components` |
 | `g03-events-state` 事件与 state | ✅ 已发布 | `g02-props` |
-| `g04-immutable-updates` 不可变更新 | ⬜ 规划中 | `g03-events-state`、`a12-destructuring-spread` |
-| `g05-lists-keys` 列表渲染与 key | ⬜ 规划中 | `g04-immutable-updates` |
-| `g06-controlled-forms` 受控表单 | ⬜ 规划中 | `g05-lists-keys` |
+| `g04-immutable-updates` 不可变更新 | 📝 草稿 | `g03-events-state`、`a12-destructuring-spread` |
+| `g05-lists-keys` 列表渲染与 key | 📝 草稿 | `g04-immutable-updates` |
+| `g06-controlled-forms` 受控表单 | 📝 草稿 | `g05-lists-keys` |
 | `g07-lifting-state` 状态提升与组合 | ⬜ 规划中 | `g06-controlled-forms` |
 | `g08-custom-hooks` 自定义 Hook | ⬜ 规划中 | `g07-lifting-state` |
 | `g09-refs` ref 的合理用途 | ⬜ 规划中 | `g08-custom-hooks` |

@@ -13,14 +13,14 @@ fixtures: quick
 | 原因 | message |
 | --- | --- |
 | `fetch` 被拒绝（网络失败） | `网络连接失败，请检查网络后重试` |
-| 状态码 500–599 | `服务器暂时出了问题，请稍后重试（状态码 500）`（数字换成实际的状态码） |
+| 状态码 500–599 | `服务器暂时出了问题，请稍后重试（状态码 503）`（数字换成实际的状态码） |
 | 其他非 2xx 状态码 | `请求失败（状态码 404）` |
 | 数据不是合法的 JSON，或者没有通过验证 | `数据格式不正确` |
 
 5. 点击“重试”时，用**上一次请求的主题**重新请求（即使下拉框已经改了）；
 6. 页面加载后先渲染 `idle` 状态。
 
-下拉框中的每个主题都对应一种模拟的响应：成功、空结果、500、404、网络失败、不是数组、返回了 HTML 网页、数组中有一项不合格。
+下拉框中的每个主题都对应一种模拟的响应：成功、空结果、500、404、网络失败、不是数组、返回了 HTML 网页、数组中有一项不合格，以及两个很慢的响应（800 毫秒）：一个成功，一个返回 503。
 
 :::files{role=support}
 ```html file=index.html readonly
@@ -38,6 +38,8 @@ fixtures: quick
         <option value="weird">格式错误</option>
         <option value="html">返回了网页</option>
         <option value="bad-item">有不合格的项</option>
+        <option value="slow">网络很慢</option>
+        <option value="busy">服务器繁忙（很慢，503）</option>
       </select>
       <button>搜索</button>
     </form>
@@ -76,14 +78,13 @@ export function renderBooks(view: BookView, state: LoadState<Book[]>, onRetry: (
       return;
     case 'error': {
       view.status.textContent = '';
-      const alert = document.createElement('div');
+      const alert = paragraph(`加载失败：${state.message}`);
       alert.setAttribute('role', 'alert');
       const retry = document.createElement('button');
       retry.type = 'button';
       retry.textContent = '重试';
       retry.addEventListener('click', onRetry);
-      alert.append(paragraph(`加载失败：${state.message}`), retry);
-      view.results.replaceChildren(alert);
+      view.results.replaceChildren(alert, retry);
       return;
     }
     case 'success': {
@@ -219,7 +220,7 @@ setState({ status: 'idle' });
 :::files{role=tests}
 ```ts file=search.test.ts
 import { expect, test, vi } from 'vitest';
-import { screen, waitFor, within } from '@testing-library/dom';
+import { screen, waitFor } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 async function search(topic: string) {
@@ -235,7 +236,7 @@ async function settled() {
 
 async function errorMessage(): Promise<string> {
   const alert = await screen.findByRole('alert');
-  return alert.querySelector('p')?.textContent ?? '';
+  return alert.textContent ?? '';
 }
 
 test('页面加载后是 idle 状态', () => {
@@ -250,19 +251,33 @@ test('加载中显示状态，完成后显示结果；状态提示是页面上�
   expect(screen.getAllByRole('listitem').map((li) => li.textContent)).toEqual(['Effective TypeScript', 'Programming TypeScript']);
 });
 
-test('加载期间按钮标记为不可用、保留焦点，再次提交被忽略', async () => {
+test('加载期间按钮用 aria-disabled（而不是 disabled）标记为不可用，再次提交被忽略', async () => {
   const fetchSpy = vi.spyOn(window, 'fetch');
   const user = userEvent.setup();
+  await user.selectOptions(screen.getByLabelText('主题'), 'slow');
   const button = screen.getByRole('button', { name: '搜索' });
   await user.click(button);
   expect(button).toHaveAttribute('aria-disabled', 'true');
   expect(button).toBeEnabled();
-  expect(document.activeElement).toBe(button);
   await user.click(button);
   await user.keyboard('{Enter}');
+  expect(document.querySelector('#results')).toHaveAttribute('aria-busy', 'true');
   await settled();
   expect(fetchSpy).toHaveBeenCalledTimes(1);
   expect(button).toHaveAttribute('aria-disabled', 'false');
+});
+
+test('加载期间再点“重试”也被忽略', async () => {
+  const fetchSpy = vi.spyOn(window, 'fetch');
+  const user = userEvent.setup();
+  await search('busy');
+  expect(await errorMessage()).toBe('加载失败：服务器暂时出了问题，请稍后重试（状态码 503）');
+  const retry = screen.getByRole('button', { name: '重试' });
+  await user.click(retry);
+  await user.click(retry);
+  expect(document.querySelector('#results')).toHaveAttribute('aria-busy', 'true');
+  await settled();
+  expect(fetchSpy).toHaveBeenCalledTimes(2);
 });
 
 test('空结果', async () => {
@@ -296,9 +311,9 @@ test('数据格式不正确：不是数组、不是 JSON、有不合格的项', 
 test('重试使用上一次请求的主题', async () => {
   const user = userEvent.setup();
   await search('offline');
-  const alert = await screen.findByRole('alert');
+  await screen.findByRole('alert');
   await user.selectOptions(screen.getByLabelText('主题'), 'typescript');
-  await user.click(within(alert).getByRole('button', { name: '重试' }));
+  await user.click(screen.getByRole('button', { name: '重试' }));
   expect(screen.getByRole('status')).toHaveTextContent('正在加载…');
   await settled();
   expect(await errorMessage()).toBe('加载失败：网络连接失败，请检查网络后重试');
@@ -325,7 +340,7 @@ test('重试使用上一次请求的主题', async () => {
 
 “翻译”错误这一步很重要：底层的错误信息（例如 `Failed to fetch`、`Unexpected token`）对用户没有意义，而且可能暴露实现细节。用户需要的是“发生了什么、我能做什么”。
 
-**为什么用 `aria-disabled` 而不是 `disabled`。** 用户点击“搜索”（或者在按钮上按回车）时，焦点就在按钮上。设置 `disabled` 之后，浏览器会把焦点从按钮上移走，落到 `<body>` 上，键盘和读屏用户会失去当前的位置。`aria-disabled="true"` 只告诉辅助技术“现在不可用”，焦点保留在原处；但它不会阻止点击，所以 `load` 开头要自己检查状态，忽略重复的提交。还有一处焦点问题这里没有处理：点击“重试”之后，重试按钮会随着新的结果被替换掉，焦点同样会丢失。更完整的做法是渲染新内容之后，把焦点移到一个合适的位置，例如结果区域的标题（给它加上 `tabindex="-1"` 再调用 `focus()`）。
+**为什么用 `aria-disabled` 而不是 `disabled`。** 用户点击“搜索”（或者在按钮上按回车）时，焦点就在按钮上。设置 `disabled` 之后，焦点会离开这个按钮（`document.activeElement` 变成 `<body>`），焦点指示随之消失，读屏软件也可能失去上下文；虽然多数浏览器之后按 Tab 仍会从原来的位置继续，但用户已经看不出自己在哪里了。`aria-disabled="true"` 只告诉辅助技术“现在不可用”，焦点保留在原处；但它不会阻止点击，所以 `load` 开头要自己检查状态，忽略重复的提交和重试。还有一处焦点问题这里没有处理：请求结束后，“重试”按钮会随着新的结果被替换掉，焦点同样会丢失。更完整的做法是渲染新内容之后，把焦点移到一个合适的位置，例如结果区域的标题（给它加上 `tabindex="-1"` 再调用 `focus()`）。
 
 重试使用上一次请求的主题，而不是下拉框当前的值：用户点击的是“重试刚才失败的请求”。`load` 内部已经处理了所有错误，`void load(...)` 不会产生未处理的拒绝。
 :::
@@ -537,7 +552,7 @@ setState({ status: 'idle' });
 ```
 :::
 
-:::variant{kind=wrong name=uses-disabled fails=tests reason="用 disabled 禁用按钮，焦点丢失"}
+:::variant{kind=wrong name=uses-disabled fails=tests reason="设置了 disabled 属性，而不是 aria-disabled"}
 ```ts file=main.ts
 import { renderBooks, type Book, type LoadState } from './render';
 

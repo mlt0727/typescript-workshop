@@ -75,6 +75,7 @@ describe('needsPreflight', () => {
     expect(needsPreflight({ method: 'POST', headers: { 'Content-Type': 'text/plain; charset=utf-8' } })).toBe(false);
     expect(needsPreflight({ method: 'POST', headers: { 'Content-Type': ' Multipart/Form-Data ; boundary=x' } })).toBe(false);
     expect(needsPreflight({ method: 'POST', headers: { 'Content-Type': 'application/json; charset=utf-8' } })).toBe(true);
+    expect(needsPreflight({ method: 'POST', headers: { 'Content-Type': 'application/json; profile=text/plain' } })).toBe(true);
   });
 });
 ```

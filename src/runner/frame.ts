@@ -44,13 +44,16 @@ export class SandboxFrame {
     if (!options.container) {
       iframe.setAttribute('aria-hidden', 'true');
       iframe.tabIndex = -1;
-      // 隐藏的 iframe 放在屏幕外，但保持正常尺寸：布局、媒体查询与 page.viewport() 都依赖它
+      // 隐藏的 iframe 保持正常尺寸：布局、媒体查询与 page.viewport() 都依赖它。
+      // 它留在视口内、位于页面内容之下并且完全透明：WebKit 会把视口之外的跨源 iframe 的计时器节流到每秒一次，
+      // 测试中的 user-event 每输入一个字符都要等一秒多。
       Object.assign(iframe.style, {
         position: 'fixed',
         width: `${VIEWPORT_LIMITS.defaultWidth}px`,
         height: `${VIEWPORT_LIMITS.defaultHeight}px`,
-        left: '-20000px',
+        left: '0',
         top: '0',
+        zIndex: '-1',
         border: '0',
         opacity: '0',
         pointerEvents: 'none',

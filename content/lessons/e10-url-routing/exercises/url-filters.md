@@ -84,6 +84,7 @@ describe('parseFilters', () => {
     for (const page of ['0', '-2', '1.5', 'abc', '']) {
       expect(parseFilters(`?page=${page}`).page, `page=${page}`).toBe(1);
     }
+    expect(parseFilters('?page=010').page).toBe(10);
     expect(parseFilters('?status=deleted').status).toBe('all');
   });
 });
@@ -91,6 +92,10 @@ describe('parseFilters', () => {
 describe('toSearch', () => {
   test('全部是默认值时返回空字符串', () => {
     expect(toSearch({ q: '  ', status: 'all', page: 1 })).toBe('');
+  });
+
+  test('写入的搜索词也去掉了首尾空白', () => {
+    expect(toSearch({ q: ' ts ', status: 'all', page: 1 })).toBe('?q=ts');
   });
 
   test('只包含非默认的参数，按 q、status、page 的顺序', () => {
@@ -145,7 +150,7 @@ export function parseFilters(search: string): Filters {
   const statusText = params.get('status') ?? 'all';
   const status: Status = statusText === 'active' || statusText === 'done' ? statusText : 'all';
   const pageText = params.get('page');
-  const page = pageText !== null && /^[1-9]\d*$/.test(pageText) ? Number(pageText) : 1;
+  const page = pageText !== null && /^\d+$/.test(pageText) && Number(pageText) >= 1 ? Number(pageText) : 1;
   return { q: params.get('q')?.trim() ?? '', status: STATUSES.includes(status) ? status : 'all', page };
 }
 

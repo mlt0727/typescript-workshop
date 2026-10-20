@@ -151,6 +151,23 @@ describe('createPersisted', () => {
     createPersisted(storage, 'scores', parseNumbers, []).clear();
     expect([...storage.data.keys()]).toEqual(['other']);
   });
+
+  test('使用传入的 key，不影响其他键', () => {
+    const storage = memoryStorage({ scores: '[1]' });
+    const muted = createPersisted(storage, 'muted', (v) => (typeof v === 'boolean' ? v : null), false);
+    expect(muted.save(true)).toBe(true);
+    expect(storage.data.get('muted')).toBe('true');
+    expect(storage.data.get('scores')).toBe('[1]');
+    muted.clear();
+    expect([...storage.data.keys()]).toEqual(['scores']);
+  });
+
+  test('保存的值是 false、0、空字符串时也能原样读回', () => {
+    const storage = memoryStorage({ muted: 'false', count: '0', note: '""' });
+    expect(createPersisted(storage, 'muted', (v) => (typeof v === 'boolean' ? v : null), true).load()).toBe(false);
+    expect(createPersisted(storage, 'count', (v) => (typeof v === 'number' ? v : null), 10).load()).toBe(0);
+    expect(createPersisted(storage, 'note', (v) => (typeof v === 'string' ? v : null), '默认').load()).toBe('');
+  });
 });
 ```
 ```ts file=persisted.test-d.ts
@@ -221,7 +238,11 @@ export function createPersisted<T>(
   };
   return {
     load: () => attempt(read, fallback),
-    save: (value) => attempt(() => (storage.setItem(key, JSON.stringify(value)), true), false),
+    save: (value) =>
+      attempt(() => {
+        storage.setItem(key, JSON.stringify(value));
+        return true;
+      }, false),
     clear: () => attempt(() => storage.removeItem(key), undefined),
   };
 }
