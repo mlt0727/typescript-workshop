@@ -65,7 +65,7 @@ stages:
       - { id: e09-storage-serialization, title: 浏览器存储与序列化, status: draft, prerequisites: [e06-runtime-validation] }
       - { id: e10-url-routing, title: URL、History 与基础路由, status: draft, prerequisites: [d07-events] }
       - { id: e11-cors, title: CORS 的真实边界, status: draft, prerequisites: [e05-fetch-json] }
-      - { id: e12-xss, title: 基础 XSS 防范, status: planned, prerequisites: [d06-dom-create-update] }
+      - { id: e12-xss, title: 基础 XSS 防范, status: draft, prerequisites: [d06-dom-create-update] }
       - { id: e13-env-secrets, title: 客户端环境变量与密钥边界, status: planned, prerequisites: [f02-vite-project] }
 
   - id: C

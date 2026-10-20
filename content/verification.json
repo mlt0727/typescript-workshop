@@ -6252,6 +6252,108 @@
         }
       ]
     },
+    "e12-xss": {
+      "verifiedAt": "2026-10-20T13:13:58.968Z",
+      "sourceHash": "9d3c7e42de25727f",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:inner-html:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:inner-html:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] innerHTML：页面上多了一个 img 吗？ true | [log] 它带着 onerror 吗？ console.log('攻击者的代码运行了') | [log] textContent：页面上有 img 吗？ false | [log] CSP 拦下了： script-src-attr"
+        },
+        {
+          "target": "playground:safe-url:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:safe-url:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] \"https://developer.mozilla.org/\" → https://developer.mozilla.org/ | [log] \"/docs/intro\" → https://app.example/docs/intro | [log] \"mailto:hi@example.com\" → mailto:hi@example.com | [log] \"javascript:alert(1)\" → null | [log] \" JavaScript:alert(1)\" → null | [log] \"java\\nscript:alert(1)\" → null | [log] \"data:text/html,<script>alert(1)</script>\" → null"
+        },
+        {
+          "target": "exercise:safe-href:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(safeHref › 放行 http、https、mailto，返回解析之后的地址,safeHref › 相对地址以 base 为基准,safeHref › 拒绝 javascript: 的各种变形,safeHref › 拒绝其他协议,safeHref › 空白和无法解析的地址)"
+        },
+        {
+          "target": "exercise:safe-href:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:safe-href:alt:try-catch",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:safe-href:wrong:blacklist",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(safeHref › 拒绝 javascript: 的各种变形,safeHref › 拒绝其他协议)"
+        },
+        {
+          "target": "exercise:safe-href:wrong:regex-prefix",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(safeHref › 放行 http、https、mailto，返回解析之后的地址,safeHref › 相对地址以 base 为基准,safeHref › 空白和无法解析的地址)"
+        },
+        {
+          "target": "exercise:safe-href:wrong:substring-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(safeHref › 相对地址以 base 为基准)"
+        },
+        {
+          "target": "exercise:safe-href:wrong:return-input",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(safeHref › 放行 http、https、mailto，返回解析之后的地址,safeHref › 相对地址以 base 为基准)"
+        },
+        {
+          "target": "exercise:markdown-lite:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(段落与换行 › 多个空行、只有空白的行、开头结尾的空行，以及 \\r\\n,链接 › [文字](地址) 变成链接，地址是解析之后的结果,链接 › 不安全或不完整的地址只显示文字,用户输入只能是文字 › HTML 标签原样显示，不会产生元素,用户输入只能是文字 › 链接的属性不会被引号“打破”)"
+        },
+        {
+          "target": "exercise:markdown-lite:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:markdown-lite:alt:tokenizer",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:markdown-lite:wrong:escape-then-innerhtml",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(链接 › [文字](地址) 变成链接，地址是解析之后的结果,用户输入只能是文字 › 链接的属性不会被引号“打破”)"
+        },
+        {
+          "target": "exercise:markdown-lite:wrong:no-protocol-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(链接 › 不安全或不完整的地址只显示文字)"
+        },
+        {
+          "target": "exercise:markdown-lite:wrong:blacklist",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(链接 › 不安全或不完整的地址只显示文字)"
+        },
+        {
+          "target": "exercise:markdown-lite:wrong:no-breaks",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(段落与换行 › 空行分隔段落，段落内的换行变成 <br>,段落与换行 › 多个空行、只有空白的行、开头结尾的空行，以及 \\r\\n,粗体 › 不成对的 ** 和不跨行)"
+        },
+        {
+          "target": "exercise:markdown-lite:wrong:split-on-blank-line",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(段落与换行 › 多个空行、只有空白的行、开头结尾的空行，以及 \\r\\n)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",

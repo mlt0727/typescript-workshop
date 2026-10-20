@@ -1,0 +1,47 @@
+- id: dangerous-sinks
+  type: multiple
+  prompt: 变量 `name` 来自用户的输入。下面哪些写法可能导致 XSS？
+  options:
+    - text: "`element.innerHTML = '欢迎，' + name`"
+      correct: true
+      explain: innerHTML 会把整个字符串解析成 HTML，name 中的标签和事件属性都会生效。
+    - text: "`link.href = name`（name 是用户填写的个人主页）"
+      correct: true
+      explain: "如果 name 是 javascript: 开头的地址，用户点击链接时就会执行脚本。要先解析，再用协议白名单检查。"
+    - text: "`element.textContent = name`"
+      explain: textContent 把值当作文字，尖括号会原样显示，不会产生元素。
+    - text: "`element.setAttribute('title', name)`"
+      explain: 普通属性的值不会被解析成 HTML。但属性名不能由用户决定，on 开头的事件属性会把值当作代码。
+- id: script-via-innerhtml
+  type: single
+  prompt: 通过 `innerHTML` 插入的 `<script>` 元素不会执行。这说明什么？
+  options:
+    - text: innerHTML 仍然不安全，`<img src=x onerror=…>` 这类事件属性照样会执行代码
+      correct: true
+      explain: 能执行代码的写法很多，只防 script 标签远远不够。只是显示文字时，用 textContent。
+    - text: 只要过滤掉 `<script>`，innerHTML 就是安全的
+      explain: "事件属性、javascript: 链接、svg 等写法都能执行代码，黑名单总会有遗漏。"
+    - text: 浏览器已经自动防住了 XSS，不需要再处理
+      explain: 浏览器只是不执行这种方式插入的 script 元素，其他注入方式不受影响。
+- id: allowlist
+  type: single
+  prompt: 检查用户提供的链接时，为什么用“协议白名单”，而不是检查它是不是以 `javascript:` 开头？
+  options:
+    - text: "浏览器解析地址前会规范化大小写、空白和控制字符，黑名单很容易被绕过，而且还有 data: 等其他危险的协议"
+      correct: true
+      explain: "`JavaScript:`、前面带空格或者中间藏着换行的写法，浏览器都当作 javascript:。用 URL 解析之后检查 protocol，检查的就是浏览器真正使用的协议。"
+    - text: 白名单的运行速度更快
+      explain: 速度不是原因，原因是黑名单拦不全。
+    - text: 两种做法一样，只是写法不同
+      explain: 黑名单只拦住了你想到的情况，白名单只放行你确认安全的情况。
+- id: csp-role
+  type: single
+  prompt: 关于内容安全策略（CSP），哪个说法正确？
+  options:
+    - text: 它由服务器在响应头中设置，可以阻止内联脚本和事件属性执行，是正确插入数据之外的一道兜底防线
+      correct: true
+      explain: 即使某处漏掉了转义，注入的代码也很可能跑不起来；但规则写得太宽就会失效，它不能代替正确的写法。
+    - text: 有了 CSP，就可以放心地用 innerHTML 显示用户的输入
+      explain: CSP 只是兜底：配置可能有疏漏，有的注入（例如伪造的登录表单）根本不需要执行脚本。
+    - text: CSP 写在前端的 JavaScript 代码里
+      explain: CSP 通常由服务器通过 Content-Security-Policy 响应头下发，页面里的脚本不能放宽它。
