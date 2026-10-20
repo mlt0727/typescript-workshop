@@ -1,0 +1,44 @@
+- id: native-first
+  type: single
+  prompt: 需要一个“点击后展开更多选项”的控件。最好的起点是什么？
+  options:
+    - text: 用 `<button type="button">`，加上 `aria-expanded` 表示是否展开
+      correct: true
+      explain: 原生按钮自带角色、键盘操作和焦点，只需要补上状态。
+    - text: 用 `<div onClick>`，加上 role="button"
+      explain: 还要补上 tabIndex 和 Enter、空格的处理，很容易漏掉。没有 ARIA 比错误的 ARIA 更好。
+    - text: 用 `<span>`，加上鼠标悬停时的样式
+      explain: 键盘无法到达，读屏软件也不知道它可以操作。
+- id: roving
+  type: single
+  prompt: 一组有 5 个标签页的 tablist，键盘用户按 Tab 进入它时，焦点应该落在哪里？再按一次 Tab 呢？
+  options:
+    - text: 落在当前选中的标签页上；再按 Tab 离开标签页，到达面板
+      correct: true
+      explain: 组内用方向键移动，整组在 Tab 的顺序中只占一个位置（roving tabindex）。
+    - text: 落在第一个标签页上；再按 Tab 到第二个标签页
+      explain: 这样键盘用户要按 5 次 Tab 才能越过这组标签页。
+    - text: 标签页不应该获得焦点，直接到面板
+      explain: 标签页本身需要焦点，用户才能用方向键切换。
+- id: dialog-focus
+  type: single
+  prompt: 点击“删除账户”后弹出确认对话框，用户按 Esc 关闭了它。焦点应该在哪里？
+  options:
+    - text: 回到“删除账户”按钮上
+      correct: true
+      explain: 关闭后把焦点归还给打开它的元素，键盘用户可以从原来的位置继续。
+    - text: 回到页面的开头
+      explain: 键盘用户要重新走一遍才能回到刚才的位置。
+    - text: 留在已经被移除的对话框中
+      explain: 元素被移除后焦点会落到 body 上，等于丢失了位置。
+- id: state-query
+  type: single
+  prompt: 测试中想检查“当前选中的标签页是‘安全’”，下面哪种写法最好？
+  options:
+    - text: "`expect(screen.getByRole('tab', { selected: true })).toHaveTextContent('安全')`"
+      correct: true
+      explain: 按角色和 aria-selected 查找，检查的正是读屏软件看到的状态。
+    - text: 检查“安全”标签页有没有 class="active"
+      explain: class 只是样式，aria-selected 错了，测试照样通过。
+    - text: 读取组件内部的 selectedId
+      explain: 测试应该检查用户能感知到的结果，而不是内部的 state。

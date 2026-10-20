@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 89 / 规划总数 126**（草稿 14，规划中 23）
+**已发布 89 / 规划总数 126**（草稿 15，规划中 22）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -151,7 +151,7 @@
 | `g12-effect-pitfalls` 避免滥用 Effect 与性能 Hook | ✅ 已发布 | `g11-effects` |
 | `g13-routing` 用 React Router 组织页面 | ✅ 已发布 | `g12-effect-pitfalls`、`e10-url-routing` |
 | `g14-async-data` 异步数据与错误状态 | ✅ 已发布 | `g13-routing`、`e08-abort-races` |
-| `g15-a11y-component-tests` 可访问性与组件测试 | ⬜ 规划中 | `g14-async-data`、`f08-dom-tests` |
+| `g15-a11y-component-tests` 可访问性与组件测试 | 📝 草稿 | `g14-async-data`、`f08-dom-tests` |
 
 ## H. Next.js 与基础全栈实验（已发布 0 / 9）
 

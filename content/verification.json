@@ -10197,6 +10197,88 @@
         }
       ]
     },
+    "g15-a11y-component-tests": {
+      "verifiedAt": "2026-10-20T23:39:39.128Z",
+      "sourceHash": "d1d1a192b169cd55",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:div-button:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:div-button:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:tabs:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › tablist 有名字；选中的标签页与它的面板互相关联 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tablist\" and name \"账户设置\",Tabs：角色、名字与状态 › 只有选中的标签页在 Tab 的顺序中（roving tabindex） ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tablist\" and name \"账户设置\",Tabs：角色、名字与状态 › initialId 不存在时选中第一个 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\",Tabs：操作 › 点击切换面板 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"账单\",Tabs：操作 › 按 Tab 进入时焦点在选中的标签页上，再按 Tab 到面板 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"安全\",Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"个人资料\")"
+        },
+        {
+          "target": "exercise:tabs:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:tabs:alt:index-state",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:tabs:wrong:all-tabbable",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › 只有选中的标签页在 Tab 的顺序中（roving tabindex） ⟶ expect(…).toEqual([ -1, 0, -1 ]),Tabs：操作 › 点击切换面板 ⟶ expect(…).toEqual([ -1, -1, 0 ]),Tabs：操作 › 按 Tab 进入时焦点在选中的标签页上，再按 Tab 到面板 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:tabs:wrong:no-wrap",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:tabs:wrong:focus-stays",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:tabs:wrong:panels-visible",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › tablist 有名字；选中的标签页与它的面板互相关联 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\",Tabs：操作 › 点击切换面板 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\",Tabs：操作 › 按 Tab 进入时焦点在选中的标签页上，再按 Tab 到面板 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\",Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\")"
+        },
+        {
+          "target": "exercise:tabs:wrong:no-selected-state",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › tablist 有名字；选中的标签页与它的面板互相关联 ⟶ expect(…).toEqual([ 'true', 'false', 'false' ]),Tabs：角色、名字与状态 › initialId 不存在时选中第一个 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\",Tabs：操作 › 点击切换面板 ⟶ expect(…).toHaveAttribute('aria-selected', 'true'),Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ expect(…).toHaveAttribute('aria-selected', 'true'))"
+        },
+        {
+          "target": "exercise:test-confirm-dialog:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-initial-focus:missed,focus-on-confirm:missed,no-return-focus:missed,unlabelled:missed,no-escape:missed,stays-open:missed,cancel-confirms:missed"
+        },
+        {
+          "target": "exercise:test-confirm-dialog:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-initial-focus:caught(tests),focus-on-confirm:caught(tests),no-return-focus:caught(tests),unlabelled:caught(tests),no-escape:caught(tests),stays-open:caught(tests),cancel-confirms:caught(tests)"
+        },
+        {
+          "target": "exercise:test-confirm-dialog:alt:keyboard-flow",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-initial-focus:caught(tests),focus-on-confirm:caught(tests),no-return-focus:caught(tests),unlabelled:caught(tests),no-escape:caught(tests),stays-open:caught(tests),cancel-confirms:caught(tests)"
+        },
+        {
+          "target": "exercise:test-confirm-dialog:wrong:mouse-only",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-initial-focus:missed,focus-on-confirm:missed,no-return-focus:missed,unlabelled:caught(tests),no-escape:missed,stays-open:caught(tests),cancel-confirms:caught(tests)"
+        },
+        {
+          "target": "exercise:test-confirm-dialog:wrong:expects-confirm-focus",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(打开后焦点在确认按钮上 ⟶ expect(…).toHaveFocus())"
+        }
+      ]
+    },
     "p1-01-plan-and-model": {
       "verifiedAt": "2026-10-20T18:21:38.286Z",
       "sourceHash": "c8c207d111027106",
