@@ -95,7 +95,7 @@ stages:
       - { id: d04-responsive-a11y, title: 响应式与可访问性基础, status: planned, prerequisites: [d03-css-layout, d02-html-forms] }
       - { id: d05-dom-query, title: DOM 查询、null 检查与元素类型收窄, status: planned, prerequisites: [d01-html-semantics, b07-narrowing] }
       - { id: d06-dom-create-update, title: 创建与更新节点, status: planned, prerequisites: [d05-dom-query] }
-      - { id: d07-events, title: 事件监听、target 与 currentTarget, status: planned, prerequisites: [d06-dom-create-update, b10-function-types] }
+      - { id: d07-events, title: 事件监听、target 与 currentTarget, status: draft, prerequisites: [d06-dom-create-update, b10-function-types] }
       - { id: d08-bubbling-delegation, title: 冒泡、委托、preventDefault 与清理监听器, status: planned, prerequisites: [d07-events] }
       - { id: d09-form-validation, title: 类型安全的表单输入与验证, status: planned, prerequisites: [d08-bubbling-delegation, d02-html-forms] }
       - { id: d10-state-and-render, title: 状态与渲染：从数据到界面, status: planned, prerequisites: [d09-form-validation, b09-discriminated-unions] }
@@ -123,7 +123,7 @@ stages:
     lessons:
       - { id: g01-jsx-components, title: JSX/TSX 与组件, status: planned, prerequisites: [d10-state-and-render, a19-modules] }
       - { id: g02-props, title: Props 与类型, status: planned, prerequisites: [g01-jsx-components] }
-      - { id: g03-events-state, title: 事件与 state, status: planned, prerequisites: [g02-props] }
+      - { id: g03-events-state, title: 事件与 state, status: draft, prerequisites: [g02-props] }
       - { id: g04-immutable-updates, title: 不可变更新, status: planned, prerequisites: [g03-events-state, a12-destructuring-spread] }
       - { id: g05-lists-keys, title: 列表渲染与 key, status: planned, prerequisites: [g04-immutable-updates] }
       - { id: g06-controlled-forms, title: 受控表单, status: planned, prerequisites: [g05-lists-keys] }

@@ -21,12 +21,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "content:build": "tsx scripts/build-content.ts",
-    "content:check": "tsx scripts/check-content.ts",
+    "content:check": "npm run content:build && tsx scripts/check-content.ts",
     "test:e2e": "playwright test --project=e2e",
     "content:verify": "playwright test --project=content",
     "check": "npm run typecheck && npm run lint && npm run test && npm run content:check",
     "build:types": "tsx scripts/build-types.ts",
-    "prepare:assets": "npm run build:types && npm run content:build && npm run build:sandbox"
+    "prepare:assets": "npm run build:types && npm run content:build && npm run build:sandbox",
+    "content:links": "tsx scripts/check-content.ts --links"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.135.0",

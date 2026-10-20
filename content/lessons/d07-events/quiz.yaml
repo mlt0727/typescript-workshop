@@ -1,0 +1,49 @@
+- id: target-or-current
+  type: single
+  prompt: |
+    监听器挂在 `<div id="card">` 上；用户点中了卡片里按钮中的 `<span>` 图标。监听器里 `event.target` 和 `event.currentTarget` 分别是什么？
+  options:
+    - text: "`target` 是 `<span>`，`currentTarget` 是 `<div id=\"card\">`"
+      correct: true
+      explain: "`target` 是事件发生的最内层元素；`currentTarget` 是当前正在执行的监听器所在的元素。"
+    - text: "`target` 是 `<div id=\"card\">`，`currentTarget` 是 `<span>`"
+      explain: 两者正好说反了。
+    - text: 两者都是 `<button>`
+      explain: 按钮只是事件冒泡经过的中间元素；它上面没有挂这个监听器，也不是点中的最内层元素。
+    - text: 两者都是 `<span>`
+      explain: "`currentTarget` 总是挂着当前监听器的元素，这里是卡片。"
+- id: target-type
+  type: single
+  prompt: |
+    下面的代码为什么无法通过类型检查？
+
+    ```ts
+    input.addEventListener('input', (event) => {
+      console.log(event.target.value);
+    });
+    ```
+  options:
+    - text: "`event.target` 的类型是 `EventTarget | null`，既可能是 `null`，也没有 `value` 属性"
+      correct: true
+      explain: TypeScript 不知道事件从哪个元素来，所以 `target` 只是最宽泛的 `EventTarget`。先用 `instanceof HTMLInputElement` 收窄，或直接使用已经收窄过的 `input` 变量。
+    - text: 因为 `input` 事件的事件对象没有 `target` 属性
+      explain: 所有事件对象都有 `target`，问题在于它的类型太宽。
+    - text: 因为 `console.log` 不能输出字符串以外的值
+      explain: "`console.log` 可以输出任何值，与这个错误无关。"
+    - text: "应该把参数类型写成 `event: any` 来解决"
+      explain: "`any` 会关闭检查，让真正的错误（例如 target 不是输入框）在运行时才暴露。正确做法是收窄类型。"
+- id: removable
+  type: multiple
+  prompt: 下面哪些写法能保证之后**不再**收到这个按钮的 `click`？（假设 `handler` 是之前保存的函数引用）
+  options:
+    - text: "`button.addEventListener('click', handler, { once: true })`，并且已经点击过一次"
+      correct: true
+      explain: "`once: true` 的监听器在第一次调用后会自动移除。"
+    - text: "`button.removeEventListener('click', handler)`（注册时也是 `addEventListener('click', handler)`）"
+      correct: true
+      explain: 传入同一个函数引用（且 capture 设置一致）才能移除。
+    - text: "注册时传了 `{ signal: controller.signal }`，之后调用 `controller.abort()`"
+      correct: true
+      explain: signal 被中止时，关联的监听器会被移除。
+    - text: "`button.removeEventListener('click', () => handler())`"
+      explain: 这里写的是一个**新的**箭头函数，和注册时的函数不是同一个引用，什么也不会移除。

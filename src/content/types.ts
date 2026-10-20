@@ -183,6 +183,8 @@ export interface VerifyExercise {
   lessonId: string;
   exerciseId: string;
   variants: ExerciseVariant[];
+  /** 当“至少两个错误解”确实不适用时的说明 */
+  wrongNotApplicable?: string;
 }
 
 export interface VerifyData {

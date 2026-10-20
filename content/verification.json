@@ -2,7 +2,7 @@
   "tsVersion": "6.0.3",
   "lessons": {
     "a08-optional-chaining-nullish": {
-      "verifiedAt": "2026-10-20T08:35:12.838Z",
+      "verifiedAt": "2026-10-20T08:42:44.772Z",
       "sourceHash": "0daf762c12bd945d",
       "ok": true,
       "checks": [
@@ -114,7 +114,7 @@
         {
           "target": "exercise:format-profile:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(formatProfile › 数据完整,formatProfile › 0 不算缺失,formatProfile › 嵌套对象缺失或为 null,formatProfile › 名字为空字符串时显示编号 ,formatProfile › 名字为null时显示编号 null,formatProfile › 名字为缺失时显示编号 undefined,formatProfile › 题目中的示例)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(formatProfile › 数据完整,formatProfile › 0 不算缺失,formatProfile › 嵌套对象缺失或为 null,formatProfile › 名字为空字符串时显示编号,formatProfile › 名字为null时显示编号,formatProfile › 名字为缺失时显示编号,formatProfile › 题目中的示例)"
         },
         {
           "target": "exercise:format-profile:solution:solution",
@@ -134,7 +134,7 @@
         {
           "target": "exercise:format-profile:wrong:all-nullish",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 名字为空字符串时显示编号 )"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 名字为空字符串时显示编号)"
         },
         {
           "target": "exercise:format-profile:wrong:non-null-stats",
@@ -145,6 +145,195 @@
           "target": "exercise:format-profile:wrong:no-defaults",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 嵌套对象缺失或为 null,formatProfile › 题目中的示例)"
+        }
+      ]
+    },
+    "d07-events": {
+      "verifiedAt": "2026-10-20T08:42:48.762Z",
+      "sourceHash": "e9133b01a4ba70f6",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:first-listener:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:first-listener:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:target-vs-current:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:target-vs-current:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:remove-listeners:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:remove-listeners:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:char-counter:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(每输入一个字符就更新剩余字数,删除字符时剩余字数增加,超出上限时显示负数并加上 over,回到上限内时去掉 over)"
+        },
+        {
+          "target": "exercise:char-counter:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:char-counter:alt:current-target-and-if",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:char-counter:wrong:change-event",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每输入一个字符就更新剩余字数,删除字符时剩余字数增加,超出上限时显示负数并加上 over,回到上限内时去掉 over)"
+        },
+        {
+          "target": "exercise:char-counter:wrong:never-removes-class",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(回到上限内时去掉 over)"
+        },
+        {
+          "target": "exercise:char-counter:wrong:asserted-target",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@10) tests=ok"
+        },
+        {
+          "target": "exercise:poll:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面加载后显示初始汇总,点击选项按钮计票,点击按钮里的图标同样计票,结束后不再计票，并显示已结束、禁用结束按钮,每个选项只有一个监听器（一次点击只加一票）)"
+        },
+        {
+          "target": "exercise:poll:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:poll:alt:delegation-with-closest",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:poll:wrong:uses-target",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点击按钮里的图标同样计票)"
+        },
+        {
+          "target": "exercise:poll:wrong:close-only-disables",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(结束后不再计票，并显示已结束、禁用结束按钮)"
+        },
+        {
+          "target": "exercise:poll:wrong:asserted-elements",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@3,type-assertion@4) tests=ok"
+        }
+      ]
+    },
+    "g03-events-state": {
+      "verifiedAt": "2026-10-20T08:42:51.849Z",
+      "sourceHash": "b59f2f711603f25f",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:plain-vs-state:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:plain-vs-state:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:snapshot:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:snapshot:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:typed-events:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:typed-events:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:like-button:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点击后已点赞并加 1,再次点击取消点赞并减 1，可以反复切换)"
+        },
+        {
+          "target": "exercise:like-button:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:like-button:alt:derived-count",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:like-button:wrong:plain-variables",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点击后已点赞并加 1,再次点击取消点赞并减 1，可以反复切换)"
+        },
+        {
+          "target": "exercise:like-button:wrong:only-increments",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(再次点击取消点赞并减 1，可以反复切换)"
+        },
+        {
+          "target": "exercise:stepper:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(Stepper › 增加与减少,Stepper › +5 一次加 5，且不超过最大值,Stepper › 到达边界时禁用相应按钮,Stepper › 重置回到初始值)"
+        },
+        {
+          "target": "exercise:stepper:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:stepper:alt:direct-values",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:stepper:wrong:five-snapshots",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Stepper › +5 一次加 5，且不超过最大值)"
+        },
+        {
+          "target": "exercise:stepper:wrong:no-clamp",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Stepper › +5 一次加 5，且不超过最大值)"
+        },
+        {
+          "target": "exercise:stepper:wrong:never-disabled",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Stepper › 到达边界时禁用相应按钮)"
         }
       ]
     }

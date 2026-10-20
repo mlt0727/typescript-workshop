@@ -3,11 +3,11 @@
  * 结果写入 content/verification.json（提交到仓库），content:check 据此检查已发布课时是否通过验证。
  * 只验证部分课时：CONTENT_LESSONS=a08-optional-chaining-nullish,g03-events-state npm run content:verify
  */
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test } from '@playwright/test';
 import type {} from '../../src/verify/main.ts';
+import { lessonSourceHash } from '../../scripts/content/source-hash.ts';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const reportFile = path.join(root, 'content', 'verification.json');
@@ -15,26 +15,6 @@ const reportFile = path.join(root, 'content', 'verification.json');
 interface Report {
   tsVersion: string;
   lessons: Record<string, { verifiedAt: string; sourceHash: string; ok: boolean; checks: { target: string; ok: boolean; detail: string }[] }>;
-}
-
-/** 课时源文件（lesson.md、quiz.yaml、exercises、fixtures）的哈希：内容一改，旧的验证结果就不再算数 */
-export function lessonSourceHash(lessonId: string): string {
-  const dir = path.join(root, 'content', 'lessons', lessonId);
-  const files: string[] = [];
-  const walk = (d: string) => {
-    for (const name of fs.readdirSync(d).sort()) {
-      const full = path.join(d, name);
-      if (fs.statSync(full).isDirectory()) walk(full);
-      else files.push(full);
-    }
-  };
-  walk(dir);
-  const h = crypto.createHash('sha256');
-  for (const f of files) {
-    h.update(path.relative(dir, f).split(path.sep).join('/'));
-    h.update(fs.readFileSync(f, 'utf8').replace(/\r\n/g, '\n'));
-  }
-  return h.digest('hex').slice(0, 16);
 }
 
 test('课程内容在真实浏览器中通过验证', async ({ page }) => {
@@ -51,7 +31,7 @@ test('课程内容在真实浏览器中通过验证', async ({ page }) => {
   for (const id of ids) {
     const checks = await page.evaluate((lessonId) => window.__tsw_verify.verifyLesson(lessonId), id);
     const ok = checks.every((c) => c.ok);
-    report.lessons[id] = { verifiedAt: new Date().toISOString(), sourceHash: lessonSourceHash(id), ok, checks: checks.map(({ target, ok, detail }) => ({ target, ok, detail })) };
+    report.lessons[id] = { verifiedAt: new Date().toISOString(), sourceHash: lessonSourceHash(path.join(root, 'content'), id), ok, checks: checks.map(({ target, ok, detail }) => ({ target, ok, detail })) };
     const bad = checks.filter((c) => !c.ok);
     console.log(`${ok ? '✓' : '✗'} ${id}：${checks.length - bad.length}/${checks.length} 项通过`);
     for (const b of bad) {

@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 0 / 规划总数 126**（草稿 1，规划中 125）
+**已发布 0 / 规划总数 126**（草稿 3，规划中 123）
 
 ## A. 起步与 JavaScript 共同语法（已发布 0 / 20）
 
@@ -107,7 +107,7 @@
 | `d04-responsive-a11y` 响应式与可访问性基础 | ⬜ 规划中 | `d03-css-layout`、`d02-html-forms` |
 | `d05-dom-query` DOM 查询、null 检查与元素类型收窄 | ⬜ 规划中 | `d01-html-semantics`、`b07-narrowing` |
 | `d06-dom-create-update` 创建与更新节点 | ⬜ 规划中 | `d05-dom-query` |
-| `d07-events` 事件监听、target 与 currentTarget | ⬜ 规划中 | `d06-dom-create-update`、`b10-function-types` |
+| `d07-events` 事件监听、target 与 currentTarget | 📝 草稿 | `d06-dom-create-update`、`b10-function-types` |
 | `d08-bubbling-delegation` 冒泡、委托、preventDefault 与清理监听器 | ⬜ 规划中 | `d07-events` |
 | `d09-form-validation` 类型安全的表单输入与验证 | ⬜ 规划中 | `d08-bubbling-delegation`、`d02-html-forms` |
 | `d10-state-and-render` 状态与渲染：从数据到界面 | ⬜ 规划中 | `d09-form-validation`、`b09-discriminated-unions` |
@@ -139,7 +139,7 @@
 |---|---|---|
 | `g01-jsx-components` JSX/TSX 与组件 | ⬜ 规划中 | `d10-state-and-render`、`a19-modules` |
 | `g02-props` Props 与类型 | ⬜ 规划中 | `g01-jsx-components` |
-| `g03-events-state` 事件与 state | ⬜ 规划中 | `g02-props` |
+| `g03-events-state` 事件与 state | 📝 草稿 | `g02-props` |
 | `g04-immutable-updates` 不可变更新 | ⬜ 规划中 | `g03-events-state`、`a12-destructuring-spread` |
 | `g05-lists-keys` 列表渲染与 key | ⬜ 规划中 | `g04-immutable-updates` |
 | `g06-controlled-forms` 受控表单 | ⬜ 规划中 | `g05-lists-keys` |

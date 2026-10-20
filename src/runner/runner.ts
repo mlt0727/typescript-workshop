@@ -75,8 +75,16 @@ export interface RunOptions {
  * - ts：在共享隐藏沙箱的新 Worker 中运行；停止 = terminate()。
  * - dom/react：在 container 中创建新的可见沙箱 iframe；停止 = 移除 iframe。
  */
+/** 仍在运行（或预览仍然存活）的运行编号；用于测试“切课后资源被清理” */
+const activeRuns = new Set<string>();
+
+export function activeRunCount(): number {
+  return activeRuns.size;
+}
+
 export function startRun(opts: RunOptions, cb: RunCallbacks): RunHandle & { frame?: SandboxFrame } {
   const runId = randomId();
+  activeRuns.add(runId);
   const isPage = opts.mode !== 'ts';
   const frame = isPage
     ? new SandboxFrame({ container: opts.container, runtimes: opts.mode === 'react' ? ['react'] : [], title: '网页预览（沙箱）' })
@@ -90,6 +98,7 @@ export function startRun(opts: RunOptions, cb: RunCallbacks): RunHandle & { fram
   const finish = (status: RunStatus, error?: SerializedError, note?: string, simulated?: string[]) => {
     if (done) return;
     done = true;
+    activeRuns.delete(runId);
     window.clearTimeout(watchdog);
     unsubscribe();
     offDeath();

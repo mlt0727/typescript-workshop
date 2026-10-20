@@ -45,6 +45,10 @@ const outDir = path.join(root, 'src', 'generated');
 const errors: string[] = [];
 const fail = (where: string, msg: string) => errors.push(`${where}: ${msg}`);
 
+function firstLine(err: unknown): string {
+  return (err instanceof Error ? err.message : String(err)).split(/\r?\n/)[0] ?? '';
+}
+
 function readText(file: string): string {
   return fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
 }
@@ -55,7 +59,12 @@ function splitFrontmatter(source: string, where: string): { data: unknown; body:
     fail(where, '缺少 YAML frontmatter（文件开头的 --- 块）');
     return { data: {}, body: source };
   }
-  return { data: YAML.parse(m[1]!), body: m[2]! };
+  try {
+    return { data: YAML.parse(m[1]!), body: m[2]! };
+  } catch (err) {
+    fail(where, `frontmatter 不是合法的 YAML：${firstLine(err)}`);
+    return { data: {}, body: m[2]! };
+  }
 }
 
 function hashFiles(files: SourceFile[]): string {
@@ -262,13 +271,20 @@ function buildExercise(lessonId: string, lessonDir: string, exId: string, lesson
     perTestTimeoutMs: meta.perTestTimeoutMs ?? 3000,
     baseHash: hashFiles(starter),
   };
-  return { exercise, verify: { lessonId, exerciseId: exId, variants: allVariants } };
+  return { exercise, verify: { lessonId, exerciseId: exId, variants: allVariants, wrongNotApplicable: meta.wrongNotApplicable } };
 }
 
 function buildQuiz(lessonDir: string, where: string): QuizQuestion[] {
   const file = path.join(lessonDir, 'quiz.yaml');
   if (!fs.existsSync(file)) return [];
-  const parsed = quizSchema.safeParse(YAML.parse(readText(file)));
+  let raw: unknown;
+  try {
+    raw = YAML.parse(readText(file));
+  } catch (err) {
+    fail(`${where}/quiz.yaml`, `不是合法的 YAML（含有冒号的文字需要加引号）：${firstLine(err)}`);
+    return [];
+  }
+  const parsed = quizSchema.safeParse(raw);
   if (!parsed.success) {
     fail(`${where}/quiz.yaml`, parsed.error.message);
     return [];
