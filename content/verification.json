@@ -8398,6 +8398,103 @@
         }
       ]
     },
+    "f12-build-ci": {
+      "verifiedAt": "2026-10-20T23:22:59.319Z",
+      "sourceHash": "9c250f3bb722ff2e",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:critical-path:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:critical-path:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] lint       第 1 分钟结束 | [log] typecheck  第 1 分钟结束 | [log] test       第 2 分钟结束 | [log] build      第 3 分钟结束 | [log] e2e        第 6 分钟结束 | [log] 依次运行： 8 分钟；并行运行： 6 分钟"
+        },
+        {
+          "target": "exercise:plan-jobs:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(planJobs › needs 可以是字符串或数组 ⟶ expect(…).toEqual([ [ 'lint', 'test' ], [ 'build' ], [ 'e2e' ], [ 'deploy' ] ]),planJobs › 批次由最晚的那个依赖决定 ⟶ expect(…).toEqual([ [ 'a' ], [ 'b', 'c' ], [ 'd' ], [ 'e' ] ]),planJobs › 同一批中保持定义的顺序（依赖写在后面也一样） ⟶ expect(…).toEqual([ [ 'zeta', 'alpha' ], [ 'mid' ] ]),planJobs › 重复的依赖、没有 job ⟶ expect(…).toEqual([ [ 'a' ], [ 'b' ] ]),planJobs › 不存在的依赖抛出错误 ⟶ expect(…).toThrow('不存在'),planJobs › 循环依赖抛出错误（而不是无限递归） ⟶ expect(…).toThrow('循环依赖'))"
+        },
+        {
+          "target": "exercise:plan-jobs:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:plan-jobs:alt:kahn",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:plan-jobs:wrong:sorted-by-name",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planJobs › 没有 needs 的 job 在第一批同时运行 ⟶ expect(…).toEqual([ [ 'lint', 'typecheck', 'test' ] ]),planJobs › 同一批中保持定义的顺序（依赖写在后面也一样） ⟶ expect(…).toEqual([ [ 'zeta', 'alpha' ], [ 'mid' ] ]))"
+        },
+        {
+          "target": "exercise:plan-jobs:wrong:earliest-dependency",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planJobs › needs 可以是字符串或数组 ⟶ expect(…).toEqual([ [ 'lint', 'test' ], [ 'build' ], [ 'e2e' ], [ 'deploy' ] ]),planJobs › 批次由最晚的那个依赖决定 ⟶ expect(…).toEqual([ [ 'a' ], [ 'b', 'c' ], [ 'd' ], [ 'e' ] ]))"
+        },
+        {
+          "target": "exercise:plan-jobs:wrong:no-cycle-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planJobs › 循环依赖抛出错误（而不是无限递归） ⟶ expect(…).toThrow('循环依赖'))"
+        },
+        {
+          "target": "exercise:plan-jobs:wrong:string-needs-as-list",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planJobs › needs 可以是字符串或数组 ⟶ Error: e2e 依赖了不存在的 job：b,planJobs › 同一批中保持定义的顺序（依赖写在后面也一样） ⟶ Error: mid 依赖了不存在的 job：z)"
+        },
+        {
+          "target": "exercise:plan-jobs:wrong:ignore-unknown",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planJobs › 不存在的依赖抛出错误 ⟶ expect(…).toThrow('不存在'))"
+        },
+        {
+          "target": "exercise:run-workflow:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(runWorkflow › 全部成功：failure() 的 job 被跳过 ⟶ expect(…).toEqual({,runWorkflow › 失败沿着依赖传播：依赖失败或被跳过的 job 被跳过 ⟶ expect(…).toEqual({,runWorkflow › failure() 看的是所有祖先：notify 的直接依赖 deploy 是被跳过，而不是失败 ⟶ expect(…).toMatchObject({,runWorkflow › 没有依赖的 failure() job：没有祖先失败，所以被跳过 ⟶ expect(…).toEqual({ cleanup: 'skipped', build: 'success' }),runWorkflow › success() 看的也是所有祖先：中间的 always() 成功了，下游仍然被跳过 ⟶ expect(…).toEqual({ a: 'failure', b: 'success', c: 'skipped' }),runWorkflow › 被跳过的祖先同样让下游跳过 ⟶ expect(…).toEqual({ check: 'skipped', after: 'skipped', last: 'success' }),runWorkflow › 依赖可以定义在后面；不存在的依赖和循环依赖抛出错误 ⟶ expect(…).toEqual({ deploy: 'skipped', build: 'failure' }))"
+        },
+        {
+          "target": "exercise:run-workflow:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:run-workflow:alt:rounds",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:run-workflow:wrong:success-direct-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(runWorkflow › success() 看的也是所有祖先：中间的 always() 成功了，下游仍然被跳过 ⟶ expect(…).toEqual({ a: 'failure', b: 'success', c: 'skipped' }))"
+        },
+        {
+          "target": "exercise:run-workflow:wrong:failure-direct-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(runWorkflow › 失败沿着依赖传播：依赖失败或被跳过的 job 被跳过 ⟶ expect(…).toEqual({,runWorkflow › failure() 看的是所有祖先：notify 的直接依赖 deploy 是被跳过，而不是失败 ⟶ expect(…).toMatchObject({)"
+        },
+        {
+          "target": "exercise:run-workflow:wrong:skipped-is-fine",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(runWorkflow › 被跳过的祖先同样让下游跳过 ⟶ expect(…).toEqual({ check: 'skipped', after: 'skipped', last: 'success' }))"
+        },
+        {
+          "target": "exercise:run-workflow:wrong:always-succeeds",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(runWorkflow › always() 的 job 总会运行，它自己也可能失败 ⟶ expect(…).toMatchObject({ report: 'failure' }))"
+        },
+        {
+          "target": "exercise:run-workflow:wrong:definition-order",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(runWorkflow › 依赖可以定义在后面；不存在的依赖和循环依赖抛出错误 ⟶ expect(…).toEqual({ deploy: 'skipped', build: 'failure' }))"
+        }
+      ]
+    },
     "g01-jsx-components": {
       "verifiedAt": "2026-10-20T17:26:38.168Z",
       "sourceHash": "5d8c2030fa5446fd",

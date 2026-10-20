@@ -115,7 +115,7 @@ stages:
       - { id: f09-e2e, title: 用 Playwright 做端到端测试, status: draft, prerequisites: [f08-dom-tests] }
       - { id: f10-git, title: Git 基础工作流, status: draft, prerequisites: [f01-node-npm] }
       - { id: f11-lint-format, title: 格式化与静态检查, status: draft, prerequisites: [f03-tsconfig] }
-      - { id: f12-build-ci, title: 生产构建与 CI, status: planned, prerequisites: [f11-lint-format, f10-git] }
+      - { id: f12-build-ci, title: 生产构建与 CI, status: draft, prerequisites: [f11-lint-format, f10-git] }
 
   - id: G
     title: React + TypeScript

@@ -1,0 +1,44 @@
+- id: npm-ci-in-ci
+  type: single
+  prompt: 工作流中安装依赖应该用哪条命令？
+  options:
+    - text: "`npm ci`"
+      correct: true
+      explain: 它严格按锁文件安装，锁文件与 package.json 不一致时直接失败，保证 CI 中的版本与本机测试过的一致（f01）。
+    - text: "`npm install`"
+      explain: 它可能更新锁文件、装到别的版本，CI 的结果就不能代表锁文件中的版本。
+    - text: "`npm update`"
+      explain: 它会把依赖升级到范围内的最新版本，与“检查这次提交”的目的相反。
+- id: needs-skip
+  type: single
+  prompt: "build 失败了。deploy 写了 `needs: build`，没有写 if。deploy 会怎样？"
+  options:
+    - text: 被跳过
+      correct: true
+      explain: 一个 job 失败或被跳过时，需要它的 job 都会被跳过，除非用条件表达式让它继续。
+    - text: 照常运行，因为 job 之间是相互独立的
+      explain: 没有 needs 的 job 才是相互独立、同时运行的。
+    - text: 等 build 重新运行成功后再运行
+      explain: GitHub 不会自动重试失败的 job；可以手动“重新运行失败的 job”。
+- id: failure-ancestor
+  type: single
+  prompt: "lint 失败，build（needs lint）被跳过；notify 写了 `needs: build` 和 `if: failure()`。notify 会运行吗？"
+  options:
+    - text: 会：failure() 在任何祖先 job 失败时为真，lint 是 notify 的祖先
+      correct: true
+      explain: GitHub 文档写明，在依赖链中 failure() 检查的是所有祖先，所以失败通知不会因为中间的 job 被跳过而发不出去。
+    - text: 不会：它的直接依赖 build 是被跳过，而不是失败
+      explain: failure() 不只看直接的依赖。
+    - text: 不会：依赖被跳过时，下游总是被跳过
+      explain: 这是没有写条件时的规则；写了 failure() 或 always() 的 job 可以继续。
+- id: separate-machines
+  type: single
+  prompt: 工作流中 check 和 e2e 是两个 job。e2e 能直接使用 check 中构建好的 dist 吗？
+  options:
+    - text: 不能：每个 job 都在一台新的虚拟机上运行，要重新构建，或者用产物（artifact）传递
+      correct: true
+      explain: 这个网站的工作流选择在 e2e 中重新构建；也可以在 check 中上传 dist，在 e2e 中下载。
+    - text: 能，同一个工作流中的 job 共享文件夹
+      explain: job 之间不共享文件系统。
+    - text: 能，只要写了 needs
+      explain: needs 只决定顺序，不会传递文件。
