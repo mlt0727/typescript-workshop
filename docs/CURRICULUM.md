@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 15 / 规划总数 126**（草稿 10，规划中 101）
+**已发布 15 / 规划总数 126**（草稿 11，规划中 100）
 
 ## A. 起步与 JavaScript 共同语法（已发布 13 / 20）
 
@@ -41,7 +41,7 @@
 | `b01-type-alias-interface` type 与 interface：描述对象形状 | 📝 草稿 | `a11-objects-references` |
 | `b02-structural-typing` 结构化类型与多余属性检查 | 📝 草稿 | `b01-type-alias-interface` |
 | `b03-optional-readonly` 可选属性与 readonly | 📝 草稿 | `b02-structural-typing` |
-| `b04-union-literal` 联合类型与字面量类型 | ⬜ 规划中 | `b03-optional-readonly` |
+| `b04-union-literal` 联合类型与字面量类型 | 📝 草稿 | `b03-optional-readonly` |
 | `b05-intersection-tuple` 交叉类型与元组 | ⬜ 规划中 | `b04-union-literal` |
 | `b06-any-unknown-never-void` any、unknown、never 与 void | ⬜ 规划中 | `b04-union-literal` |
 | `b07-narrowing` 类型收窄 | ⬜ 规划中 | `b06-any-unknown-never-void` |

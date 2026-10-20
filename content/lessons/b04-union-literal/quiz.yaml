@@ -1,0 +1,57 @@
+- id: common-members
+  type: multiple
+  prompt: "`value` 的类型是 `string | number`。不经过任何检查，下列哪些写法可以通过类型检查？"
+  options:
+    - text: "`value.toString()`"
+      correct: true
+      explain: 字符串和数字都有 `toString` 方法。
+    - text: "`String(value)`"
+      correct: true
+      explain: "`String()` 接受任何值。"
+    - text: "`value.toFixed(2)`"
+      explain: 只有数字有 `toFixed`，需要先用 `typeof value === 'number'` 收窄。
+    - text: "`value.length`"
+      explain: 只有字符串有 `length`。
+- id: widening
+  type: single
+  prompt: |
+    `type Mode = 'light' | 'dark';`、`function setMode(m: Mode) {}`。对下面四个值分别调用 `setMode(a)`、`setMode(b)`、`setMode(c.mode)`、`setMode(d.mode)`，哪些会报错？
+
+    ```ts
+    const a = 'dark';
+    let b = 'dark';
+    const c = { mode: 'dark' };
+    const d: { mode: Mode } = { mode: 'dark' };
+    ```
+  options:
+    - text: "`setMode(b)` 和 `setMode(c.mode)`"
+      correct: true
+      explain: "`let` 和对象属性都会把 `'dark'` 拓宽成 `string`。`a` 是 `const`，保持字面量类型；`d` 有类型注解，`mode` 是 `Mode`。"
+    - text: 只有 `setMode(b)`
+      explain: "对象属性也会被拓宽：`c` 的类型是 `{ mode: string }`。"
+    - text: 四个都不会报错
+      explain: "`string` 不能赋给 `'light' | 'dark'`。"
+    - text: 四个都会报错
+      explain: "`a` 推断为 `'dark'`，`d.mode` 的类型是 `Mode`，它们都可以传入。"
+- id: array-union
+  type: single
+  prompt: 下列哪个值可以赋给 `string[] | number[]` 类型的变量？
+  options:
+    - text: "`[1, 2, 3]`"
+      correct: true
+      explain: 全是数字，满足 `number[]`。
+    - text: "`['a', 1]`"
+      explain: 混合了字符串和数字，既不是 `string[]` 也不是 `number[]`。它可以赋给 `(string | number)[]`。
+    - text: "`'abc'`"
+      explain: 这是 `string | number[]` 才接受的值，注意括号的位置。
+- id: boolean-literal
+  type: single
+  prompt: "`boolean` 类型等价于下面哪个类型？"
+  options:
+    - text: "`true | false`"
+      correct: true
+      explain: "`boolean` 就是两个字面量类型的联合。"
+    - text: "`0 | 1`"
+      explain: JavaScript 的布尔值和数字是不同的类型。
+    - text: "`true | false | null`"
+      explain: 严格模式下 `boolean` 不包含 `null`。

@@ -2537,6 +2537,108 @@
         }
       ]
     },
+    "b04-union-literal": {
+      "verifiedAt": "2026-10-20T10:12:40.133Z",
+      "sourceHash": "513a13cdb8caf1f0",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:union-basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:union-basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 3.14 已售罄 | [log] 42 42 x"
+        },
+        {
+          "target": "playground:literal-types:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:literal-types:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 找不到 | [log] 服务器错误 | [log] paid"
+        },
+        {
+          "target": "playground:widening:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:widening:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 对齐方式：left 对齐方式：left | [log] 对齐方式：left | [log] 对齐方式：left 对齐方式：left"
+        },
+        {
+          "target": "playground:union-arrays:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:union-arrays:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 'a', 1, 'b' ] [ 1, 2, 3 ] [ 'a', 1 ]"
+        },
+        {
+          "target": "exercise:status-label:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2305@status.test-d.ts:2 Module '\"./status\"' has no exported member 'OrderStatus'.；TS2578@status.test-d.ts:7 Unused '@ts-expect-error' directive.) rules=ok tests=fail(shipped → 已发货)"
+        },
+        {
+          "target": "exercise:status-label:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:status-label:alt:record-lookup",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:status-label:wrong:string-param",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@status.test-d.ts:5 Type 'OrderStatus' does not satisfy the constraint '\"Expected: literal string: pending, Actual: string\" | \"Expected: literal string: paid, Actual: string\" | \"Expected: literal string: shipped, Actual: string\" | \"Expected: literal string: cancelled, Actual: string\"'.；TS2578@) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:status-label:wrong:missing-case",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2366@status.ts:3 Function lacks ending return statement and return type does not include 'undefined'.) rules=ok tests=fail(cancelled → 已取消)"
+        },
+        {
+          "target": "exercise:format-cell:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS7006@cell.ts:1 Parameter 'value' implicitly has an 'any' type.；TS7006@cell.ts:6 Parameter 'values' implicitly has an 'any' type.；TS2305@cell.test-d.ts:2 Module '\"./cell\"' has no exported member 'Align'.；TS2305@cell.test-d.ts:2 Module '\"./cell\"' has no exported member 'CellValue'.；TS2344@cell.test-) rules=ok tests=fail(formatCell › 字符串,formatCell › 数字,formatCell › 布尔值,formatCell › 空值,formatRow › 连接一行)"
+        },
+        {
+          "target": "exercise:format-cell:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:format-cell:alt:annotated-result",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:format-cell:wrong:widened-align",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@cell.ts:15 Type '{ text: string; align: string; }' is not assignable to type '{ text: string; align: Align; }'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:format-cell:wrong:truthy-bool",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatCell › 字符串,formatCell › 数字,formatRow › 连接一行)"
+        },
+        {
+          "target": "exercise:format-cell:wrong:nan-as-text",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatCell › 数字)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",
