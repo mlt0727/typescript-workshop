@@ -62,7 +62,7 @@ stages:
       - { id: e06-runtime-validation, title: 运行时数据校验, status: draft, prerequisites: [e05-fetch-json, b08-type-guards] }
       - { id: e07-loading-states, title: 加载、空与失败状态, status: draft, prerequisites: [e06-runtime-validation, d06-dom-create-update] }
       - { id: e08-abort-races, title: AbortController、取消请求与竞态, status: draft, prerequisites: [e07-loading-states] }
-      - { id: e09-storage-serialization, title: 浏览器存储与序列化, status: planned, prerequisites: [e06-runtime-validation] }
+      - { id: e09-storage-serialization, title: 浏览器存储与序列化, status: draft, prerequisites: [e06-runtime-validation] }
       - { id: e10-url-routing, title: URL、History 与基础路由, status: planned, prerequisites: [d07-events] }
       - { id: e11-cors, title: CORS 的真实边界, status: planned, prerequisites: [e05-fetch-json] }
       - { id: e12-xss, title: 基础 XSS 防范, status: planned, prerequisites: [d06-dom-create-update] }

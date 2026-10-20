@@ -5961,6 +5961,98 @@
         }
       ]
     },
+    "e09-storage-serialization": {
+      "verifiedAt": "2026-10-20T12:34:57.309Z",
+      "sourceHash": "75f358c284f386cc",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] dark 18 string | [log] 不存在的键： null | [log] 删除之后： null ，还剩 1 项"
+        },
+        {
+          "target": "playground:json-roundtrip:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:json-roundtrip:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] {\"name\":\"Ada\",\"joined\":\"2026-10-20T08:00:00.000Z\",\"tags\":{},\"scores\":{},\"ratio\":null} | [log] {\n  name: 'Ada',\n  joined: '2026-10-20T08:00:00.000Z',\n  tags: {},\n  scores: {},\n  ratio: null\n}"
+        },
+        {
+          "target": "exercise:persisted-value:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(createPersisted › 内容损坏或格式不对时返回默认值,createPersisted › 存储不可用时：读取返回默认值，保存返回 false，删除不抛出错误)"
+        },
+        {
+          "target": "exercise:persisted-value:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:persisted-value:alt:helper-functions",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:persisted-value:wrong:no-try",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createPersisted › 内容损坏或格式不对时返回默认值,createPersisted › 存储不可用时：读取返回默认值，保存返回 false，删除不抛出错误)"
+        },
+        {
+          "target": "exercise:persisted-value:wrong:skip-validation",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createPersisted › 内容损坏或格式不对时返回默认值)"
+        },
+        {
+          "target": "exercise:persisted-value:wrong:save-throws",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createPersisted › 存储不可用时：读取返回默认值，保存返回 false，删除不抛出错误)"
+        },
+        {
+          "target": "exercise:settings-migration:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(loadSettings › 读取第 2 版，日期转换成 Date,loadSettings › 第 1 版迁移成第 2 版，并写回存储,saveSettings › 按第 2 版格式保存，读回来相同)"
+        },
+        {
+          "target": "exercise:settings-migration:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings-migration:alt:migrations-table",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings-migration:wrong:no-migration",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadSettings › 第 1 版迁移成第 2 版，并写回存储)"
+        },
+        {
+          "target": "exercise:settings-migration:wrong:no-write-back",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadSettings › 第 1 版迁移成第 2 版，并写回存储)"
+        },
+        {
+          "target": "exercise:settings-migration:wrong:any-version",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadSettings › 第 1 版格式不对、未知版本、损坏的内容都返回默认设置)"
+        },
+        {
+          "target": "exercise:settings-migration:wrong:date-not-checked",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadSettings › 第 2 版中任何一项不合格都返回默认设置)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",

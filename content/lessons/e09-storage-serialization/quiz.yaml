@@ -1,0 +1,48 @@
+- id: string-only
+  type: single
+  prompt: "`localStorage.setItem('done', String(false))` 之后，`if (localStorage.getItem('done')) { … }` 的条件是真还是假？"
+  options:
+    - text: 真，因为读出来的是非空字符串 'false'
+      correct: true
+      explain: Storage 只保存字符串。要表示布尔值，读出来后和 'true' 比较，或者用 JSON 保存再验证。
+    - text: 假，因为保存的是 false
+      explain: 保存时 false 被转换成了字符串 'false'，它是 truthy。
+    - text: TypeScript 会报类型错误
+      explain: getItem 返回 string | null，用作条件是允许的；这正是它危险的地方。
+- id: json-loss
+  type: multiple
+  prompt: 一个对象经过 `JSON.stringify` 再 `JSON.parse` 之后，哪些值会改变或丢失？
+  options:
+    - text: Date 变成字符串
+      correct: true
+      explain: 读回来时需要自己转换成 Date 并检查是否有效。
+    - text: Set 和 Map 变成空对象 {}
+      correct: true
+      explain: 保存前要先转换成数组。
+    - text: 值为 undefined 的属性被省略
+      correct: true
+      explain: JSON 中没有 undefined。
+    - text: 数字 0 变成 null
+      explain: 普通数字保持不变；变成 null 的是 NaN 和 Infinity。
+- id: what-not-to-store
+  type: single
+  prompt: 为什么不应该把登录令牌保存在 localStorage 中？
+  options:
+    - text: 页面上的任何脚本都能读取它，一旦出现 XSS 漏洞，攻击者就能拿走令牌
+      correct: true
+      explain: localStorage 对同源的所有脚本都是可读的，没有任何保护。e12 会讲 XSS。
+    - text: localStorage 在每次刷新时都会被清空
+      explain: 那是 sessionStorage 关闭标签页时的行为；localStorage 会一直保留。
+    - text: localStorage 只能保存数字
+      explain: 它只能保存字符串，但这不是不能保存令牌的原因。
+- id: versioning
+  type: single
+  prompt: 新版本的程序改变了保存设置的格式。处理老用户浏览器里旧格式数据的最好方式是？
+  options:
+    - text: 在数据中保存版本号，读取时把已知的旧版本迁移成新格式并写回，无法识别的使用默认值
+      correct: true
+      explain: 老用户的设置得以保留，迁移只发生一次，损坏或未知的数据也不会让页面崩溃。
+    - text: 新版本上线时清空所有用户的 localStorage
+      explain: 用户的设置会全部丢失，而且程序无法访问用户的浏览器去“清空”。
+    - text: 读取时直接按新格式使用，出错了再说
+      explain: 旧格式的字段对不上，轻则设置丢失，重则页面报错。
