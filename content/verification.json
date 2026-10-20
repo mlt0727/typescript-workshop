@@ -4010,6 +4010,1013 @@
         }
       ]
     },
+    "c01-keyof-typeof-indexed": {
+      "verifiedAt": "2026-10-20T19:32:00.681Z",
+      "sourceHash": "f538cfb688860773",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:derive:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:derive:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 18 showHints true green"
+        },
+        {
+          "target": "playground:generic-key:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:generic-key:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 37 admin undefined"
+        },
+        {
+          "target": "exercise:pluck:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@collection.test-d.ts:9 Type 'number[]' does not satisfy the constraint '\"Expected: number, Actual: unknown\"[]'.；TS2344@collection.test-d.ts:10 Type 'string[][]' does not satisfy the constraint '\"Expected: ..., Actual: unknown\"[]'.；TS2344@collection.test-d.ts:11 Type 'Map<string, number>' does) rules=ok tests=fail(pluck › 按顺序取出每一项的属性 ⟶ expect(…).toEqual([ 'Ada', 'Lin', 'Bo', 'Mo' ]),countBy › 统计每个值出现的次数，按第一次出现的顺序 ⟶ expect(…).toEqual([ [ 'admin', 1 ], [ 'editor', 2 ], [ 'viewer', 1 ] ]),countBy › 值按 Map 的规则比较：1 和 \"1\" 是不同的键 ⟶ expect(…).toEqual([ [ 1, 2 ], [ '1', 1 ] ]))"
+        },
+        {
+          "target": "exercise:pluck:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pluck:alt:reduce",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pluck:wrong:key-without-generic",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@collection.test-d.ts:9 Type 'number[]' does not satisfy the constraint '(\"Expected: number, Actual: string\" | \"Expected: number, Actual: ...\")[]'.；TS2344@collection.test-d.ts:10 Type 'string[][]' does not satisfy the constraint '(\"Expected: ..., Actual: string\" | \"Expected: ..., Actual: numbe) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pluck:wrong:count-from-one",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(countBy › 统计每个值出现的次数，按第一次出现的顺序 ⟶ expect(…).toEqual([ [ 'admin', 1 ], [ 'editor', 2 ], [ 'viewer', 1 ] ]),countBy › 值按 Map 的规则比较：1 和 \"1\" 是不同的键 ⟶ expect(…).toEqual([ [ 1, 2 ], [ '1', 1 ] ]))"
+        },
+        {
+          "target": "exercise:pluck:wrong:string-keys",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(countBy › 值按 Map 的规则比较：1 和 \"1\" 是不同的键 ⟶ expect(…).toEqual([ [ 1, 2 ], [ '1', 1 ] ]))"
+        },
+        {
+          "target": "exercise:settings:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS7053@main.ts:5 Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ theme: string; fontSize: string; }'.；TS7053@main.ts:5 Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ theme: string; fontSi) rules=ok tests=fail(LABELS › 每个设置项都有中文名称 ⟶ expect(…).toEqual({ theme: '主题', fontSize: '字号', showHints: '显示提示', language: '语言' }),setSetting › 返回新的对象，只改这一项 ⟶ expect(…).toEqual({ theme: 'light', fontSize: 16, showHints: false, language: 'zh-CN' }),isSettingKey › 只认 DEFAULTS 自己的属性 ⟶ expect(…).toBe(false),changedKeys › 按 DEFAULTS 中的顺序返回修改过的项 ⟶ expect(…).toEqual([ 'theme', 'language' ]))"
+        },
+        {
+          "target": "exercise:settings:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings:alt:loop-over-keys",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings:wrong:in-operator",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isSettingKey › 只认 DEFAULTS 自己的属性 ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:settings:wrong:value-any-setting",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2578@settings.test-d.ts:10 Unused '@ts-expect-error' directive.；TS2578@settings.test-d.ts:12 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings:wrong:assert-keys",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@27) tests=ok"
+        },
+        {
+          "target": "exercise:settings:wrong:mutate",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(setSetting › 返回新的对象，只改这一项 ⟶ expect(…).not.toBe({ theme: 'light', fontSize: 16, showHints: false, language: 'zh-CN' }))"
+        }
+      ]
+    },
+    "c02-mapped-types": {
+      "verifiedAt": "2026-10-20T19:32:01.179Z",
+      "sourceHash": "3f358533c2c82c01",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:form-types:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:form-types:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { email: '邮箱格式不正确', age: '需要年满 18 岁' } { email: true, age: true, agree: false }"
+        },
+        {
+          "target": "playground:modifiers:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:modifiers:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { id: 'u2', nickname: 'Ada', bio: '改不了' } { id: 'u2', nickname: 'Ada', bio: '改不了' }"
+        },
+        {
+          "target": "exercise:validate-form:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS18046@main.ts:6 'value' is of type 'unknown'.；TS18046@main.ts:7 'value' is of type 'unknown'.；TS18046@validate.test.ts:9 'v' is of type 'unknown'.；TS18046@validate.test.ts:10 'v' is of type 'unknown'.；TS18046@validate.test.ts:18 'v' is of type 'unknown'.；TS2344@validate.test-d.ts:6 Type '{ email?:) rules=ok tests=fail(validateForm › 收集每个字段的错误 ⟶ expect(…).toEqual({ email: '邮箱格式不正确', age: '需要年满 18 岁' }),validateForm › 没有错误的字段不出现在结果中 ⟶ expect(…).toEqual([ 'age' ]),validateForm › 只调用提供了的校验函数，每个调用一次，参数是对应字段的值 ⟶ expect(…).toEqual([ 'Ada' ]),validateForm › 空字符串也是一条错误信息 ⟶ expect(…).toEqual({ nickname: '' }),hasErrors › 有没有任何错误 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:validate-form:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:validate-form:alt:entries-loop",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:validate-form:wrong:unknown-values",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18046@main.ts:6 'value' is of type 'unknown'.；TS18046@main.ts:7 'value' is of type 'unknown'.；TS18046@validate.test.ts:9 'v' is of type 'unknown'.；TS18046@validate.test.ts:10 'v' is of type 'unknown'.；TS18046@validate.test.ts:18 'v' is of type 'unknown'.；TS2344@validate.test-d.ts:6 Type '{ email?:) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:validate-form:wrong:keeps-undefined",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(validateForm › 没有错误的字段不出现在结果中 ⟶ expect(…).toEqual([ 'age' ]))"
+        },
+        {
+          "target": "exercise:validate-form:wrong:first-error-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(validateForm › 收集每个字段的错误 ⟶ expect(…).toEqual({ email: '邮箱格式不正确', age: '需要年满 18 岁' }))"
+        },
+        {
+          "target": "exercise:validate-form:wrong:truthy-message",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(validateForm › 空字符串也是一条错误信息 ⟶ expect(…).toEqual({ nickname: '' }))"
+        },
+        {
+          "target": "exercise:event-bus:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@bus.test-d.ts:6 Type '{ added?: Handler<{ id: string; title: string; }>[] | undefined; removed?: Handler<{ id: string; }>[] | undefined; cleared?: Handler<undefined>[] | undefined; }' does not satisfy the constraint '{ [x: string]: { [x: number]: \"Expected: never, Actual: function\" | undefine) rules=ok tests=fail(createBus › 按注册顺序调用这一种事件的处理函数，返回调用的个数 ⟶ expect(…).toBe(2),createBus › 取消函数只移除这一次注册，重复调用没有额外效果 ⟶ expect(…).toBe(1),createBus › 处理函数中新注册的函数从下一次 emit 开始生效 ⟶ expect(…).toBe(1),createBus › listenerCount：没有注册过的事件是 0 ⟶ expect(…).toBe(1))"
+        },
+        {
+          "target": "exercise:event-bus:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:event-bus:alt:wrapped-handlers",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:event-bus:wrong:unknown-payload",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@bus.test-d.ts:6 Type '{ added?: Handler<{ id: string; title: string; }>[] | undefined; removed?: Handler<{ id: string; }>[] | undefined; cleared?: Handler<undefined>[] | undefined; }' does not satisfy the constraint '{ added?: \"Expected: undefined, Actual: never\" | \"Expected: ..., Actual: nev) rules=ok tests=fail(createBus › 按注册顺序调用这一种事件的处理函数，返回调用的个数 ⟶ expect(…).toEqual([ 'a1:t1', 'a2:t1' ]),createBus › 取消函数只移除这一次注册，重复调用没有额外效果 ⟶ expect(…).toBe(1),createBus › 处理函数中新注册的函数从下一次 emit 开始生效 ⟶ expect(…).toEqual([ 'first' ]),createBus › listenerCount：没有注册过的事件是 0 ⟶ expect(…).toBe(0))"
+        },
+        {
+          "target": "exercise:event-bus:wrong:filter-removes-all",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createBus › 取消函数只移除这一次注册，重复调用没有额外效果 ⟶ expect(…).toBe(1))"
+        },
+        {
+          "target": "exercise:event-bus:wrong:live-array",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createBus › 处理函数中新注册的函数从下一次 emit 开始生效 ⟶ expect(…).toBe(1))"
+        }
+      ]
+    },
+    "c03-conditional-infer": {
+      "verifiedAt": "2026-10-20T19:32:01.660Z",
+      "sourceHash": "cc4447d1a70823b8",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:infer:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:infer:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { id: 'u1', name: 'Lin', roles: [] } viewer"
+        },
+        {
+          "target": "playground:deferred:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:deferred:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 43 0042"
+        },
+        {
+          "target": "exercise:type-toolkit:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@types.test-d.ts:4 Type '\"text\"' does not satisfy the constraint '\"Expected: literal string: text, Actual: literal string: other\"'.；TS2344@types.test-d.ts:5 Type '\"number\"' does not satisfy the constraint '\"Expected: literal string: number, Actual: literal string: other\"'.；TS2344@types.test-d.) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:type-toolkit:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:type-toolkit:alt:indexed-and-promise",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:type-toolkit:wrong:unknown-args",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@main.ts:10 Type '{ id: string; title: string; done: boolean; }' is not assignable to type 'never'.；TS2344@types.test-d.ts:20 Type 'boolean' does not satisfy the constraint '\"Expected: boolean, Actual: never\"'.；TS2344@types.test-d.ts:22 Type 'number' does not satisfy the constraint '\"Expected:) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:type-toolkit:wrong:mutable-array-only",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@types.test-d.ts:11 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: never\"'.；TS2344@types.test-d.ts:12 Type '1 | \"a\"' does not satisfy the constraint '\"Expected: literal number: 1, Actual: never\" | \"Expected: literal string: a, Actual: never\"'.) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:type-toolkit:wrong:unwrap-deep",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@types.test-d.ts:16 Type 'Promise<number>' does not satisfy the constraint '\"Expected: ..., Actual: number\"'.) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:type-toolkit:wrong:any-args",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(any@4) tests=n/a"
+        },
+        {
+          "target": "exercise:form-schema:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@main.ts:5 Argument of type 'Field | undefined' is not assignable to parameter of type 'Field'.；TS2345@main.ts:5 Argument of type 'Field | undefined' is not assignable to parameter of type 'Field'.；TS2345@main.ts:5 Argument of type 'Field | undefined' is not assignable to parameter of type 'Fi) rules=ok tests=fail(SIGNUP › 四个字段 ⟶ expect(…).toEqual({,parseValue › 文本：去掉首尾空白 ⟶ expect(…).toBe('ada@example.com'),parseValue › 数字：范围与不合法的输入 ⟶ expect(…).toBe(36),parseValue › 复选框：只有 on 是 true ⟶ expect(…).toBe(true),parseValue › 下拉框：必须是选项之一 ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:form-schema:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:form-schema:alt:lookup-table",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:form-schema:wrong:general-first",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@main.ts:3 Type 'number' is not assignable to type 'string'.；TS2322@main.ts:3 Type 'boolean' is not assignable to type 'string'.；TS2344@schema.test-d.ts:5 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: string\"'.；TS2344@schema.test-d.ts:6 Type 'boolean' does not satis) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:form-schema:wrong:annotated-schema",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@main.ts:5 Argument of type 'Field | undefined' is not assignable to parameter of type 'Field'.；TS2345@main.ts:5 Argument of type 'Field | undefined' is not assignable to parameter of type 'Field'.；TS2345@main.ts:5 Argument of type 'Field | undefined' is not assignable to parameter of type 'Fi) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:form-schema:wrong:empty-is-zero",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseValue › 数字：范围与不合法的输入 ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:form-schema:wrong:select-unchecked",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseValue › 下拉框：必须是选项之一 ⟶ expect(…).toBeNull())"
+        }
+      ]
+    },
+    "c04-distributive-conditional": {
+      "verifiedAt": "2026-10-20T19:32:02.292Z",
+      "sourceHash": "f0e03799934db753",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:distribute:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:distribute:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 1, 2 ] [ 1, 'two' ] draft"
+        },
+        {
+          "target": "playground:correlated:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:correlated:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 添加：写周报 删除：t1"
+        },
+        {
+          "target": "exercise:union-tools:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2722@main.ts:10 Cannot invoke an object which is possibly 'undefined'.；TS2344@union.test-d.ts:5 Type '\"draft\" | \"published\"' does not satisfy the constraint '\"Expected: literal string: draft, Actual: literal string: archived\" | \"Expected: literal string: published, Actual: literal string: archived) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:union-tools:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:union-tools:alt:without-conditionals",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:union-tools:wrong:naive-is-never",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@union.test-d.ts:15 Type 'true' does not satisfy the constraint '\"Expected: literal boolean: true, Actual: never\"'.；TS2344@union.test-d.ts:18 Type 'true' does not satisfy the constraint '\"Expected: literal boolean: true, Actual: never\"'.) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:union-tools:wrong:distributes-all",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2554@union.test-d.ts:22 Expected 1 arguments, but got 0.；TS2554@union.test-d.ts:23 Expected 1 arguments, but got 0.) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:union-tools:wrong:handler-gets-union",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2339@main.ts:6 Property 'x' does not exist on type 'AppEvent'.；TS2339@main.ts:7 Property 'key' does not exist on type 'AppEvent'.；TS2344@union.test-d.ts:26 Type '{ click: (event: { type: \"click\"; x: number; }) => void; key: (event: { type: \"key\"; key: string; }) => void; scroll: (event: { type: \"s) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:action-reducer:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS18046@todos.test.ts:63 'a.payload' is of type 'unknown'.；TS2344@todos.test-d.ts:5 Type '{ type: \"add\"; payload: { title: string; }; } | { type: \"toggle\"; payload: { id: string; }; } | { type: \"rename\"; payload: { id: string; title: string; }; } | { type: \"clearDone\"; payload: undefined; }' does no) rules=ok tests=fail(reduce › add：添加到末尾，id 来自 nextId ⟶ expect(…).toEqual({ todos: [ { id: 't1', title: '写周报', done: false } ], nextId: 2 }),reduce › toggle：切换 done，其他项保持原来的对象 ⟶ expect(…).toEqual({ id: 't1', title: '写周报', done: true }),reduce › rename：改标题 ⟶ expect(…).toEqual([ '写周报', '修好自行车' ]),reduce › clearDone：删除已完成的项 ⟶ expect(…).toEqual([ 't1' ]),reduce › 可以直接交给数组的 reduce ⟶ expect(…).toEqual({ todos: [ { id: 't2', title: 'b', done: false } ], nextId: 3 }),actionsOfType › 按顺序挑出某一种动作 ⟶ expect(…).toEqual([ 'a', 'c' ]))"
+        },
+        {
+          "target": "exercise:action-reducer:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:action-reducer:alt:switch",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:action-reducer:wrong:not-discriminated",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@todos.ts:43 Argument of type '{ type: K; payload: { title: string; } | { id: string; } | { id: string; title: string; } | undefined; }' is not assignable to parameter of type 'Action<K>'.；TS2554@todos.test-d.ts:4 Expected 1 arguments, but got 0.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:action-reducer:wrong:assert-handler",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@39) tests=ok"
+        },
+        {
+          "target": "exercise:action-reducer:wrong:always-new-state",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(reduce › 没有变化时返回原来的 state ⟶ expect(…).toBe({)"
+        },
+        {
+          "target": "exercise:action-reducer:wrong:payload-type-all",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@todos.test-d.ts:11 Type '\"add\" | \"toggle\" | \"rename\"' does not satisfy the constraint '\"Expected: literal string: add, Actual: literal string: clearDone\" | \"Expected: literal string: toggle, Actual: literal string: clearDone\" | \"Expected: literal string: rename, Actual: literal string: clearD) rules=ok tests=ok"
+        }
+      ]
+    },
+    "c05-template-literal-types": {
+      "verifiedAt": "2026-10-20T19:32:03.103Z",
+      "sourceHash": "d1be75f2d057db93",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:remap:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:remap:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Ada 36 onKeyDown"
+        },
+        {
+          "target": "playground:build-path:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:build-path:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（Error: 缺少参数：commentId）；输出：[error] Uncaught Error: 缺少参数：commentId\n    at main.ts:11:36\n    at buildPath (main.ts:9:16)\n    at main.ts:16:13"
+        },
+        {
+          "target": "exercise:string-types:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@strings.test-d.ts:4 Type '\"onClick\"' does not satisfy the constraint '\"Expected: literal string: onClick, Actual: string\"'.；TS2344@strings.test-d.ts:5 Type '\"onClick\" | \"onKeyDown\"' does not satisfy the constraint '\"Expected: literal string: onClick, Actual: string\" | \"Expected: literal strin) rules=ok tests=fail(isCssLength › 数字加单位 ⟶ 1.5rem,isCssLength › 缺少数字、单位不对、有空白、格式不完整 ⟶ px)"
+        },
+        {
+          "target": "exercise:string-types:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:string-types:alt:helpers",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:string-types:wrong:no-anchors",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isCssLength › 缺少数字、单位不对、有空白、格式不完整 ⟶  12px)"
+        },
+        {
+          "target": "exercise:string-types:wrong:keeps-functions",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@strings.test-d.ts:12 Type '0 | \"name\" | \"age\"' does not satisfy the constraint '\"Expected: literal number: 0, Actual: literal string: save\" | \"Expected: literal string: name, Actual: literal string: save\" | \"Expected: literal string: age, Actual: literal string: save\"'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:string-types:wrong:setter-any-value",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@strings.test-d.ts:8 Type '{ setName: (value: string) => void; setAge: (value: number) => void; }' does not satisfy the constraint '{ setName: \"Expected: function, Actual: never\"; setAge: \"Expected: function, Actual: never\"; }'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-routes:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@routes.test-d.ts:4 Type '\"id\"' does not satisfy the constraint '\"Expected: literal string: id, Actual: string\"'.；TS2344@routes.test-d.ts:5 Type '\"postId\" | \"commentId\"' does not satisfy the constraint '\"Expected: literal string: postId, Actual: string\" | \"Expected: literal string: commentId, ) rules=ok tests=fail(buildPath › 替换参数并编码 ⟶ expect(…).toBe('/users/42'),buildPath › 路由不是字面量时，运行时检查缺少的参数 ⟶ expect(…).toThrow('缺少参数：id'),matchPath › 匹配时返回解码后的参数 ⟶ expect(…).toEqual({ postId: '7', commentId: '3' }),link › 按名字生成路径 ⟶ expect(…).toBe('/users/u1'))"
+        },
+        {
+          "target": "exercise:typed-routes:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-routes:alt:regex-based",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-routes:wrong:string-params",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2578@routes.test-d.ts:11 Unused '@ts-expect-error' directive.；TS2578@routes.test-d.ts:13 Unused '@ts-expect-error' directive.；TS2578@routes.test-d.ts:15 Unused '@ts-expect-error' directive.；TS2578@routes.test-d.ts:17 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-routes:wrong:only-first-param",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2353@main.ts:4 Object literal may only specify known properties, and 'commentId' does not exist in type 'Record<\"postId\", string>'.；TS2353@routes.test.ts:7 Object literal may only specify known properties, and 'commentId' does not exist in type 'Record<\"postId\", string>'.；TS2353@routes.test.ts:38 ) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-routes:wrong:no-decode-guard",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchPath › 不匹配时返回 null ⟶ URIError: URI malformed)"
+        },
+        {
+          "target": "exercise:typed-routes:wrong:empty-segment-ok",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchPath › 不匹配时返回 null ⟶ expect(…).toBeNull())"
+        }
+      ]
+    },
+    "c06-utility-types": {
+      "verifiedAt": "2026-10-20T19:32:03.868Z",
+      "sourceHash": "9dae4efe0ac6d61e",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:patch-undefined:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:patch-undefined:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] undefined undefined | [log] { id: 'u1', name: 'Ada', email: 'ada@new.example' }"
+        },
+        {
+          "target": "exercise:user-types:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@main.ts:3 Argument of type '{ name: string; email: string; }' is not assignable to parameter of type 'User'.；TS2322@main.ts:4 Type 'undefined' is not assignable to type 'string'.；TS2345@users.test.ts:9 Argument of type '{ name: string; email: string; }' is not assignable to parameter of type ) rules=ok tests=fail(createUser › 加上 id 与 createdAt ⟶ expect(…).toEqual({,applyPatch › 值为 undefined 的字段不修改 ⟶ expect(…).toBe('Ada'),summarize › 每一项只有 id 和 name ⟶ expect(…).toEqual([ { id: 'u1', name: 'Ada' }, { id: 'u2', name: 'Lin' } ]))"
+        },
+        {
+          "target": "exercise:user-types:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:user-types:alt:loop-over-fields",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:user-types:wrong:spread-patch",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(applyPatch › 值为 undefined 的字段不修改 ⟶ expect(…).toBe('Ada'))"
+        },
+        {
+          "target": "exercise:user-types:wrong:summary-leaks-fields",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summarize › 每一项只有 id 和 name ⟶ expect(…).toEqual([ { id: 'u1', name: 'Ada' }, { id: 'u2', name: 'Lin' } ]))"
+        },
+        {
+          "target": "exercise:user-types:wrong:partial-user",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@users.test-d.ts:5 Type '{ name?: string | undefined; email?: string | undefined; bio?: string | undefined; }' does not satisfy the constraint '{ id: \"Expected: never, Actual: string\" | \"Expected: never, Actual: undefined\"; createdAt: \"Expected: never, Actual: undefined\" | \"Expected: never, Ac) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:user-types:wrong:omit-typo",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@main.ts:3 Argument of type '{ name: string; email: string; }' is not assignable to parameter of type 'NewUser'.；TS2345@users.test.ts:9 Argument of type '{ name: string; email: string; }' is not assignable to parameter of type 'NewUser'.；TS2344@users.test-d.ts:4 Type '{ name: string; email: st) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shape-drafts:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2353@main.ts:4 Object literal may only specify known properties, and 'radius' does not exist in type 'ShapeDraft'.；TS2353@main.ts:5 Object literal may only specify known properties, and 'width' does not exist in type 'ShapeDraft'.；TS2353@shapes.test.ts:11 Object literal may only specify known prop) rules=ok tests=fail(addShape › 在末尾加上新图形，id 来自 nextId ⟶ expect(…).toEqual({ id: 's3', kind: 'circle', radius: 2 }),countByKind › 每种图形的个数，没有的种类是 0 ⟶ expect(…).toEqual({ circle: 0, rect: 2 }),area › 圆与矩形 ⟶ expect(…).toBeCloseTo(12.566, 3))"
+        },
+        {
+          "target": "exercise:shape-drafts:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shape-drafts:alt:map-and-reduce",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shape-drafts:wrong:plain-omit",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2353@main.ts:4 Object literal may only specify known properties, and 'radius' does not exist in type 'ShapeDraft'.；TS2353@main.ts:5 Object literal may only specify known properties, and 'width' does not exist in type 'ShapeDraft'.；TS2353@shapes.test.ts:11 Object literal may only specify known prop) rules=ok tests=fail(addShape › 在末尾加上新图形，id 来自 nextId ⟶ expect(…).toEqual({ id: 's3', kind: 'circle', radius: 2 }))"
+        },
+        {
+          "target": "exercise:shape-drafts:wrong:assign-not-increment",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(countByKind › 每种图形的个数，没有的种类是 0 ⟶ expect(…).toEqual({ circle: 0, rect: 2 }))"
+        },
+        {
+          "target": "exercise:shape-drafts:wrong:optional-counts",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@shapes.test-d.ts:5 Type '{ circle: number; rect: number; }' does not satisfy the constraint '{ circle: \"Expected: number, Actual: undefined\"; rect: \"Expected: number, Actual: undefined\"; }'.；TS2578@shapes.test-d.ts:15 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shape-drafts:wrong:mutates-array",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addShape › 在末尾加上新图形，id 来自 nextId ⟶ expect(…).toHaveLength(2),countByKind › 每种图形的个数，没有的种类是 0 ⟶ expect(…).toEqual({ circle: 0, rect: 2 }))"
+        }
+      ]
+    },
+    "c07-function-utility-types": {
+      "verifiedAt": "2026-10-20T19:32:05.182Z",
+      "sourceHash": "cb88a279738f8746",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:limits:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:limits:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 1 x"
+        },
+        {
+          "target": "playground:wrapper:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:wrapper:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] add(2, 3) → 5 | [log] 5"
+        },
+        {
+          "target": "exercise:derive-from-functions:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@main.ts:4 Argument of type '(input: { title: string; tags?: string[] | undefined; }, now: number) => { id: string; createdAt: number; }' is not assignable to parameter of type '(...args: unknown[]) => unknown'.；TS2345@types.test.ts:12 Argument of type '(a: number, b: number) => number' is not) rules=ok tests=fail(withTiming › 传入参数，返回原来的结果，报告用时 ⟶ expect(…).toEqual([ 30 ]),withTiming › 每次调用都报告一次 ⟶ expect(…).toEqual([ 5, 2 ]),withTiming › 抛出异常时也报告，然后照常抛出 ⟶ expect(…).toEqual([ 3 ]),withTiming › 异步函数：返回的 Promise 原样返回 ⟶ expect(…).toEqual([ 1 ]))"
+        },
+        {
+          "target": "exercise:derive-from-functions:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:derive-from-functions:alt:parameters-and-return-type",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:derive-from-functions:wrong:promise-task",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@types.test-d.ts:5 Type '{ id: string; title: string; status: Status; tags: string[]; }' does not satisfy the constraint '{ [toStringTag]: \"Expected: never, Actual: string\"; then: \"Expected: never, Actual: function\"; catch: \"Expected: never, Actual: function\"; finally: \"Expected: never, Actual) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:derive-from-functions:wrong:loses-signature",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@types.test-d.ts:10 Type '[input: { title: string; tags?: string[] | undefined; }, now: number]' does not satisfy the constraint '{ [x: number]: \"Expected: number, Actual: unknown\" | \"Expected: ..., Actual: unknown\" | undefined; 0: \"Expected: ..., Actual: never\"; 1: \"Expected: number, Actual: ) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:derive-from-functions:wrong:no-report-on-throw",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTiming › 抛出异常时也报告，然后照常抛出 ⟶ expect(…).toEqual([ 3 ]))"
+        },
+        {
+          "target": "exercise:derive-from-functions:wrong:options-with-undefined",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@types.test-d.ts:6 Type '{ status?: Status | undefined; limit?: number | undefined; }' does not satisfy the constraint '\"Expected: ..., Actual: undefined\"'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:async-wrappers:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@main.ts:10 Argument of type '(id: string) => Promise<{ id: string; name: string; }>' is not assignable to parameter of type '(...args: unknown[]) => Promise<unknown>'.；TS2322@main.ts:10 Type 'unknown' is not assignable to type 'string'.；TS2345@wrappers.test.ts:18 Argument of type '(id: string) rules=ok tests=fail(withRetry › 失败后重试，直到成功 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败,withRetry › 达到次数上限时，以最后一次的错误拒绝 ⟶ expect(…).toThrow('第 3 次失败'),withRetry › shouldRetry 返回 false 时立即拒绝 ⟶ expect(…).toHaveLength(1),withRetry › 重试之前等待 delay，参数是已经失败的次数 ⟶ Error: 第 1 次失败,memoizeAsync › 并发的同样调用共用一个 Promise，只调用一次 ⟶ expect(…).toBe(Promise { <unknown> }),memoizeAsync › 不同的键分别调用 ⟶ expect(…).toEqual([ 'a', 'b' ]),memoizeAsync › 失败的结果不缓存，下一次重新调用 ⟶ expect(…).toEqual([ 'a', 'a' ]))"
+        },
+        {
+          "target": "exercise:async-wrappers:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:async-wrappers:alt:recursive-retry",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:async-wrappers:wrong:cache-values",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(memoizeAsync › 并发的同样调用共用一个 Promise，只调用一次 ⟶ expect(…).toBe(Promise { <unknown> }),memoizeAsync › 不同的键分别调用 ⟶ expect(…).toEqual([ 'a', 'b' ]))"
+        },
+        {
+          "target": "exercise:async-wrappers:wrong:caches-failure",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(memoizeAsync › 失败的结果不缓存，下一次重新调用 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败)"
+        },
+        {
+          "target": "exercise:async-wrappers:wrong:return-without-await",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRetry › 失败后重试，直到成功 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败,withRetry › 达到次数上限时，以最后一次的错误拒绝 ⟶ expect(…).toThrow('第 3 次失败'),withRetry › shouldRetry 返回 false 时立即拒绝 ⟶ expect(…).toHaveLength(1),withRetry › 重试之前等待 delay，参数是已经失败的次数 ⟶ Error: 第 1 次失败)"
+        },
+        {
+          "target": "exercise:async-wrappers:wrong:any-wrapper",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(any@7,any@7,type-assertion@8) tests=ok"
+        }
+      ]
+    },
+    "c08-generic-api-design": {
+      "verifiedAt": "2026-10-20T19:32:06.111Z",
+      "sourceHash": "0862605e82171dcf",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:inference:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:inference:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 'S', 'M', 'L' ] true XL S XL"
+        },
+        {
+          "target": "exercise:fix-signatures:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2554@main.ts:6 Expected 1 arguments, but got 2.；TS2554@api.test.ts:17 Expected 1 arguments, but got 2.；TS2554@api.test.ts:18 Expected 1 arguments, but got 2.；TS2554@api.test.ts:19 Expected 1 arguments, but got 2.；TS2554@api.test-d.ts:4 Expected 1 arguments, but got 0.；TS2554@api.test-d.ts:7 Expect) rules=ok tests=fail(parseJson › 守卫通过时返回值，否则返回 null ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:fix-signatures:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-signatures:alt:overload-free-style",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-signatures:wrong:return-only-generic",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2554@main.ts:6 Expected 1 arguments, but got 2.；TS2554@api.test.ts:17 Expected 1 arguments, but got 2.；TS2554@api.test.ts:18 Expected 1 arguments, but got 2.；TS2554@api.test.ts:19 Expected 1 arguments, but got 2.；TS2554@api.test-d.ts:7 Expected 1 arguments, but got 2.；TS2344@api.test-d.ts:7 Type ') rules=ok tests=fail(parseJson › 守卫通过时返回值，否则返回 null ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:fix-signatures:wrong:no-const",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@api.test-d.ts:12 Type 'readonly [\"S\", \"M\", \"L\"]' does not satisfy the constraint '{ [x: number]: \"Expected: literal string: S, Actual: string\" | \"Expected: literal string: M, Actual: string\" | \"Expected: literal string: L, Actual: string\" | undefined; ... 34 more ...; with?: \"Expected: functi) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-signatures:wrong:fallback-infers",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2578@api.test-d.ts:18 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-signatures:wrong:ignores-guard",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseJson › 守卫通过时返回值，否则返回 null ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:lru-cache:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2558@main.ts:3 Expected 0 type arguments, but got 2.；TS7006@main.ts:5 Parameter 'key' implicitly has an 'any' type.；TS7006@main.ts:5 Parameter 'value' implicitly has an 'any' type.；TS2339@main.ts:7 Property 'set' does not exist on type 'void'.；TS2558@cache.test.ts:6 Expected 0 type arguments, but ) rules=ok tests=fail(LruCache › 放入、取出、项数 ⟶ TypeError: Cannot read properties of undefined (reading 'set'),LruCache › 满了以后淘汰最久没有使用的，get 会更新使用顺序 ⟶ TypeError: Cannot read properties of undefined (reading 'set'),LruCache › 更新已有的键：值改变、成为最近使用的，不淘汰 ⟶ TypeError: Cannot read properties of undefined (reading 'set'),LruCache › has 不改变使用顺序；delete 不调用 onEvict ⟶ TypeError: Cannot read properties of undefined (reading 'set'),LruCache › 值是 undefined 的项同样存在，也会因为 get 成为最近使用的 ⟶ TypeError: Cannot read properties of undefined (reading 'set'),LruCache › maxSize 必须是正整数 ⟶ expect(…).toThrow([Function: RangeError]))"
+        },
+        {
+          "target": "exercise:lru-cache:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:lru-cache:alt:has-then-get",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:lru-cache:wrong:evicts-newest",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(LruCache › 满了以后淘汰最久没有使用的，get 会更新使用顺序 ⟶ expect(…).toEqual([ 'a', 'c' ]),LruCache › has 不改变使用顺序；delete 不调用 onEvict ⟶ expect(…).toEqual([ 'b', 'c' ]),LruCache › 值是 undefined 的项同样存在，也会因为 get 成为最近使用的 ⟶ expect(…).toEqual([ 'a', 'c' ]))"
+        },
+        {
+          "target": "exercise:lru-cache:wrong:get-no-refresh",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(LruCache › 满了以后淘汰最久没有使用的，get 会更新使用顺序 ⟶ expect(…).toEqual([ 'a', 'c' ]),LruCache › 值是 undefined 的项同样存在，也会因为 get 成为最近使用的 ⟶ expect(…).toEqual([ 'a', 'c' ]))"
+        },
+        {
+          "target": "exercise:lru-cache:wrong:undefined-means-missing",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(LruCache › 值是 undefined 的项同样存在，也会因为 get 成为最近使用的 ⟶ expect(…).toEqual([ 'a', 'c' ]))"
+        },
+        {
+          "target": "exercise:lru-cache:wrong:any-values",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=fail(TS2344@cache.test-d.ts:4 Type 'LruCache<string, unknown>' does not satisfy the constraint '{ keys: () => string[]; size: number; has: (key: string) => boolean; get: \"Expected: function, Actual: never\"; set: \"Expected: function, Actual: never\"; delete: (key: string) => boolean; }'.) rules=fail(any@3) tests=ok"
+        }
+      ]
+    },
+    "c09-boundary-modeling": {
+      "verifiedAt": "2026-10-20T19:32:07.001Z",
+      "sourceHash": "aaf9711bdcb2db90",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:brands:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:brands:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 订单 o_8f2k1x"
+        },
+        {
+          "target": "exercise:branded-ids:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2578@ids.test-d.ts:11 Unused '@ts-expect-error' directive.；TS2578@ids.test-d.ts:13 Unused '@ts-expect-error' directive.；TS2578@ids.test-d.ts:15 Unused '@ts-expect-error' directive.) rules=ok tests=fail(parseUserId 与 parseOrderId › 前缀不对、长度不对、大写、有空白时返回 null ⟶ o_7a9c3d,parseYuan › 其他格式返回 null ⟶ expect(…).toBeNull(),addCents 与 formatCents › 分总是两位 ⟶ expect(…).toBe('¥5.00'),addCents 与 formatCents › 超出安全整数范围时抛出 RangeError ⟶ expect(…).toThrow([Function: RangeError]))"
+        },
+        {
+          "target": "exercise:branded-ids:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:branded-ids:alt:string-arithmetic",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:branded-ids:wrong:plain-aliases",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2578@ids.test-d.ts:11 Unused '@ts-expect-error' directive.；TS2578@ids.test-d.ts:13 Unused '@ts-expect-error' directive.；TS2578@ids.test-d.ts:15 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:branded-ids:wrong:float-math",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseYuan › 其他格式返回 null ⟶ 1e3)"
+        },
+        {
+          "target": "exercise:branded-ids:wrong:assert-brand",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@9,type-assertion@13,type-assertion@21,type-assertion@27) tests=ok"
+        },
+        {
+          "target": "exercise:branded-ids:wrong:fen-not-padded",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addCents 与 formatCents › 分总是两位 ⟶ expect(…).toBe('¥0.05'))"
+        },
+        {
+          "target": "exercise:parse-order:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseOrder：成功 › 转换成领域模型，多余的字段不出现 ⟶ expect(…).toEqual({,parseOrder：成功 › 已退款的订单带着退款时间；时区偏移与毫秒 ⟶ expect(…).toMatchObject({,parseOrder：成功 › note：没有、null、只有空白时都是 null ⟶ expect(…).toMatchObject({ ok: true, order: { note: null } }),parseOrder：失败 › 不是普通对象 ⟶ expect(…).toEqual({ ok: false, errors: [ '订单必须是对象' ] }),parseOrder：失败 › 收集全部错误，按字段的顺序 ⟶ expect(…).toEqual({,parseOrder：失败 › 时间必须是带时区的完整格式，并且有效 ⟶ 2026-10-20,parseOrder：失败 › 金额必须是非负的安全整数 ⟶ 1.5,parseOrder：失败 › refunded_at 与状态 ⟶ expect(…).toEqual({ ok: false, errors: [ 'refunded_at 不是有效的时间' ] }),toDto › 转换回线上的格式，可以再解析回来 ⟶ Error: 还没有实现,toDto › 没有退款时没有 refunded_at ⟶ Error: 还没有实现)"
+        },
+        {
+          "target": "exercise:parse-order:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-order:alt:field-steps",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-order:wrong:validate-only",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@28,type-assertion@35,type-assertion@35,type-assertion@39,type-assertion@39) tests=fail(parseOrder：成功 › 转换成领域模型，多余的字段不出现 ⟶ expect(…).toEqual({,parseOrder：成功 › 已退款的订单带着退款时间；时区偏移与毫秒 ⟶ expect(…).toMatchObject({,parseOrder：成功 › note：没有、null、只有空白时都是 null ⟶ expect(…).toMatchObject({ ok: true, order: { note: null } }),parseOrder：失败 › 收集全部错误，按字段的顺序 ⟶ expect(…).toEqual({,parseOrder：失败 › 时间必须是带时区的完整格式，并且有效 ⟶ 2026-10-20,parseOrder：失败 › 金额必须是非负的安全整数 ⟶ 12990,parseOrder：失败 › refunded_at 与状态 ⟶ expect(…).toEqual({ ok: false, errors: [ 'refunded_at 不是有效的时间' ] }),toDto › 转换回线上的格式，可以再解析回来 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:parse-order:wrong:first-error-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseOrder：失败 › 收集全部错误，按字段的顺序 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:parse-order:wrong:trusts-date",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseOrder：失败 › 收集全部错误，按字段的顺序 ⟶ expect(…).toEqual({,parseOrder：失败 › 时间必须是带时区的完整格式，并且有效 ⟶ 2026-10-20)"
+        },
+        {
+          "target": "exercise:parse-order:wrong:note-not-normalized",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseOrder：成功 › 转换成领域模型，多余的字段不出现 ⟶ expect(…).toEqual({,parseOrder：成功 › note：没有、null、只有空白时都是 null ⟶ expect(…).toMatchObject({ ok: true, order: { note: null } }))"
+        }
+      ]
+    },
+    "c10-avoid-any": {
+      "verifiedAt": "2026-10-20T19:32:07.786Z",
+      "sourceHash": "60a7b8e9893e946d",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:contagious:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:contagious:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of null (reading 'name')）；输出：[log] light | [log] null | [error] Uncaught TypeError: Cannot read properties of null (reading 'name')\n    at main.ts:9:23"
+        },
+        {
+          "target": "exercise:remove-any:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@cart.test-d.ts:5 Type 'unknown' does not satisfy the constraint '\"Expected: unknown, Actual: never\"'.) rules=fail(any@2,any@3,any@6) tests=fail(sumPrices › 不合法的输入返回 null ⟶ SyntaxError: Unexpected token '不', \"不是 JSON\" is not valid JSON,errorMessage › 取出错误信息 ⟶ expect(…).toBe('出错了'),errorMessage › 其他情况返回未知错误 ⟶ TypeError: Cannot read properties of null (reading 'message'))"
+        },
+        {
+          "target": "exercise:remove-any:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:remove-any:alt:parse-helpers",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:remove-any:wrong:keeps-any",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(any@2) tests=fail(errorMessage › 取出错误信息 ⟶ expect(…).toBe('对象中的信息'))"
+        },
+        {
+          "target": "exercise:remove-any:wrong:trusts-shape",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(sumPrices › 不合法的输入返回 null ⟶ {\"items\":[{\"price\":\"12.5\",\"quantity\":2}]})"
+        },
+        {
+          "target": "exercise:remove-any:wrong:assume-error",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@25) tests=fail(errorMessage › 取出错误信息 ⟶ expect(…).toBe('出错了'),errorMessage › 其他情况返回未知错误 ⟶ TypeError: Cannot read properties of null (reading 'message'))"
+        },
+        {
+          "target": "exercise:remove-any:wrong:no-finite-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(sumPrices › 不合法的输入返回 null ⟶ {\"items\":[{\"price\":1e999,\"quantity\":1}]})"
+        },
+        {
+          "target": "exercise:typed-facade:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(loadSettings › 不合法的字段用默认值，合法的保留 ⟶ expect(…).toEqual({ theme: 'light', fontSize: 18, recent: [ '/a', '/b' ] }),loadSettings › 完全不对的数据：全部默认 ⟶ \"settings\",loadSettings › 多余的字段不会被带进来 ⟶ expect(…).toEqual([ 'fontSize', 'recent', 'theme' ]),parseSettings › 字号的范围与整数 ⟶ expect(…).toBe(12),parseSettings › 最近打开的最多保留前 5 个字符串 ⟶ expect(…).toEqual([ '1', '2', '3', '4', '5' ]),parseSettings › 返回新的对象，修改它不影响默认设置 ⟶ expect(…).toEqual({ theme: 'light', fontSize: 16, recent: [] }),addRecent › 放在最前面，去掉重复，最多 5 个 ⟶ expect(…).toEqual([ '/6', '/5', '/4', '/3', '/2' ]),addRecent › 返回新的设置，不修改原来的 ⟶ expect(…).toEqual([ '/b', '/a' ]))"
+        },
+        {
+          "target": "exercise:typed-facade:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-facade:alt:defaults-copy",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:typed-facade:wrong:trusts-legacy",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadSettings › 不合法的字段用默认值，合法的保留 ⟶ expect(…).toEqual({ theme: 'light', fontSize: 18, recent: [ '/a', '/b' ] }),loadSettings › 完全不对的数据：全部默认 ⟶ \"settings\",loadSettings › 多余的字段不会被带进来 ⟶ expect(…).toEqual([ 'fontSize', 'recent', 'theme' ]))"
+        },
+        {
+          "target": "exercise:typed-facade:wrong:assert-settings",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@10) tests=fail(loadSettings › 不合法的字段用默认值，合法的保留 ⟶ expect(…).toEqual({ theme: 'light', fontSize: 18, recent: [ '/a', '/b' ] }),loadSettings › 完全不对的数据：全部默认 ⟶ [1,2],loadSettings › 多余的字段不会被带进来 ⟶ expect(…).toEqual([ 'fontSize', 'recent', 'theme' ]),parseSettings › 字号的范围与整数 ⟶ expect(…).toBe(16),parseSettings › 最近打开的最多保留前 5 个字符串 ⟶ expect(…).toEqual([ '1', '2', '3', '4', '5' ]))"
+        },
+        {
+          "target": "exercise:typed-facade:wrong:shared-default",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseSettings › 返回新的对象，修改它不影响默认设置 ⟶ expect(…).toEqual({ theme: 'light', fontSize: 16, recent: [] }))"
+        },
+        {
+          "target": "exercise:typed-facade:wrong:recent-unfiltered",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadSettings › 不合法的字段用默认值，合法的保留 ⟶ expect(…).toEqual({ theme: 'light', fontSize: 18, recent: [ '/a', '/b' ] }))"
+        }
+      ]
+    },
+    "c11-strict-options": {
+      "verifiedAt": "2026-10-20T19:32:08.581Z",
+      "sourceHash": "a5cdd20eb1d8dff6",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:no-null-checks:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:no-null-checks:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of undefined (reading 'name')）；输出：[error] Uncaught TypeError: Cannot read properties of undefined (reading 'name')\n    at main.ts:9:17"
+        },
+        {
+          "target": "playground:exact-optional:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:exact-optional:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { name: 'Ada' } { name: 'Ada', bio: undefined } { name: 'Ada' }"
+        },
+        {
+          "target": "exercise:exact-patch:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2375@contacts.ts:6 Type '{ name: string; email?: string | null; phone?: string | null; }' is not assignable to type 'Contact' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.；TS2375@contacts.ts:10 Type '{ name: string; email: string | un) rules=ok tests=fail(applyContactPatch › null 删除这一项：结果中没有这个属性 ⟶ expect(…).toBe(false),fromForm › 去掉空白；空的可选项不出现 ⟶ expect(…).toEqual({ name: 'Ada', email: 'ada@example.com' }))"
+        },
+        {
+          "target": "exercise:exact-patch:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:exact-patch:alt:set-or-delete",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:exact-patch:wrong:assign-undefined",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2412@contacts.ts:8 Type 'string | undefined' is not assignable to type 'string' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the type of the target.；TS2412@contacts.ts:9 Type 'string | undefined' is not assignable to type 'string' with 'exactOptionalPropertyTypes: true'.) rules=ok tests=fail(applyContactPatch › null 删除这一项：结果中没有这个属性 ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:exact-patch:wrong:explicit-undefined-form",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2375@contacts.ts:16 Type '{ name: string; email: string | undefined; phone: string | undefined; }' is not assignable to type 'Contact' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.) rules=ok tests=fail(fromForm › 去掉空白；空的可选项不出现 ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:exact-patch:wrong:null-ignored",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(applyContactPatch › null 删除这一项：结果中没有这个属性 ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:exact-patch:wrong:no-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fromForm › 去掉空白；空的可选项不出现 ⟶ expect(…).toEqual({ name: 'Ada', email: 'ada@example.com' }))"
+        },
+        {
+          "target": "exercise:stricter-report:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2532@stock.ts:5 Object is possibly 'undefined'.；TS2532@stock.ts:13 Object is possibly 'undefined'.；TS2532@stock.ts:14 Object is possibly 'undefined'.；TS2532@stock.ts:14 Object is possibly 'undefined'.；TS2375@stock.ts:16 Type '{ total: number; skus: number; top: string | undefined; low: string[]; }) rules=ok tests=fail(restock › 新的 sku 从 0 开始；已有的累加；返回新对象 ⟶ expect(…).toEqual({ apple: 3 }),restock › 结果小于 0 时抛出 RangeError ⟶ expect(…).toThrow([Function: RangeError]),report › 库存为空时没有 top 属性 ⟶ expect(…).toBe(false),Formatter › 普通格式与 CSV ⟶ expect(…).toBe('total,skus,top\\n0,0,'),describeApples › 没有苹果时是 0 ⟶ expect(…).toBe('苹果：0 件'))"
+        },
+        {
+          "target": "exercise:stricter-report:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:stricter-report:alt:reduce-and-maps",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:stricter-report:wrong:non-null-assertions",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(non-null-assertion@5,non-null-assertion@15,non-null-assertion@16,non-null-assertion@16,non-null-assertion@18) tests=fail(restock › 新的 sku 从 0 开始；已有的累加；返回新对象 ⟶ expect(…).toEqual({ apple: 3 }),restock › 结果小于 0 时抛出 RangeError ⟶ expect(…).toThrow('库存不足：pear'))"
+        },
+        {
+          "target": "exercise:stricter-report:wrong:explicit-undefined-top",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2375@stock.ts:19 Type '{ total: number; skus: number; low: string[]; top: string | undefined; }' is not assignable to type 'Report' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.) rules=ok tests=fail(report › 库存为空时没有 top 属性 ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:stricter-report:wrong:missing-override",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS4114@stock.ts:31 This member must have an 'override' modifier because it overrides a member in the base class 'Formatter'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:stricter-report:wrong:tie-by-last",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(report › 数量相同时取字母顺序在前的 ⟶ expect(…).toBe('apple'))"
+        }
+      ]
+    },
     "d01-html-semantics": {
       "verifiedAt": "2026-10-20T17:25:01.990Z",
       "sourceHash": "35c36f09a41f3c03",

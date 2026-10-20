@@ -78,6 +78,11 @@ export function Playground({ lesson, block }: { lesson: Lesson; block: Playgroun
           <AskAiButton lesson={lesson} blockId={block.id} files={files} diagnostics={project.diagnostics} logs={runner.state.logs} />
         </div>
       </header>
+      {block.compiler.note && (
+        <div className="notice notice-info">
+          <Icon name="info" /> 本示例的编译配置：{block.compiler.note}
+        </div>
+      )}
       {draft.status === 'outdated' && (
         <div className="notice notice-warn" role="status">
           课程已更新，这个示例的起始代码变了；编辑器里是你基于旧版本的代码。

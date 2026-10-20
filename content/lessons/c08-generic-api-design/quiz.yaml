@@ -1,0 +1,33 @@
+- id: return-only
+  type: single
+  prompt: "`function load<T>(url: string): Promise<T>` 这个签名有什么问题？"
+  options:
+    - text: T 只出现在返回值中，调用方写什么类型就得到什么类型，实际上没有任何检查，相当于藏起来的断言
+      correct: true
+      explain: 诚实的写法是返回 `Promise<unknown>` 让调用方验证，或者接收一个验证函数，让 T 由它推断。
+    - text: 泛型函数不能返回 Promise
+      explain: 当然可以；问题在于 T 没有真正的来源。
+    - text: 没有问题，这是最常见、最推荐的写法
+      explain: 它很常见，但并不安全：数据的形状完全由调用方“声称”。
+- id: const-param
+  type: single
+  prompt: "`function f<const T extends readonly string[]>(values: T)` 中的 `const` 起什么作用？"
+  options:
+    - text: 调用 f(['a', 'b']) 时，T 被推断为 readonly ['a', 'b']，而不是 string[]
+      correct: true
+      explain: TypeScript 5.0 的 const 类型参数让推断像 as const 一样保留字面量，调用方不用自己写 as const。
+    - text: 让 values 在函数中不能被重新赋值
+      explain: 那是变量声明的 const；这里影响的是类型参数的推断。
+    - text: 要求调用方必须传入用 const 声明的变量
+      explain: 它只影响直接写在调用处的字面量的推断，不限制传入什么样的变量。
+- id: no-infer
+  type: single
+  prompt: "`function pick<T extends string>(options: T[], fallback: NoInfer<T>)`，`pick(['a', 'b'], 'c')` 会怎样？"
+  options:
+    - text: 报错：T 只从 options 推断为 'a' | 'b'，'c' 不是其中之一
+      correct: true
+      explain: NoInfer 阻止 fallback 参与推断。去掉它的话，T 会被推断为 'a' | 'b' | 'c'，错误就被掩盖了。
+    - text: 不报错，T 被推断为 'a' | 'b' | 'c'
+      explain: 这是没有 NoInfer 时的行为。
+    - text: 不报错，NoInfer 让 fallback 的类型变成 any
+      explain: "`NoInfer<T>` 的类型仍然是 T，只是不参与推断。"

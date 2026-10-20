@@ -1,0 +1,44 @@
+- id: index-signature-keyof
+  type: single
+  prompt: "`type K = keyof { [key: string]: number }` 中，K 是什么？"
+  options:
+    - text: "string | number"
+      correct: true
+      explain: JavaScript 会把数字键转换成字符串，obj[0] 和 obj['0'] 是同一个属性，所以数字也是合法的键。
+    - text: string
+      explain: 这是 keyof Record<string, number> 的结果；直接写索引签名时，结果还包括 number。
+    - text: never
+      explain: 索引签名表示“任何字符串都可以作为键”，keyof 的结果不是空的。
+- id: object-keys
+  type: single
+  prompt: "`const user: User = …` 之后，`Object.keys(user)` 的类型为什么是 `string[]` 而不是 `(keyof User)[]`？"
+  options:
+    - text: 结构化类型允许一个 User 类型的值在运行时带着更多的属性，TypeScript 不能保证只返回 User 声明过的键
+      correct: true
+      explain: 例如把一个多了 password 字段的对象赋给 User 类型的变量是允许的（b02），Object.keys 会把 password 也返回。
+    - text: TypeScript 的标准库还没有为 Object.keys 写好类型，以后会改成 (keyof T)[]
+      explain: 这是有意的设计：(keyof T)[] 会在上面那种情况下给出错误的类型。
+    - text: Object.keys 返回的数组可能包含 Symbol 键
+      explain: 正好相反，Object.keys 只返回字符串键，Symbol 键要用 Object.getOwnPropertySymbols。
+- id: array-element
+  type: single
+  prompt: "`const SIZES = ['S', 'M', 'L'];` 之后，`(typeof SIZES)[number]` 是什么类型？"
+  options:
+    - text: string
+      correct: true
+      explain: 没有 as const 时，SIZES 的类型是 string[]，元素类型就是 string。写成 ['S', 'M', 'L'] as const 才会得到 'S' | 'M' | 'L'。
+    - text: "'S' | 'M' | 'L'"
+      explain: 只有加上 as const，数组才会保留每一项的字面量类型（b16）。
+    - text: number
+      explain: "[number] 是用 number 作为键去取元素的类型，不是取下标的类型。"
+- id: generic-key
+  type: single
+  prompt: "下面哪种写法能让 `get(user, 'age')` 的返回值类型是 `number`？"
+  options:
+    - text: "`function get<T, K extends keyof T>(obj: T, key: K): T[K]`"
+      correct: true
+      explain: K 记住了传入的具体键，返回值 T[K] 跟着它变化。
+    - text: "`function get<T>(obj: T, key: keyof T): T[keyof T]`"
+      explain: 返回值是所有属性类型的联合，例如 string | number。
+    - text: "`function get<T>(obj: T, key: string): unknown`"
+      explain: 调用方得到的是 unknown，还得自己收窄；拼错的键也不会报错。

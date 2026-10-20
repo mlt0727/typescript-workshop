@@ -1,0 +1,33 @@
+- id: strict-default
+  type: single
+  prompt: TypeScript 6.0 中，tsconfig.json 没有写 strict 时会怎样？
+  options:
+    - text: strict 默认开启，得到的是严格的检查；仍然建议显式写出 "strict" 为 true，让配置不依赖编译器版本
+      correct: true
+      explain: 以前的版本默认是 false。显式写出能让读配置的人一眼看到，也不受以后默认值变化的影响。
+    - text: strict 默认关闭，和以前的版本一样
+      explain: TypeScript 6.0 改变了这个默认值。
+    - text: 不写 strict 时编译器会报错，要求必须写出来
+      explain: 不写也能编译，只是使用默认值。
+- id: unchecked-index
+  type: single
+  prompt: 开启 noUncheckedIndexedAccess 之后，下面哪种写法得到的元素类型不带 undefined？
+  options:
+    - text: "for (const item of items) { … } 中的 item"
+      correct: true
+      explain: for…of、map、filter 等不经过下标的写法，每个元素都确实存在；只有 items[i] 这样的下标读取和数组解构才带上 undefined。
+    - text: items[0]
+      explain: 下标读取的结果可能越界，所以是 T | undefined。
+    - text: "const [first] = items 中的 first"
+      explain: 数组解构同样是按位置读取，开启这个选项后也带上 undefined。
+- id: exact-optional
+  type: single
+  prompt: "开启 exactOptionalPropertyTypes 后，`type P = { bio?: string }`，下面哪个对象能赋给 P？"
+  options:
+    - text: "{}"
+      correct: true
+      explain: 可选属性表示“可以没有”。没有这个属性完全合法。
+    - text: "{ bio: undefined }"
+      explain: "开启选项后，可选属性不能显式地写成 undefined（TS2375）；需要时要写成 `bio?: string | undefined`。"
+    - text: "{ bio: null }"
+      explain: null 本来就不能赋给 string，和这个选项无关。

@@ -1,0 +1,33 @@
+- id: omit-typo
+  type: single
+  prompt: "`type NewUser = Omit<User, 'createAt'>`（把 createdAt 拼错了）会怎样？"
+  options:
+    - text: 不报错，NewUser 和 User 一样，createdAt 仍然是必需的
+      correct: true
+      explain: 标准库的 Omit 只要求键是 keyof any，拼错的键被静默忽略。Pick 会检查，因为它的 K 约束为 keyof T。
+    - text: 报错：'createAt' 不是 User 的键
+      explain: 这是 Pick 的行为；Omit 不检查。需要检查时自己写 StrictOmit。
+    - text: NewUser 变成 never
+      explain: 去掉一个不存在的键，相当于什么都没去掉。
+- id: patch-undefined
+  type: single
+  prompt: "`UserPatch = Partial<Pick<User, 'name'>>`，`{ ...user, ...patch }` 中 patch 是 `{ name: undefined }`，结果的 name 是什么？"
+  options:
+    - text: 运行时是 undefined，但 TypeScript 认为它是 string
+      correct: true
+      explain: 默认配置下可选属性允许显式的 undefined，而展开时 TypeScript 假定可选属性“要么没有，要么是 string”。逐个字段判断 !== undefined 才安全。
+    - text: 运行时仍然是原来的名字，因为 undefined 会被展开跳过
+      explain: 展开会复制值为 undefined 的自有属性，原来的名字被覆盖了。
+    - text: 编译报错，Partial 不允许 undefined
+      explain: Partial 让属性可选，可选属性的类型包括 undefined；开启 exactOptionalPropertyTypes 才会禁止显式的 undefined（c11）。
+- id: omit-union
+  type: single
+  prompt: "`type Shape = Circle | Rect`（都有 id、kind，各自还有 radius 或 width/height），`Omit<Shape, 'id'>` 是什么？"
+  options:
+    - text: "`{ kind: 'circle' | 'rect' }`，各自独有的字段都丢了"
+      correct: true
+      explain: keyof 作用在联合上只得到共有的键。要对每个成员分别去掉 id，写分布式的 Omit。
+    - text: "`Omit<Circle, 'id'> | Omit<Rect, 'id'>`"
+      explain: 这是 DistributiveOmit 的结果；Omit 本身不是条件类型，不会分布。
+    - text: never
+      explain: 两种图形共有 kind，结果不是空的。

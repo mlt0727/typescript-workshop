@@ -66,6 +66,7 @@ console.log(ada.profile.nickname);
 - `expect="码@文件:行, …"`：示例**故意**包含的类型错误，验证时必须完全一致（不多也不少）。
 - `run=ok|error|skip`：运行预期。`error` 表示故意演示运行时错误；`skip` 用于需要手动停止的演示（例如死循环）。
 - `mode=dom|react|ts`：覆盖本课默认模式。`fixtures=name`：使用 `fixtures/name.json` 模拟网络。
+- `options="exactOptionalPropertyTypes=true, noUncheckedIndexedAccess=false" note="…"`：只为这个示例覆盖编译选项（例如对比开启、关闭某个选项时的诊断），选项只能是 `src/compiler/config.ts` 中 `OVERRIDABLE_OPTIONS` 列出的那些，必须写 `note` 说明原因（会显示在示例上方）。
 - DOM 模式需要 `index.html`（用 `<script type="module" src="./main.ts">` 指定入口，用 `<link rel="stylesheet" href="./style.css">` 引用样式）；React 模式的入口是 `main.tsx`。
 
 **引用练习与测验**：`::exercise{#get-city}`（对应 `exercises/get-city.md`）、`::quiz`。

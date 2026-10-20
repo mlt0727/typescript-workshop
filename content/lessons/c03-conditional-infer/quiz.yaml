@@ -1,0 +1,33 @@
+- id: extends-meaning
+  type: single
+  prompt: "条件类型 `T extends U ? X : Y` 中的 `extends` 是什么意思？"
+  options:
+    - text: T 能不能赋值给 U
+      correct: true
+      explain: 和泛型约束中的 extends 一样，表示可赋值关系。例如 'a' extends string 成立，string extends 'a' 不成立。
+    - text: T 是不是用 class … extends U 声明的子类
+      explain: 条件类型检查的是类型之间的可赋值关系，和类的继承声明无关（结构化类型，b02）。
+    - text: T 和 U 是不是完全相同的类型
+      explain: 只要求 T 能赋值给 U，不要求相同。
+- id: never-args
+  type: single
+  prompt: "为什么 `F extends (...args: never[]) => infer R ? R : never` 能匹配 `(a: string, b: number) => boolean`，而把 `never[]` 换成 `unknown[]` 就不行？"
+  options:
+    - text: 函数的参数是逆变的：目标类型的参数是 never 时，任何函数都能接收它；是 unknown 时，只有能接收任意值的函数才能赋值过去
+      correct: true
+      explain: "(a: string) => boolean 不能保证接收任意的 unknown，所以不能赋值给 (...args: unknown[]) => R。"
+    - text: unknown[] 只能匹配没有参数的函数
+      explain: "能匹配的是参数能接收任意值的函数，例如 (x: unknown) => void，不只是没有参数的函数。"
+    - text: never[] 会让 TypeScript 跳过参数的检查
+      explain: 没有跳过检查；正是按照参数的逆变规则，never 能赋值给任何参数类型。
+- id: deferred-return
+  type: single
+  prompt: "`function parse<T extends 'a' | 'b'>(k: T): T extends 'a' ? number : string` 的实现中写 `if (k === 'a') return 1;` 会怎样？"
+  options:
+    - text: 报 TS2322：T 还没有确定，条件类型是“延迟”的，判断 k 不会让 TypeScript 认为条件成立
+      correct: true
+      explain: 收窄作用在变量 k 上，而不是类型参数 T 上。这种需求用重载或拆分函数来表达。
+    - text: 可以通过检查，因为 k === 'a' 把 T 收窄成了 'a'
+      explain: 收窄不会改变类型参数 T 本身；T 仍然可能是 'a' | 'b'。
+    - text: 运行时报错
+      explain: 这是编译期的类型错误，运行时的 JavaScript 没有任何问题。

@@ -1,0 +1,33 @@
+- id: combinations
+  type: single
+  prompt: "``type T = `${'a' | 'b'}-${'x' | 'y' | 'z'}` ``，T 有几个成员？"
+  options:
+    - text: "6 个：所有的组合"
+      correct: true
+      explain: 模板中的联合会生成所有的组合，数量是 2 × 3。几个大的联合放在一起，成员数量会迅速增长。
+    - text: "5 个"
+      explain: 不是把各部分加起来，而是相乘。
+    - text: "1 个：`string`"
+      explain: 结果是具体的字符串字面量的联合，例如 'a-x'、'b-z'。
+- id: non-literal
+  type: single
+  prompt: "`buildPath<R extends string>(route: R, params: Record<Params<R>, string>)`，调用时 `route` 的类型是 `string`（例如来自用户输入），会怎样？"
+  options:
+    - text: "`Params<string>` 是 `never`，参数对象不受任何限制，只能靠运行时检查"
+      correct: true
+      explain: 模板字面量类型只对字面量有效；外部输入的字符串照样要在运行时验证。
+    - text: TypeScript 会在运行时检查参数是否齐全
+      explain: 类型在运行时不存在，不会做任何检查。
+    - text: 编译报错，buildPath 只能接收字面量
+      explain: string 满足 R extends string 的约束，可以调用；只是参数检查失效了。
+- id: key-remap
+  type: single
+  prompt: "映射类型 `{ [K in keyof T as Capitalize<K>]: T[K] }` 为什么会报错？"
+  options:
+    - text: keyof T 可能包含 number 和 symbol 键，Capitalize 只接受字符串，要写 `Capitalize<K & string>`
+      correct: true
+      explain: K & string 把非字符串的键变成 never，改名之后它们就被去掉了。
+    - text: 映射类型中不能用 as 给键改名
+      explain: TypeScript 4.1 起支持 as 子句，可以改名，也可以通过映射成 never 来过滤。
+    - text: Capitalize 只能用在类型别名的最外层
+      explain: 它可以用在任何需要类型的位置，问题在于参数必须是字符串类型。

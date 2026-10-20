@@ -13,11 +13,12 @@ import path from 'node:path';
 import type { ContainerDirective, LeafDirective } from 'mdast-util-directive';
 import type { Code, RootContent } from 'mdast';
 import YAML from 'yaml';
-import type { RunMode } from '../src/compiler/config.ts';
+import { OVERRIDABLE_OPTIONS, type CompilerOverrides, type OverridableOption, type RunMode } from '../src/compiler/config.ts';
 import { ALL_RULES, type RuleId } from '../src/compiler/core/types.ts';
 import type {
   Catalog,
   CatalogLesson,
+  CompilerSettings,
   Exercise,
   ExerciseVariant,
   ExpectedDiagnostic,
@@ -136,6 +137,28 @@ function loadFixtures(lessonDir: string, name: string | undefined, where: string
     return undefined;
   }
   return parsed.data;
+}
+
+const isOverridable = (name: string): name is OverridableOption => (OVERRIDABLE_OPTIONS as readonly string[]).includes(name);
+
+/**
+ * playground 可以单独覆盖编译选项（例如对比开启、关闭某个选项时的诊断）：
+ * options="exactOptionalPropertyTypes=true, noUncheckedIndexedAccess=false"，并且必须用 note="…" 说明原因。
+ */
+function playgroundCompiler(base: CompilerSettings | undefined, options: string | null | undefined, note: string | null | undefined, where: string): CompilerSettings {
+  if (!options) return base ?? {};
+  const overrides: CompilerOverrides = { ...base?.overrides };
+  for (const part of options.split(',').map((s) => s.trim()).filter(Boolean)) {
+    const m = /^(\w+)=(true|false)$/.exec(part);
+    const name = m?.[1];
+    if (m === null || name === undefined || !isOverridable(name)) {
+      fail(where, `options 的格式应为“选项=true|false”，选项只能是 ${OVERRIDABLE_OPTIONS.join(', ')}；实际为 ${part}`);
+      continue;
+    }
+    overrides[name] = m[2] === 'true';
+  }
+  if (!note) fail(where, '覆盖编译选项时必须用 note="…" 说明原因（会显示给学习者）');
+  return { overrides, note: note ?? undefined };
 }
 
 const isDirective = (n: RootContent): n is ContainerDirective | LeafDirective =>
@@ -406,7 +429,7 @@ async function main() {
           observeHtml: rest.length ? renderNodes(rest) : undefined,
           expectDiagnostics: parseExpect(attrs.expect ?? undefined, pgWhere),
           expectRun: run as 'ok' | 'error' | 'skip',
-          compiler: fm.compiler ?? {},
+          compiler: playgroundCompiler(fm.compiler, attrs.options, attrs.note, pgWhere),
           fixtures: loadFixtures(dir, attrs.fixtures ?? undefined, pgWhere),
           timeoutMs: Number(attrs.timeout ?? 5000),
           baseHash: hashFiles(files),

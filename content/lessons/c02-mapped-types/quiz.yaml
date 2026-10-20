@@ -1,0 +1,33 @@
+- id: homomorphic
+  type: single
+  prompt: "`type Copy<T> = { [K in keyof T]: T[K] }`，那么 `Copy<{ readonly id: string; note?: string }>` 是什么？"
+  options:
+    - text: "`{ readonly id: string; note?: string }`，和原来的类型完全一样"
+      correct: true
+      explain: in keyof T 是同态映射，会保留原来的 readonly 和 ?。要去掉它们需要写 -readonly、-?。
+    - text: "`{ id: string; note: string }`，修饰符都被去掉了"
+      explain: 映射不会自动去掉修饰符，-readonly 和 -? 要明确写出来。
+    - text: "`{ id: string; note: string | undefined }`"
+      explain: 同态映射保留了可选；只有 -? 才会把可选和其中的 undefined 一起去掉。
+- id: value-position
+  type: single
+  prompt: "`type Validators<T> = { [K in keyof T]: (value: ???) => boolean }`，问号处写什么，才能让每个校验函数的参数类型与对应的字段一致？"
+  options:
+    - text: "`T[K]`"
+      correct: true
+      explain: K 是正在映射的那一个键，T[K] 就是这个字段的类型。
+    - text: "`T[keyof T]`"
+      explain: 这是所有字段类型的联合，email 的校验函数也可能收到 number。
+    - text: "`K`"
+      explain: K 是键本身（例如 'email'），不是字段值的类型。
+- id: readonly-runtime
+  type: single
+  prompt: "`const saved: Readonly<Profile> = draft;` 之后，下面哪个说法正确？"
+  options:
+    - text: 通过 saved 修改属性会在编译期报错，但 draft 仍然可以修改，运行时对象也没有被冻结
+      correct: true
+      explain: readonly 只是类型检查，作用于“通过这个类型访问”的代码；需要运行时保证时用 Object.freeze。
+    - text: draft 和 saved 都不能再修改了
+      explain: draft 的类型没有变，仍然可以修改；两个变量指向同一个对象。
+    - text: 运行时修改 saved 的属性会抛出 TypeError
+      explain: 类型在编译后被擦除，运行时没有任何检查；只有冻结过的对象在严格模式下修改才会抛出。

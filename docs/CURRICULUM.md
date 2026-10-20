@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 78 / 规划总数 126**（草稿 0，规划中 48）
+**已发布 78 / 规划总数 126**（草稿 11，规划中 37）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -82,17 +82,17 @@
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `c01-keyof-typeof-indexed` keyof、typeof 与索引访问类型 | ⬜ 规划中 | `b16-assertions-as-const-satisfies` |
-| `c02-mapped-types` 映射类型与修饰符 | ⬜ 规划中 | `c01-keyof-typeof-indexed` |
-| `c03-conditional-infer` 条件类型与 infer | ⬜ 规划中 | `c02-mapped-types` |
-| `c04-distributive-conditional` 分布式条件类型 | ⬜ 规划中 | `c03-conditional-infer` |
-| `c05-template-literal-types` 模板字面量类型的实际用途 | ⬜ 规划中 | `c03-conditional-infer` |
-| `c06-utility-types` Partial、Required、Pick、Omit、Record、Readonly | ⬜ 规划中 | `c02-mapped-types` |
-| `c07-function-utility-types` ReturnType、Parameters 与 Awaited | ⬜ 规划中 | `c06-utility-types`、`e03-async-await` |
-| `c08-generic-api-design` 泛型 API 设计 | ⬜ 规划中 | `c07-function-utility-types` |
-| `c09-boundary-modeling` 边界数据建模 | ⬜ 规划中 | `c08-generic-api-design`、`e06-runtime-validation` |
-| `c10-avoid-any` 避免 any 与不必要的双重断言 | ⬜ 规划中 | `c09-boundary-modeling` |
-| `c11-strict-options` strict、strictNullChecks 与 noUncheckedIndexedAccess | ⬜ 规划中 | `c10-avoid-any` |
+| `c01-keyof-typeof-indexed` keyof、typeof 与索引访问类型 | 📝 草稿 | `b16-assertions-as-const-satisfies` |
+| `c02-mapped-types` 映射类型与修饰符 | 📝 草稿 | `c01-keyof-typeof-indexed` |
+| `c03-conditional-infer` 条件类型与 infer | 📝 草稿 | `c02-mapped-types` |
+| `c04-distributive-conditional` 分布式条件类型 | 📝 草稿 | `c03-conditional-infer` |
+| `c05-template-literal-types` 模板字面量类型的实际用途 | 📝 草稿 | `c03-conditional-infer` |
+| `c06-utility-types` Partial、Required、Pick、Omit、Record、Readonly | 📝 草稿 | `c02-mapped-types` |
+| `c07-function-utility-types` ReturnType、Parameters 与 Awaited | 📝 草稿 | `c06-utility-types`、`e03-async-await` |
+| `c08-generic-api-design` 泛型 API 设计 | 📝 草稿 | `c07-function-utility-types` |
+| `c09-boundary-modeling` 边界数据建模 | 📝 草稿 | `c08-generic-api-design`、`e06-runtime-validation` |
+| `c10-avoid-any` 避免 any 与不必要的双重断言 | 📝 草稿 | `c09-boundary-modeling` |
+| `c11-strict-options` strict、strictNullChecks 与 noUncheckedIndexedAccess | 📝 草稿 | `c10-avoid-any` |
 | `c12-modules-dts` 模块与 .d.ts 基础 | ⬜ 规划中 | `c11-strict-options`、`f03-tsconfig` |
 
 ## D. HTML、CSS 与 DOM（已发布 10 / 10）

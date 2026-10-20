@@ -1,0 +1,33 @@
+- id: when-distributes
+  type: single
+  prompt: "`type Box<T> = T extends unknown ? { value: T } : never`，`Box<string | number>` 是什么？"
+  options:
+    - text: "`{ value: string } | { value: number }`"
+      correct: true
+      explain: 左边是裸的类型参数 T，传入联合时对每个成员分别计算，再合并。
+    - text: "`{ value: string | number }`"
+      explain: 只有关掉分布（写成 [T] extends [unknown]）才会把整个联合作为一个 T。
+    - text: never
+      explain: T extends unknown 对每个成员都成立，不会得到 never。
+- id: is-never
+  type: single
+  prompt: "`type IsNever<T> = T extends never ? true : false`，`IsNever<never>` 的结果是什么？"
+  options:
+    - text: never
+      correct: true
+      explain: never 是没有成员的联合，分布时一个成员都不计算，结果是 never。要写成 [T] extends [never]。
+    - text: "true"
+      explain: 直觉上是 true，但分布让结果变成了 never。
+    - text: "false"
+      explain: 没有任何成员被计算，所以也得不到 false。
+- id: correlated
+  type: single
+  prompt: "`function run(action: Action) { return handlers[action.type](action.payload); }` 报错，`function run<K extends keyof ActionMap>(action: Action<K>)` 却能通过。原因是什么？"
+  options:
+    - text: 不带类型参数时，handlers[action.type] 和 action.payload 是两个互不相关的联合；带上 K 之后，两者都由同一个 K 表示，TypeScript 能看出它们对应
+      correct: true
+      explain: 这依赖于联合是从一张表（ActionMap）映射出来的，TypeScript 4.6 起支持这种推断。
+    - text: 带类型参数的函数不会做类型检查
+      explain: 泛型函数照样检查；能通过是因为类型之间的对应关系被表达了出来。
+    - text: 第一种写法在运行时会出错
+      explain: 两种写法生成的 JavaScript 完全一样，区别只在类型检查。

@@ -1,0 +1,33 @@
+- id: parse-vs-validate
+  type: single
+  prompt: 为什么边界函数应该返回“解析后的值”，而不只是返回 boolean？
+  options:
+    - text: 返回 boolean 时，调用方手里仍然是未经转换、类型为 unknown 的原始数据，最后还得断言；解析函数把检查和转换的结果都交给了类型
+      correct: true
+      explain: 解析成功得到 Order，其中的日期已经是 Date、id 已经是品牌类型，后面的代码不需要再检查，也不会忘记检查。
+    - text: boolean 在运行时比对象慢
+      explain: 和性能无关，关键是检查过的信息有没有保存在类型里。
+    - text: TypeScript 不允许函数返回 boolean
+      explain: 当然允许；类型守卫就返回 boolean，只是它只收窄、不转换。
+- id: brand
+  type: single
+  prompt: "`type OrderId = string & { readonly [brand]: 'OrderId' }`（`brand` 是 `declare const brand: unique symbol`），下面哪个说法正确？"
+  options:
+    - text: 运行时它就是普通的字符串；类型上普通字符串和用户 id 都不能当作 OrderId，要通过类型守卫得到
+      correct: true
+      explain: 品牌只存在于类型中，declare 不生成任何运行时代码。守卫中写真正的检查，“是 OrderId”就意味着“检查过”。
+    - text: 运行时每个 OrderId 都带着一个 brand 属性
+      explain: 品牌是类型层面的标记，运行时的值没有这个属性。
+    - text: OrderId 不能再当作 string 使用
+      explain: 它是 string 的子类型，可以拼接、比较、序列化；只是普通的 string 不能当作 OrderId。
+- id: invalid-date
+  type: single
+  prompt: "`new Date('昨天')` 会怎样？"
+  options:
+    - text: 不抛出异常，得到一个无效日期，getTime() 返回 NaN
+      correct: true
+      explain: 所以解析时间时要检查 Number.isNaN(date.getTime())，并且最好先用正则限制格式（例如必须带时区）。
+    - text: 抛出 RangeError
+      explain: 构造无效日期不会抛出；对无效日期调用 toISOString() 才会抛出 RangeError。
+    - text: 得到当前时间
+      explain: 只有不传参数的 new Date() 才是当前时间。

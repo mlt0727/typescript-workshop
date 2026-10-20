@@ -1,0 +1,33 @@
+- id: json-any
+  type: single
+  prompt: "`const data = JSON.parse(text); const n: number = data.count;` 为什么不报错？"
+  options:
+    - text: JSON.parse 返回 any，any 的属性还是 any，可以赋给任何类型
+      correct: true
+      explain: "写成 `const data: unknown = JSON.parse(text)`，之后的每一步都要先检查。"
+    - text: TypeScript 会在运行时检查 data.count 是不是数字
+      explain: 类型在运行时被擦除，没有任何检查。
+    - text: 因为没有开启 strict
+      explain: 即使开启 strict，库函数返回的 any 也不会报错；noImplicitAny 只管没写类型、推断不出来的地方。
+- id: expect-error
+  type: single
+  prompt: "`// @ts-expect-error` 和 `// @ts-ignore` 的区别是什么？"
+  options:
+    - text: 下一行没有错误时，@ts-expect-error 会报 TS2578 提醒删除它，@ts-ignore 什么都不说
+      correct: true
+      explain: 所以 @ts-ignore 会一直留着，悄悄掩盖以后出现的新错误；需要时用 @ts-expect-error 并写明原因。
+    - text: "@ts-ignore 忽略整个文件，@ts-expect-error 只忽略下一行"
+      explain: 两者都只作用于下一行；忽略整个文件的是 @ts-nocheck。
+    - text: 没有区别，只是名字不同
+      explain: 区别在于没有错误时的行为。
+- id: legacy-any
+  type: single
+  prompt: 一个没有类型声明的旧库返回 any。下面哪种做法最能防止 any 扩散到整个程序？
+  options:
+    - text: 在一个包装模块中，把旧库的返回值赋给 unknown，解析成准确的类型后再交给程序的其他部分
+      correct: true
+      explain: any 被关在一个文件里，程序的其他部分只看到有类型、经过检查的接口。
+    - text: 在每个使用的地方写 as 某个类型
+      explain: 断言不做任何检查，而且散落在各处，旧库一变就到处出问题。
+    - text: 关闭 strict，让编译器不再报错
+      explain: 这会让整个程序失去检查，而不是解决 any 的问题。

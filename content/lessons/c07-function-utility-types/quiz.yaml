@@ -1,0 +1,33 @@
+- id: awaited-return
+  type: single
+  prompt: "`async function load() { return { id: 1 }; }`，怎样得到 `{ id: number }` 这个类型？"
+  options:
+    - text: "`Awaited<ReturnType<typeof load>>`"
+      correct: true
+      explain: "ReturnType 得到 Promise<{ id: number }>，Awaited 取出里面的值；参数要写 typeof load，因为 load 是一个值。"
+    - text: "`ReturnType<typeof load>`"
+      explain: async 函数的返回值是 Promise，还要再用 Awaited 取一层。
+    - text: "`Awaited<ReturnType<load>>`"
+      explain: load 是值，不是类型，要写 typeof load。
+- id: overload
+  type: single
+  prompt: "函数有两个重载签名 `(x: string): number` 和 `(x: number): string`，`ReturnType<typeof f>` 是什么？"
+  options:
+    - text: string，只取最后一个重载的返回值
+      correct: true
+      explain: ReturnType、Parameters 遇到重载时只看最后一个签名，而不是所有重载的联合。
+    - text: "number | string"
+      explain: 直觉上像是联合，但实际上只取最后一个重载。
+    - text: number，只取第一个重载的返回值
+      explain: 取的是最后一个，不是第一个。
+- id: memoize-promise
+  type: single
+  prompt: 给异步请求加缓存时，为什么要缓存 Promise 而不是请求完成后的结果？
+  options:
+    - text: 两次几乎同时的调用，第二次能直接拿到正在进行中的请求，不会再发一次
+      correct: true
+      explain: 如果等结果出来再写缓存，两次并发调用都会看到缓存是空的。缓存 Promise 时还要记得在失败后删除它。
+    - text: Promise 占用的内存比结果少
+      explain: 和内存无关，关键是并发调用能共享同一个请求。
+    - text: 结果对象不能放进 Map
+      explain: 任何值都能放进 Map；问题在于时机。
