@@ -14,13 +14,21 @@ export function locate(error: unknown): { file: string; line: number; column: nu
   return mapStack(error.stack, moduleRegistry).first;
 }
 
+/** 错误消息里可能出现模块的 blob URL（例如“模块没有导出 X”），换成学习者认识的文件名。 */
+function mapModuleUrls(text: string): string {
+  return text.replace(/blob:[^\s'"`)]+/g, (url) => {
+    const info = moduleRegistry.get(url);
+    return info ? `./${info.path}` : url;
+  });
+}
+
 export function serializeError(error: unknown): SerializedError {
   if (error instanceof Error) {
     const mapped = error.stack ? mapStack(error.stack, moduleRegistry) : undefined;
     return {
       name: error.name || 'Error',
-      message: String(error.message).slice(0, 10_000),
-      stack: mapped?.stack.slice(0, 20_000),
+      message: mapModuleUrls(String(error.message)).slice(0, 10_000),
+      stack: mapped ? mapModuleUrls(mapped.stack).slice(0, 20_000) : undefined,
       location: mapped?.first,
     };
   }

@@ -33,6 +33,17 @@ test.describe('课内学习闭环', () => {
     await expect(pg.locator('.js-preview')).toHaveCount(0);
   });
 
+  test('多文件示例：模块加载错误显示文件名而不是内部地址', async ({ page }) => {
+    await page.goto('/learn/a19-modules');
+    const pg = block(page, 'named-exports');
+    await pg.scrollIntoViewIfNeeded();
+    await pg.getByRole('button', { name: '运行' }).click();
+    const lines = pg.locator('.console-lines');
+    await expect(lines).toContainText("./geometry.ts");
+    await expect(lines).toContainText("'secret'");
+    await expect(lines).not.toContainText('blob:');
+  });
+
   test('判题：起始代码不通过；能运行但有类型错误的答案不通过；正确答案通过；修改后结果失效；刷新后恢复', async ({ page }) => {
     await page.goto(A08);
     const ex = block(page, 'get-city');

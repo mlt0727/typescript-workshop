@@ -2022,6 +2022,215 @@
         }
       ]
     },
+    "a19-modules": {
+      "verifiedAt": "2026-10-20T10:01:18.750Z",
+      "sourceHash": "3b6c99ad793f3e1c",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:named-exports:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:named-exports:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（SyntaxError: The requested module './geometry.ts' does not provide an export named 'secret'）；输出：[error] Uncaught SyntaxError: The requested module './geometry.ts' does not provide an export named 'secret'"
+        },
+        {
+          "target": "playground:default-export:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:default-export:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 你好，Ada | [log] HI! hi…"
+        },
+        {
+          "target": "playground:import-type:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:import-type:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（SyntaxError: The requested module './user.ts' does not provide an export named 'User'）；输出：[error] Uncaught SyntaxError: The requested module './user.ts' does not provide an export named 'User'"
+        },
+        {
+          "target": "playground:runs-once:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:runs-once:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Assignment to constant variable.）；输出：[log] counter 模块执行了 | [log] main 读到的 count： 3 | [error] Uncaught TypeError: Assignment to constant variable.\n    at main.ts:8:6"
+        },
+        {
+          "target": "exercise:export-fix:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2459@cart.ts:1 Module '\"./money\"' declares 'Money' locally, but it is not exported.；TS2459@cart.ts:1 Module '\"./money\"' declares 'formatMoney' locally, but it is not exported.；TS2459@cart.test.ts:3 Module '\"./money\"' declares 'formatMoney' locally, but it is not exported.；TS2459@cart.test-d.ts:2 M) rules=ok tests=fail(SyntaxError: The requested module './money.ts' does not provide an export named 'Money')"
+        },
+        {
+          "target": "exercise:export-fix:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:export-fix:alt:separate-import-type",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:export-fix:wrong:missing-type-keyword",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS1484@cart.ts:1 'Money' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.) rules=ok tests=fail(SyntaxError: The requested module './money.ts' does not provide an export named 'Money')"
+        },
+        {
+          "target": "exercise:export-fix:wrong:only-function-exported",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2459@cart.ts:1 Module '\"./money\"' declares 'Money' locally, but it is not exported.；TS2459@cart.test-d.ts:2 Module '\"./money\"' declares 'Money' locally, but it is not exported.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings-cache:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS1484@load.ts:1 'Settings' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.) rules=ok tests=fail(SyntaxError: The requested module './settings.ts' does not provide an export named 'Settings')"
+        },
+        {
+          "target": "exercise:settings-cache:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings-cache:alt:undefined-sentinel",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings-cache:wrong:parse-every-time",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(之后的调用返回同一个对象，不再解析,reset 之后重新解析，次数继续累加)"
+        },
+        {
+          "target": "exercise:settings-cache:wrong:local-cache",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(之后的调用返回同一个对象，不再解析,reset 之后重新解析，次数继续累加)"
+        },
+        {
+          "target": "exercise:settings-cache:wrong:reset-noop",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(reset 之后重新解析，次数继续累加)"
+        },
+        {
+          "target": "exercise:settings-cache:wrong:value-import-of-type",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS1484@load.ts:1 'Settings' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.) rules=ok tests=fail(SyntaxError: The requested module './settings.ts' does not provide an export named 'Settings')"
+        }
+      ]
+    },
+    "a20-errors": {
+      "verifiedAt": "2026-10-20T10:03:51.943Z",
+      "sourceHash": "6a5ca6e512cb269a",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:throw-catch:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:throw-catch:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 42 | [log] 出错了 | [log] finally 总会执行"
+        },
+        {
+          "target": "playground:unknown-catch:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:unknown-catch:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Expected property name or '}' in JSON at position 2 (line 1 column 3) | [log] SyntaxError ： Expected property name or '}' in JSON at position 2 (line 1 column 3) | [log] Error： 普通的 Error | [log] 不是 Error： 只是一个字符串"
+        },
+        {
+          "target": "playground:cause:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:cause:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 配置文件格式错误 | [log] 原因： SyntaxError"
+        },
+        {
+          "target": "exercise:error-message:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS18046@message.ts:2 'err' is of type 'unknown'.) rules=ok tests=fail(字符串原样返回,其他值)"
+        },
+        {
+          "target": "exercise:error-message:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:error-message:alt:ternaries",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:error-message:wrong:assertion",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@2) tests=fail(字符串原样返回,其他值)"
+        },
+        {
+          "target": "exercise:error-message:wrong:string-convert",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Error 及其子类,其他值)"
+        },
+        {
+          "target": "exercise:error-message:wrong:forget-string",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(字符串原样返回)"
+        },
+        {
+          "target": "exercise:parse-port-errors:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parsePort › 不是合法的 JSON，保留原始错误,parsePort › 42 不是对象,parsePort › null 不是对象,parsePort › \"x\" 不是对象,parsePort › [1] 不是对象,parsePort › { \"port\": 70000 } 的端口无效,parsePort › { \"port\": \"8080\" } 的端口无效,parsePort › { \"port\": 0 } 的端口无效,parsePort › { \"port\": 80.5 } 的端口无效,parsePort › {} 的端口无效,parsePort › { \"port\": null } 的端口无效,portOrNull › 任何错误都返回 null)"
+        },
+        {
+          "target": "exercise:parse-port-errors:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-port-errors:alt:in-operator",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-port-errors:wrong:no-cause",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parsePort › 不是合法的 JSON，保留原始错误)"
+        },
+        {
+          "target": "exercise:parse-port-errors:wrong:wide-try",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parsePort › 42 不是对象,parsePort › null 不是对象,parsePort › \"x\" 不是对象,parsePort › [1] 不是对象,parsePort › { \"port\": 70000 } 的端口无效,parsePort › { \"port\": \"8080\" } 的端口无效,parsePort › { \"port\": 0 } 的端口无效,parsePort › { \"port\": 80.5 } 的端口无效,parsePort › {} 的端口无效,parsePort › { \"port\": null } 的端口无效)"
+        },
+        {
+          "target": "exercise:parse-port-errors:wrong:array-is-object",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parsePort › [1] 不是对象)"
+        },
+        {
+          "target": "exercise:parse-port-errors:wrong:unknown-message",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18046@port.ts:6 'err' is of type 'unknown'.) rules=ok tests=ok"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

@@ -1,0 +1,58 @@
+- id: catch-type
+  type: single
+  prompt: 在严格模式下，`catch (err)` 中 `err` 的类型是什么？为什么？
+  options:
+    - text: "`unknown`，因为 JavaScript 可以抛出任何值"
+      correct: true
+      explain: 字符串、数字、对象都能被 `throw`，TypeScript 也不跟踪函数会抛出什么，所以只能是 `unknown`，使用前要检查（通常用 `instanceof Error`）。
+    - text: "`Error`，因为只有 Error 能被抛出"
+      explain: "`throw '出错了'` 也是合法的 JavaScript。"
+    - text: "`any`，可以直接读取 `message`"
+      explain: 关闭 `useUnknownInCatchVariables` 时是 `any`；严格模式下是 `unknown`。
+- id: finally-order
+  type: single
+  prompt: |
+    下面的代码按顺序输出什么？
+
+    ```ts
+    try {
+      console.log('A');
+      throw new Error('x');
+      console.log('B');
+    } catch {
+      console.log('C');
+    } finally {
+      console.log('D');
+    }
+    ```
+  options:
+    - text: "`A C D`"
+      correct: true
+      explain: 抛出错误后 `try` 中剩下的代码被跳过，进入 `catch`，最后执行 `finally`。
+    - text: "`A B C D`"
+      explain: "`throw` 之后的 `B` 不会执行。"
+    - text: "`A C`"
+      explain: "`finally` 无论是否出错都会执行。"
+- id: multiple-catch
+  type: single
+  prompt: 想对 `RangeError` 和其他错误分别处理，在 JavaScript/TypeScript 中应该怎么写？
+  options:
+    - text: 写一个 `catch (err)`，在里面用 `if (err instanceof RangeError)` 判断
+      correct: true
+      explain: JavaScript 只允许一个 `catch` 子句，按类型区分要自己判断。
+    - text: "写两个 `catch`：`catch (err: RangeError)` 和 `catch (err)`"
+      explain: 这是 Java 风格的写法，JavaScript 不支持多个 `catch`，TypeScript 也不允许给 `catch` 变量注解为 `unknown`/`any` 以外的类型。
+    - text: 在函数签名中声明 `throws RangeError`
+      explain: JavaScript 和 TypeScript 都没有受检异常，也没有 `throws` 声明。
+- id: throw-or-null
+  type: multiple
+  prompt: 下列哪些情况**更适合**返回 `null`（而不是抛出错误）？
+  options:
+    - text: 根据 id 在列表中查找用户，没有找到
+      correct: true
+      explain: 找不到是预料之中的结果，返回 `null` 后 TypeScript 会强迫调用方处理。
+    - text: 解析用户在输入框里填的年龄，填写的内容无效
+      correct: true
+      explain: 用户输入无效很常见，调用方通常会显示提示，返回 `null` 更直接（a05 的 parseAge）。
+    - text: 程序自带的配置文件格式损坏
+      explain: 这不应该发生，当前函数也无法修复，抛出错误让上层统一处理更合适。

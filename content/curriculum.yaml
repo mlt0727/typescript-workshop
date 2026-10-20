@@ -25,8 +25,8 @@ stages:
       - { id: a16-array-methods, title: map、filter、reduce、find 的实际用法, status: draft, prerequisites: [a13-functions] }
       - { id: a17-sort-and-mutation, title: sort 与变异行为的常见误区, status: draft, prerequisites: [a16-array-methods] }
       - { id: a18-map-set, title: Map 与 Set, status: draft, prerequisites: [a11-objects-references] }
-      - { id: a19-modules, title: ESM 导入与导出, status: planned, prerequisites: [a13-functions] }
-      - { id: a20-errors, title: 错误处理：throw、try/catch 与 unknown, status: planned, prerequisites: [a13-functions] }
+      - { id: a19-modules, title: ESM 导入与导出, status: draft, prerequisites: [a13-functions] }
+      - { id: a20-errors, title: 错误处理：throw、try/catch 与 unknown, status: draft, prerequisites: [a13-functions] }
 
   - id: B
     title: 日常 TypeScript

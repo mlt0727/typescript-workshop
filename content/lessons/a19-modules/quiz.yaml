@@ -1,0 +1,45 @@
+- id: import-type
+  type: single
+  prompt: "`user.ts` 中有 `export type User = { name: string };`。在开启 `verbatimModuleSyntax` 的项目里，另一个文件应该怎样导入 `User`？"
+  options:
+    - text: "`import type { User } from './user';`"
+      correct: true
+      explain: 只用作类型的导入要标明 `type`，编译时整行会被删除。也可以写成 `import { type User } from './user';`。
+    - text: "`import { User } from './user';`"
+      explain: 开启 `verbatimModuleSyntax` 时，这样导入类型会报 TS1484。
+    - text: "`import User from './user';`"
+      explain: 不带花括号是导入默认导出，而 `User` 是具名导出。
+- id: runs-once
+  type: single
+  prompt: |
+    `log.ts` 的第一行是 `console.log('加载 log');`。`a.ts` 和 `main.ts` 都导入了 `log.ts`，`main.ts` 还导入了 `a.ts`。运行 `main.ts` 时，“加载 log”输出几次？
+  options:
+    - text: 1 次
+      correct: true
+      explain: 模块只执行一次，之后的导入拿到的都是同一份导出。
+    - text: 2 次
+      explain: 模块不会因为被多个文件导入而重复执行。
+    - text: 0 次，只有被调用的函数才会执行
+      explain: 模块的顶层代码在模块第一次被导入时就会执行。
+- id: default-import
+  type: single
+  prompt: "`greet.ts` 里写的是 `export default function greet() { … }`。下列哪种导入是正确的？"
+  options:
+    - text: "`import hello from './greet';`"
+      correct: true
+      explain: 默认导出不写花括号，导入方可以自己起名字。
+    - text: "`import { hello } from './greet';`"
+      explain: 花括号用于具名导出，而且名字必须和导出的名字一致。
+    - text: "`import { default } from './greet';`"
+      explain: "`default` 是关键字，不能这样作为变量名导入（需要写成 `import { default as hello }`）。"
+- id: import-binding
+  type: single
+  prompt: "`counter.ts` 导出了 `export let count = 0;`。在另一个文件里 `import { count } from './counter';` 之后写 `count = 5;` 会怎样？"
+  options:
+    - text: TypeScript 报 TS2632，运行时也会抛出 `TypeError`
+      correct: true
+      explain: 导入的绑定是只读的。要修改模块内部的状态，应该由模块导出一个函数来做。
+    - text: 只修改了当前文件里的副本
+      explain: 导入不会复制变量，导入方看到的是模块里的同一个变量（只读）。
+    - text: 修改成功，所有导入方都会看到 5
+      explain: 导入方不能给导入的绑定赋值。
