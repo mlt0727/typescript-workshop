@@ -6736,6 +6736,103 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(撤销修改：回到初始设置；没有修改时不可用)"
         }
       ]
+    },
+    "g05-lists-keys": {
+      "verifiedAt": "2026-10-20T13:36:12.962Z",
+      "sourceHash": "64d852ff00e07dff",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:map-list:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:map-list:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:index-key-bug:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:index-key-bug:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:contact-list:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(按名字排序显示全部联系人；每一项都有唯一的 key（没有 React 警告） ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"listitem\",电话显示在名字后面 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"listitem\",按名字筛选：不区分大小写，忽略首尾空白 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"listitem\",空状态 ⟶ TestingLibraryElementError: Unable to find an element with the text: 没有找到“赵”. This could be because the text is broken up by multiple elements. In this case, yo)"
+        },
+        {
+          "target": "exercise:contact-list:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:contact-list:alt:copy-then-sort",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:contact-list:wrong:no-key",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按名字排序显示全部联系人；每一项都有唯一的 key（没有 React 警告） ⟶ 控制台出现了关于 key 的警告)"
+        },
+        {
+          "target": "exercise:contact-list:wrong:name-as-key",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按名字排序显示全部联系人；每一项都有唯一的 key（没有 React 警告） ⟶ 控制台出现了关于 key 的警告,按名字筛选：不区分大小写，忽略首尾空白 ⟶ expect(…).toEqual([ 'Alice' ]))"
+        },
+        {
+          "target": "exercise:contact-list:wrong:unsorted",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按名字排序显示全部联系人；每一项都有唯一的 key（没有 React 警告） ⟶ expect(…).toEqual([ '李雷', '王芳', '王芳', 'Alice', 'bob' ]))"
+        },
+        {
+          "target": "exercise:contact-list:wrong:no-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按名字筛选：不区分大小写，忽略首尾空白 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"list\" and name \"联系人\",空状态 ⟶ TestingLibraryElementError: Unable to find an element with the text: 没有找到“赵”. This could be because the text is broken up by multiple elements. In this case, yo)"
+        },
+        {
+          "target": "exercise:contact-list:wrong:case-sensitive",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按名字筛选：不区分大小写，忽略首尾空白 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"list\" and name \"联系人\")"
+        },
+        {
+          "target": "exercise:playlist:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(按顺序显示歌曲，第一首不能上移 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"listitem\",删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“平凡之路”\",上移之后，“喜欢”仍然跟着原来的歌 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“夜空中最亮的星”\",其他歌曲的状态在每次操作后都保留 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"喜欢“晴天”\",全部删除后显示空列表的提示 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"删除“晴天”\")"
+        },
+        {
+          "target": "exercise:playlist:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:playlist:alt:updater-functions",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:playlist:wrong:index-key",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),上移之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+        },
+        {
+          "target": "exercise:playlist:wrong:index-in-key",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),上移之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+        },
+        {
+          "target": "exercise:playlist:wrong:random-key",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(删除前面的歌曲之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),上移之后，“喜欢”仍然跟着原来的歌 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),其他歌曲的状态在每次操作后都保留 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+        }
+      ]
     }
   }
 }

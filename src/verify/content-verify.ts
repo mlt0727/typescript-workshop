@@ -93,11 +93,16 @@ async function verifyPlayground(lesson: Lesson, pg: PlaygroundBlock): Promise<Ch
   return out;
 }
 
+function describeFailure(t: JudgeResult['tests']['results'][number]): string {
+  const first = t.error?.message.split('\n')[0]?.slice(0, 160);
+  return first === undefined ? t.name : `${t.name} ⟶ ${first}`;
+}
+
 function summarize(r: JudgeResult): string {
   const parts = [
     `types=${r.types.ok ? 'ok' : `fail(${[...r.types.student, ...r.types.tests].map(describeDiag).join('；').slice(0, 300)})`}`,
     `rules=${r.rules.ok ? 'ok' : `fail(${r.rules.violations.map((v) => `${v.rule}@${v.line}`).join(',')})`}`,
-    `tests=${r.tests.required ? (r.tests.ok ? 'ok' : `fail(${r.tests.error ? `${r.tests.error.name}: ${r.tests.error.message}` : r.tests.results.filter((t) => t.status !== 'pass').map((t) => t.name).join(',')})`) : 'n/a'}`,
+    `tests=${r.tests.required ? (r.tests.ok ? 'ok' : `fail(${r.tests.error ? `${r.tests.error.name}: ${r.tests.error.message}` : r.tests.results.filter((t) => t.status !== 'pass').map(describeFailure).join(',')})`) : 'n/a'}`,
   ];
   if (r.internalError) parts.push(`internal=${r.internalError}`);
   return parts.join(' ');

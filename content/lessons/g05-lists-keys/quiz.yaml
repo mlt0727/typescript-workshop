@@ -1,0 +1,44 @@
+- id: key-purpose
+  type: single
+  prompt: React 列表中的 `key` 主要用来做什么？
+  options:
+    - text: 在多次渲染之间识别“同一项”，从而保留它的 DOM 和组件内部的 state
+      correct: true
+      explain: key 相同就被当作同一项；key 变了，旧的组件被销毁，新的组件被创建。
+    - text: 决定列表的显示顺序
+      explain: 顺序由数组的顺序决定，key 不影响顺序。
+    - text: 作为 prop 传给组件，用来显示 id
+      explain: key 不会传给组件。组件需要 id 时要另外传一个 prop。
+- id: index-key
+  type: single
+  prompt: 什么情况下可以用数组下标作为 key？
+  options:
+    - text: 列表永远不会重新排序、筛选，也不会在中间插入或删除
+      correct: true
+      explain: 只有这种情况下，下标才能稳定地代表同一项。否则 state 会跟着位置走，而不是跟着数据走。
+    - text: 列表项没有自己的 state 时，任何情况都可以
+      explain: 即使组件没有 state，列表项中的输入框、焦点等 DOM 状态也会错位，而且 React 可能做多余的更新。
+    - text: 任何时候都可以，只要不重复
+      explain: 下标虽然不重复，但删除或排序之后，同一个下标对应的就不是同一项了。
+- id: random-key
+  type: single
+  prompt: "`<Row key={crypto.randomUUID()} … />` 有什么问题？"
+  options:
+    - text: 每次渲染都得到新的 key，React 每次都会销毁并重建所有行，state 全部丢失
+      correct: true
+      explain: key 必须稳定。id 应该在创建数据时生成一次，保存在数据里。
+    - text: 没有问题，随机 id 一定唯一
+      explain: 唯一但不稳定。key 既要唯一，也要在多次渲染之间保持不变。
+    - text: crypto.randomUUID 在浏览器中不可用
+      explain: 现代浏览器在安全上下文（https 或 localhost）中都支持它；问题在于每次渲染都调用。
+- id: fragment-key
+  type: single
+  prompt: 每个词条需要渲染成一对 `<dt>` 和 `<dd>`，并且不能多出包裹元素。key 应该写在哪里？
+  options:
+    - text: "`<Fragment key={term.id}>…</Fragment>` 上"
+      correct: true
+      explain: 带 key 的 Fragment 要写成 Fragment 的完整形式，简写的 <>…</> 不能写 key。
+    - text: "`<dt>` 和 `<dd>` 上各写一个相同的 key"
+      explain: key 要写在 map 直接返回的那个元素上，并且兄弟之间不能重复。
+    - text: "`<>` 上：`<key={term.id}>`"
+      explain: 这不是合法的语法，简写的 Fragment 不支持属性。
