@@ -8,8 +8,8 @@
 |---|---|
 | 平台功能（M1） | ✅ 最小完整学习闭环已实现并通过自动化测试 |
 | 同步 / 问 AI / 部署（M2） | ✅ 同步与部署已上线并验证；问 AI 已实现，**未配置密钥，未做线上调用验证** |
-| 课程编写 | ⚠ 已发布 **70 / 126** 节：A 阶段 20 节、B 阶段 17 节、D 阶段 10 节、E 阶段 12 节（e01–e12）、G 阶段 11 节（g01–g11）；没有草稿；其余 56 节为规划中 |
-| 课程审核 | ⚠ 已发布的 70 节：浏览器自动验证 + 独立 AI 审查 + 按意见修正（`self-reviewed`）；**没有人工审核** |
+| 课程编写 | ⚠ 已发布 **71 / 126** 节：A 阶段 20 节、B 阶段 17 节、D 阶段 10 节、E 阶段 12 节（e01–e12）、G 阶段 12 节（g01–g12）；草稿 1 节（g13，已在 Chromium 与 WebKit 中通过浏览器验证，独立审查进行中）；其余 54 节为规划中 |
+| 课程审核 | ⚠ 已发布的 71 节：浏览器自动验证 + 独立 AI 审查 + 按意见修正（`self-reviewed`）；**没有人工审核** |
 | 项目实验（I 阶段） | ⬜ 未开始 |
 | Next.js 实验（H 阶段） | ⬜ 未开始 |
 
@@ -26,6 +26,7 @@
 | 输出格式与 Node.js `util.inspect`/`util.format` 一致 | ✅ | 60 项与 Node 对照的单元测试 |
 | DOM 模式：真实网页预览、每个测试前恢复页面、循环保护 | ✅ | e2e |
 | React 模式：React 19.3 开发版、RTL 组件测试、真实预览交互 | ✅ | e2e |
+| React 模式提供 React Router 8.5（`react-router`、`react-router/dom`，与 React 打包在同一个运行时中，开发版构建；类型在 React 类型组中） | ✅ | g13 课程验证（Chromium、WebKit）：内存路由、哈希路由预览、`NavLink`、查询参数 |
 | 判题：类型 / 规则（AST）/ 行为三类检查，快照哈希，编辑后结果失效 | ✅ | e2e |
 | 规则：any、类型断言（含泛型 querySelector）、非空断言、@ts-ignore/@ts-nocheck/@ts-expect-error、var | ✅ | 单元测试 |
 | 纯 HTML/CSS 页面（没有脚本时只显示页面）；DOM 断言 `toContainElement`、`toHaveStyle`（计算样式） | ✅ | e2e |
@@ -45,6 +46,8 @@
 | 问 AI（服务端代理 Claude，`claude-opus-5-5`，流式，默认先给思路） | ✅ 已实现 | ⚠ 未配置 API 密钥，未做真实调用；接口鉴权与未配置时的降级有单元测试 |
 | 浅色/深色、字号、可折叠目录、窄屏抽屉、目录搜索 | ✅ | e2e（手机/平板/桌面无横向溢出） |
 | 课程内容管线与发布验收（`content:check`、`content:verify`、`content:verify:webkit`、链接检查） | ✅ | 实际运行 |
+| 课程 Markdown 中作者写的原始 HTML（例如没有加反引号的 `<T>`）当作文字显示，`content:check` 报告为错误 | ✅ | 单元测试 3 项；全部课程的检查 |
+| 测试 API 的 `toHaveTextContent('')` 与 jest-dom 一致（只有内容为空才通过） | ✅ | 单元测试 2 项 |
 
 ## 已运行的检查（2026-10-20，Windows 11，Node 24.13）
 
@@ -52,11 +55,11 @@
 |---|---|
 | `npm run typecheck` | 通过 |
 | `npm run lint` | 通过 |
-| `npm test` | 5 个文件、102 项全部通过 |
-| `npm run content:check` | 已发布 70、草稿 0、错误 0、提醒 0 |
-| `npm run content:links` | 198 个参考链接全部可访问 |
-| `npm run content:verify`（Chromium） | 已发布的 70 节全部通过，验证记录与当前源文件一致（每节 15–29 项检查：示例的诊断与运行结果、参考解、替代解、错误解、起始代码）；第 14、15 轮修改后的 11 节重新验证 |
-| `npm run content:verify:webkit` | A、B 阶段 37 节（修复前的一次运行）与 D、E、G 阶段 29 节（修复后）全部通过；第 14 轮修改后的 7 节（e10、g01、g02、g04–g07）再次通过；g08–g11 在第 15 轮修改后通过 |
+| `npm test` | 7 个文件、107 项全部通过 |
+| `npm run content:check` | 已发布 71、草稿 1、错误 0、提醒 0 |
+| `npm run content:links` | 228 个参考链接全部可访问 |
+| `npm run content:verify`（Chromium） | 已发布的 71 节与草稿 g13 全部通过，验证记录与当前源文件一致（每节 15–29 项检查：示例的诊断与运行结果、参考解、替代解、错误解、起始代码） |
+| `npm run content:verify:webkit` | A、B 阶段 37 节（修复前的一次运行）与 D、E、G 阶段 29 节（修复后）全部通过；第 14 轮修改后的 7 节（e10、g01、g02、g04–g07）再次通过；g08–g11 在第 15 轮修改后通过；g12、g13 通过 |
 | `npm run build` | 通过 |
 | `npx playwright test --project=e2e --project=e2e-webkit`（生产预览，含 CSP） | 65 项全部通过（Chromium 45、WebKit 20） |
 
@@ -79,6 +82,7 @@
 | 9 | e01–e04 | 1 处错误（Promise `catch` 回调参数实为 `any` 而非 `unknown`）；4 处测试漏洞（防抖、failAfter、超时时刻、结果顺序）；“同步执行到第一个 await”未讲先考；缺少 `return await` 讲解；若干行号与先修关系 | 全部修改后发布；补充测试与对应的错误解 |
 | 10–11 | d01–d10 | 语义（aside 的作用域、article 不是地标、search 元素）、placeholder 与可访问名称；多处测试漏洞（委托、失败时清除字段、阻止默认提交、按钮位置等）；对比度测试改用 canvas 换算颜色；d06 复用节点保留焦点；d08 中键与修饰键 | 全部修改后发布 |
 | 12 | e05–e08 | 2 处错误（e08 参考解在读取响应体时超时抛错类型不对；“请求完成后 abort 不受影响”说法相反）；e07 每次新插入 `role="status"`、状态提示放在 `aria-busy` 区域中；多处测试漏洞（Promise.race 不中止请求、404/非 JSON/逐项验证、网络失败退避）；e06 日期只检查 NaN；e05 补讲 `encodeURIComponent` | 全部修改；平台新增响应体延迟的模拟；e05、e06 发布 |
+| 16 | g12 | 2 处平台问题：测验文字中没有加反引号的 JSX（`<ChatRoom … />`）被浏览器当成标签吞掉，**已发布的 g01、g06、g07、g09 的测验中也有同样的问题**（`<h2>`、`<option>`、`<T>`、`Ref<HTMLInputElement>` 不显示）；平台的 `toHaveTextContent('')` 永远通过，两处“提示消失”的测试实际没有检查。测试漏洞：筛选时重新排序、全名不去空白；Profiler 的测量说明、父组件循环的条件、拼音输入法下的观察结果；在渲染中计数与“渲染必须是纯的”冲突 | 全部修改；平台把 Markdown 中的原始 HTML 当作文字显示并在 `content:check` 中报错，`toHaveTextContent('')` 改为与 jest-dom 一致；四节已发布课的测验修正后重新验证；行的渲染次数改用 `<Profiler>` 统计；g12 发布 |
 | 15 | g08–g11 | 2 处规格与测试不一致或缺少测试：g10 `setQuantity` 对不在购物车中的商品的行为没有写进规格；g11 没有测试“被中止的请求不算失败”（不检查 `aborted` 的写法退格后会立刻显示失败）；多处测试漏洞（重置不限制范围、重做到 `undefined`、只阻止 `mousedown` 的焦点写法、再次编辑时的草稿、单向切换主题、不验证响应格式、渲染时设置标题、只依赖 `delay === null`）；一条提示把学生引向 `at(-1)` 的陷阱；错误的课程引用与预览尺寸说明；切换按钮文字随状态变化；g11 缺少 e08 先修 | 全部修改；g08 新增泛型 Hook 示例，g09 补讲 ref 回调的清理与类型，g11 搜索状态改为常驻的 `role="status"` 区域；补充对应的错误解；4 节在 Chromium 与 WebKit 中验证后发布 |
 | 14 | g01、g02、g04–g07，复查 e10 的路由题 | g04 两处测试漏洞（toggle 写成只能取消、字号一步跳到边界）与“标题不变时返回原数组”；g05 播放列表缺少同名歌曲，`key={title}` 能通过；g07 分段选择器用 `aria-pressed` 按钮表达“多选一”，FAQ 解释引用了错误的课程；e10 路由在页面刚打开时就移动焦点、没有测试链接内的子元素、`createMemoryRouter` 的用途描述不准确；g01、g02、g06 的措辞、悬停类型说明与测试补充 | 全部修改；g07 分段选择器改为原生单选框（`fieldset` + `legend`，`name` 由 `useId()` 生成）；补充对应的错误解；7 节发布 |
 | 13 | e09–e12，复查 e07 | **Safari 中沙箱的 `history.back()` 会让课程页面后退**、e10 路由题在 Safari 中无法完成（平台问题）；e12 测试没有覆盖协议白名单（黑名单解法能生成 `javascript:` 链接）；e10 路由题多处漏洞（XSS、修饰键、丢失查询参数）；e09 测验解释错误、日期验证与 e06 矛盾；e11 cookie 动机与 `Vary` 范围；e07 测试依赖计时 | 全部修改；平台新增历史记录保护、WebKit 焦点模拟、WebKit 课程验证；e10 路由题重新设计（待审查）；e07–e09、e11、e12 发布 |
@@ -109,6 +113,7 @@
 | 跨设备同步：Vercel Function + Neon（新加坡） | 学习者要求跨设备；单用户密码；离中国大陆较近；本地优先、离线可用。 |
 | 问 AI：服务端调用 `@anthropic-ai/sdk`，默认 `claude-opus-5-5`，开启服务端 refusal fallback（`fallbacks: "default"`） | 密钥不进浏览器；按 Anthropic 官方用法；模型可用 `AI_MODEL` 更换。 |
 | 课程审核状态 | AI 起草的内容最高只标 `self-reviewed`（经过明确的二次检查），不冒称人工审核。 |
+| React Router 打包进 React 运行时 | g13 需要真实的 React Router。平台本身已经依赖 react-router 8.5，和 React 打包在一起可以共用同一个 React 实例；代价是 React 运行时从约 612 KB 增加到约 815 KB（gzip 约 231 KB），React 类型组从约 1.1 MB 增加到约 1.5 MB。沙箱中不能修改路径，课程预览用 `createHashRouter`，测试用 `createMemoryRouter`。 |
 
 ## 阻塞与需要你处理的事项
 
@@ -119,7 +124,7 @@
 
 ## 下一步（按计划顺序）
 
-1. G 阶段其余课时（g12–g15）；g13 需要先决定是在平台中加入 react-router 依赖，还是用平台自带的方式讲路由。
+1. g13（React Router）的独立审查进行中，按意见修改后发布；然后是 g14、g15。
 2. 项目 1（原生 TS 任务板）。
 3. F 阶段（工程化、测试、调试、Git、构建与 CI）与 e13（密钥边界）。
 4. 为“课程更新后草稿处理”补充 e2e。

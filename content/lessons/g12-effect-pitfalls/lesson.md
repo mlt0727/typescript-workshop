@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 上一课讲了 Effect 的用法。Effect 很好用，所以也很容易被滥用：用它把 props 复制进 state、计算派生的数据、在 state 变化之后通知父组件、等“已提交”的标记变成 true 再发请求。这样的代码每次都多渲染一遍，先用过时的数据渲染一次，逻辑也分散在好几个地方。这一课讲哪些场景其实不需要 Effect（渲染时计算、用 key 重置、放进事件处理函数），以及 memo、useMemo、useCallback 这些性能工具的作用、正确用法和使用时机，最后介绍会自动完成这些优化的 React Compiler。
 objectives:
   - 识别不需要 Effect 的场景：能从 props 和 state 算出来的值在渲染时计算；用 key 重置组件的 state；由用户操作引起的逻辑放进事件处理函数
