@@ -109,8 +109,8 @@
       ]
     },
     "a02-compile-vs-runtime": {
-      "verifiedAt": "2026-10-20T09:41:51.205Z",
-      "sourceHash": "9e215d2b49f6854c",
+      "verifiedAt": "2026-10-20T11:09:49.839Z",
+      "sourceHash": "d740472dd62ea000",
       "ok": true,
       "checks": [
         {
@@ -3720,8 +3720,8 @@
       ]
     },
     "b15-generic-constraints": {
-      "verifiedAt": "2026-10-20T10:47:31.682Z",
-      "sourceHash": "f0de01a4d2a34a75",
+      "verifiedAt": "2026-10-20T11:09:50.365Z",
+      "sourceHash": "528259f2d604df0a",
       "ok": true,
       "checks": [
         {
@@ -3780,7 +3780,7 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:pluck:wrong:string-key",
+          "target": "exercise:pluck:wrong:keyof-without-k",
           "ok": true,
           "detail": "被拒绝（types）；types=fail(TS2344@pluck.test-d.ts:7 Type 'string[]' does not satisfy the constraint '\"Expected: string, Actual: number\"[]'.；TS2344@pluck.test-d.ts:8 Type 'number[]' does not satisfy the constraint '\"Expected: number, Actual: string\"[]'.) rules=ok tests=ok"
         },
@@ -3818,12 +3818,17 @@
           "target": "exercise:typed-store:wrong:notify-unchanged",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createStore › 值没有变化时不通知)"
+        },
+        {
+          "target": "exercise:typed-store:wrong:get-without-k",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@store.test-d.ts:6 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: boolean\"'.；TS2344@store.test-d.ts:7 Type 'string' does not satisfy the constraint '\"Expected: string, Actual: boolean\"'.) rules=ok tests=ok"
         }
       ]
     },
     "b16-assertions-as-const-satisfies": {
-      "verifiedAt": "2026-10-20T10:49:34.864Z",
-      "sourceHash": "a13c51dc73faef39",
+      "verifiedAt": "2026-10-20T11:09:50.760Z",
+      "sourceHash": "dcf8757a3213b05e",
       "ok": true,
       "checks": [
         {
@@ -3919,8 +3924,8 @@
       ]
     },
     "b17-enums-and-alternatives": {
-      "verifiedAt": "2026-10-20T10:51:36.017Z",
-      "sourceHash": "b79531be2ab847c7",
+      "verifiedAt": "2026-10-20T11:09:51.102Z",
+      "sourceHash": "66c70085712d293e",
       "ok": true,
       "checks": [
         {
@@ -3954,7 +3959,7 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:migrate-enum:alt:literal-union-and-object",
+          "target": "exercise:migrate-enum:alt:derived-type-lookup",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
@@ -3971,7 +3976,7 @@
         {
           "target": "exercise:http-status:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2305@http.test.ts:2 Module '\"./http\"' has no exported member 'category'.；TS2724@http.test.ts:2 '\"./http\"' has no exported member named 'isHttpStatus'. Did you mean 'HttpStatus'?；TS2305@http.test.ts:2 Module '\"./http\"' has no exported member 'statusName'.；TS2339@http.test.ts:17 Property 'ServerErro) rules=ok tests=fail(SyntaxError: The requested module './http.ts' does not provide an export named 'category')"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2305@http.test.ts:2 Module '\"./http\"' has no exported member 'category'.；TS2724@http.test.ts:2 '\"./http\"' has no exported member named 'isHttpStatus'. Did you mean 'HttpStatus'?；TS2305@http.test.ts:2 Module '\"./http\"' has no exported member 'statusName'.；TS2339@http.test.ts:18 Property 'ServerErro) rules=ok tests=fail(SyntaxError: The requested module './http.ts' does not provide an export named 'category')"
         },
         {
           "target": "exercise:http-status:solution:solution",
@@ -3980,6 +3985,11 @@
         },
         {
           "target": "exercise:http-status:alt:entries-loop",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:http-status:alt:reverse-table",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
@@ -3996,7 +4006,7 @@
         {
           "target": "exercise:http-status:wrong:missing-name",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(HttpStatus › isHttpStatus)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(HttpStatus › isHttpStatus,HttpStatus › statusName 反向查找)"
         }
       ]
     },

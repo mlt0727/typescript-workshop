@@ -65,7 +65,7 @@ test('权重', () => {
   expect(weight('high')).toBe(3);
 });
 
-test('运行时对象只有三个成员', () => {
+test('运行时对象的成员', () => {
   expect(Object.entries(Priority)).toEqual([
     ['Low', 'low'],
     ['Medium', 'medium'],
@@ -100,15 +100,15 @@ weight('urgent');
 迁移后还多了一个好处：类型是普通的字符串字面量联合，`weight('high')` 这样直接传字符串也能通过检查；原来的字符串枚举不接受普通字符串。
 :::
 
-:::variant{kind=alt name=literal-union-and-object}
+:::variant{kind=alt name=derived-type-lookup}
 ```ts file=priority.ts
-export type Priority = 'low' | 'medium' | 'high';
-
 export const Priority = {
   Low: 'low',
   Medium: 'medium',
   High: 'high',
-} as const satisfies Record<string, Priority>;
+} as const;
+
+export type Priority = (typeof Priority)[keyof typeof Priority];
 
 const WEIGHTS: Record<Priority, number> = { low: 1, medium: 2, high: 3 };
 

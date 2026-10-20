@@ -74,7 +74,7 @@ console.log(typeof console.log);
 console.log(Array.isArray([1, 2]), Array.isArray({ a: 1 }));
 ```
 - 注意两个“意外”：`typeof null` 是 `'object'`（JavaScript 早期设计遗留的问题），数组的 `typeof` 也是 `'object'`。判断数组要用 `Array.isArray`。
-- `typeof` 在 TypeScript 里还有另一种用法（写在类型的位置，用来“取得某个变量的类型”），C 阶段会讲。这一课说的都是运行时的 `typeof`。
+- `typeof` 在 TypeScript 里还有另一种用法（写在类型的位置，用来“取得某个变量的类型”），b16 会讲。这一课说的都是运行时的 `typeof`。
 :::
 
 TypeScript 会理解这些运行时检查：在 `if (typeof value === 'string')` 的分支里（`===` 是严格相等，a06 会讲为什么不用 `==`），它知道 `value` 一定是字符串，于是允许你使用字符串的方法。这叫**类型收窄**（narrowing），B 阶段会系统讲解，下面的小任务先体验一下。

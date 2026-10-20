@@ -21,7 +21,7 @@
       explain: 所有属性都变成了 `readonly`。
     - text: "`point.tags` 的类型是 `readonly ['a']`"
       correct: true
-      explain: 嵌套的数组也变成了只读元组。
+      explain: "`as const` 是深层的：直接写在里面的数组字面量也变成了只读元组。"
     - text: 运行时 `point` 被冻结，修改会抛出异常
       explain: "`as const` 只影响类型，运行时需要 `Object.freeze`。"
 - id: satisfies-vs-annotation
@@ -40,7 +40,7 @@
     - text: 两者都是 `string | undefined`，都不报错
       explain: 这是 `a` 的情况：注解为 `Record<string, string>` 后，任何键都“存在”。
     - text: "`satisfies` 会把 `b` 的类型变成 `Theme`"
-      explain: "`satisfies` 只检查，不改变推断出的类型。"
+      explain: "`satisfies` 不会把 `b` 的类型换成 `Theme`，`b` 的类型仍由对象字面量推断：`{ primary: string }`。"
 - id: double-assertion
   type: single
   prompt: "`const n = 'hello' as unknown as number;` 为什么危险？"

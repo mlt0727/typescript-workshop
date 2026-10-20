@@ -5,7 +5,7 @@ title: 类型安全的状态存储
 实现 `createStore(initial)`，返回一个通用的状态存储，适用于任何对象形状的状态：
 
 - `get(key)`：返回 `key` 当前的值，类型是该键对应的值类型；
-- `set(key, value)`：`value` 的类型必须和该键对应；值没有变化时（`Object.is` 判断相等）什么也不做；否则保存新值，并通知订阅了这个键的监听函数 `(newValue, oldValue)`；
+- `set(key, value)`：`value` 的类型必须和该键对应；值没有变化时（用 `Object.is` 判断相等：它和 `===` 基本相同，区别是 `NaN` 等于自身、`+0` 与 `-0` 不相等）什么也不做；否则保存新值，并通知订阅了这个键的监听函数 `(newValue, oldValue)`；
 - `subscribe(key, listener)`：订阅某个键的变化，返回取消订阅的函数；
 - `snapshot()`：返回当前完整状态的**浅拷贝**。
 
@@ -159,11 +159,11 @@ store.get('missing');
 :::
 
 :::explanation
-`T extends object` 让存储适用于任何对象形状的状态；三个方法上的 `K extends keyof T` 把“键”和“值的类型”绑定在一起：`set('count', '1')` 找不到匹配，在编译期被拒绝；`subscribe('ready', …)` 的回调参数自动是 `boolean`。
+`T extends object` 让存储适用于任何对象形状的状态；三个方法上的 `K extends keyof T` 把“键”和“值的类型”绑定在一起：`set('count', '1')` 中 `K` 被推断为 `'count'`，`value` 必须是 `number`，于是报 TS2345，在编译期被拒绝；`subscribe('ready', …)` 的回调参数自动是 `boolean`。
 
 真正的难点在于保存监听函数：一个 `Map<keyof T, …>` 无法记住“这个键对应这种参数类型”。如果把它们存成某个宽泛的类型，调用时就不得不用类型断言把类型“找回来”——断言只是“相信我”，判题规则也不允许。参考答案换了个思路：在 `subscribe` 内部，`K` 和 `T[K]` 都是已知的，于是把监听函数包装成一个只需要 `previous: T` 的闭包（a14）。闭包自己知道该取哪个键、参数是什么类型，存储时所有闭包的类型都一样，整个实现不需要任何断言。
 
-`set` 先用 `Object.is` 判断值是否变化（它把 `NaN` 视为等于自身），再保存修改前的状态 `previous`，通知时闭包从 `previous` 里取旧值、从 `state` 里取新值。遍历时复制订阅列表，和 b10 的订阅器一样，避免监听函数在回调中取消订阅导致跳过别人。
+`set` 先用 `Object.is` 判断值是否变化（它把 `NaN` 视为等于自身），再保存修改前的状态 `previous`，通知时闭包从 `previous` 里取旧值、从 `state` 里取新值。遍历时先复制订阅列表，和 b10 一样，避免监听函数在回调中取消订阅导致跳过别人（本题不要求处理“同一轮通知中途被取消的监听函数不再调用”，b10 的挑战要求了）。
 
 这类“类型系统难以直接表达、需要在实现内部换个结构”的情况在库代码中很常见，关键是让**对外的签名**保持精确。
 :::
@@ -265,6 +265,32 @@ export function createStore<T extends object>(initial: T) {
   }
   function subscribe<K extends keyof T>(key: K, listener: (newValue: T[K], oldValue: T[K]) => void): () => void {
     const entry = { key: key, notify: (old: T) => listener(state[key], old[key]) };
+    subscribers.push(entry);
+    return () => {
+      subscribers.splice(subscribers.indexOf(entry), 1);
+    };
+  }
+  return { get, set, subscribe, snapshot: (): T => ({ ...state }) };
+}
+```
+:::
+
+:::variant{kind=wrong name=get-without-k fails=types reason="get 没有用类型参数 K，返回类型是所有值类型的联合"}
+```ts file=store.ts
+export function createStore<T extends object>(initial: T) {
+  const state: T = { ...initial };
+  const subscribers: { key: keyof T; notify: (previous: T) => void }[] = [];
+  function get(key: keyof T): T[keyof T] {
+    return state[key];
+  }
+  function set<K extends keyof T>(key: K, value: T[K]): void {
+    if (Object.is(state[key], value)) return;
+    const previous: T = { ...state };
+    state[key] = value;
+    for (const s of [...subscribers]) if (s.key === key) s.notify(previous);
+  }
+  function subscribe<K extends keyof T>(key: K, listener: (newValue: T[K], oldValue: T[K]) => void): () => void {
+    const entry = { key: key, notify: (previous: T) => listener(state[key], previous[key]) };
     subscribers.push(entry);
     return () => {
       subscribers.splice(subscribers.indexOf(entry), 1);

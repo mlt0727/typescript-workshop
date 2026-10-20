@@ -33,7 +33,7 @@
   options:
     - text: "`T` 可能是比 `{ count: number }` 更具体的类型，返回一个只有 `count` 的新对象不满足调用方期待的 `T`"
       correct: true
-      explain: "例如传入 `{ count: 3, name: 'x' }`，调用方以为拿回的对象也有 `name`。可以返回 `{ ...value, count: 0 }`。"
+      explain: "例如传入 `{ count: 3, name: 'x' }`，调用方以为拿回的对象也有 `name`。修改参数本身再返回它，或者把返回类型改成 `{ count: number }`。不要指望 `{ ...value, count: 0 }`：它能编译，但如果传入的是类实例，展开得到的普通对象会丢掉原型上的方法。"
     - text: 泛型函数不能返回对象字面量
       explain: 可以返回，只要它的类型符合返回类型。
     - text: 约束必须写成 interface

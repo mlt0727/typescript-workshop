@@ -46,9 +46,9 @@ stages:
       - { id: b12-classes, title: 类、字段与访问控制, status: published, prerequisites: [b10-function-types, a15-this] }
       - { id: b13-inheritance-implements, title: 继承、实现接口与抽象类, status: published, prerequisites: [b12-classes] }
       - { id: b14-generics, title: 泛型函数与泛型类型, status: published, prerequisites: [b10-function-types] }
-      - { id: b15-generic-constraints, title: 泛型约束, status: draft, prerequisites: [b14-generics] }
-      - { id: b16-assertions-as-const-satisfies, title: 类型断言、as const 与 satisfies, status: draft, prerequisites: [b15-generic-constraints] }
-      - { id: b17-enums-and-alternatives, title: 枚举与可擦除语法, status: draft, prerequisites: [b16-assertions-as-const-satisfies] }
+      - { id: b15-generic-constraints, title: 泛型约束, status: published, prerequisites: [b14-generics] }
+      - { id: b16-assertions-as-const-satisfies, title: 类型断言、as const 与 satisfies, status: published, prerequisites: [b15-generic-constraints] }
+      - { id: b17-enums-and-alternatives, title: 枚举与可擦除语法, status: published, prerequisites: [b16-assertions-as-const-satisfies] }
 
   - id: E
     title: 浏览器机制、异步与数据

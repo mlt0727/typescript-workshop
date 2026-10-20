@@ -69,7 +69,7 @@ pluck(users, 'email');
 
 起始代码的 `item[key]` 本身就会报错：`key` 是任意字符串，TypeScript 无法确定它是 `T` 的键（a11、b01 讲过的 TS7053）。加上约束后，这个访问就是安全的。
 
-注意 `T[K][]` 是“`T[K]` 的数组”；如果写成 `T[K[]]` 意思就完全不同了。也可以写成 `Array<T[K]>`，更不容易看错。
+注意 `T[K][]` 是“`T[K]` 的数组”；写成 `T[K[]]` 会报错（TS2536：数组类型不能用来索引 `T`）。也可以写成 `Array<T[K]>`，更不容易看错。
 :::
 
 :::variant{kind=alt name=array-generic}
@@ -84,7 +84,7 @@ export function pluck<Item, Key extends keyof Item>(items: readonly Item[], key:
 ```
 :::
 
-:::variant{kind=wrong name=string-key fails=types reason="key 的类型是 string，任何字符串都能传入，返回类型也不准确"}
+:::variant{kind=wrong name=keyof-without-k fails=types reason="没有单独的类型参数 K，返回类型是所有值类型的联合，和传入的键无关"}
 ```ts file=pluck.ts
 export function pluck<T>(items: readonly T[], key: keyof T): T[keyof T][] {
   return items.map((item) => item[key]);

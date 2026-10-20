@@ -2,10 +2,10 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 上一课的泛型函数对 T 一无所知，连 value.length 都不能用。很多时候你需要的是“任何具有某些特征的类型”：任何有 length 的值、任何对象的任何键。泛型约束 T extends … 表达的就是这件事。配合 keyof 和索引访问类型 T[K]，可以写出“传入哪个键，就返回那个键对应类型的值”的函数——b11 用重载才做到的事情，现在一个签名就够了。
 objectives:
-  - "用 T extends 约束 限制类型参数，在函数内部使用约束保证存在的属性"
+  - "用 `T extends 约束类型` 限制类型参数，在函数内部使用约束保证存在的属性"
   - 知道返回值类型是 T 时，不能返回一个“只满足约束”的新对象
   - 用 keyof 得到对象类型所有键的联合，用 T[K] 得到某个键对应的值类型
   - "写出 K extends keyof T 的函数，让返回类型随传入的键变化"
@@ -76,10 +76,10 @@ console.log(atLeast([1, 2, 3], 2));
 
 两个新的类型运算符：
 
-- `keyof T`：`T` 所有键组成的字面量联合。`keyof { name: string; age: number }` 就是 `'name' | 'age'`。
+- `keyof T`：`T` 所有键组成的字面量联合。`keyof { name: string; age: number }` 就是 `'name' | 'age'`。（有索引签名的类型例外：`keyof { [k: string]: number }` 是 `string | number`，因为任意字符串都可以是键，而数字键也会被转成字符串。）
 - `T[K]`：**索引访问类型**，`T` 中键 `K` 对应的值的类型。`User['age']` 是 `number`；`K` 是联合时，结果也是联合。
 
-注意它们都是**类型层面**的写法：`User['age']` 写在类型的位置，和运行时的 `user['age']` 不是一回事。
+注意它们都是**类型层面**的写法：`User['age']` 写在类型的位置，和运行时的 `user['age']` 不是一回事。类型位置只能用方括号：写成 `User.age` 会报 TS2713（Java/C++ 中常见的写法在这里行不通）。
 
 :::playground{#keyof expect="2322@main.ts:8"}
 ```ts file=main.ts
@@ -95,7 +95,7 @@ const age: Age = 36;
 const value: NameOrAge = 'Ada';
 console.log(key, age, value, wrong);
 ```
-- 把鼠标停在 `UserKey`、`Age`、`NameOrAge` 上，看展开后的类型。
+- 把鼠标停在 `Age` 和 `NameOrAge` 上：分别是 `number` 和 `string | number`。`UserKey` 会显示为 `keyof User`，它等价于 `'name' | 'age' | 'admin'`；在第 7 行的引号里按 Ctrl+Space，补全列表会列出这三个键。
 - 第 8 行：`'email'` 不是 `User` 的键，报 TS2322。
 :::
 
@@ -132,7 +132,7 @@ getProp(user, 'email');
 ## 常见错误
 
 - **在泛型函数里使用约束之外的属性**：先在约束中声明它。
-- **返回类型写 `T`，却返回了只满足约束的新对象**：TS2322，改成返回约束类型，或者返回基于参数构造的值。
+- **返回类型写 `T`，却返回了只满足约束的新对象**：TS2322。要么直接返回参数本身，要么把返回类型改成约束类型。注意不要用展开 `{ ...value, length: min }` 绕过这个错误：它能编译，但对数组和类实例，展开得到的是普通对象，数组方法和原型上的方法都丢了，而类型仍然声称它是 `T`。
 - **把 `keyof T` 当成运行时的值**：它只是类型。运行时用 `Object.keys`（返回 `string[]`，b02 解释过原因）。
 - **用 `string` 代替 `keyof T`**：任意字符串都能传入，拼错的键要到运行时才暴露。
 
