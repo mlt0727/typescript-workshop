@@ -2965,6 +2965,103 @@
         }
       ]
     },
+    "b08-type-guards": {
+      "verifiedAt": "2026-10-20T10:26:14.277Z",
+      "sourceHash": "a24599c5ae67a124",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:type-guard:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:type-guard:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ { x: 1, y: 2 } ]"
+        },
+        {
+          "target": "playground:lying-guard:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:lying-guard:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of undefined (reading 'toUpperCase')）；输出：[error] Uncaught TypeError: Cannot read properties of undefined (reading 'toUpperCase')\n    at main.ts:9:25"
+        },
+        {
+          "target": "playground:assertions:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:assertions:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] hello | [log] B"
+        },
+        {
+          "target": "exercise:is-point:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@points.test-d.ts:6 Type 'Point' does not satisfy the constraint '\"Expected: ..., Actual: unknown\"'.) rules=ok tests=fail(isPoint › { x: 1 } 不是点,isPoint › { x: '1', y: 2 } 不是点,isPoint › [ 1, 2 ] 不是点,isPoint › { y: 2, z: 3 } 不是点,parsePoints › 只保留合法的点，并且只保留 x 和 y)"
+        },
+        {
+          "target": "exercise:is-point:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:is-point:alt:record-check",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:is-point:wrong:boolean-return",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@points.test-d.ts:6 Type 'Point' does not satisfy the constraint '\"Expected: ..., Actual: unknown\"'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:is-point:wrong:lying-guard",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isPoint › { x: 1 } 不是点,isPoint › { x: '1', y: 2 } 不是点,isPoint › [ 1, 2 ] 不是点,isPoint › { y: 2, z: 3 } 不是点,parsePoints › 只保留合法的点，并且只保留 x 和 y)"
+        },
+        {
+          "target": "exercise:is-point:wrong:keep-extra",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parsePoints › 只保留合法的点，并且只保留 x 和 y)"
+        },
+        {
+          "target": "exercise:assert-config:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@config.test-d.ts:6 Type 'Config' does not satisfy the constraint '\"Expected: ..., Actual: unknown\"'.) rules=ok tests=fail(assertConfig › null 不是对象,assertConfig › [] 不是对象,assertConfig › 'config' 不是对象,assertConfig › 42 不是对象,assertConfig › name,assertConfig › port,assertConfig › tags,assertConfig › 按顺序报告第一个错误,loadConfig › 返回整理后的新对象,loadConfig › 配置错误时抛出)"
+        },
+        {
+          "target": "exercise:assert-config:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:assert-config:alt:helper-guards",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:assert-config:wrong:boolean-function",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18046@config.ts:19 'data' is of type 'unknown'.；TS18046@config.ts:19 'data' is of type 'unknown'.；TS18046@config.ts:19 'data' is of type 'unknown'.；TS2344@config.test-d.ts:6 Type 'Config' does not satisfy the constraint '\"Expected: ..., Actual: unknown\"'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:assert-config:wrong:skip-tag-items",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(assertConfig › tags)"
+        },
+        {
+          "target": "exercise:assert-config:wrong:return-raw",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadConfig › 返回整理后的新对象)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

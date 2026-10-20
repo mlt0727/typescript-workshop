@@ -1,0 +1,56 @@
+- id: predicate-meaning
+  type: single
+  prompt: "`function isUser(value: unknown): value is User` 的返回类型 `value is User` 表示什么？"
+  options:
+    - text: 函数返回 `true` 时，调用处的参数被收窄为 `User`
+      correct: true
+      explain: 这是类型守卫的含义；返回 `false` 时，`User` 会从参数的类型中去掉。
+    - text: TypeScript 会自动根据 `User` 的定义生成检查代码
+      explain: TypeScript 不生成任何运行时代码，检查要你自己写，它只相信你的实现。
+    - text: 函数一定返回一个 `User` 对象
+      explain: 守卫函数返回的是布尔值，`value is User` 描述的是这个布尔值的含义。
+- id: lying-guard
+  type: single
+  prompt: |
+    下面的代码会怎样？
+
+    ```ts
+    type User = { name: string };
+    function isUser(v: unknown): v is User {
+      return typeof v === 'object' && v !== null;
+    }
+    const data: unknown = { id: 1 };
+    if (isUser(data)) {
+      console.log(data.name.length);
+    }
+    ```
+  options:
+    - text: 类型检查通过，运行时抛出 `TypeError`
+      correct: true
+      explain: 守卫没有检查 `name`，但 TypeScript 完全相信它。`data.name` 是 `undefined`，读取 `.length` 时出错。
+    - text: TypeScript 报错：守卫的实现与 `User` 不符
+      explain: TypeScript 不检查守卫的实现是否正确。
+    - text: 输出 `undefined`
+      explain: 读取 `undefined.length` 会抛出 `TypeError`，不会输出 `undefined`。
+- id: assertion
+  type: single
+  prompt: "`function assertIsString(v: unknown): asserts v is string` 被调用后，如果函数正常返回，接下来的代码中 `v` 是什么类型？"
+  options:
+    - text: "`string`"
+      correct: true
+      explain: 断言函数正常返回就意味着断言成立，之后的代码按断言收窄。
+    - text: "`unknown`"
+      explain: 这是普通函数的结果；`asserts v is string` 会让调用之后的 `v` 变成 `string`。
+    - text: "`boolean`"
+      explain: 断言函数不返回值（返回类型相当于 `void`），它通过“抛出或不抛出”表达结果。
+- id: arrow-assertion
+  type: single
+  prompt: "`const check = (c: unknown): asserts c => { if (!c) throw new Error(); };` 之后调用 `check(x)`，为什么报 TS2775？"
+  options:
+    - text: 调用断言函数时，TypeScript 要求被调用的名字有明确的类型注解，而 `check` 的类型是推断出来的
+      correct: true
+      explain: "改用 `function check(c: unknown): asserts c { … }`，或给变量写注解 `const check: (c: unknown) => asserts c = …`。"
+    - text: 箭头函数不能抛出错误
+      explain: 箭头函数可以抛出错误；问题在于断言函数需要明确的类型注解。
+    - text: "`asserts c` 的写法是错误的，必须写成 `asserts c is boolean`"
+      explain: "`asserts 条件参数` 是合法的写法，表示参数为 truthy。"
