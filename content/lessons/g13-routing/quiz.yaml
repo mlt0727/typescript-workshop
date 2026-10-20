@@ -1,0 +1,44 @@
+- id: imports
+  type: single
+  prompt: 在使用 react-router 8 的项目中，下面哪种导入是正确的？
+  options:
+    - text: "`import { Link, useParams } from 'react-router'`，`import { RouterProvider } from 'react-router/dom'`"
+      correct: true
+      explain: 从 v7 开始所有内容都从 react-router 导入，和 DOM 有关的 RouterProvider 从 react-router/dom 导入；v8 删除了 react-router-dom 包。
+    - text: "`import { Link, useParams } from 'react-router-dom'`"
+      explain: 这是 v6 和更早版本的写法，v8 中已经没有 react-router-dom 这个包了。
+    - text: "`import { Switch, useHistory } from 'react-router'`"
+      explain: Switch 和 useHistory 是 v5 的 API，v6 起分别换成了 Routes 和 useNavigate。
+- id: navlink-end
+  type: single
+  prompt: 导航中写了 `<NavLink to="/products" end>商品</NavLink>`。在商品详情页 /products/205 上，“商品”没有 `aria-current="page"`。原因是？
+  options:
+    - text: end 让它只在地址正好是 /products 时才算当前页；去掉 end，它会按前缀匹配，详情页上也是当前页
+      correct: true
+      explain: NavLink 默认按前缀判断“当前页”，这对“商品”这样的分类导航正合适。end 只在需要“完全相同”时才加。
+    - text: 详情页是另一个路由，NavLink 只能匹配自己所在的路由
+      explain: NavLink 比较的是地址，和它写在哪个路由的组件中无关。
+    - text: 要用 Link 才能显示当前页
+      explain: 正好相反：Link 不会标出当前页，NavLink 才会。
+- id: params-type
+  type: single
+  prompt: "`const { productId } = useParams();` 中 `productId` 的类型是 `string | undefined`。正确的处理是？"
+  options:
+    - text: 先检查它存在并且格式正确（例如只由数字组成），再转换、查找；不合法时显示“没有这个商品”
+      correct: true
+      explain: 路径参数来自地址栏，可能缺失，也可能是任意字符串，使用前要验证（e06、e10）。
+    - text: 写成 productId! 告诉 TypeScript 它一定存在
+      explain: 非空断言只是让编译器不再提醒，地址中的值仍然可能不合法，例如 /products/abc。
+    - text: 直接用 parseInt(productId) 转换
+      explain: parseInt('205abc') 得到 205，格式错误的地址会被当成合法的编号。
+- id: replace
+  type: single
+  prompt: 搜索框绑定在查询参数 q 上，每输入一个字就调用一次 `setSearchParams({ q })`，不带其他选项。用户输入了“蛋糕”两个字，然后按一次浏览器的“后退”。会看到什么？
+  options:
+    - text: 搜索框变成“蛋”：每个字都新增了一条历史记录
+      correct: true
+      explain: "输入时应该写 `setSearchParams(…, { replace: true })`，替换当前的历史记录，后退才会离开这个页面或者回到上一次的操作。"
+    - text: 回到进入这个页面之前的页面
+      explain: 只有使用 replace 时才是这样；默认每次都新增一条记录。
+    - text: 什么都不变，查询参数不会影响历史记录
+      explain: 修改查询参数也是一次导航，默认会新增一条历史记录。

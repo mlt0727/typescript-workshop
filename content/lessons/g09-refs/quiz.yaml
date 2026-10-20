@@ -38,7 +38,7 @@
   type: single
   prompt: 在 React 19 中，自己的函数组件 `TextField` 想让使用者拿到内部的 `<input>`，应该怎么写？
   options:
-    - text: 在 props 中接收 ref（类型 Ref<HTMLInputElement>），把它交给内部的 input
+    - text: 在 props 中接收 ref（类型 `Ref<HTMLInputElement>`），把它交给内部的 input
       correct: true
       explain: React 19 起，函数组件可以像普通 prop 一样接收 ref。
     - text: 必须用 forwardRef 包装组件

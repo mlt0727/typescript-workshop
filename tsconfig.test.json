@@ -13,6 +13,7 @@
     "src/test",
     "src/compiler/core/node-loader.ts",
     "sandbox/src/**/*.test.ts",
+    "sandbox/src/types",
     "server/**/*.test.ts",
     "scripts/**/*.test.ts"
   ]

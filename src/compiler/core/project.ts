@@ -28,6 +28,8 @@ export const PROVIDED_DEPS = [
   'react/jsx-runtime',
   'react-dom',
   'react-dom/client',
+  'react-router',
+  'react-router/dom',
   'vitest',
   'vitest/browser',
   '@testing-library/dom',

@@ -11,6 +11,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { TS_VERSION } from '../src/compiler/config.ts';
 import type { Catalog, Lesson, VerifyData } from '../src/content/types.ts';
+import { parse as parseYaml } from 'yaml';
+import { findRawHtml } from './content/markdown.ts';
 import { lessonSourceHash } from './content/source-hash.ts';
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -29,6 +31,28 @@ const report = fs.existsSync(reportFile)
 
 const errors: string[] = [];
 const warnings: string[] = [];
+
+/** 正文、练习说明、测验中没有放进反引号的 HTML 标签（例如 `<T>`、`<input>`）会被当成文字显示，应该写成行内代码 */
+function rawHtmlIn(lessonId: string): string[] {
+  const dir = path.join(contentDir, 'lessons', lessonId);
+  const sources: { where: string; text: string }[] = [];
+  const stripFrontmatter = (text: string) => text.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+  sources.push({ where: 'lesson.md', text: stripFrontmatter(fs.readFileSync(path.join(dir, 'lesson.md'), 'utf8')) });
+  const exDir = path.join(dir, 'exercises');
+  if (fs.existsSync(exDir)) {
+    for (const f of fs.readdirSync(exDir)) sources.push({ where: `exercises/${f}`, text: stripFrontmatter(fs.readFileSync(path.join(exDir, f), 'utf8')) });
+  }
+  const quizFile = path.join(dir, 'quiz.yaml');
+  if (fs.existsSync(quizFile)) {
+    const quiz = parseYaml(fs.readFileSync(quizFile, 'utf8')) as { id: string; prompt: string; explain?: string; options: { text: string; explain: string }[] }[];
+    for (const q of quiz) {
+      for (const t of [q.prompt, q.explain ?? '', ...q.options.flatMap((o) => [o.text, o.explain])]) sources.push({ where: `quiz.yaml（${q.id}）`, text: String(t) });
+    }
+  }
+  return sources.flatMap(({ where, text }) =>
+    findRawHtml(text).map((html) => `${where} 中出现了原始 HTML ${JSON.stringify(html)}：它会被当成文字显示，请用反引号写成行内代码`),
+  );
+}
 
 const all = catalog.stages.flatMap((s) => s.lessons);
 const status = new Map(all.map((l) => [l.id, l.status]));
@@ -65,6 +89,8 @@ for (const meta of all) {
     const solution = JSON.stringify(ex.solution.map((f) => f.content));
     if (starter === solution) problems.push(`${where} 起始代码与参考解相同`);
   }
+
+  for (const issue of rawHtmlIn(meta.id)) problems.push(issue);
 
   if (meta.status === 'published' && !lesson.representative) {
     for (const p of meta.prerequisites) {

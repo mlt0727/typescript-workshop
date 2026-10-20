@@ -6385,8 +6385,8 @@
       ]
     },
     "g01-jsx-components": {
-      "verifiedAt": "2026-10-20T14:55:01.348Z",
-      "sourceHash": "911ce54daeec3ad6",
+      "verifiedAt": "2026-10-20T15:46:39.049Z",
+      "sourceHash": "5d8c2030fa5446fd",
       "ok": true,
       "checks": [
         {
@@ -6885,8 +6885,8 @@
       ]
     },
     "g06-controlled-forms": {
-      "verifiedAt": "2026-10-20T14:55:21.748Z",
-      "sourceHash": "16245a5e69f74d3f",
+      "verifiedAt": "2026-10-20T15:46:50.503Z",
+      "sourceHash": "da7f9a37b76fb57a",
       "ok": true,
       "checks": [
         {
@@ -7002,8 +7002,8 @@
       ]
     },
     "g07-lifting-state": {
-      "verifiedAt": "2026-10-20T14:55:25.796Z",
-      "sourceHash": "ea105fb0f49f469a",
+      "verifiedAt": "2026-10-20T15:46:54.954Z",
+      "sourceHash": "ae3e7ea05ac3dd88",
       "ok": true,
       "checks": [
         {
@@ -7231,8 +7231,8 @@
       ]
     },
     "g09-refs": {
-      "verifiedAt": "2026-10-20T15:14:16.631Z",
-      "sourceHash": "a2c1d15c0d84dc9a",
+      "verifiedAt": "2026-10-20T15:47:01.189Z",
+      "sourceHash": "9c6fe568c2cc6506",
       "ok": true,
       "checks": [
         {
@@ -7542,8 +7542,8 @@
       ]
     },
     "g12-effect-pitfalls": {
-      "verifiedAt": "2026-10-20T15:25:27.199Z",
-      "sourceHash": "982339a249cf2139",
+      "verifiedAt": "2026-10-20T15:47:07.733Z",
+      "sourceHash": "47c817ffbe3656ca",
       "ok": true,
       "checks": [
         {
@@ -7579,7 +7579,7 @@
         {
           "target": "exercise:remove-effects:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(打开时显示第一个联系人和全名，只提交一次 ⟶ 打开页面时多渲染了一次：全名应该在渲染时计算,输入时全名同步变化，每输入一个字只提交一次 ⟶ 每输入一个字应该只渲染一次,切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ 切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）,每次提交都保存一次（去掉首尾空白），并显示“已保存” ⟶ 保存时应该只渲染一次,保存之后再修改，“已保存”消失；按回车也能保存 ⟶ expect(…).toHaveBeenLastCalledWith({ id: 'a', firstName: '三', lastName: '李' }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(打开时显示第一个联系人和全名，只提交一次 ⟶ 打开页面时多渲染了一次：全名应该在渲染时计算,输入时全名同步变化，每输入一个字只提交一次 ⟶ 输入一个字时多提交了一次：全名应该在渲染时计算，不要存进 state 再用 Effect 同步,切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ 切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）,每次提交都保存一次（去掉首尾空白），并显示“已保存” ⟶ 保存时应该只渲染一次,保存之后再修改，“已保存”消失；按回车也能保存 ⟶ expect(…).toHaveBeenLastCalledWith({ id: 'a', firstName: '三', lastName: '李' }))"
         },
         {
           "target": "exercise:remove-effects:solution:solution",
@@ -7594,12 +7594,12 @@
         {
           "target": "exercise:remove-effects:wrong:derived-in-effect",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(打开时显示第一个联系人和全名，只提交一次 ⟶ 打开页面时多渲染了一次：全名应该在渲染时计算,输入时全名同步变化，每输入一个字只提交一次 ⟶ 每输入一个字应该只渲染一次,切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ 切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(打开时显示第一个联系人和全名，只提交一次 ⟶ 打开页面时多渲染了一次：全名应该在渲染时计算,输入时全名同步变化，每输入一个字只提交一次 ⟶ 输入一个字时多提交了一次：全名应该在渲染时计算，不要存进 state 再用 Effect 同步,切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ 切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）)"
         },
         {
           "target": "exercise:remove-effects:wrong:reset-in-effect",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入时全名同步变化，每输入一个字只提交一次 ⟶ 每输入一个字应该只渲染一次,切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ 切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ 切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）)"
         },
         {
           "target": "exercise:remove-effects:wrong:save-in-effect",
@@ -7609,7 +7609,7 @@
         {
           "target": "exercise:remove-effects:wrong:no-key",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ expect(…).toHaveValue('韩'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ expect(…).toHaveValue('韩'),切换联系人时，“已保存”的提示不会带到另一个联系人 ⟶ expect(…).not.toHaveTextContent('已保存'))"
         },
         {
           "target": "exercise:memo-list:starter:starter",
@@ -7644,7 +7644,7 @@
         {
           "target": "exercise:memo-list:wrong:sort-every-render",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(在“备注”中输入：不重新渲染任何一行，也不重新排序 ⟶ 备注与商品无关，不应该重新排序,收藏一件商品：只重新渲染这一行，不重新排序 ⟶ expect(…).toBe(1))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(在“备注”中输入：不重新渲染任何一行，也不重新排序 ⟶ 备注与商品无关，不应该重新排序,收藏一件商品：只重新渲染这一行，不重新排序 ⟶ expect(…).toBe(1),筛选时，仍然显示的行不重新渲染 ⟶ 排序只取决于商品目录，筛选时不应该重新排序)"
         },
         {
           "target": "exercise:memo-list:wrong:compare-product-only",
@@ -7655,6 +7655,128 @@
           "target": "exercise:memo-list:wrong:missing-dependency",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按价格从低到高显示；筛选词去掉首尾空白 ⟶ expect(…).toEqual([ '绿茶', '奶茶' ]))"
+        },
+        {
+          "target": "exercise:memo-list:wrong:sort-with-filter",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(筛选时，仍然显示的行不重新渲染 ⟶ 排序只取决于商品目录，筛选时不应该重新排序)"
+        }
+      ]
+    },
+    "g13-routing": {
+      "verifiedAt": "2026-10-20T15:48:23.851Z",
+      "sourceHash": "08d83a2c31162220",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:first-router:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:first-router:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:route-params:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:route-params:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:search-params:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:search-params:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:app-routes:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(首页：显示在布局的 main 中，“首页”是当前页 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",从导航进入商品列表，再进入详情：页面不重新加载，“商品”一直是当前页 ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"商品\",详情页的“返回商品列表” ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",编号不存在或格式不对：“没有这个商品”，仍然显示在布局中 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",其他地址：“页面不存在”，仍然显示在布局中 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\")"
+        },
+        {
+          "target": "exercise:app-routes:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:app-routes:alt:jsx-routes",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:app-routes:wrong:plain-anchors",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(首页：显示在布局的 main 中，“首页”是当前页 ⟶ expect(…).toHaveAttribute('aria-current', 'page'),从导航进入商品列表，再进入详情：页面不重新加载，“商品”一直是当前页 ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"商品\",编号不存在或格式不对：“没有这个商品”，仍然显示在布局中 ⟶ expect(…).toHaveAttribute('aria-current', 'page'))"
+        },
+        {
+          "target": "exercise:app-routes:wrong:products-end",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(从导航进入商品列表，再进入详情：页面不重新加载，“商品”一直是当前页 ⟶ expect(…).toHaveAttribute('aria-current', 'page'),编号不存在或格式不对：“没有这个商品”，仍然显示在布局中 ⟶ expect(…).toHaveAttribute('aria-current', 'page'))"
+        },
+        {
+          "target": "exercise:app-routes:wrong:not-found-outside-layout",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(其他地址：“页面不存在”，仍然显示在布局中 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"main\")"
+        },
+        {
+          "target": "exercise:app-routes:wrong:parse-int",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编号不存在或格式不对：“没有这个商品”，仍然显示在布局中 ⟶ /products/205abc)"
+        },
+        {
+          "target": "exercise:app-routes:wrong:number-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编号不存在或格式不对：“没有这个商品”，仍然显示在布局中 ⟶ /products/205.0)"
+        },
+        {
+          "target": "exercise:catalog-search:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(从地址读取搜索词、排序和页码 ⟶ expect(…).toHaveValue('茶'),页码太大时显示最后一页 ⟶ expect(…).toEqual([ '矿泉水' ]),输入搜索词：更新地址中的 q，替换当前的历史记录，并回到第 1 页 ⟶ expect(…).toEqual({ q: '蛋糕' }),改变排序：新增一条历史记录，回到第 1 页；后退时界面跟着地址恢复 ⟶ expect(…).toEqual([ '奶茶', '蛋糕', '抹茶蛋糕' ]),翻页是链接：保留其他参数，第 1 页不写 page ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\" and name \"下一页\",后退、前进时，输入框跟着地址变化 ⟶ expect(…).toHaveValue('蛋糕'))"
+        },
+        {
+          "target": "exercise:catalog-search:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:catalog-search:alt:functional-updates",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:catalog-search:wrong:copy-into-state",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(后退、前进时，输入框跟着地址变化 ⟶ expect(…).toHaveValue('茶'))"
+        },
+        {
+          "target": "exercise:catalog-search:wrong:push-while-typing",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入搜索词：更新地址中的 q，替换当前的历史记录，并回到第 1 页 ⟶ 输入时应该替换历史记录，后退一次就离开这个页面)"
+        },
+        {
+          "target": "exercise:catalog-search:wrong:keep-page",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入搜索词：更新地址中的 q，替换当前的历史记录，并回到第 1 页 ⟶ expect(…).toEqual({ q: '蛋糕' }))"
+        },
+        {
+          "target": "exercise:catalog-search:wrong:no-clamp",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页码太大时显示最后一页 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"list\" and name \"商品\")"
+        },
+        {
+          "target": "exercise:catalog-search:wrong:page-one-in-url",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(翻页是链接：保留其他参数，第 1 页不写 page ⟶ expect(…).toEqual({ q: '茶' }))"
         }
       ]
     }

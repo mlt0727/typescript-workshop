@@ -2,7 +2,7 @@
 kind: challenge
 title: 只重新渲染需要的行
 ---
-`ProductList` 显示一个商品列表：可以按名字筛选，可以收藏商品，旁边还有一个与商品无关的“备注”框。`lib.ts`（只读）中的 `sortByPrice` 假设很慢，`ProductRow` 中调用的 `recordRender` 只用于统计每一行渲染了几次。
+`ProductList` 显示一个商品列表：可以按名字筛选，可以收藏商品，旁边还有一个与商品无关的“备注”框。`lib.tsx`（只读）中的 `sortByPrice` 假设很慢；`ProductRow` 用 `Tracked` 包住每一行，它用 `<Profiler>` 统计这一行被重新渲染了几次，不影响显示的内容。
 
 现在每输入一个字，每一行都会重新渲染，商品也会重新排序一遍。优化它，**行为保持不变**：
 
@@ -13,24 +13,25 @@ title: 只重新渲染需要的行
 5. 筛选时，仍然显示的行不重新渲染；
 6. 只有 `products` 变化时才重新排序。
 
-可以使用 `memo`、`useMemo`、`useCallback`，不要修改 `lib.ts`，也不要改变 `ProductRow` 显示的内容。
+可以使用 `memo`、`useMemo`、`useCallback`，不要修改 `lib.tsx`，也不要改变 `ProductRow` 显示的内容（包括 `Tracked`）。
 
 :::files{role=starter}
 ```tsx file=ProductList.tsx
 import { useState } from 'react';
-import { recordRender, sortByPrice, type Product } from './lib';
+import { Tracked, sortByPrice, type Product } from './lib';
 
 type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
 
 export function ProductRow({ product, favorite, onToggle }: RowProps) {
-  recordRender(product.id);
   return (
-    <li>
-      {product.name} ¥{product.price}{' '}
-      <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
-        {favorite ? '★' : '☆'}
-      </button>
-    </li>
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
   );
 }
 
@@ -61,7 +62,7 @@ export function ProductList({ products }: { products: readonly Product[] }) {
           <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={toggle} />
         ))}
       </ul>
-      <p>已收藏 {favorites.size} 件</p>
+      <p role="status">已收藏 {favorites.size} 件</p>
     </div>
   );
 }
@@ -69,7 +70,9 @@ export function ProductList({ products }: { products: readonly Product[] }) {
 :::
 
 :::files{role=support}
-```ts file=lib.ts readonly
+```tsx file=lib.tsx readonly
+import { Profiler, type ReactNode } from 'react';
+
 export type Product = { id: string; name: string; price: number };
 
 const stats = { sorts: 0, rows: new Map<string, number>() };
@@ -80,9 +83,13 @@ export function sortByPrice(products: readonly Product[]): Product[] {
   return products.toSorted((a, b) => a.price - b.price);
 }
 
-/** 在 ProductRow 中调用，只用于统计每一行渲染了几次（就像 console.log），不影响渲染的结果 */
-export function recordRender(id: string): void {
-  stats.rows.set(id, (stats.rows.get(id) ?? 0) + 1);
+/** 包住一行的内容：用 Profiler 统计这一行被重新渲染并提交了几次，不影响显示的内容 */
+export function Tracked({ id, children }: { id: string; children: ReactNode }) {
+  return (
+    <Profiler id={id} onRender={() => stats.rows.set(id, (stats.rows.get(id) ?? 0) + 1)}>
+      {children}
+    </Profiler>
+  );
 }
 
 export function readStats(): { sorts: number; rows: ReadonlyMap<string, number> } {
@@ -114,19 +121,20 @@ createRoot(container).render(<ProductList products={products} />);
 :::files{role=solution}
 ```tsx file=ProductList.tsx
 import { memo, useCallback, useMemo, useState } from 'react';
-import { recordRender, sortByPrice, type Product } from './lib';
+import { Tracked, sortByPrice, type Product } from './lib';
 
 type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
 
 export const ProductRow = memo(function ProductRow({ product, favorite, onToggle }: RowProps) {
-  recordRender(product.id);
   return (
-    <li>
-      {product.name} ¥{product.price}{' '}
-      <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
-        {favorite ? '★' : '☆'}
-      </button>
-    </li>
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
   );
 });
 
@@ -160,7 +168,7 @@ export function ProductList({ products }: { products: readonly Product[] }) {
           <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={toggle} />
         ))}
       </ul>
-      <p>已收藏 {favorites.size} 件</p>
+      <p role="status">已收藏 {favorites.size} 件</p>
     </div>
   );
 }
@@ -236,9 +244,10 @@ test('筛选时，仍然显示的行不重新渲染', async () => {
   const user = userEvent.setup();
   render(<ProductList products={products} />);
   await user.type(screen.getByLabelText('筛选'), '茶');
-  const { rows } = readStats();
+  const { rows, sorts } = readStats();
   expect(rows.get('tea')).toBe(1);
   expect(rows.get('milk-tea')).toBe(1);
+  expect(sorts, '排序只取决于商品目录，筛选时不应该重新排序').toBe(1);
 });
 
 test('商品目录变化时重新排序一次', () => {
@@ -246,6 +255,9 @@ test('商品目录变化时重新排序一次', () => {
   rerender(<ProductList products={[...products, { id: 'water', name: '矿泉水', price: 3 }]} />);
   expect(names()[0]).toBe('矿泉水');
   expect(readStats().sorts).toBe(2);
+  rerender(<ProductList products={products.map((p) => (p.id === 'cake' ? { ...p, price: 5 } : p))} />);
+  expect(names()[0], '商品数量不变、价格变了，也要重新排序').toBe('蛋糕');
+  expect(readStats().sorts).toBe(3);
 });
 ```
 :::
@@ -261,9 +273,11 @@ test('商品目录变化时重新排序一次', () => {
 :::explanation
 `memo` 只在**每一个** prop 都和上一次相同时才跳过渲染，所以要逐个检查传给 `ProductRow` 的 props：
 
-- `product`：来自排序后的数组。`useMemo(() => sortByPrice(products), [products])` 只在目录变化时重新排序，其他时候返回同一个数组，里面是同样的商品对象；筛选得到的新数组中，商品也还是这些对象；
+- `product`：`sortByPrice` 和 `filter` 都返回新数组，但数组中的商品还是原来的那些对象，所以即使每次都重新排序，`product` 也不会变。`useMemo(() => sortByPrice(products), [products])` 是为了另一件事：避免在备注、收藏、筛选变化时重复做那个慢的排序；
 - `favorite`：一个布尔值，只有被点击的那一行会变；
 - `onToggle`：普通的函数每次渲染都是新的。`useCallback` 让它保持不变，前提是依赖不变：用更新函数读取最新的收藏，依赖就是空数组。如果写成 `useCallback(…, [favorites])`，每次收藏之后 `toggle` 都是新的，所有行又都会重新渲染。
+
+把筛选也放进同一个 `useMemo`（依赖 `[products, query]`）看起来更省事，但每输入一个筛选字都会重新排序一遍。依赖要写得恰好：排序只依赖目录，筛选很便宜，留在渲染时做就好。
 
 在 `memo` 的组件上写内联的 `onToggle={(id) => toggle(id)}`，前面的努力就全白费了。自定义比较函数（`memo` 的第二个参数）也很危险：只比较 `product` 而忽略 `favorite`，星标就不会更新了。
 
@@ -273,19 +287,20 @@ test('商品目录变化时重新排序一次', () => {
 :::variant{kind=alt name=memo-wrapper}
 ```tsx file=ProductList.tsx
 import { memo, useCallback, useMemo, useState, type ChangeEvent } from 'react';
-import { recordRender, sortByPrice, type Product } from './lib';
+import { Tracked, sortByPrice, type Product } from './lib';
 
 type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
 
 function Row({ product, favorite, onToggle }: RowProps) {
-  recordRender(product.id);
   return (
-    <li>
-      {product.name} ¥{product.price}{' '}
-      <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
-        {favorite ? '★' : '☆'}
-      </button>
-    </li>
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
   );
 }
 
@@ -321,7 +336,7 @@ export function ProductList({ products }: { products: readonly Product[] }) {
           <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={toggle} />
         ))}
       </ul>
-      <p>已收藏 {favorites.size} 件</p>
+      <p role="status">已收藏 {favorites.size} 件</p>
     </div>
   );
 }
@@ -331,19 +346,20 @@ export function ProductList({ products }: { products: readonly Product[] }) {
 :::variant{kind=wrong name=no-memo fails=tests reason="用了 useMemo 和 useCallback，却没有用 memo 包住 ProductRow，每次都重新渲染所有的行"}
 ```tsx file=ProductList.tsx
 import { useCallback, useMemo, useState } from 'react';
-import { recordRender, sortByPrice, type Product } from './lib';
+import { Tracked, sortByPrice, type Product } from './lib';
 
 type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
 
 export function ProductRow({ product, favorite, onToggle }: RowProps) {
-  recordRender(product.id);
   return (
-    <li>
-      {product.name} ¥{product.price}{' '}
-      <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
-        {favorite ? '★' : '☆'}
-      </button>
-    </li>
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
   );
 }
 
@@ -377,7 +393,7 @@ export function ProductList({ products }: { products: readonly Product[] }) {
           <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={toggle} />
         ))}
       </ul>
-      <p>已收藏 {favorites.size} 件</p>
+      <p role="status">已收藏 {favorites.size} 件</p>
     </div>
   );
 }
@@ -387,19 +403,20 @@ export function ProductList({ products }: { products: readonly Product[] }) {
 :::variant{kind=wrong name=inline-handler fails=tests reason="给 memo 组件传了内联的箭头函数，每次都是新的 onToggle"}
 ```tsx file=ProductList.tsx
 import { memo, useCallback, useMemo, useState } from 'react';
-import { recordRender, sortByPrice, type Product } from './lib';
+import { Tracked, sortByPrice, type Product } from './lib';
 
 type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
 
 export const ProductRow = memo(function ProductRow({ product, favorite, onToggle }: RowProps) {
-  recordRender(product.id);
   return (
-    <li>
-      {product.name} ¥{product.price}{' '}
-      <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
-        {favorite ? '★' : '☆'}
-      </button>
-    </li>
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
   );
 });
 
@@ -433,7 +450,7 @@ export function ProductList({ products }: { products: readonly Product[] }) {
           <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={(id) => toggle(id)} />
         ))}
       </ul>
-      <p>已收藏 {favorites.size} 件</p>
+      <p role="status">已收藏 {favorites.size} 件</p>
     </div>
   );
 }
@@ -443,19 +460,20 @@ export function ProductList({ products }: { products: readonly Product[] }) {
 :::variant{kind=wrong name=callback-reads-state fails=tests reason="useCallback 依赖 favorites，每次收藏之后 toggle 都变了，所有的行都重新渲染"}
 ```tsx file=ProductList.tsx
 import { memo, useCallback, useMemo, useState } from 'react';
-import { recordRender, sortByPrice, type Product } from './lib';
+import { Tracked, sortByPrice, type Product } from './lib';
 
 type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
 
 export const ProductRow = memo(function ProductRow({ product, favorite, onToggle }: RowProps) {
-  recordRender(product.id);
   return (
-    <li>
-      {product.name} ¥{product.price}{' '}
-      <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
-        {favorite ? '★' : '☆'}
-      </button>
-    </li>
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
   );
 });
 
@@ -490,7 +508,7 @@ export function ProductList({ products }: { products: readonly Product[] }) {
           <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={toggle} />
         ))}
       </ul>
-      <p>已收藏 {favorites.size} 件</p>
+      <p role="status">已收藏 {favorites.size} 件</p>
     </div>
   );
 }
@@ -500,19 +518,20 @@ export function ProductList({ products }: { products: readonly Product[] }) {
 :::variant{kind=wrong name=sort-every-render fails=tests reason="没有缓存排序的结果，每次渲染都重新排序"}
 ```tsx file=ProductList.tsx
 import { memo, useCallback, useState } from 'react';
-import { recordRender, sortByPrice, type Product } from './lib';
+import { Tracked, sortByPrice, type Product } from './lib';
 
 type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
 
 export const ProductRow = memo(function ProductRow({ product, favorite, onToggle }: RowProps) {
-  recordRender(product.id);
   return (
-    <li>
-      {product.name} ¥{product.price}{' '}
-      <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
-        {favorite ? '★' : '☆'}
-      </button>
-    </li>
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
   );
 });
 
@@ -546,7 +565,7 @@ export function ProductList({ products }: { products: readonly Product[] }) {
           <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={toggle} />
         ))}
       </ul>
-      <p>已收藏 {favorites.size} 件</p>
+      <p role="status">已收藏 {favorites.size} 件</p>
     </div>
   );
 }
@@ -556,19 +575,20 @@ export function ProductList({ products }: { products: readonly Product[] }) {
 :::variant{kind=wrong name=compare-product-only fails=tests reason="memo 的比较函数只比较 product，忽略了 favorite，星标不再更新"}
 ```tsx file=ProductList.tsx
 import { memo, useCallback, useMemo, useState } from 'react';
-import { recordRender, sortByPrice, type Product } from './lib';
+import { Tracked, sortByPrice, type Product } from './lib';
 
 type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
 
 export const ProductRow = memo(function ProductRow({ product, favorite, onToggle }: RowProps) {
-  recordRender(product.id);
   return (
-    <li>
-      {product.name} ¥{product.price}{' '}
-      <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
-        {favorite ? '★' : '☆'}
-      </button>
-    </li>
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
   );
 }, (prev, next) => prev.product === next.product);
 
@@ -602,7 +622,7 @@ export function ProductList({ products }: { products: readonly Product[] }) {
           <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={toggle} />
         ))}
       </ul>
-      <p>已收藏 {favorites.size} 件</p>
+      <p role="status">已收藏 {favorites.size} 件</p>
     </div>
   );
 }
@@ -612,19 +632,20 @@ export function ProductList({ products }: { products: readonly Product[] }) {
 :::variant{kind=wrong name=missing-dependency fails=tests reason="把筛选也放进 useMemo，依赖却漏掉了 query，筛选不起作用"}
 ```tsx file=ProductList.tsx
 import { memo, useCallback, useMemo, useState } from 'react';
-import { recordRender, sortByPrice, type Product } from './lib';
+import { Tracked, sortByPrice, type Product } from './lib';
 
 type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
 
 export const ProductRow = memo(function ProductRow({ product, favorite, onToggle }: RowProps) {
-  recordRender(product.id);
   return (
-    <li>
-      {product.name} ¥{product.price}{' '}
-      <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
-        {favorite ? '★' : '☆'}
-      </button>
-    </li>
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
   );
 });
 
@@ -657,7 +678,63 @@ export function ProductList({ products }: { products: readonly Product[] }) {
           <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={toggle} />
         ))}
       </ul>
-      <p>已收藏 {favorites.size} 件</p>
+      <p role="status">已收藏 {favorites.size} 件</p>
+    </div>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=sort-with-filter fails=tests reason="把排序和筛选放进同一个 useMemo，每输入一个筛选字都重新排序"}
+```tsx file=ProductList.tsx
+import { memo, useCallback, useMemo, useState } from 'react';
+import { Tracked, sortByPrice, type Product } from './lib';
+
+type RowProps = { product: Product; favorite: boolean; onToggle: (id: string) => void };
+
+export const ProductRow = memo(function ProductRow({ product, favorite, onToggle }: RowProps) {
+  return (
+    <Tracked id={product.id}>
+      <li>
+        {product.name} ¥{product.price}{' '}
+        <button type="button" aria-pressed={favorite} aria-label={`收藏${product.name}`} onClick={() => onToggle(product.id)}>
+          {favorite ? '★' : '☆'}
+        </button>
+      </li>
+    </Tracked>
+  );
+});
+
+export function ProductList({ products }: { products: readonly Product[] }) {
+  const [query, setQuery] = useState('');
+  const [note, setNote] = useState('');
+  const [favorites, setFavorites] = useState<ReadonlySet<string>>(new Set());
+
+  const visible = useMemo(() => sortByPrice(products).filter((p) => p.name.includes(query.trim())), [products, query]);
+
+  const toggle = useCallback((id: string) => {
+    setFavorites((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  return (
+    <div>
+      <label>
+        筛选 <input value={query} onChange={(e) => setQuery(e.currentTarget.value)} />
+      </label>
+      <label>
+        备注 <textarea value={note} onChange={(e) => setNote(e.currentTarget.value)} />
+      </label>
+      <ul aria-label="商品">
+        {visible.map((p) => (
+          <ProductRow key={p.id} product={p} favorite={favorites.has(p.id)} onToggle={toggle} />
+        ))}
+      </ul>
+      <p role="status">已收藏 {favorites.size} 件</p>
     </div>
   );
 }

@@ -112,6 +112,8 @@ DOM 模式的测试：每个测试开始前，平台会把页面恢复成 `index
 
 **含有冒号加空格（`: `）的文字必须用引号包起来**，否则 YAML 会解析失败（构建脚本会指出具体行）。
 
+**标签和泛型要写成行内代码**：正文、练习说明和测验中的 `<input>`、`<T>`、`Ref<HTMLInputElement>`、`<ChatRoom … />` 必须放进反引号。没有反引号时它们是 Markdown 中的“原始 HTML”：构建时平台会把它们当作文字显示（否则浏览器会把它们当成标签吞掉），`content:check` 会报告出来（已发布的课时是错误）。
+
 ## 3. 编写原则（发布验收会检查其中能自动检查的部分）
 
 - 先写“解决什么问题”，再写短段落讲解；多数课至少两次“讲解 → 示例/小任务”循环；不为凑模板制造重复内容。
@@ -132,6 +134,20 @@ DOM 模式的测试：每个测试开始前，平台会把页面恢复成 `index
 - **`response.json()` 的错误**：Safari 中解析失败时是 `name` 为 `'SyntaxError'` 的 `DOMException`，不是 `SyntaxError`。测试用 `toMatchObject({ name: 'SyntaxError' })`，不要用 `toBeInstanceOf(SyntaxError)`；`JSON.parse` 在所有浏览器中都抛出 `SyntaxError`。
 - **像素**：行内元素的盒子高度取决于字体，不同引擎会差 1 像素左右；比较文字盒子的位置时，容差至少 2px。
 - **排序**：`localeCompare(…, 'zh-CN')` 把汉字（按拼音）排在拉丁字母前面，写期望值前先实际运行一次。
+- **导航是异步的**：React Router 的导航在 transition 中完成，点击链接之后页面不会立刻更新（Chromium 中常常“碰巧”已经更新了，WebKit 中则没有）。断言导航之后的内容用 `findBy…` 或 `waitFor`；直接导航用 `await act(() => router.navigate(…))`。
+
+### React Router（React 模式）
+
+React 模式提供 `react-router` 与 `react-router/dom`（与平台本身使用的版本相同，见 `package.json`）：
+
+- 学生文件导出路由配置（`routes: RouteObject[]`）；`main.tsx` 用 `createHashRouter(routes)` 渲染预览（沙箱中不能修改路径，见上面的“地址”）；测试用 `createMemoryRouter(routes, { initialEntries, initialIndex })` 加上 `react-router/dom` 的 `RouterProvider`，用 `router.state.location` 检查地址；
+- 直接绑定在查询参数上的输入框，修改时要传 `{ replace: true, flushSync: true }`：默认的 transition 会让输入框先退回旧的值，快速输入（包括测试中的 `user.type`）会丢字；
+- 测试中检查链接不能让整页跳转时，在 `window` 上注册一个 `click` 监听器，记录 `event.defaultPrevented` 并调用 `preventDefault()`（见 g13 的 `app-routes`），否则真实的跳转会中断测试。
+
+### 测试 API 的细节
+
+- `toHaveTextContent('')` 与 jest-dom 一致：只有内容为空才通过。检查“提示消失了”时更推荐 `not.toHaveTextContent('已保存')` 或 `toBeEmptyDOMElement()`；
+- 统计渲染次数时用 `<Profiler onRender>`（开发版的 React 每次提交都会调用它，见 g12），不要在组件的渲染过程中计数。
 
 ## 4. 验证与发布流程
 

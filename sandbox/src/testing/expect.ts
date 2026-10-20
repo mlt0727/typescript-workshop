@@ -254,6 +254,15 @@ const matchers: Record<string, Matcher> = {
     const el = requireElement(a, 'toHaveTextContent');
     const normalize = (opts as { normalizeWhitespace?: boolean } | undefined)?.normalizeWhitespace ?? true;
     const content = normalize ? normalizeWs(el.textContent ?? '') : (el.textContent ?? '');
+    // 与 jest-dom 一致：用空字符串检查时，只有内容确实为空才通过（否则“包含空字符串”永远成立）
+    if (text === '') {
+      return {
+        pass: content === '',
+        message: '用空字符串检查时，期望文本内容为空（检查元素是否为空，更推荐 toBeEmptyDOMElement()）',
+        expected: show(''),
+        actual: show(content),
+      };
+    }
     const pass = typeof text === 'string' ? content.includes(normalize ? normalizeWs(text) : text) : (text as RegExp).test(content);
     return { pass, message: '期望文本内容包含/匹配', expected: show(text), actual: show(content) };
   },

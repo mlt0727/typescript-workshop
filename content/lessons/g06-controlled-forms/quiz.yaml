@@ -19,7 +19,7 @@
     - text: "`e.currentTarget.value`"
       explain: value 是勾选时提交给服务器的值（默认是 "on"），不管勾没勾选都不会变。
     - text: "`e.currentTarget.selected`"
-      explain: selected 是 <option> 的属性，复选框没有它。
+      explain: selected 是 `<option>` 的属性，复选框没有它。
 - id: number-input-state
   type: single
   prompt: 数量输入框（type="number"）的 state 最好存成什么？

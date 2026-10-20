@@ -2,7 +2,7 @@
   type: single
   prompt: 组件要显示购物车的合计金额，合计由 props 中的 items 算出来。最好的写法是？
   options:
-    - text: 在渲染时直接计算：const total = items.reduce(…)
+    - text: "在渲染时直接计算：`const total = items.reduce(…)`"
       correct: true
       explain: 能从 props 和 state 算出来的值不要存进 state。只有计算确实很慢时，才用 useMemo 缓存。
     - text: 用 useState 保存 total，在依赖 [items] 的 Effect 中更新它
@@ -13,7 +13,7 @@
   type: single
   prompt: "`<ChatRoom roomId={roomId} />` 中有一个输入框保存草稿。切换房间时草稿应该清空。最合适的做法是？"
   options:
-    - text: 父组件写 <ChatRoom key={roomId} roomId={roomId} />
+    - text: "父组件写 `<ChatRoom key={roomId} roomId={roomId} />`"
       correct: true
       explain: key 变化时，React 创建一个新的 ChatRoom，它的所有 state 都回到初始值，不会先用旧的草稿渲染一次。
     - text: 在 ChatRoom 中写依赖 [roomId] 的 Effect，调用 setDraft('')
@@ -37,7 +37,7 @@
   options:
     - text: 删掉所有的 memo、useMemo、useCallback 之后，组件的行为应该完全不变，只是可能变慢
       correct: true
-      explain: 它们是性能优化，不是保证，代码的正确性不能依赖它们。
+      explain: 它们是性能优化，不是保证，代码的正确性不能依赖它们。一个记忆化的值被用作 Effect 的依赖时，去掉记忆化会让 Effect 更频繁地重新同步，但只要 Effect 有正确的清理，结果仍然是对的。
     - text: 优化之前应该先测量，确认哪里真的慢
       correct: true
       explain: 大多数渲染都很快。React DevTools 的 Profiler 和 console.time 都能帮助找到真正的瓶颈。

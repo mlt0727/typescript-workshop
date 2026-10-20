@@ -46,7 +46,7 @@ Effect 是 React 的“逃生口”：它用来让组件与**外部系统**保�
 
 ### 能算出来的，就在渲染时计算
 
-下面两个组件显示同样的筛选结果，一个用 Effect 把结果存进 state，一个在渲染时直接计算。打开控制台，在输入框中输入“香”：
+下面两个组件显示同样的筛选结果，一个用 Effect 把结果存进 state，一个在渲染时直接计算。打开控制台，在输入框中**粘贴**一个“香”字（用拼音输入法打字时，组字过程中的每个字母也会触发一次渲染，只看选定“香”之后的几行）：
 
 :::playground{#derived-state}
 ```tsx file=App.tsx
@@ -90,12 +90,12 @@ const container = document.getElementById('root');
 if (!container) throw new Error('页面缺少 #root');
 createRoot(container).render(<App />);
 ```
-- 输入“香”之后，Effect 版打印了两次：第一次渲染用的还是**旧的**结果（5 项），等 Effect 执行、`setVisible` 之后，才又渲染一次得到 1 项。计算版只渲染一次，而且一开始就是对的。
+- 粘贴“香”之后，Effect 版打印了两次：第一次渲染用的还是**上一次的**结果（这里是 5 项），等 Effect 执行、`setVisible` 之后，才又渲染一次得到 1 项。计算版只渲染一次，而且一开始就是对的。
 - 刚打开页面时，Effect 版也渲染了两次：`filter` 返回的是一个新数组，即使内容相同，`setVisible` 也会再触发一次渲染。
 - Effect 版还多了一份 state：`visible` 和 `query` 必须靠 Effect 保持一致，而计算版根本不存在“不一致”的可能。
 :::
 
-规则很简单：**能从 props 和 state 算出来的值，不要存进 state，在渲染时计算**（g07 的“派生数据”）。在 Effect 中同步地调用 `setState`，几乎总是这种问题的信号。eslint-plugin-react-hooks 7 的推荐规则中有一条 `set-state-in-effect`，专门检查这种写法。
+规则很简单：**能从 props 和 state 算出来的值，不要存进 state，在渲染时计算**（g07：能算出来的，就不另存）。在 Effect 中同步地调用 `setState`，几乎总是这种问题的信号。eslint-plugin-react-hooks 7 的推荐规则中有一条 `set-state-in-effect`，专门检查这种写法。
 
 ### 计算很慢时：useMemo
 
@@ -211,7 +211,7 @@ if (!container) throw new Error('页面缺少 #root');
 createRoot(container).render(<App />);
 ```
 - 刚打开页面，还什么都没点，控制台中就有了一条“Effect 版通知父组件：关”：Effect 在组件出现时就执行了。
-- 第 7–9 行的 Effect 依赖 `onChange`。这里的 `App` 从不重新渲染，所以还看不出问题；如果父组件每次渲染都传入一个新的函数，Effect 版在父组件每次渲染之后都会再通知一次。父组件如果在 `onChange` 里更新自己的 state，就会陷入“渲染、通知、更新、再渲染”的循环。
+- 第 7–9 行的 Effect 依赖 `onChange`。这里的 `App` 从不重新渲染，所以还看不出问题；如果父组件每次渲染都传入一个新的函数，Effect 版在父组件每次渲染之后都会再通知一次。父组件如果在 `onChange` 里写入的 state 每次都是新的值（例如往一个数组里追加一条记录），就会陷入“渲染、通知、更新、再渲染”的循环；即使不循环，也多了一轮渲染。
 - 事件版在同一个事件处理函数中更新自己的 state 并通知父组件，React 把两处的更新合并成一次渲染。
 :::
 
@@ -219,7 +219,7 @@ createRoot(container).render(<App />);
 
 ### 什么时候仍然需要 Effect
 
-与外部系统保持同步，仍然是 Effect 的本职工作（g11）：订阅浏览器事件、计时器、操作不受 React 管理的组件、因为“组件显示出来了”而请求数据（记得清理）。订阅外部的数据源时，React 还提供了专门的 `useSyncExternalStore`。真实项目中请求数据，通常交给框架或数据请求库，它们还处理了缓存、重试等问题（g14）。
+与外部系统保持同步，仍然是 Effect 的本职工作（g11）：订阅浏览器事件、计时器、操作不受 React 管理的组件、因为“组件显示出来了”而请求数据（记得清理，g14 会把它整理成一个完整的数据加载 Hook）。订阅外部的数据源时，React 还提供了专门的 `useSyncExternalStore`。真实项目中请求数据，通常交给框架或数据请求库，它们还处理了缓存、重试等问题。
 
 ## 性能工具：memo、useCallback、useMemo
 
@@ -281,12 +281,12 @@ if (!container) throw new Error('页面缺少 #root');
 createRoot(container).render(<App />);
 ```
 - 一开始打印了三行。在“备注”中输入：`App` 每次都重新渲染，三行却都没有再打印，因为它们的 `item` 和 `onToggle` 都和上一次相同，`memo` 跳过了它们。
-- 勾选“修自行车”：只打印了“渲染第 2 行”。`map` 只替换了被修改的那一项，其他两项还是原来的对象（g04 中“没有变化的项保持原来的引用”就是为了这里）。
+- 勾选“修自行车”：只打印了“渲染第 2 行”。`map` 只替换了被修改的那一项，其他两项还是原来的对象（g04 讲过，没有改变的部分仍然是原来的对象，这里就用上了）。
 - 把第 24–26 行改成普通的函数 `const toggle = (id: number) => { setItems(…); };`：每输入一个字，三行都会重新渲染，因为每次渲染都创建了一个新函数。去掉第 5 行的 `memo(…)`，效果也一样：`memo` 和稳定的 props 缺一不可。
 - `useCallback` 的依赖是 `[]`：函数中用的是更新函数 `setItems((current) => …)`，不需要读取 `items`。如果直接读取 `items`，就要把它写进依赖，每次修改之后函数又变了，所有的行又都要重新渲染。
 :::
 
-传给 `memo` 组件的对象和数组用 `useMemo` 保持不变；Provider 的 `value` 也可以用 `useMemo` 包起来，避免 Provider 每次重新渲染都让所有使用者重新渲染（g10）。
+传给 `memo` 组件的对象和数组用 `useMemo` 保持不变；Provider 的 `value` 也可以用 `useMemo` 包起来，避免 Provider 每次重新渲染都让所有使用者重新渲染（g10）。另一个办法是把经常变化的数据和不常变化的数据（例如“当前用户”和“正在输入的草稿”）拆成两个 Context，只读取不常变化的那个的组件，就不会因为草稿而重新渲染。
 
 几点要记住：
 
@@ -296,13 +296,13 @@ createRoot(container).render(<App />);
 
 ### 什么时候值得用
 
-- **先找到真正慢的地方**：React DevTools 的 Profiler 能显示每次提交中每个组件渲染了多久（测量要用生产构建）；
+- **先找到真正慢的地方**：React DevTools 的 Profiler 能显示每次提交中每个组件渲染了多久。开发模式下的耗时偏大，只适合比较相对的快慢；要测准确的时间，需要开启了 profiling 的生产构建；
 - **优先调整结构**：把经常变化的 state 放到真正用它的小组件中（上面的“备注”可以是一个自己保存输入内容的组件，`App` 就不会重新渲染了）；把内容作为 `children` 传进去；去掉不必要的 Effect；
 - `memo` 最适合**交互细碎、频繁更新**的界面（拖拽、逐字输入时的大列表），而且只在“经常用相同的 props 重新渲染，并且渲染很慢”时才有收益。整页切换这类粗粒度的更新通常用不到。
 
 ## React Compiler
 
-手写这些记忆化既繁琐又容易出错（漏一个依赖、多一个内联函数就失效）。**React Compiler** 是 React 团队发布的构建工具（2025 年 10 月发布 1.0），它在构建时分析组件，自动加上相当于 `memo`、`useMemo`、`useCallback` 的缓存，往往比手写的更精确。
+手写这些记忆化既繁琐又容易出错（漏一个依赖、多一个内联函数就失效）。**React Compiler** 是 React 团队发布的构建工具（2025 年 10 月发布 1.0），它在构建时分析组件，自动加上相当于 `memo`、`useMemo`、`useCallback` 的缓存，通常不比手写的差，很多时候更精确（例如在提前 `return` 之后也能缓存，手写的 Hook 做不到）。
 
 - 新项目启用编译器后，通常不需要再手写它们；`useMemo`、`useCallback` 仍然可以作为“逃生口”，在需要精确控制时使用（例如一个值被用作 Effect 的依赖）。已有代码中的手写记忆化可以保留，删除之前要仔细测试；
 - 编译器的前提是代码遵守 React 的规则：渲染是纯的、不修改 props 和 state、Hook 只在顶层调用。这正是前面几课一直在练习的。即使不用编译器，eslint-plugin-react-hooks 7 的推荐规则也会检查这些问题；

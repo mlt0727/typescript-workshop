@@ -4,7 +4,7 @@
   options:
     - text: 每个 JSX 标签都会被编译成一次函数调用，得到一个描述界面的对象
       correct: true
-      explain: "例如 <h2>{title}</h2> 会变成 jsx('h2', { children: title })。所以 TypeScript 能检查标签的属性，一个 JSX 表达式也只能有一个根元素。"
+      explain: "例如 `<h2>{title}</h2>` 会变成 `jsx('h2', { children: title })`。所以 TypeScript 能检查标签的属性，一个 JSX 表达式也只能有一个根元素。"
     - text: JSX 是一种 HTML 字符串，React 用 innerHTML 把它插入页面
       explain: JSX 不是字符串。花括号中的文字会被当作文字插入，不会被解析成 HTML。
     - text: JSX 只是写法上的提示，TypeScript 不检查其中的内容
@@ -41,7 +41,7 @@
   options:
     - text: React 用首字母区分它们：小写的标签是 HTML 元素，大写的才是组件
       correct: true
-      explain: 写成 <header /> 会创建一个 HTML 的 header 元素，而不是调用你的 header 函数。
+      explain: 写成 `<header />` 会创建一个 HTML 的 header 元素，而不是调用你的 header 函数。
     - text: 这只是代码风格的约定，小写也能正常工作
       explain: 这不只是约定，小写开头的标签会被当作 HTML 元素。
     - text: 因为 TypeScript 要求函数名以大写字母开头

@@ -9,7 +9,7 @@ title: 删掉多余的 Effect
 3. 每次提交（点“保存”或者在输入框中按回车）都调用一次 `onSave({ id, firstName, lastName })`，姓名去掉首尾空白，然后显示“已保存”；没有修改时再提交一次，也要再保存一次；
 4. 保存之后，再修改任何一个输入框，“已保存”消失。
 
-测试会用 `<Profiler>` 统计每次操作提交到页面的次数：打开页面、输入一个字、切换联系人、保存，都应该只提交**一次**。
+测试会用 React 的 `<Profiler>` 组件统计每次操作“提交到页面”的次数（开发版的 React 每次提交都会调用它的 `onRender`）：打开页面、输入一个字、切换联系人、保存，都应该只提交**一次**。
 
 :::files{role=starter}
 ```tsx file=ContactEditor.tsx
@@ -226,17 +226,17 @@ test('打开时显示第一个联系人和全名，只提交一次', () => {
   const { commits } = setup();
   expect(lastName()).toHaveValue('张');
   expect(firstName()).toHaveValue('三');
-  expect(fullName()).toHaveTextContent('全名：张三');
+  expect(fullName()).toHaveTextContent(/^全名：张三$/);
   expect(commits, '打开页面时多渲染了一次：全名应该在渲染时计算').toEqual(['mount']);
 });
 
 test('输入时全名同步变化，每输入一个字只提交一次', async () => {
   const { commits, user } = setup();
-  await user.click(firstName());
+  await user.type(firstName(), '丰');
   commits.length = 0;
-  await user.keyboard('丰');
-  expect(fullName()).toHaveTextContent('全名：张三丰');
-  expect(commits, '每输入一个字应该只渲染一次').toHaveLength(1);
+  await user.keyboard('!');
+  expect(fullName()).toHaveTextContent(/^全名：张三丰!$/);
+  expect(commits, '输入一个字时多提交了一次：全名应该在渲染时计算，不要存进 state 再用 Effect 同步').toHaveLength(1);
 });
 
 test('切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃', async () => {
@@ -246,7 +246,7 @@ test('切换联系人：直接显示新联系人的姓名，没有多余的渲�
   await user.click(screen.getByRole('button', { name: '韩梅梅' }));
   expect(lastName()).toHaveValue('韩');
   expect(firstName()).toHaveValue('梅梅');
-  expect(fullName()).toHaveTextContent('全名：韩梅梅');
+  expect(fullName()).toHaveTextContent(/^全名：韩梅梅$/);
   expect(commits, '切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）').toHaveLength(1);
   await user.click(screen.getByRole('button', { name: '张三' }));
   expect(firstName()).toHaveValue('三');
@@ -256,6 +256,7 @@ test('每次提交都保存一次（去掉首尾空白），并显示“已保�
   const { onSave, commits, user } = setup();
   await user.clear(firstName());
   await user.type(firstName(), '  三丰  ');
+  expect(fullName(), '全名由去掉首尾空白的姓和名组成').toHaveTextContent(/^全名：张三丰$/);
   commits.length = 0;
   await user.click(screen.getByRole('button', { name: '保存' }));
   expect(onSave).toHaveBeenLastCalledWith({ id: 'a', firstName: '三丰', lastName: '张' });
@@ -270,17 +271,20 @@ test('保存之后再修改，“已保存”消失；按回车也能保存', as
   await user.click(screen.getByRole('button', { name: '保存' }));
   expect(status()).toHaveTextContent('已保存');
   await user.type(lastName(), '{Backspace}李');
-  expect(status()).toHaveTextContent('');
+  expect(status()).not.toHaveTextContent('已保存');
   await user.keyboard('{Enter}');
   expect(onSave).toHaveBeenLastCalledWith({ id: 'a', firstName: '三', lastName: '李' });
   expect(status()).toHaveTextContent('已保存');
+  await user.type(firstName(), '丰');
+  expect(status(), '修改“名”之后，“已保存”也要消失').not.toHaveTextContent('已保存');
 });
 
 test('切换联系人时，“已保存”的提示不会带到另一个联系人', async () => {
   const { user } = setup();
   await user.click(screen.getByRole('button', { name: '保存' }));
+  expect(status()).toHaveTextContent('已保存');
   await user.click(screen.getByRole('button', { name: '韩梅梅' }));
-  expect(status()).toHaveTextContent('');
+  expect(status()).not.toHaveTextContent('已保存');
 });
 ```
 :::
@@ -300,7 +304,9 @@ test('切换联系人时，“已保存”的提示不会带到另一个联系�
 - **props 变化时重置 state**：切换联系人，相当于换了一个全新的编辑器。`key={selected.id}` 让 React 在 id 变化时创建新的 `ContactEditor`，所有的 state 都从这个联系人的数据重新初始化。用 Effect 重置，会先用上一个联系人的姓名渲染一次；
 - **用标记加 Effect 处理用户操作**：保存是用户点“保存”引起的，应该写在 `onSubmit` 中。用 `submitted` 标记触发 Effect，第二次提交时标记已经是 `true`，Effect 不会再执行；保存和“已保存”的提示也被拆成了两次渲染。
 
-去掉这些 Effect 之后，代码更短，行为也更容易预测：每一个 state 都只在一个地方被修改，修改的原因一目了然。
+去掉这些 Effect 之后，代码更短，行为也更容易预测：每个 state 只在用户的操作中被修改（`saved` 在修改输入框和保存时各改一次），修改的原因一目了然。
+
+另一种同样能通过测试的写法，是把全名存进 state，在两个输入框的 `onChange` 中同步更新它。它没有多余的渲染，但仍然是一份多余的 state：每个修改姓名的地方都要记得同时更新全名。能算出来的，就不要存。
 
 另一种重置的写法见替代解：在渲染期间比较 `contact.id` 和上一次的 id，不同时直接调整 state。它同样只提交一次，但需要额外保存“上一次的 id”，所以能用 `key` 时优先用 `key`。
 :::

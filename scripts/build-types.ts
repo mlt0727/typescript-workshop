@@ -5,7 +5,7 @@
  * - core：lib.es2025 链 + lib.dom + lib.webworker
  * - test：平台测试 API（Vitest 兼容子集）+ expect-type
  * - dom-testing：@testing-library/dom、@testing-library/user-event
- * - react：@types/react、@types/react-dom、@testing-library/react
+ * - react：@types/react、@types/react-dom、@testing-library/react、react-router
  *
  * 依赖闭包通过 TypeScript 自己的模块解析计算，因此浏览器内的解析结果与这里一致。
  */
@@ -153,7 +153,7 @@ testFiles.set('/node_modules/vitest/browser.d.ts', fs.readFileSync(path.join(roo
 
 const domTestingFiles = collectPackages(['@testing-library/dom', '@testing-library/user-event'], extraLibs);
 const reactFiles = collectPackages(
-  ['react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', '@testing-library/react'],
+  ['react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', '@testing-library/react', 'react-router', 'react-router/dom'],
   extraLibs,
 );
 // @testing-library/react 依赖 @testing-library/dom，避免与 dom-testing 组重复

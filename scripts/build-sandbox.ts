@@ -2,7 +2,7 @@
  * 构建沙箱运行时到 public/sandbox/：
  *   index.html          运行页（带 CSP）
  *   frame.js            核心运行时（经典脚本 IIFE；内联纯 TS 模式的 Worker）
- *   react-runtime.js    React 19 开发版 + @testing-library/react
+ *   react-runtime.js    React 19 开发版 + @testing-library/react + React Router
  *
  * 经典脚本 + 不带 crossorigin 属性：不透明来源的页面加载它们不需要 CORS。
  * 用法：tsx scripts/build-sandbox.ts [--watch]
@@ -22,6 +22,8 @@ function config(name: string, entry: string, mode: 'development' | 'production',
     logLevel: 'warn',
     mode,
     define: { 'process.env.NODE_ENV': JSON.stringify(mode) },
+    // 让带 exports 条件的包（如 react-router）也选用与 mode 一致的构建：开发版保留有教学价值的警告
+    resolve: { conditions: ['module', 'browser', mode] },
     worker: { format: 'iife' },
     build: {
       outDir,
@@ -40,6 +42,11 @@ function config(name: string, entry: string, mode: 'development' | 'production',
       rolldownOptions: {
         external: Object.keys(globals),
         output: { globals },
+        // react-router 的模块开头有 "use client"（给 RSC 用），打包成 IIFE 时可以忽略
+        onwarn(warning, defaultHandler) {
+          if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return;
+          defaultHandler(warning);
+        },
       },
     },
   };

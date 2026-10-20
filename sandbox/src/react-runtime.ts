@@ -1,12 +1,14 @@
 /**
  * React 模式的依赖（开发版构建：保留 key 缺失等有教学价值的警告）。
- * 以经典脚本加载。
+ * 以经典脚本加载。React Router 与 React 打包在一起，共用同一个 React 实例。
  */
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as ReactDOMClient from 'react-dom/client';
 import * as JsxRuntime from 'react/jsx-runtime';
 import * as RTL from '@testing-library/react';
+import * as ReactRouter from 'react-router';
+import * as ReactRouterDom from 'react-router/dom';
 
 const g = globalThis as { __tsw_deps__?: Record<string, object>; __tsw_untracked__?: <T>(fn: () => T) => T };
 g.__tsw_deps__ ??= {};
@@ -19,5 +21,7 @@ Object.assign(g.__tsw_deps__, {
   'react-dom': ReactDOM,
   'react-dom/client': ReactDOMClient,
   'react/jsx-runtime': JsxRuntime,
+  'react-router': ReactRouter,
+  'react-router/dom': ReactRouterDom,
   '@testing-library/react': { ...RTL, render },
 });

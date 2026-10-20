@@ -62,9 +62,33 @@ function replaceCode(node: RootContent | Root): RootContent | Root {
 
 const toHtml = unified().use(remarkRehype, { allowDangerousHtml: true }).use(rehypeStringify, { allowDangerousHtml: true });
 
+/**
+ * 课程作者写在 Markdown 中的原始 HTML（例如测验中没有加反引号的 `<T>`、`<input>`）当作普通文字显示，
+ * 否则浏览器会把它当成标签“吞掉”。只有代码高亮生成的 HTML 才原样输出（见 replaceCode）。
+ * content:check 会把这类写法报告出来（findRawHtml）。
+ */
+function escapeRawHtml(node: RootContent | Root): RootContent | Root {
+  if (node.type === 'html') return { type: 'text', value: (node as { value: string }).value };
+  if ('children' in node && Array.isArray(node.children)) {
+    (node as { children: RootContent[] }).children = node.children.map((c) => escapeRawHtml(c) as RootContent);
+  }
+  return node;
+}
+
+/** 找出 Markdown 中作者写的原始 HTML（用于发布检查） */
+export function findRawHtml(source: string): string[] {
+  const out: string[] = [];
+  const walk = (node: RootContent | Root) => {
+    if (node.type === 'html') out.push((node as { value: string }).value);
+    if ('children' in node && Array.isArray(node.children)) for (const c of node.children) walk(c as RootContent);
+  };
+  walk(parseMarkdown(source));
+  return out;
+}
+
 /** 把一组 mdast 节点渲染成 HTML（代码块高亮、外部链接新窗口打开）。 */
 export function renderNodes(nodes: RootContent[]): string {
-  const root: Root = { type: 'root', children: nodes.map((n) => replaceCode(structuredClone(n)) as RootContent) };
+  const root: Root = { type: 'root', children: nodes.map((n) => replaceCode(escapeRawHtml(structuredClone(n))) as RootContent) };
   const hast = toHtml.runSync(root as never);
   let html = String(toHtml.stringify(hast as never));
   html = html.replace(/<a href="(https?:\/\/[^"]+)"/g, '<a href="$1" target="_blank" rel="noopener noreferrer"');

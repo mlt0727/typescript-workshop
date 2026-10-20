@@ -41,4 +41,4 @@
     - text: 禁止调用者传入 value
       explain: value 仍然要传，只是它不参与推断 T。
     - text: 让 value 的类型变成 any
-      explain: NoInfer<T> 的类型就是 T 本身，只是阻止从这里推断。
+      explain: "`NoInfer<T>` 的类型就是 T 本身，只是阻止从这里推断。"
