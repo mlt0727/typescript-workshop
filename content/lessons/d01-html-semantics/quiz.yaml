@@ -1,0 +1,47 @@
+- id: button-or-link
+  type: single
+  prompt: 点击后在当前页面打开一个“设置”对话框。应该用哪个元素？
+  options:
+    - text: "`<button type=\"button\">设置</button>`"
+      correct: true
+      explain: 这是执行一个操作，不是去往别的地方。按钮能用键盘触发，角色是 button。
+    - text: "`<a href=\"#\">设置</a>`"
+      explain: 链接表示“去往一个地方”。用 `href="#"` 假装按钮，屏幕阅读器会读成链接，点击还会把页面滚动到顶部。
+    - text: "`<div class=\"button\">设置</div>`，再加上点击监听器"
+      explain: div 不能用 Tab 聚焦，也不能用 Enter 或空格触发，没有 button 角色。
+- id: landmark-facts
+  type: multiple
+  prompt: 下列哪些说法正确？
+  options:
+    - text: 直接属于页面的 `<header>` 的角色是 banner
+      correct: true
+      explain: 它不在 article、aside、main、nav、section 之内时，就是页面的 banner 地标。
+    - text: 每个 `<section>` 都是一个 region 地标
+      explain: 只有通过 `aria-labelledby` 或 `aria-label` 得到名字的 section 才是 region；没有名字的只是普通分组。
+    - text: 一个页面应该只有一个 `<main>`
+      correct: true
+      explain: main 表示页面的主要内容，屏幕阅读器用户会直接跳到它。
+    - text: 写在 `<article>` 里的 `<footer>` 也是页面的 contentinfo
+      explain: 在 article 里，它只是这篇文章的尾部，不是整个页面的页脚。
+- id: heading-size
+  type: single
+  prompt: 设计稿里文章的小标题字号比较小。你打算把 `<h2>` 改成 `<h4>`，这样做对吗？
+  options:
+    - text: 不对：标题级别表达结构，应该保持 `<h2>`，用 CSS 调整字号
+      correct: true
+      explain: 屏幕阅读器用户靠标题层级理解页面大纲，跳级会让大纲出现“缺口”。
+    - text: 对：哪个级别的默认字号合适就用哪个
+      explain: 默认字号只是浏览器的样式，随时可以用 CSS 改。选择级别要看结构。
+    - text: 对，只要页面上还有一个 `<h1>` 就行
+      explain: 从 h1 直接跳到 h4，同样会让大纲出现缺口。
+- id: decorative-image
+  type: single
+  prompt: 一张纯装饰的花纹图片，`alt` 应该怎么写？
+  options:
+    - text: "`alt=\"\"`"
+      correct: true
+      explain: 空的替代文字告诉屏幕阅读器这是装饰，跳过它。
+    - text: 不写 `alt` 属性
+      explain: 屏幕阅读器不知道它是装饰，可能会读出文件名。
+    - text: "`alt=\"装饰图片\"`"
+      explain: 这会让屏幕阅读器读出“装饰图片”，对用户没有任何帮助。

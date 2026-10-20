@@ -4010,6 +4010,113 @@
         }
       ]
     },
+    "d01-html-semantics": {
+      "verifiedAt": "2026-10-20T11:27:09.083Z",
+      "sourceHash": "88d9e47ce68663a4",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:document:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:document:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:landmarks:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:landmarks:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:button-vs-div:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:button-vs-div:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:semantic-page:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面语言是简体中文,顶部 header 中的网站名称是唯一的一级标题,导航在顶部的 header 里，链接放在列表中,文章在 main 中，标题是二级标题，正文是两个段落,“开始学习”是文章中的真按钮,版权信息在页面底部的 footer 中)"
+        },
+        {
+          "target": "exercise:semantic-page:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:semantic-page:alt:extra-wrappers",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:semantic-page:wrong:div-button",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(“开始学习”是文章中的真按钮)"
+        },
+        {
+          "target": "exercise:semantic-page:wrong:links-without-list",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导航在顶部的 header 里，链接放在列表中)"
+        },
+        {
+          "target": "exercise:semantic-page:wrong:two-h1",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(顶部 header 中的网站名称是唯一的一级标题,文章在 main 中，标题是二级标题，正文是两个段落)"
+        },
+        {
+          "target": "exercise:semantic-page:wrong:footer-in-main",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(版权信息在页面底部的 footer 中)"
+        },
+        {
+          "target": "exercise:recipe:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(内容在 main 中，菜名是唯一的一级标题,成品照片有替代文字，装饰图片被跳过,配料是一个以二级标题命名的区块，里面是无序列表,步骤是一个以二级标题命名的区块，里面是有序列表,小贴士是旁注,加入收藏是按钮)"
+        },
+        {
+          "target": "exercise:recipe:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:recipe:alt:aria-label-and-figure",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:recipe:wrong:unnamed-sections",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(配料是一个以二级标题命名的区块，里面是无序列表,步骤是一个以二级标题命名的区块，里面是有序列表)"
+        },
+        {
+          "target": "exercise:recipe:wrong:unordered-steps",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(步骤是一个以二级标题命名的区块，里面是有序列表)"
+        },
+        {
+          "target": "exercise:recipe:wrong:decorative-alt",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(成品照片有替代文字，装饰图片被跳过)"
+        },
+        {
+          "target": "exercise:recipe:wrong:photo-without-alt",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(成品照片有替代文字，装饰图片被跳过)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

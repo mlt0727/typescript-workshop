@@ -89,7 +89,7 @@ stages:
     title: HTML、CSS 与 DOM
     summary: 足以完成项目的 HTML/CSS，以及类型安全的 DOM 操作、事件与表单。
     lessons:
-      - { id: d01-html-semantics, title: HTML 语义结构, status: planned, prerequisites: [a01-where-ts-runs] }
+      - { id: d01-html-semantics, title: HTML 语义结构, status: draft, prerequisites: [a01-where-ts-runs] }
       - { id: d02-html-forms, title: 表单元素与标签, status: planned, prerequisites: [d01-html-semantics] }
       - { id: d03-css-layout, title: CSS 布局：Flexbox 与 Grid, status: planned, prerequisites: [d01-html-semantics] }
       - { id: d04-responsive-a11y, title: 响应式与可访问性基础, status: planned, prerequisites: [d03-css-layout, d02-html-forms] }
