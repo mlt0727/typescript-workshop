@@ -1,0 +1,47 @@
+- id: ref-vs-state
+  type: single
+  prompt: 修改 `ref.current` 和调用 state 的设置函数，最大的区别是什么？
+  options:
+    - text: 修改 ref.current 不会触发重新渲染，并且立即就能读到新值
+      correct: true
+      explain: ref 适合保存不显示在界面上的值；要显示的数据用 state。
+    - text: ref 的值在每次渲染时都会重置
+      explain: 每次渲染 useRef 返回的都是同一个对象，值会一直保留。会被重置的是普通的局部变量。
+    - text: 两者没有区别，ref 只是写法更短
+      explain: state 的修改会触发渲染，而 ref 不会，这是根本的区别。
+- id: focus-timing
+  type: single
+  prompt: "`setEditing(true); inputRef.current?.focus();` 为什么不能把焦点移到即将出现的输入框？"
+  options:
+    - text: 设置 state 只是安排一次渲染，这时输入框还没有渲染出来，inputRef.current 是 null
+      correct: true
+      explain: 可以用 flushSync 包住 setEditing(true)，让 React 同步完成渲染，之后再聚焦。
+    - text: React 不允许在事件处理函数中调用 focus
+      explain: 可以调用，只是要等元素存在。
+    - text: 必须使用 forwardRef 才能聚焦
+      explain: 这和 forwardRef 无关；在 React 19 中，函数组件可以直接接收 ref prop。
+- id: ref-uses
+  type: multiple
+  prompt: 下面哪些是 ref 的合理用途？
+  options:
+    - text: 保存 setInterval 返回的计时器编号，停止时用来清除
+      correct: true
+      explain: 编号不显示在界面上，也不需要触发渲染。
+    - text: 把焦点移到某个输入框，或者选中其中的文字
+      correct: true
+      explain: 焦点和选区是 React 不管理的浏览器状态，需要通过 ref 操作 DOM。
+    - text: 保存购物车中的商品数量，并显示在页面上
+      explain: 要显示的数据应该是 state，修改 ref 不会让界面更新。
+    - text: 用 ref 删除列表中由 React 渲染的某一项
+      explain: React 渲染的内容应该通过 state 和 JSX 修改，直接删改 DOM 会和 React 的更新冲突。
+- id: ref-prop
+  type: single
+  prompt: 在 React 19 中，自己的函数组件 `TextField` 想让使用者拿到内部的 `<input>`，应该怎么写？
+  options:
+    - text: 在 props 中接收 ref（类型 Ref<HTMLInputElement>），把它交给内部的 input
+      correct: true
+      explain: React 19 起，函数组件可以像普通 prop 一样接收 ref。
+    - text: 必须用 forwardRef 包装组件
+      explain: 这是旧版本的写法，React 19 中已经不需要了（旧代码中仍然常见）。
+    - text: 用 document.querySelector 找到 input，再把它传给使用者
+      explain: 全局查询在页面上有多个实例时会找错元素。

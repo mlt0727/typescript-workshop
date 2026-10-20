@@ -7159,6 +7159,93 @@
           "detail": "被拒绝（types）；types=fail(TS2344@useUndoable.test-d.tsx:6 Type '{ title: string; words: number; }' does not satisfy the constraint '\"Expected: ..., Actual: string\"'.；TS2344@useUndoable.test-d.tsx:11 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: string\"'.；TS2578@useUndoable.test-d.tsx:12 Unused '@t) rules=ok tests=ok"
         }
       ]
+    },
+    "g09-refs": {
+      "verifiedAt": "2026-10-20T14:28:05.440Z",
+      "sourceHash": "8827725a83bffdc4",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:timer-ref:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:timer-ref:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:flush-sync:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:flush-sync:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:search-box:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点“清空”：清空内容，焦点回到输入框，“清空”变为不可用 ⟶ expect(…).toHaveFocus(),在输入框中按 Esc 也会清空，焦点留在输入框 ⟶ expect(…).toHaveValue(''),页面上有两个搜索框时，焦点回到被清空的那一个 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:search-box:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:search-box:alt:focus-first",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:search-box:wrong:no-focus",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点“清空”：清空内容，焦点回到输入框，“清空”变为不可用 ⟶ expect(…).toHaveFocus(),页面上有两个搜索框时，焦点回到被清空的那一个 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:search-box:wrong:global-query",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面上有两个搜索框时，焦点回到被清空的那一个 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:editable-title:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点“编辑标题”：焦点移到输入框，文字全部选中 ⟶ expect(…).toHaveFocus(),输入新标题后按回车：保存，回到显示状态，焦点回到“编辑标题” ⟶ expect(…).toHaveBeenCalledWith('第四季度计划'),Esc 或“取消”：不保存，焦点回到“编辑标题” ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"编辑标题\",标题为空时不保存，留在编辑状态；没有改动时直接退出 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新标题,两个实例：焦点在各自的元素之间移动 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:editable-title:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:editable-title:alt:mode-union",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:editable-title:wrong:no-flush-sync",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点“编辑标题”：焦点移到输入框，文字全部选中 ⟶ expect(…).toHaveFocus(),输入新标题后按回车：保存，回到显示状态，焦点回到“编辑标题” ⟶ expect(…).toHaveBeenCalledWith('第四季度计划'),Esc 或“取消”：不保存，焦点回到“编辑标题” ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"编辑标题\",两个实例：焦点在各自的元素之间移动 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:editable-title:wrong:inline-ref-callback",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入新标题后按回车：保存，回到显示状态，焦点回到“编辑标题” ⟶ expect(…).toHaveBeenCalledWith('第四季度计划'),标题为空时不保存，留在编辑状态；没有改动时直接退出 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:editable-title:wrong:no-return-focus",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入新标题后按回车：保存，回到显示状态，焦点回到“编辑标题” ⟶ expect(…).toHaveFocus(),Esc 或“取消”：不保存，焦点回到“编辑标题” ⟶ expect(…).toHaveFocus(),标题为空时不保存，留在编辑状态；没有改动时直接退出 ⟶ expect(…).toHaveFocus(),两个实例：焦点在各自的元素之间移动 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:editable-title:wrong:rename-unchanged",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题为空时不保存，留在编辑状态；没有改动时直接退出 ⟶ expect(…).not.toHaveBeenCalled())"
+        }
+      ]
     }
   }
 }
