@@ -1,0 +1,7 @@
+[
+  { "url": "/api/books?topic=typescript", "delayMs": 600, "body": [ { "id": 1, "title": "Effective TypeScript" }, { "id": 2, "title": "Programming TypeScript" } ] },
+  { "url": "/api/books?topic=cobol", "delayMs": 600, "body": [] },
+  { "url": "/api/books?topic=broken", "delayMs": 600, "status": 500, "statusText": "Internal Server Error", "body": { "message": "数据库连接失败" } },
+  { "url": "/api/books?topic=offline", "delayMs": 300, "networkError": true },
+  { "url": "/api/books?topic=weird", "delayMs": 300, "body": { "books": "不是数组" } }
+]

@@ -1,0 +1,48 @@
+- id: boolean-flags
+  type: single
+  prompt: "用 `{ isLoading: boolean; error: string | null; data: Book[] | null }` 表示加载状态，主要问题是什么？"
+  options:
+    - text: 可以表示出“既在加载、又有错误”这类不可能或说不清的组合
+      correct: true
+      explain: 三个字段可以组合出 8 种情况，渲染代码只能靠 if 的顺序去猜。可辨识联合让每种状态只带自己的数据。
+    - text: 布尔值在 TypeScript 中不能用于判断
+      explain: 布尔值当然可以判断；问题在于字段之间没有约束。
+    - text: 占用的内存太多
+      explain: 和内存无关。
+- id: empty-state
+  type: single
+  prompt: 请求成功但返回了空数组，界面应该怎么显示？
+  options:
+    - text: 显示一句说明，例如“没有找到相关的书”
+      correct: true
+      explain: 否则用户面对一片空白，分不清是没有结果、还没加载完，还是出了错。
+    - text: 渲染一个空的列表
+      explain: 空列表在页面上什么都看不到。
+    - text: 当作错误处理，显示“加载失败”
+      explain: 请求是成功的，只是没有结果，不应该让用户以为出了问题。
+- id: live-regions
+  type: multiple
+  prompt: 哪些做法能让屏幕阅读器用户知道加载状态的变化？
+  options:
+    - text: 把“正在加载…”“找到 2 本书”放在 `role="status"` 的元素中
+      correct: true
+      explain: 内容变化时，屏幕阅读器会在不打断用户的情况下读出来。
+    - text: 错误信息放在 `role="alert"` 的元素中
+      correct: true
+      explain: 错误需要立即被注意到，alert 会被立即读出。
+    - text: 加载期间给结果区域设置 `aria-busy="true"`，结束后设为 false
+      correct: true
+      explain: 告诉辅助技术这块区域正在更新，等更新完再读取。
+    - text: 只显示一个旋转的图标
+      explain: 屏幕阅读器用户看不到图标，也不知道它代表加载中。
+- id: error-translation
+  type: single
+  prompt: 网络失败时，界面上应该显示什么？
+  options:
+    - text: 说明发生了什么、用户可以做什么，例如“网络连接失败，请检查网络后重试”，并提供重试按钮
+      correct: true
+      explain: 把底层错误翻译成用户能理解、能行动的提示。
+    - text: 原样显示错误对象的 message，例如“Failed to fetch”
+      explain: 底层的错误信息对普通用户没有意义，还可能暴露实现细节；这些信息适合记录到日志里。
+    - text: 什么都不显示，让界面保持加载中
+      explain: 用户会一直等下去，不知道请求已经失败了。

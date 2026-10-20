@@ -5752,6 +5752,88 @@
         }
       ]
     },
+    "e07-loading-states": {
+      "verifiedAt": "2026-10-20T12:19:46.236Z",
+      "sourceHash": "de40baa5cc46dbc3",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:states:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:states:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:load-state-render:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2353@render.test.ts:15 Object literal may only specify known properties, and 'status' does not exist in type 'LoadState<Book[]>'.；TS2353@render.test.ts:21 Object literal may only specify known properties, and 'status' does not exist in type 'LoadState<Book[]>'.；TS2353@render.test.ts:28 Object lite) rules=ok tests=fail(idle,loading,error：显示原因，重试按钮调用 onRetry,success：没有数据,success：书名列表，特殊字符原样显示,每次渲染都替换原来的内容)"
+        },
+        {
+          "target": "exercise:load-state-render:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:load-state-render:alt:element-builder",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:load-state-render:wrong:optional-fields",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2578@render.test-d.ts:10 Unused '@ts-expect-error' directive.；TS2578@render.test-d.ts:12 Unused '@ts-expect-error' directive.；TS2578@render.test-d.ts:14 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:load-state-render:wrong:empty-as-list",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(success：没有数据)"
+        },
+        {
+          "target": "exercise:load-state-render:wrong:no-retry",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(error：显示原因，重试按钮调用 onRetry)"
+        },
+        {
+          "target": "exercise:load-state-render:wrong:busy-never-reset",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(idle,error：显示原因，重试按钮调用 onRetry,每次渲染都替换原来的内容)"
+        },
+        {
+          "target": "exercise:book-search:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面加载后是 idle 状态,加载中显示状态并禁用按钮，完成后显示结果,空结果,服务器出错,网络失败,数据格式不正确,重试使用上一次请求的主题)"
+        },
+        {
+          "target": "exercise:book-search:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:book-search:alt:result-based",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:book-search:wrong:no-error-classification",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(服务器出错,网络失败,数据格式不正确,重试使用上一次请求的主题)"
+        },
+        {
+          "target": "exercise:book-search:wrong:button-never-disabled",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(加载中显示状态并禁用按钮，完成后显示结果)"
+        },
+        {
+          "target": "exercise:book-search:wrong:retry-current-select",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(重试使用上一次请求的主题)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",
