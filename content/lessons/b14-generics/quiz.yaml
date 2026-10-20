@@ -1,0 +1,44 @@
+- id: inferred-t
+  type: single
+  prompt: "`function last<T>(items: readonly T[]): T | undefined`。调用 `last(['a', 'b'])` 的返回类型是什么？"
+  options:
+    - text: "`string | undefined`"
+      correct: true
+      explain: TypeScript 从实参 `string[]` 推断出 `T` 是 `string`。
+    - text: "`any`"
+      explain: 泛型的意义就是保留类型，不会变成 `any`。
+    - text: "`T | undefined`"
+      explain: "`T` 在调用时被具体的类型替换，调用方看到的是 `string | undefined`。"
+- id: single-use
+  type: single
+  prompt: "`function print<T>(value: T): void { console.log(value); }` 这样写有什么问题？"
+  options:
+    - text: "`T` 只出现了一次，没有把任何东西联系起来，直接写 `value: unknown` 更简单"
+      correct: true
+      explain: Handbook 建议：类型参数至少出现两次才有意义。
+    - text: 泛型函数必须有返回值
+      explain: 泛型函数可以返回 `void`；问题在于 `T` 没有起作用。
+    - text: 没有问题，这是最好的写法
+      explain: "它和 `value: unknown` 完全等价，却更难读。"
+- id: no-assumption
+  type: single
+  prompt: "为什么 `function size<T>(x: T) { return x.length; }` 报错？"
+  options:
+    - text: "`T` 可以是任何类型，例如数字，不一定有 `length` 属性"
+      correct: true
+      explain: "在泛型函数内部，不能对 `T` 做任何假设。需要 `length` 时用约束 `T extends { length: number }`（b15）。"
+    - text: 泛型函数不能访问参数的属性
+      explain: 可以访问，前提是约束保证了这个属性存在。
+    - text: 必须先写 `x as string`
+      explain: 断言只是让编译器闭嘴，`size(42)` 仍然会在运行时得到 `undefined`。
+- id: generic-runtime
+  type: single
+  prompt: 下列关于泛型的说法哪个正确？
+  options:
+    - text: 类型参数在编译后被擦除，不能在运行时使用 `T`（例如 `x instanceof T`）
+      correct: true
+      explain: 和所有类型一样，泛型只存在于编译期。
+    - text: 每次调用泛型函数，运行时会根据 `T` 生成不同版本的函数
+      explain: 运行时只有一个函数，TypeScript 不生成任何代码。
+    - text: 泛型类型 `Box<number>` 在运行时会检查 `value` 是不是数字
+      explain: TypeScript 不生成运行时检查。

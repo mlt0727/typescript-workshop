@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 28 / 规划总数 126**（草稿 7，规划中 91）
+**已发布 28 / 规划总数 126**（草稿 8，规划中 90）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -51,7 +51,7 @@
 | `b11-overloads` 函数重载：何时用，何时不用 | 📝 草稿 | `b10-function-types` |
 | `b12-classes` 类、字段与访问控制 | 📝 草稿 | `b10-function-types`、`a15-this` |
 | `b13-inheritance-implements` 继承、实现接口与抽象类 | 📝 草稿 | `b12-classes` |
-| `b14-generics` 泛型函数与泛型类型 | ⬜ 规划中 | `b10-function-types` |
+| `b14-generics` 泛型函数与泛型类型 | 📝 草稿 | `b10-function-types` |
 | `b15-generic-constraints` 泛型约束 | ⬜ 规划中 | `b14-generics` |
 | `b16-assertions-as-const-satisfies` 类型断言、as const 与 satisfies | ⬜ 规划中 | `b15-generic-constraints` |
 | `b17-enums-and-alternatives` 枚举与可擦除语法 | ⬜ 规划中 | `b16-assertions-as-const-satisfies` |

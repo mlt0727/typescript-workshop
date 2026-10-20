@@ -3597,6 +3597,108 @@
         }
       ]
     },
+    "b14-generics": {
+      "verifiedAt": "2026-10-20T10:43:20.733Z",
+      "sourceHash": "10e6eca6ac0232c8",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:why-generics:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:why-generics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 1 1 x"
+        },
+        {
+          "target": "playground:inference:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:inference:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 'Ada', 36 ] hi hi 42"
+        },
+        {
+          "target": "playground:generic-types:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:generic-types:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { value: 1 } { value: '1' } { ok: true, value: 42 } { ok: false, error: '不是数字' } 42"
+        },
+        {
+          "target": "playground:guidelines:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:guidelines:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 1 1,2 3"
+        },
+        {
+          "target": "exercise:group-by-key:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@group.test-d.ts:7 Type 'Map<string, User[]>' does not satisfy the constraint '{ [iterator]: \"Expected: function, Actual: never\"; [toStringTag]: string; forEach: \"Expected: function, Actual: never\"; entries: \"Expected: function, Actual: never\"; ... 7 more ...; size: number; }'.；TS2344@group.te) rules=fail(any@1,any@1,any@1,any@2) tests=ok"
+        },
+        {
+          "target": "exercise:group-by-key:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:group-by-key:alt:reduce-version",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:group-by-key:wrong:keep-any",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=fail(TS2344@group.test-d.ts:7 Type 'Map<string, User[]>' does not satisfy the constraint '{ [iterator]: \"Expected: function, Actual: never\"; [toStringTag]: string; forEach: \"Expected: function, Actual: never\"; entries: \"Expected: function, Actual: never\"; ... 7 more ...; size: number; }'.；TS2344@group.te) rules=fail(any@1) tests=ok"
+        },
+        {
+          "target": "exercise:group-by-key:wrong:unknown-instead",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18046@group.test.ts:10 'u' is of type 'unknown'.；TS18046@group.test.ts:12 'u' is of type 'unknown'.；TS18046@group.test.ts:16 'n' is of type 'unknown'.；TS18046@group.test-d.ts:7 'u' is of type 'unknown'.；TS2344@group.test-d.ts:7 Type 'Map<string, User[]>' does not satisfy the constraint '{ [iterato) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:result-helpers:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2305@result.test.ts:2 Module '\"./result\"' has no exported member 'all'.；TS2305@result.test.ts:2 Module '\"./result\"' has no exported member 'err'.；TS2305@result.test.ts:2 Module '\"./result\"' has no exported member 'map'.；TS2305@result.test.ts:2 Module '\"./result\"' has no exported member 'unwrapOr'.) rules=ok tests=fail(SyntaxError: The requested module './result.ts' does not provide an export named 'all')"
+        },
+        {
+          "target": "exercise:result-helpers:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:result-helpers:alt:explicit-objects",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:result-helpers:wrong:unknown-values",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@result.ts:25 Type 'Result<unknown, never>' is not assignable to type 'Result<unknown[], unknown>'.；TS2322@result.test.ts:6 Type 'Result<never, unknown>' is not assignable to type 'Result<number>'.；TS2322@result.test.ts:6 Type 'Result<unknown, never>' is not assignable to type 'Result<number>') rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:result-helpers:wrong:last-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(all › 返回第一个失败)"
+        },
+        {
+          "target": "exercise:result-helpers:wrong:same-type-map",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@result.test-d.ts:8 Type 'string' is not assignable to type 'number'.；TS2344@result.test-d.ts:8 Type 'Result<string, string>' does not satisfy the constraint '{ value: never; error: never; ok: boolean; }'.) rules=ok tests=ok"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",
