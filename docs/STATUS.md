@@ -110,9 +110,10 @@
 
 ## 阻塞与需要你处理的事项
 
-1. **问 AI 的密钥**：在 Vercel 项目 → Settings → Environment Variables 添加 `ANTHROPIC_API_KEY`（可选 `AI_MODEL`），然后重新部署。
-2. **推送自动部署**：本次使用的 Vercel 连接器对你账号的团队作用域只有部分权限（无法读取构建日志、无法建立 Git 关联）。项目目前通过 API 按提交部署；如需推送后自动部署，请在 Vercel 控制台 → 项目 → Settings → Git 连接仓库。
-3. 若在中国大陆访问 `*.vercel.app` 不稳定，可以绑定自己的域名。
+1. **部署**：2026-10-20 推送提交 `a2eb055` 后，Vercel 连接器对团队作用域 `lingtong-mengs-projects` 的访问返回 403（之前的部署都是成功的），本机也没有登录的 Vercel CLI。所以**线上站点仍是提交 `01c93a2` 的版本**（已发布 52 节，没有本次的 Safari 修复）。需要你在 claude.ai 的连接器设置中重新授权 Vercel，或者在 Vercel 控制台把项目和 GitHub 仓库关联（之后每次推送会自动部署）。
+2. **问 AI 的密钥**：在 Vercel 项目 → Settings → Environment Variables 添加 `ANTHROPIC_API_KEY`（可选 `AI_MODEL`），然后重新部署。
+3. **推送自动部署**：本次使用的 Vercel 连接器对你账号的团队作用域只有部分权限（无法读取构建日志、无法建立 Git 关联）。项目目前通过 API 按提交部署；如需推送后自动部署，请在 Vercel 控制台 → 项目 → Settings → Git 连接仓库。
+4. 若在中国大陆访问 `*.vercel.app` 不稳定，可以绑定自己的域名。
 
 ## 下一步（按计划顺序）
 
