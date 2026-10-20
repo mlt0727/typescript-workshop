@@ -1,0 +1,6 @@
+[
+  { "url": "/api/users", "delayMs": 400, "body": [{ "id": 1, "name": "韩梅梅" }, { "id": 2, "name": "李雷" }] },
+  { "url": "/api/users/empty", "delayMs": 200, "body": [] },
+  { "url": "/api/users/broken", "delayMs": 200, "status": 500, "body": { "message": "出错了" } },
+  { "url": "/api/users/bad-shape", "delayMs": 200, "body": { "users": [] } }
+]

@@ -33,9 +33,9 @@
       explain: parseInt('205abc') 得到 205，格式错误的地址会被当成合法的编号。
 - id: replace
   type: single
-  prompt: 搜索框绑定在查询参数 q 上，每输入一个字就调用一次 `setSearchParams({ q })`，不带其他选项。用户输入了“蛋糕”两个字，然后按一次浏览器的“后退”。会看到什么？
+  prompt: 搜索框绑定在查询参数 q 上，每输入一个字就调用一次 `setSearchParams({ q })`，不带其他选项。用户依次输入了 t、e、a 三个字母（每个字母触发一次），然后按一次浏览器的“后退”。会看到什么？
   options:
-    - text: 搜索框变成“蛋”：每个字都新增了一条历史记录
+    - text: 搜索框变成“te”：每个字母都新增了一条历史记录
       correct: true
       explain: "输入时应该写 `setSearchParams(…, { replace: true })`，替换当前的历史记录，后退才会离开这个页面或者回到上一次的操作。"
     - text: 回到进入这个页面之前的页面

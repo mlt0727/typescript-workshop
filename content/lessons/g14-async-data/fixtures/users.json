@@ -1,0 +1,6 @@
+[
+  {"url": "/api/users", "delayMs": 100, "body": [{"id": 1, "name": "韩梅梅"}, {"id": 2, "name": "李雷"}]},
+  {"url": "/api/users/slow", "delayMs": 800, "body": [{"id": 9, "name": "很慢的结果"}]},
+  {"url": "/api/users/broken", "delayMs": 50, "status": 500, "body": {"message": "出错了"}},
+  {"url": "/api/users/bad", "delayMs": 50, "body": {"users": []}}
+]

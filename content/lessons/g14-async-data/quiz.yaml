@@ -1,0 +1,48 @@
+- id: derived-loading
+  type: single
+  prompt: "数据加载 Hook 记住了“最近一次的结果属于哪个地址”。为什么不在 Effect 一开始写 `setState({ status: 'loading' })`？"
+  options:
+    - text: 那样每次请求都会多渲染一次，而且第一次渲染时显示的还是上一个地址的结果；“加载中”可以在渲染时比较地址推出来
+      correct: true
+      explain: 结果不属于当前的请求，就是加载中。Effect 只在请求结束时设置 state（g11、g12）。
+    - text: React 不允许在 Effect 中调用 setState
+      explain: 允许，只是同步地调用会多一次渲染；在异步回调中设置结果是正常的用法。
+    - text: 因为 setState 是异步的，“加载中”永远显示不出来
+      explain: 会显示出来，问题在于多余的渲染和那一帧过时的结果。
+- id: aborted
+  type: single
+  prompt: 切换用户时，清理函数中止了上一个请求，fetch 以 AbortError 拒绝。catch 中应该怎么处理？
+  options:
+    - text: "检查 `signal.aborted`：是自己中止的，就什么都不做"
+      correct: true
+      explain: 被中止的请求不是失败。如果把它记成错误，用户换回那个参数时可能会看到一个并没有发生的“加载失败”。
+    - text: 显示“加载失败，请重试”
+      explain: 用户并没有遇到失败，只是换了参数。
+    - text: 重新发送这个请求
+      explain: 它已经过时了，组件需要的是新参数的数据。
+- id: loader-errors
+  type: multiple
+  prompt: 关于 React Router 的 loader 与错误边界，下面哪些说法是正确的？
+  options:
+    - text: "在 loader 中 `throw data('没有这本书', { status: 404 })`，最近的 ErrorBoundary 中 `isRouteErrorResponse(error)` 为 true，可以读 `error.status`"
+      correct: true
+      explain: 这是处理“找不到”的推荐方式：它是一个预期中的响应，不是代码的 bug。
+    - text: 错误边界挂在哪一层路由上，出错时就替换哪一层；挂在子路由上，布局和导航都会保留
+      correct: true
+      explain: 错误渲染在最近的错误边界的位置，外层的布局不受影响。
+    - text: "`request.signal` 让被放弃的导航中的请求也能真正停下来"
+      correct: true
+      explain: 用户在加载中去了别的页面，React Router 中止这次导航，把信号传给 fetch，请求就会被取消（e08）。
+    - text: loader 是一个 Hook，可以在里面调用 useState
+      explain: loader 是普通的函数，在组件之外、导航开始时被调用，不能使用 Hook。
+- id: use-promise
+  type: single
+  prompt: "组件中写了 `const albums = use(fetch('/api/albums').then((r) => r.json()))`，页面一直显示 Suspense 的后备内容。原因是？"
+  options:
+    - text: 每次渲染都创建了一个新的 Promise；交给 use 的 Promise 必须被缓存，在多次渲染之间是同一个对象
+      correct: true
+      explain: 组件挂起之后 React 会重新渲染它，又创建一个新的 Promise，于是永远在等待。Promise 应该在渲染之外创建，或者由框架、数据请求库缓存。
+    - text: use 只能读取 Context，不能读取 Promise
+      explain: React 19 的 use 可以读取 Promise，也可以读取 Context。
+    - text: 没有用 await
+      explain: 组件函数不能是 async 的（客户端组件），use 正是在渲染中读取 Promise 的方式。

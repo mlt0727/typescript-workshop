@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: e10 手写了一个小路由：匹配路径、拦截链接、处理后退。真实的应用还需要更多：几个页面共用同一个布局、链接显示“当前页”、路径参数、在 404 页面上也保留导航、把筛选条件放进地址里、在测试中模拟任意地址。React Router 是 React 生态中使用最广的路由库，这一课用它的 Data 模式组织一个多页面的应用：路由配置与嵌套布局、Link 与 NavLink、路径参数的类型与验证、查询参数，以及怎样测试路由。
 objectives:
   - 用 createBrowserRouter（或 createHashRouter）与 RouterProvider 配置路由：嵌套路由、布局与 Outlet、index 路由、* 路由
@@ -30,11 +30,17 @@ references:
   - title: Accessibility — React Router
     url: https://reactrouter.com/how-to/accessibility
     checked: 2026-10-20
+  - title: NavLink — React Router API
+    url: https://reactrouter.com/api/components/NavLink
+    checked: 2026-10-20
+  - title: useSearchParams — React Router API
+    url: https://reactrouter.com/api/hooks/useSearchParams
+    checked: 2026-10-20
 ---
 
 ## 为什么用路由库
 
-e10 的路由已经能用了，但真实的应用很快会遇到更多问题：很多页面共用一个带导航的布局；导航中要标出当前所在的页面；`/products` 和 `/products/:id` 要同时显示“商品”导航是当前页；地址不存在时，要在同一个布局中显示 404；路径参数要解码；链接要能写成相对于当前页面的形式……React Router 把这些都做好了，原理和 e10 一样：**地址是唯一的数据来源**，链接被拦截后由路由更新地址、重新渲染。
+e10 的路由已经能用了，但真实的应用很快会遇到更多问题：很多页面共用一个带导航的布局；导航中要标出当前所在的页面；在 `/products` 和 `/products/:id` 上，“商品”导航都要显示为当前页；地址不存在时，要在同一个布局中显示 404；路径参数要解码；链接要能写成相对于当前页面的形式……React Router 把这些都做好了，原理和 e10 一样：**地址是唯一的数据来源**，链接被拦截后由路由更新地址、重新渲染。
 
 React Router 有三种用法（官方称为“模式”）：
 
@@ -42,7 +48,7 @@ React Router 有三种用法（官方称为“模式”）：
 - **Data 模式**：用 `createBrowserRouter` 在 React 之外创建路由，再交给 `<RouterProvider>`。除了路由，还支持在路由上加载数据（`loader`，g14）等功能；
 - **Framework 模式**：在 Data 模式之上加一个 Vite 插件，提供按文件组织路由、服务端渲染等功能，更像一个完整的框架。
 
-本课使用 **Data 模式**。版本说明：本平台使用 react-router 8（2026 年 6 月发布 8.0）。从 v7 开始，所有内容都从 `react-router` 导入，只有 `RouterProvider` 这类和 DOM 有关的组件从 `react-router/dom` 导入；v8 删除了旧的 `react-router-dom` 包。很多旧教程还在用 `react-router-dom`，或者 v6 之前的 `<Switch>`、`useHistory`，不要照抄。
+本课使用 **Data 模式**。版本说明：本平台使用 react-router 8（2026 年 6 月发布 8.0）。从 v7 开始，所有内容都从 `react-router` 导入，只有 `RouterProvider` 这类和 DOM 有关的组件从 `react-router/dom` 导入（`react-router` 中也有一个 `RouterProvider`，类型检查能通过，但它不支持后面要用到的 `flushSync`，网页中要用 `react-router/dom` 的）；v8 删除了旧的 `react-router-dom` 包。很多旧教程还在用 `react-router-dom`，或者 v6 之前的 `<Switch>`、`useHistory`，不要照抄。
 
 ## 第一个路由：嵌套与布局
 
@@ -106,12 +112,12 @@ createRoot(container).render(<RouterProvider router={router} />);
 ```
 - `/` 对应的 `Layout` 是一个**布局路由**：它的子路由渲染在 `<Outlet />` 的位置。点三个链接，导航和页脚一直都在，只有 `<main>` 中的内容在变。
 - `{ index: true }` 是 **index 路由**：地址正好是父路由的路径（这里是 `/`）时显示它，相当于“默认的子页面”。
-- `path: '*'` 匹配其他所有地址。它是 `Layout` 的子路由，所以 404 页面也有导航和页脚。React Router 会给路由排序：`about` 比 `*` 更具体，先匹配它，所以书写的顺序不重要。
-- `NavLink` 和 `Link` 都渲染一个真正的 `<a>`：按住 Ctrl/⌘ 点击会在新标签页打开（e10 讲过路由要放过这类点击）。区别是 `NavLink` 知道自己是不是**当前页**：它会得到 `aria-current="page"` 属性和 `active` 类名，`style` 和 `className` 还可以写成函数，根据 `isActive` 返回样式。
+- `path: '*'` 匹配其他所有地址。它是 `Layout` 的子路由，所以 404 页面也有导航和页脚。React Router 会给路由排序：`about` 比 `*` 更具体，先匹配它，所以书写的顺序通常不重要（只有两个路由同样具体时才按书写的顺序）。
+- `NavLink` 和 `Link` 都渲染一个真正的 `<a>`：按住 Ctrl/⌘ 点击会在新标签页打开（e10 讲过路由要放过这类点击）。区别是 `NavLink` 知道自己是不是**当前页**：是当前页时，它会得到 `aria-current="page"` 属性和 `active` 类名，`style` 和 `className` 还可以写成函数，根据 `isActive` 返回样式。
 - `NavLink` 默认按**前缀**判断当前页：`<NavLink to="/products">` 在 `/products/2` 上也是当前页，这通常正是我们想要的（在详情页，“商品”导航仍然亮着）。加上 `end` 之后，只有地址完全相同时才算。`to="/"` 是个例外：每个地址都以 `/` 开头，所以 React Router 让它只在根地址时才算当前页，加不加 `end` 都一样。
 :::
 
-`createBrowserRouter` 使用真实的路径（`/about`），这是正式部署时的选择，但服务器要把这些路径都返回同一个 `index.html`（e10）。本平台的预览运行在一个沙箱页面中，Safari 不允许沙箱修改路径，所以示例用 `createHashRouter`，把路径放在 `#` 之后。两者的路由配置完全一样。路由对象要在组件之外**只创建一次**，不要放在 state 里，也不要在组件中每次渲染都创建。
+`createBrowserRouter` 使用真实的路径（`/about`），这是正式部署时的选择，但服务器要把这些路径都返回同一个 `index.html`（e10）。本平台的预览运行在一个沙箱页面中，Safari 不允许沙箱修改路径，所以示例用 `createHashRouter`，把路径放在 `#` 之后。两者的路由配置完全一样。`createHashRouter`、`createBrowserRouter` 返回的 `router` 要在组件之外**只创建一次**，不要放在 state 里，也不要在组件中每次渲染都创建。
 
 ## 路径参数：类型是 string | undefined
 
@@ -195,13 +201,13 @@ createRoot(container).render(<RouterProvider router={router} />);
 ```
 - 把鼠标停在第 33 行的 `productId` 上：类型是 `string | undefined`。组件不知道自己会被放在哪个路由下（同一个组件可以用在没有这个参数的路由中），所以 TypeScript 只能说“可能没有”。
 - 路径参数和查询参数一样**来自用户**：任何人都能在地址栏中输入 `/products/2abc`。第 34 行先用正则确认它是正整数，再查找商品。如果直接用 `parseInt('2abc')`，得到的是 2，一个错误的地址也会显示出“咖啡”（e06 讲过，运行时的数据要验证）。
-- `/products` 这一项没有 `Component`，只用来给子路由加上共同的前缀。`to={String(p.id)}`、`to=".."` 是**相对链接**：相对于当前的路由，`..` 回到上一级路由 `/products`。
+- `/products` 这一项没有 `Component`，只用来给子路由加上共同的前缀。`to={String(p.id)}`、`to=".."` 是**相对链接**：相对于当前的路由，`..` 回到上一级**路由**，这里是 `/products`。注意它按路由的层级计算，不是按地址中的 `/`：如果把详情页写成和列表并列的 `{ path: 'products/:productId' }`（本课的小任务就是这样），它的上一级路由是 `/`，`..` 会回到首页。这时写 `<Link to=".." relative="path">`（按地址去掉一段），或者直接写 `to="/products"`。
 :::
 
 ## 链接与跳转
 
 - 用户点击就能去的地方，用 `<Link>` 或 `<NavLink>`：它们是真正的链接，可以在新标签页打开、可以复制地址，读屏软件也会把它读成“链接”；
-- 不是由用户点击引起的跳转（例如操作超时后回到登录页），才用 `useNavigate()` 得到的 `navigate('/login')`。不要用一个按钮加 `navigate` 去模拟链接；
+- 不是由点击链接引起的跳转，才用 `useNavigate()` 得到的 `navigate(…)`：例如表单提交成功后转到新建的页面、操作超时后回到登录页。不要用一个按钮加 `navigate` 去模拟链接；
 - `<Link to="/products" replace>`、`navigate(-1)`：替换当前的历史记录、后退一步。
 
 React Router 不会在切换页面后移动焦点，也不会通知读屏软件页面变了（官方文档的“Accessibility”一节把它们留给了应用）。e10 的做法在这里同样适用：在布局中根据 `useLocation().pathname` 的变化，把焦点移到新页面的主标题上（页面刚打开时不移动）。
@@ -260,8 +266,8 @@ createRoot(container).render(<RouterProvider router={router} />);
 ```
 - 输入框的值**直接来自地址**（`searchParams.get('q')`），没有另外的 state。地址变了（输入、后退、打开分享来的链接），界面跟着变，两者不可能不一致。
 - `replace: true`：每输入一个字都新增一条历史记录的话，用户按一次“后退”只能删掉一个字。输入时替换当前记录；切换排序、翻页这种“一步操作”才新增记录。
-- `flushSync: true`：React Router 默认在 transition（`startTransition`）中更新导航后的状态，好让 React 先处理更紧急的更新。但这个输入框的值来自地址：地址还没更新时，React 会先把输入框恢复成旧的值，打字很快时，下一个字就可能接在旧的值后面，前一个字“丢了”。`flushSync` 让这一次更新同步完成。只有像这样**直接绑定在地址上的输入框**才需要它。
-- `setSearchParams` 也可以传一个函数 `(prev) => 新的参数`，在原来的参数基础上修改。读出来的值都是 `string | null`，排序、页码这类有固定取值的参数，读取时要验证（e10 的 `parseFilters`）。
+- `flushSync: true`：React Router 默认在 transition（`startTransition`）中更新导航后的状态，好让 React 先处理更紧急的更新。但这个输入框的值来自地址：地址还没更新时，React 会先把输入框恢复成旧的值，等 transition 完成再换成新的值。这会带来两个问题：在文字中间修改时，光标会跳到末尾；打字很快时（在较慢的设备上尤其明显），下一个字可能接在旧的值后面，前一个字“丢了”。`flushSync` 让这一次更新同步完成。只有像这样**直接绑定在地址上的输入框**才需要它，而且只在这个路由没有 `loader`（g14）时有效：有 `loader` 时，地址要等它运行完才更新。那种情况下，输入框可以先用自己的 state 保存正在输入的文字，再更新地址。
+- `setSearchParams` 也可以传一个函数 `(prev) => 新的参数`，在原来的参数基础上修改。注意它不像 `setState` 的更新函数那样排队：在同一个事件中调用两次，后一次会覆盖前一次，要改的几个参数应该一次改完。读出来的值都是 `string | null`，排序、页码这类有固定取值的参数，读取时要验证（e10 的 `parseFilters`）。
 :::
 
 ## 测试路由
@@ -269,6 +275,7 @@ createRoot(container).render(<RouterProvider router={router} />);
 测试中用 `createMemoryRouter`：地址只保存在内存中，可以从任意地址开始，不影响浏览器（e10 的 `createMemoryHistory` 也是这个思路）。路由配置单独导出，测试和 `main.tsx` 共用同一份：
 
 ```tsx
+import { expect, test } from 'vitest';
 import { createMemoryRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import { render, screen } from '@testing-library/react';
@@ -286,7 +293,7 @@ test('从详情页返回列表', async () => {
 });
 ```
 
-注意第二个断言用的是 `findByRole`：点击链接之后，导航是**异步**完成的（还可能要先加载数据），页面不会在 `click` 返回时立刻更新。`findBy…` 会等到元素出现为止。`router.state.location` 是路由当前的地址；要在测试中直接导航，用 `await act(() => router.navigate('/about'))`，后退一步是 `router.navigate(-1)`。
+注意第二个断言用的是 `findByRole`：点击链接之后，导航是**异步**完成的（还可能要先加载数据），页面不会在 `click` 返回时立刻更新。`findBy…` 会等到元素出现为止。`router.state.location` 是路由当前的地址；要在测试中直接导航，用 `await act(() => router.navigate('/about'))`，后退一步是 `await act(() => router.navigate(-1))`。官方文档还介绍了 `createRoutesStub`，用来单独测试一个依赖路由数据的组件。
 
 ::exercise{#app-routes}
 
@@ -298,7 +305,8 @@ test('从详情页返回列表', async () => {
 
 ## 常见错误
 
-- **从 `react-router-dom` 导入**：v8 已经删除了这个包。从 `react-router` 导入，`RouterProvider` 从 `react-router/dom` 导入。
+- **从 `react-router-dom` 导入**：v8 已经删除了这个包。从 `react-router` 导入，`RouterProvider` 从 `react-router/dom` 导入（从 `react-router` 导入的 `RouterProvider` 不支持 `flushSync`）。
+- **把 `..` 当成“地址的上一段”**：它默认按路由的层级回退。并列的路由之间要用 `relative="path"` 或者绝对地址。
 - **用 `<a href>` 或者按钮加 `navigate` 做站内导航**：前者会让整个页面重新加载，后者不是真正的链接。用 `<Link>`、`<NavLink>`。
 - **给需要按前缀匹配的 `NavLink` 加了 `end`**：`<NavLink to="/products" end>` 在商品详情页上就不再是当前页了。只在确实需要“完全相同”时才加 `end`。
 - **直接使用 `useParams()` 的值**：它可能是 `undefined`，也可能是任意的字符串。验证之后再用。

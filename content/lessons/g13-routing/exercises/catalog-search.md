@@ -244,7 +244,7 @@ export const routes: RouteObject[] = [
 :::files{role=tests}
 ```tsx file=Catalog.test.tsx
 import { expect, test } from 'vitest';
-import { act, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
@@ -284,9 +284,19 @@ test('不合法的排序和页码退回默认值', () => {
   expect(pageInfo()).toHaveTextContent('第 1 / 3 页');
 });
 
-test('以 0 开头的页码无效', () => {
-  start('/products?page=02');
-  expect(pageInfo()).toHaveTextContent('第 1 / 3 页');
+test('以 0 开头、带小数点的页码无效', () => {
+  for (const page of ['02', '1.5']) {
+    const { router } = start(`/products?page=${page}`);
+    expect(pageInfo(), `page=${page}`).toHaveTextContent('第 1 / 3 页');
+    expect(router.state.location.search).toBe(`?page=${page}`);
+    cleanup();
+  }
+});
+
+test('输入框显示原来的搜索词；筛选时去掉首尾空白', () => {
+  start('/products?q=%20蛋糕%20');
+  expect(screen.getByLabelText('搜索')).toHaveValue(' 蛋糕 ');
+  expect(items()).toEqual(['蛋糕', '抹茶蛋糕']);
 });
 
 test('页码太大时显示最后一页', () => {
@@ -296,42 +306,56 @@ test('页码太大时显示最后一页', () => {
   expect(pager().queryByRole('link', { name: '下一页' })).toBeNull();
 });
 
-test('输入搜索词：更新地址中的 q，替换当前的历史记录，并回到第 1 页', async () => {
-  const { router, user } = start('/', '/products?page=3');
+test('输入搜索词：更新地址中的 q，保留其他参数，替换当前的历史记录，并回到第 1 页', async () => {
+  const { router, user } = start('/', '/products?sort=price-desc&page=3');
   await user.type(screen.getByLabelText('搜索'), '蛋糕');
-  expect(params(router)).toEqual({ q: '蛋糕' });
-  expect(items()).toEqual(['蛋糕', '抹茶蛋糕']);
+  expect(params(router)).toEqual({ sort: 'price-desc', q: '蛋糕' });
+  expect(items()).toEqual(['抹茶蛋糕', '蛋糕']);
   await user.clear(screen.getByLabelText('搜索'));
-  expect(params(router)).toEqual({});
+  expect(params(router)).toEqual({ sort: 'price-desc' });
   await act(() => router.navigate(-1));
   expect(router.state.location.pathname, '输入时应该替换历史记录，后退一次就离开这个页面').toBe('/');
 });
 
-test('改变排序：新增一条历史记录，回到第 1 页；后退时界面跟着地址恢复', async () => {
-  const { router, user } = start('/products?page=2');
-  expect(items()).toEqual(['奶茶', '蛋糕', '抹茶蛋糕']);
+test('改变排序：保留搜索词，新增一条历史记录，回到第 1 页；后退时界面跟着地址恢复', async () => {
+  const { router, user } = start('/products?q=茶&page=2');
+  expect(items()).toEqual(['抹茶蛋糕']);
   await user.selectOptions(screen.getByLabelText('排序'), 'price-asc');
-  await waitFor(() => expect(params(router)).toEqual({ sort: 'price-asc' }));
-  expect(await screen.findByText('第 1 / 3 页')).toBeInTheDocument();
-  expect(items()).toEqual(['矿泉水', '绿茶', '红茶']);
+  await waitFor(() => expect(params(router)).toEqual({ q: '茶', sort: 'price-asc' }));
+  expect(await screen.findByText('第 1 / 2 页')).toBeInTheDocument();
+  expect(items()).toEqual(['绿茶', '红茶', '奶茶']);
   await user.selectOptions(screen.getByLabelText('排序'), 'default');
-  await waitFor(() => expect(params(router)).toEqual({}));
+  await waitFor(() => expect(params(router)).toEqual({ q: '茶' }));
   await act(() => router.navigate(-1));
+  expect(params(router)).toEqual({ q: '茶', sort: 'price-asc' });
+  expect(screen.getByLabelText('排序'), '后退之后，下拉框要跟着地址变化').toHaveValue('price-asc');
+  expect(items()).toEqual(['绿茶', '红茶', '奶茶']);
   await act(() => router.navigate(-1));
-  expect(params(router)).toEqual({ page: '2' });
+  expect(params(router)).toEqual({ q: '茶', page: '2' });
   expect(screen.getByLabelText('排序')).toHaveValue('default');
-  expect(items()).toEqual(['奶茶', '蛋糕', '抹茶蛋糕']);
+  expect(items()).toEqual(['抹茶蛋糕']);
 });
 
-test('翻页是链接：保留其他参数，第 1 页不写 page', async () => {
-  const { router, user } = start('/products?q=茶');
-  await user.click(pager().getByRole('link', { name: '下一页' }));
+/** 解析链接的 href：比较路径和参数，不受参数顺序、中文是否编码的影响 */
+function target(link: HTMLElement) {
+  const url = new URL(link.getAttribute('href') ?? '', 'https://app.test');
+  return { pathname: url.pathname, params: Object.fromEntries(url.searchParams) };
+}
+
+test('翻页是真正的链接：保留其他参数，第 1 页不写 page', async () => {
+  const { router, user } = start('/products?q=茶&sort=price-desc');
+  expect(items()).toEqual(['抹茶蛋糕', '奶茶', '红茶']);
+  const next = pager().getByRole('link', { name: '下一页' });
+  expect(target(next)).toEqual({ pathname: '/products', params: { q: '茶', sort: 'price-desc', page: '2' } });
+  await user.click(next);
   expect(await screen.findByText('第 2 / 2 页')).toBeInTheDocument();
-  expect(params(router)).toEqual({ q: '茶', page: '2' });
-  expect(items()).toEqual(['抹茶蛋糕']);
-  await user.click(pager().getByRole('link', { name: '上一页' }));
+  expect(params(router)).toEqual({ q: '茶', sort: 'price-desc', page: '2' });
+  expect(items()).toEqual(['绿茶']);
+  const prev = pager().getByRole('link', { name: '上一页' });
+  expect(target(prev)).toEqual({ pathname: '/products', params: { q: '茶', sort: 'price-desc' } });
+  await user.click(prev);
   expect(await screen.findByText('第 1 / 2 页')).toBeInTheDocument();
-  expect(params(router)).toEqual({ q: '茶' });
+  expect(params(router)).toEqual({ q: '茶', sort: 'price-desc' });
 });
 
 test('后退、前进时，输入框跟着地址变化', async () => {
@@ -398,7 +422,7 @@ function readSort(value: string | null): Sort {
 function readPage(value: string | null): number {
   if (value === null) return 1;
   const n = Number(value);
-  return String(n) === value && n >= 1 ? n : 1;
+  return Number.isInteger(n) && String(n) === value && n >= 1 ? n : 1;
 }
 
 function edit(params: URLSearchParams, key: string, value: string | null): URLSearchParams {
@@ -782,7 +806,7 @@ export const routes: RouteObject[] = [
 ```
 :::
 
-:::variant{kind=wrong name=no-clamp fails=tests reason="页码超过总页数时显示了空列表"}
+:::variant{kind=wrong name=no-clamp fails=tests reason="页码超过总页数时没有显示最后一页，而是“没有找到商品”"}
 ```tsx file=Catalog.tsx
 import { Link, useSearchParams, type RouteObject } from 'react-router';
 import { PAGE_SIZE, PRODUCTS, type Product } from './catalog';

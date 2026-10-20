@@ -1,0 +1,6 @@
+[
+  { "url": "/api/books/1", "delayMs": 300, "body": { "id": 1, "title": "三体", "author": "刘慈欣" } },
+  { "url": "/api/books/2", "delayMs": 1500, "body": { "id": 2, "title": "活着", "author": "余华" } },
+  { "url": "/api/books/99", "delayMs": 200, "status": 404, "body": { "message": "没有这本书" } },
+  { "url": "/api/books/500", "delayMs": 200, "status": 500, "body": { "message": "出错了" } }
+]

@@ -9,7 +9,8 @@ title: 商店的路由
 3. `/`：标题 `<h1>首页</h1>`；`/products`：标题“商品”，列表中每个商品是一个指向 `/products/编号` 的链接；
 4. `/products/:productId`：标题是商品的名字，下面是“价格：¥22”这样的一行。编号必须只由数字组成、不以 0 开头，并且在 `PRODUCTS` 中存在，否则标题是“没有这个商品”（不显示价格）。两种情况下都有一个“返回商品列表”的链接；
 5. 其他地址：标题“页面不存在”，同样显示在布局中；
-6. 站内链接都不能让整个页面重新加载。
+6. 站内链接都不能让整个页面重新加载；
+7. 每个页面只有一个 `<h1>`（布局中不要再放其他 `<h1>`）。
 
 `data.ts`（只读）中是商品数据；`main.tsx`（只读）用你导出的 `routes` 创建路由。
 
@@ -201,7 +202,7 @@ test('从导航进入商品列表，再进入详情：页面不重新加载，�
   expect(await screen.findByRole('heading', { level: 1, name: '商品' })).toBeInTheDocument();
   expect(navLink('商品')).toHaveAttribute('aria-current', 'page');
   expect(navLink('首页')).not.toHaveAttribute('aria-current');
-  const links = within(screen.getByRole('list')).getAllByRole('link');
+  const links = within(within(screen.getByRole('main')).getByRole('list')).getAllByRole('link');
   expect(links.map((a) => a.getAttribute('href'))).toEqual(['/products/101', '/products/205', '/products/309']);
   await user.click(screen.getByRole('link', { name: '咖啡' }));
   expect(await screen.findByRole('heading', { level: 1, name: '咖啡' })).toBeInTheDocument();
@@ -220,7 +221,7 @@ test('详情页的“返回商品列表”', async () => {
 });
 
 test('编号不存在或格式不对：“没有这个商品”，仍然显示在布局中', () => {
-  for (const id of ['999', '0', '205abc', '205.0', '-205']) {
+  for (const id of ['999', '0', '0205', '205abc', '205.0', '-205']) {
     const { unmount } = start(`/products/${id}`);
     expect(heading(), `/products/${id}`).toHaveTextContent('没有这个商品');
     expect(screen.queryByText(/价格/)).toBeNull();
@@ -235,6 +236,7 @@ test('其他地址：“页面不存在”，仍然显示在布局中', () => {
     const { unmount } = start(path);
     expect(heading(), path).toHaveTextContent('页面不存在');
     expect(screen.getByRole('main')).toContainElement(heading());
+    expect(screen.getByRole('navigation', { name: '主导航' }), '“页面不存在”也要显示在布局中，导航不能消失').toBeInTheDocument();
     unmount();
   }
 });
@@ -254,7 +256,7 @@ test('其他地址：“页面不存在”，仍然显示在布局中', () => {
 
 `NavLink` 的“当前页”是按前缀判断的：`/products` 也匹配 `/products/205`，所以在详情页“商品”仍然是当前页，这正是我们想要的；如果给它加上 `end`，详情页上它就不亮了。`to="/"` 是例外：React Router 让它只在根地址时才算当前页。
 
-编号的验证和 e06、e10 一样：路径参数来自地址，可能是任何字符串。`parseInt('205abc')` 得到 205，`Number('205.0')` 也是 205，只靠它们，一个错误的地址就会显示出“咖啡”。先确认格式，再转换。替代解用了另一种写法：`String(Number(id)) === id`，转换回去还和原来一样，才是一个“干净”的整数。
+编号的验证和 e06、e10 一样：路径参数来自地址，可能是任何字符串。`parseInt('205abc')` 得到 205，`Number('205.0')` 也是 205，只靠它们，一个错误的地址就会显示出“咖啡”。先确认格式，再转换。替代解用了另一种写法：`String(Number(id)) === id`，转换回去还和原来一样，才是一个“干净”的数字；它对 `'0'`、`'-205'` 也成立，所以还要加上 `id > 0`。
 
 替代解还演示了另一种写路由配置的方式：`createRoutesFromElements` 加上 JSX 的 `<Route>`。它得到的是同样的路由对象，选哪一种是风格问题。
 :::

@@ -7664,8 +7664,8 @@
       ]
     },
     "g13-routing": {
-      "verifiedAt": "2026-10-20T15:48:23.851Z",
-      "sourceHash": "08d83a2c31162220",
+      "verifiedAt": "2026-10-20T16:10:07.713Z",
+      "sourceHash": "66559c5aee8754f9",
       "ok": true,
       "checks": [
         {
@@ -7731,17 +7731,17 @@
         {
           "target": "exercise:app-routes:wrong:parse-int",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编号不存在或格式不对：“没有这个商品”，仍然显示在布局中 ⟶ /products/205abc)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编号不存在或格式不对：“没有这个商品”，仍然显示在布局中 ⟶ /products/0205)"
         },
         {
           "target": "exercise:app-routes:wrong:number-only",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编号不存在或格式不对：“没有这个商品”，仍然显示在布局中 ⟶ /products/205.0)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编号不存在或格式不对：“没有这个商品”，仍然显示在布局中 ⟶ /products/0205)"
         },
         {
           "target": "exercise:catalog-search:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(从地址读取搜索词、排序和页码 ⟶ expect(…).toHaveValue('茶'),页码太大时显示最后一页 ⟶ expect(…).toEqual([ '矿泉水' ]),输入搜索词：更新地址中的 q，替换当前的历史记录，并回到第 1 页 ⟶ expect(…).toEqual({ q: '蛋糕' }),改变排序：新增一条历史记录，回到第 1 页；后退时界面跟着地址恢复 ⟶ expect(…).toEqual([ '奶茶', '蛋糕', '抹茶蛋糕' ]),翻页是链接：保留其他参数，第 1 页不写 page ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\" and name \"下一页\",后退、前进时，输入框跟着地址变化 ⟶ expect(…).toHaveValue('蛋糕'))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(从地址读取搜索词、排序和页码 ⟶ expect(…).toHaveValue('茶'),输入框显示原来的搜索词；筛选时去掉首尾空白 ⟶ expect(…).toHaveValue(' 蛋糕 '),页码太大时显示最后一页 ⟶ expect(…).toEqual([ '矿泉水' ]),输入搜索词：更新地址中的 q，保留其他参数，替换当前的历史记录，并回到第 1 页 ⟶ expect(…).toEqual({ sort: 'price-desc', q: '蛋糕' }),改变排序：保留搜索词，新增一条历史记录，回到第 1 页；后退时界面跟着地址恢复 ⟶ expect(…).toEqual([ '抹茶蛋糕' ]),翻页是真正的链接：保留其他参数，第 1 页不写 page ⟶ expect(…).toEqual([ '抹茶蛋糕', '奶茶', '红茶' ]),后退、前进时，输入框跟着地址变化 ⟶ expect(…).toHaveValue('蛋糕'))"
         },
         {
           "target": "exercise:catalog-search:solution:solution",
@@ -7761,12 +7761,12 @@
         {
           "target": "exercise:catalog-search:wrong:push-while-typing",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入搜索词：更新地址中的 q，替换当前的历史记录，并回到第 1 页 ⟶ 输入时应该替换历史记录，后退一次就离开这个页面)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入搜索词：更新地址中的 q，保留其他参数，替换当前的历史记录，并回到第 1 页 ⟶ 输入时应该替换历史记录，后退一次就离开这个页面)"
         },
         {
           "target": "exercise:catalog-search:wrong:keep-page",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入搜索词：更新地址中的 q，替换当前的历史记录，并回到第 1 页 ⟶ expect(…).toEqual({ q: '蛋糕' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入搜索词：更新地址中的 q，保留其他参数，替换当前的历史记录，并回到第 1 页 ⟶ expect(…).toEqual({ sort: 'price-desc', q: '蛋糕' }))"
         },
         {
           "target": "exercise:catalog-search:wrong:no-clamp",
@@ -7776,7 +7776,119 @@
         {
           "target": "exercise:catalog-search:wrong:page-one-in-url",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(翻页是链接：保留其他参数，第 1 页不写 page ⟶ expect(…).toEqual({ q: '茶' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(翻页是真正的链接：保留其他参数，第 1 页不写 page ⟶ expect(…).toEqual({ pathname: '/products', params: { q: '茶', sort: 'price-desc' } }))"
+        }
+      ]
+    },
+    "g14-async-data": {
+      "verifiedAt": "2026-10-20T16:06:21.158Z",
+      "sourceHash": "268836825afa5e79",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:use-json:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:use-json:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:route-loader:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:route-loader:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:use-json-hook:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(url 为 null：idle，不发请求；reload 也什么都不做 ⟶ expect(…).toEqual({ status: 'idle' }),先是 loading，然后是 success；请求带着中止信号 ⟶ expect(…).toEqual({,失败：状态码不是 2xx、数据格式不对、网络失败 ⟶ expect(…).toEqual({ status: 'error', message: '服务器返回了 500' }),重试：重新请求当前的地址，期间显示加载中 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",url 变化：中止旧的请求；被中止的请求不算失败，旧的结果也不会出现 ⟶ expect(…).toBe(true),传入内联的 parse 函数也不会重复请求 ⟶ TestingLibraryElementError: Unable to find an element with the text: success. This could be because the text is broken up by multiple elements. In this case, yo,一次成功的加载只提交两次：出现时一次，结果到达时一次 ⟶ TestingLibraryElementError: Unable to find role=\"list\" and name \"用户\")"
+        },
+        {
+          "target": "exercise:use-json-hook:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:use-json-hook:alt:ref-and-async",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:use-json-hook:wrong:parse-in-deps",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(传入内联的 parse 函数也不会重复请求 ⟶ 每次渲染的 parse 都是新函数，不能因此重新请求)"
+        },
+        {
+          "target": "exercise:use-json-hook:wrong:abort-as-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(url 变化：中止旧的请求；被中止的请求不算失败，旧的结果也不会出现 ⟶ 换回来时应该重新加载，而不是显示上一次被中止的请求的“失败”)"
+        },
+        {
+          "target": "exercise:use-json-hook:wrong:ignore-status",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(失败：状态码不是 2xx、数据格式不对、网络失败 ⟶ expect(…).toEqual({ status: 'error', message: '服务器返回了 500' }))"
+        },
+        {
+          "target": "exercise:use-json-hook:wrong:no-signal",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(先是 loading，然后是 success；请求带着中止信号 ⟶ expect(…).toBeInstanceOf([Function: AbortSignal] {,url 变化：中止旧的请求；被中止的请求不算失败，旧的结果也不会出现 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:use-json-hook:wrong:sync-loading",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(一次成功的加载只提交两次：出现时一次，结果到达时一次 ⟶ 不要在 Effect 中同步地设置“加载中”：根据结果属于哪一次请求，在渲染时推出来)"
+        },
+        {
+          "target": "exercise:book-routes:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(直接打开书单：先显示“正在加载…”，数据到了再显示书单 ⟶ TestingLibraryElementError: Unable to find an element with the text: 正在加载…. This could be because the text is broken up by multiple elements. In this case, you ,进入详情：加载时原来的页面保留，状态区显示“正在加载…” ⟶ TestingLibraryElementError: Unable to find role=\"link\" and name \"活着\",服务器出错、数据格式不对：显示加载失败的原因，导航还在 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",数据格式不对也是加载失败 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",加载中又去了别的页面：中止上一次的请求 ⟶ TestingLibraryElementError: Unable to find role=\"link\" and name \"活着\")"
+        },
+        {
+          "target": "exercise:book-routes:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:book-routes:alt:pathless-boundary",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:book-routes:wrong:boundary-on-root",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(不存在的书：“没有这本书”，导航还在 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"navigation\" and name \"主导航\",服务器出错、数据格式不对：显示加载失败的原因，导航还在 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"navigation\" and name \"主导航\")"
+        },
+        {
+          "target": "exercise:book-routes:wrong:no-hydrate-fallback",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(直接打开书单：先显示“正在加载…”，数据到了再显示书单 ⟶ TestingLibraryElementError: Unable to find an element with the text: 正在加载…. This could be because the text is broken up by multiple elements. In this case, you )"
+        },
+        {
+          "target": "exercise:book-routes:wrong:404-as-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(不存在的书：“没有这本书”，导航还在 ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"没有这本书\")"
+        },
+        {
+          "target": "exercise:book-routes:wrong:no-param-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编号格式不对：不发请求，直接是“没有这本书” ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"没有这本书\")"
+        },
+        {
+          "target": "exercise:book-routes:wrong:no-signal",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(加载中又去了别的页面：中止上一次的请求 ⟶ 没有用到的请求应该被中止)"
+        },
+        {
+          "target": "exercise:book-routes:wrong:no-validation",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(数据格式不对也是加载失败 ⟶ TestingLibraryElementError: Unable to find role=\"alert\")"
         }
       ]
     }
