@@ -5538,6 +5538,123 @@
         }
       ]
     },
+    "e05-fetch-json": {
+      "verifiedAt": "2026-10-20T12:11:34.564Z",
+      "sourceHash": "5a4194dc844e44f5",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:basic:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:basic:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] /api/users/1 → 200  ok = true | [log]   响应体： { id: 1, name: 'Ada', email: 'ada@example.com' } | [log] /api/users/999 → 404 Not Found ok = false | [log]   响应体： { message: '用户不存在' }"
+        },
+        {
+          "target": "playground:failures:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:failures:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 网络失败：fetch 被拒绝，是 TypeError 吗？ true | [log] 状态： 500 内容类型： text/html | [log] 响应体不是 JSON： true | [log] 响应体已经读过了吗？ true"
+        },
+        {
+          "target": "playground:post:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:post:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 201 Created | [log] 服务器创建了： { id: 42, title: '写周报', done: false }"
+        },
+        {
+          "target": "playground:url:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:url:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] https://api.example.com/search?q=TypeScript+%26+React+%E5%85%A5%E9%97%A8&page=2 | [log] 读取参数： TypeScript & React 入门 | [log] 直接拼接： TypeScript  | [log] 请求成功： true"
+        },
+        {
+          "target": "exercise:get-json:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(getJson › 404 与 500 抛出 HttpError,getJson › 204 返回 null)"
+        },
+        {
+          "target": "exercise:get-json:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:get-json:alt:text-then-parse",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:get-json:wrong:no-ok-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJson › 404 与 500 抛出 HttpError)"
+        },
+        {
+          "target": "exercise:get-json:wrong:json-on-204",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJson › 204 返回 null)"
+        },
+        {
+          "target": "exercise:get-json:wrong:swallow-errors",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJson › 404 与 500 抛出 HttpError,getJson › 响应体不是 JSON 时，SyntaxError 原样传出,getJson › 网络失败时，fetch 的拒绝原样传出)"
+        },
+        {
+          "target": "exercise:get-json:wrong:wrap-network-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJson › 网络失败时，fetch 的拒绝原样传出)"
+        },
+        {
+          "target": "exercise:fetch-retry:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(fetchWithRetry › 5xx 时按指数退避重试，成功后返回,fetchWithRetry › 429 时按 Retry-After 等待,fetchWithRetry › Retry-After 不是整数秒时，仍按指数退避,fetchWithRetry › 网络失败也会重试；次数用完时抛出最后一次的错误,fetchWithRetry › 次数用完时返回最后一个响应)"
+        },
+        {
+          "target": "exercise:fetch-retry:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fetch-retry:alt:recursive",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fetch-retry:wrong:retry-all-errors",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 其他 4xx 不重试)"
+        },
+        {
+          "target": "exercise:fetch-retry:wrong:constant-delay",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 5xx 时按指数退避重试，成功后返回)"
+        },
+        {
+          "target": "exercise:fetch-retry:wrong:ignore-retry-after",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 429 时按 Retry-After 等待)"
+        },
+        {
+          "target": "exercise:fetch-retry:wrong:generic-final-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(fetchWithRetry › 网络失败也会重试；次数用完时抛出最后一次的错误)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",

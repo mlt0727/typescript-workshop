@@ -1,0 +1,8 @@
+[
+  { "url": "/api/profile", "body": { "id": 7, "name": "Grace" } },
+  { "url": "/api/missing", "status": 404, "statusText": "Not Found", "body": { "message": "没有这个资源" } },
+  { "url": "/api/crash", "status": 500, "statusText": "Internal Server Error", "body": "服务器出错了" },
+  { "url": "/api/empty", "status": 204, "statusText": "No Content" },
+  { "url": "/api/not-json", "body": "这不是 JSON", "headers": { "content-type": "text/plain" } },
+  { "url": "/api/offline", "networkError": true }
+]

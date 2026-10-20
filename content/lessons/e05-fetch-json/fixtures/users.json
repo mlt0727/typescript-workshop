@@ -1,0 +1,8 @@
+[
+  { "url": "/api/users/1", "body": { "id": 1, "name": "Ada", "email": "ada@example.com" }, "delayMs": 30 },
+  { "url": "/api/users/999", "status": 404, "statusText": "Not Found", "body": { "message": "用户不存在" }, "delayMs": 30 },
+  { "url": "/api/broken", "status": 500, "statusText": "Internal Server Error", "body": "<h1>500 Internal Server Error</h1>", "headers": { "content-type": "text/html" } },
+  { "url": "/api/offline", "networkError": true },
+  { "method": "POST", "url": "/api/todos", "status": 201, "statusText": "Created", "body": { "id": 42, "title": "写周报", "done": false } },
+  { "url": "https://api.example.com/search*", "body": { "results": [], "page": 2 } }
+]
