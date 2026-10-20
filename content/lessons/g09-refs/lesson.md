@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 有些东西需要在多次渲染之间记住，却不应该显示在界面上：计时器的编号、上一次请求的控制器。还有些时候必须直接操作 DOM：点击“编辑”之后把焦点移到输入框，把新加的一项滚动到可见的位置。React 为这两种情况提供了 ref。它是一个可以随时修改、但修改了不会触发渲染的“盒子”。这一课讲 useRef 的两种用法、在 React 19 中把 ref 传给自己的组件，以及什么时候不该用 ref。
 objectives:
   - 用 useRef 保存不参与渲染的值（例如计时器编号），区分 ref 与 state
@@ -84,7 +84,7 @@ createRoot(container).render(<App />);
 - 这个示例还缺一件事：组件被移除时，计时器仍在运行。在组件被移除时做清理，要用 Effect（g11）。
 :::
 
-两条规则：**不要在渲染过程中读写 `ref.current`**（只在事件处理函数和 Effect 中使用），也**不要用 ref 代替要显示的数据**。渲染时读取 ref，界面就可能和 ref 的值不一致，因为修改 ref 不会触发渲染。
+两条规则：**不要在渲染过程中读写 `ref.current`**（只在事件处理函数和 Effect 中使用），也**不要用 ref 代替要显示的数据**。渲染时读取 ref，界面就可能和 ref 的值不一致，因为修改 ref 不会触发渲染。唯一的例外是**惰性初始化**：`if (ref.current === null) ref.current = new Player();`，它只在第一次渲染时赋值，之后每次渲染的结果都一样。
 
 ## 用 ref 访问 DOM
 
@@ -176,7 +176,26 @@ function TextField({ label, ref }: { label: string; ref?: Ref<HTMLInputElement> 
 
 在旧版本的 React 中，这需要用 `forwardRef` 包装组件，旧代码和资料中经常能看到它。g02 中用 `ComponentProps<'button'>` 写的 `Button`，它的 props 里已经包含了 `ref`，展开 `{...rest}` 时就一起传下去了。
 
-`ref` 属性也可以是一个函数（**ref 回调**）：React 在元素挂载时用元素调用它，元素移除时用 `null` 调用它；在 React 19 中，它还可以返回一个清理函数。需要给列表中的每一项都保存一个元素时（例如“滚动到第 N 项”），ref 回调配合一个 `Map` 比为每一项准备一个 `useRef` 更方便。
+`ref` 属性也可以是一个函数（**ref 回调**）：React 在元素挂载时用元素调用它，元素移除时用 `null` 调用它。在 React 19 中，它还可以返回一个清理函数：返回了清理函数时，元素移除时 React 调用清理函数，不再用 `null` 调用回调。需要给列表中的每一项都保存一个元素时（例如“滚动到第 N 项”），ref 回调配合一个 `Map` 比为每一项准备一个 `useRef` 更方便：
+
+```tsx
+const items = useRef(new Map<string, HTMLLIElement>());
+// …
+<li
+  key={todo.id}
+  ref={(node) => {
+    if (node) items.current.set(todo.id, node);
+    return () => {
+      items.current.delete(todo.id);
+    };
+  }}
+>
+```
+
+两点要注意：
+
+- 写在 JSX 中的箭头函数每次渲染都是一个新函数，React 发现回调变了，就会先清理旧的（调用清理函数，或者用 `null` 调用旧回调），再用元素调用新的。所以 ref 回调里只做“登记”这类重复执行也没关系的事，不要在里面聚焦、选中文字（挑战题会遇到这个问题）；
+- 在 React 19 的类型中，ref 回调只能返回清理函数或者什么都不返回。`ref={(node) => (current = node)}` 这种简写会返回赋值的结果，TypeScript 会报错，要写成带花括号的函数体。
 
 ## 不该用 ref 的时候
 

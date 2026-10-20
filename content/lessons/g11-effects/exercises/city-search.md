@@ -2,15 +2,16 @@
 kind: challenge
 title: 带防抖的城市搜索
 fixtures: cities
+timeoutMs: 15000
 ---
 `CitySearch` 的界面已经写好：它根据 `result` 显示“正在搜索…”、建议列表、“没有匹配的城市”或错误。你要写的是那个 Effect：
 
 1. 搜索词是输入框的内容去掉首尾空白；为空时不请求；
-2. 搜索词变化后，等待 **300 毫秒**没有新的输入，才请求 `/api/cities?q=搜索词`（用 `encodeURIComponent` 编码）；连续输入只请求最后一次；
+2. 搜索词变化后，等待 **300 毫秒**没有新的输入，才请求 `/api/cities?q=搜索词`（用 `encodeURIComponent` 编码），写成 `fetch(地址, { signal })`，测试会从第二个参数中检查 `signal`；连续输入只请求最后一次；
 3. 响应必须是字符串数组，成功时 `setResult({ query, cities })`；状态码不是 2xx、数据格式不对、网络失败时 `setResult({ query, error: true })`；
 4. 搜索词变化或组件消失时，**取消**还没到时间的计时器，并**中止**正在进行的请求；被中止的请求不算失败。
 
-界面只显示与当前搜索词对应的结果（`result.query === query`），所以不需要在 Effect 中重置 `result`。模拟的服务器中，“广”的响应要 800 毫秒，其他的都很快。
+界面只显示与当前搜索词对应的结果（`result.query === query`），所以不需要在 Effect 中重置 `result`。“正在搜索…”和结果的数量显示在一个一直存在的 `role="status"` 区域中，读屏软件会读出它的变化（e07）。模拟的服务器中，“广”的响应要 800 毫秒，其他的都很快。
 
 :::files{role=starter}
 ```tsx file=CitySearch.tsx
@@ -33,18 +34,25 @@ export function CitySearch() {
 
   const current = result !== null && result.query === query ? result : null;
 
+  const status =
+    query === ''
+      ? ''
+      : current === null
+        ? '正在搜索…'
+        : 'error' in current
+          ? ''
+          : current.cities.length === 0
+            ? '没有匹配的城市'
+            : `找到 ${current.cities.length} 个城市`;
+
   return (
     <div>
       <label>
         搜索城市 <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
       </label>
-      {query === '' ? null : current === null ? (
-        <p role="status">正在搜索…</p>
-      ) : 'error' in current ? (
-        <p role="alert">搜索失败，请重试</p>
-      ) : current.cities.length === 0 ? (
-        <p>没有匹配的城市</p>
-      ) : (
+      <p role="status">{status}</p>
+      {current !== null && 'error' in current && <p role="alert">搜索失败，请重试</p>}
+      {current !== null && 'cities' in current && current.cities.length > 0 && (
         <ul aria-label="建议">
           {current.cities.map((city) => (
             <li key={city}>{city}</li>
@@ -107,18 +115,25 @@ export function CitySearch() {
 
   const current = result !== null && result.query === query ? result : null;
 
+  const status =
+    query === ''
+      ? ''
+      : current === null
+        ? '正在搜索…'
+        : 'error' in current
+          ? ''
+          : current.cities.length === 0
+            ? '没有匹配的城市'
+            : `找到 ${current.cities.length} 个城市`;
+
   return (
     <div>
       <label>
         搜索城市 <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
       </label>
-      {query === '' ? null : current === null ? (
-        <p role="status">正在搜索…</p>
-      ) : 'error' in current ? (
-        <p role="alert">搜索失败，请重试</p>
-      ) : current.cities.length === 0 ? (
-        <p>没有匹配的城市</p>
-      ) : (
+      <p role="status">{status}</p>
+      {current !== null && 'error' in current && <p role="alert">搜索失败，请重试</p>}
+      {current !== null && 'cities' in current && current.cities.length > 0 && (
         <ul aria-label="建议">
           {current.cities.map((city) => (
             <li key={city}>{city}</li>
@@ -151,19 +166,35 @@ test('输入停止 300 毫秒后才请求，连续输入只请求一次', async 
   await wait(150);
   expect(fetchSpy).not.toHaveBeenCalled();
   await waitFor(() => expect(suggestions()).toEqual(['上海']));
+  expect(screen.getByRole('status')).toHaveTextContent('找到 1 个城市');
   expect(fetchSpy).toHaveBeenCalledTimes(1);
   const [url] = fetchSpy.mock.calls[0] ?? [];
   expect(String(url)).toContain(`q=${encodeURIComponent('上海')}`);
 });
 
-test('清空输入时什么都不显示，也不请求', async () => {
+test('只输入空白时什么都不显示，也不请求', async () => {
   const fetchSpy = vi.spyOn(window, 'fetch');
   const user = userEvent.setup();
   render(<CitySearch />);
   await user.type(input(), '  ');
   await wait(400);
   expect(fetchSpy).not.toHaveBeenCalled();
-  expect(screen.queryByRole('status')).toBeNull();
+  expect(screen.getByRole('status')).toBeEmptyDOMElement();
+  expect(screen.queryByRole('alert')).toBeNull();
+});
+
+test('被中止的请求不算失败', async () => {
+  const fetchSpy = vi.spyOn(window, 'fetch');
+  const user = userEvent.setup();
+  render(<CitySearch />);
+  await user.type(input(), '广');
+  await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+  await user.type(input(), '州');
+  await user.keyboard('{Backspace}');
+  await wait(50);
+  expect(fetchSpy.mock.calls[0]?.[1]?.signal?.aborted).toBe(true);
+  expect(screen.queryByRole('alert'), '“广”的请求是我们自己中止的，不应该显示失败').toBeNull();
+  expect(screen.getByRole('status')).toHaveTextContent('正在搜索…');
 });
 
 test('慢的旧请求被中止，不会覆盖新的结果', async () => {
@@ -188,6 +219,16 @@ test('没有结果和失败', async () => {
   expect(await screen.findByText('没有匹配的城市')).toBeInTheDocument();
   await user.clear(input());
   await user.type(input(), '错');
+  expect(await screen.findByRole('alert')).toHaveTextContent('搜索失败，请重试');
+});
+
+test('数据格式不对、网络失败也算失败', async () => {
+  const user = userEvent.setup();
+  render(<CitySearch />);
+  await user.type(input(), '坏');
+  expect(await screen.findByRole('alert')).toHaveTextContent('搜索失败，请重试');
+  await user.clear(input());
+  await user.type(input(), '断');
   expect(await screen.findByRole('alert')).toHaveTextContent('搜索失败，请重试');
 });
 
@@ -236,7 +277,10 @@ function isCityList(value: unknown): value is string[] {
 async function searchCities(query: string, signal: AbortSignal): Promise<Result> {
   const response = await fetch(`/api/cities?${new URLSearchParams({ q: query }).toString().replace(/\+/g, '%20')}`, { signal });
   if (!response.ok) return { query, error: true };
-  const data: unknown = await response.json().catch(() => null);
+  const data: unknown = await response.json().catch((error: unknown) => {
+    if (signal.aborted) throw error;
+    return null;
+  });
   return isCityList(data) ? { query, cities: data } : { query, error: true };
 }
 
@@ -261,18 +305,25 @@ export function CitySearch() {
 
   const current = result?.query === query ? result : null;
 
+  const status =
+    query === ''
+      ? ''
+      : current === null
+        ? '正在搜索…'
+        : 'error' in current
+          ? ''
+          : current.cities.length === 0
+            ? '没有匹配的城市'
+            : `找到 ${current.cities.length} 个城市`;
+
   return (
     <div>
       <label>
         搜索城市 <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
       </label>
-      {query === '' ? null : current === null ? (
-        <p role="status">正在搜索…</p>
-      ) : 'error' in current ? (
-        <p role="alert">搜索失败，请重试</p>
-      ) : current.cities.length === 0 ? (
-        <p>没有匹配的城市</p>
-      ) : (
+      <p role="status">{status}</p>
+      {current !== null && 'error' in current && <p role="alert">搜索失败，请重试</p>}
+      {current !== null && 'cities' in current && current.cities.length > 0 && (
         <ul aria-label="建议">
           {current.cities.map((city) => (
             <li key={city}>{city}</li>
@@ -322,18 +373,25 @@ export function CitySearch() {
 
   const current = result !== null && result.query === query ? result : null;
 
+  const status =
+    query === ''
+      ? ''
+      : current === null
+        ? '正在搜索…'
+        : 'error' in current
+          ? ''
+          : current.cities.length === 0
+            ? '没有匹配的城市'
+            : `找到 ${current.cities.length} 个城市`;
+
   return (
     <div>
       <label>
         搜索城市 <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
       </label>
-      {query === '' ? null : current === null ? (
-        <p role="status">正在搜索…</p>
-      ) : 'error' in current ? (
-        <p role="alert">搜索失败，请重试</p>
-      ) : current.cities.length === 0 ? (
-        <p>没有匹配的城市</p>
-      ) : (
+      <p role="status">{status}</p>
+      {current !== null && 'error' in current && <p role="alert">搜索失败，请重试</p>}
+      {current !== null && 'cities' in current && current.cities.length > 0 && (
         <ul aria-label="建议">
           {current.cities.map((city) => (
             <li key={city}>{city}</li>
@@ -381,18 +439,25 @@ export function CitySearch() {
 
   const current = result !== null && result.query === query ? result : null;
 
+  const status =
+    query === ''
+      ? ''
+      : current === null
+        ? '正在搜索…'
+        : 'error' in current
+          ? ''
+          : current.cities.length === 0
+            ? '没有匹配的城市'
+            : `找到 ${current.cities.length} 个城市`;
+
   return (
     <div>
       <label>
         搜索城市 <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
       </label>
-      {query === '' ? null : current === null ? (
-        <p role="status">正在搜索…</p>
-      ) : 'error' in current ? (
-        <p role="alert">搜索失败，请重试</p>
-      ) : current.cities.length === 0 ? (
-        <p>没有匹配的城市</p>
-      ) : (
+      <p role="status">{status}</p>
+      {current !== null && 'error' in current && <p role="alert">搜索失败，请重试</p>}
+      {current !== null && 'cities' in current && current.cities.length > 0 && (
         <ul aria-label="建议">
           {current.cities.map((city) => (
             <li key={city}>{city}</li>
@@ -441,18 +506,163 @@ export function CitySearch() {
 
   const current = result !== null && result.query === query ? result : null;
 
+  const status =
+    query === ''
+      ? ''
+      : current === null
+        ? '正在搜索…'
+        : 'error' in current
+          ? ''
+          : current.cities.length === 0
+            ? '没有匹配的城市'
+            : `找到 ${current.cities.length} 个城市`;
+
   return (
     <div>
       <label>
         搜索城市 <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
       </label>
-      {query === '' ? null : current === null ? (
-        <p role="status">正在搜索…</p>
-      ) : 'error' in current ? (
-        <p role="alert">搜索失败，请重试</p>
-      ) : current.cities.length === 0 ? (
-        <p>没有匹配的城市</p>
-      ) : (
+      <p role="status">{status}</p>
+      {current !== null && 'error' in current && <p role="alert">搜索失败，请重试</p>}
+      {current !== null && 'cities' in current && current.cities.length > 0 && (
+        <ul aria-label="建议">
+          {current.cities.map((city) => (
+            <li key={city}>{city}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=abort-as-error fails=tests reason="把自己中止的请求也当成了失败，退格回到旧的搜索词时立刻显示“搜索失败”"}
+```tsx file=CitySearch.tsx
+import { useEffect, useState } from 'react';
+
+const DELAY = 300;
+
+type Result = { query: string; cities: readonly string[] } | { query: string; error: true };
+
+function isCityList(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item: unknown) => typeof item === 'string');
+}
+
+export function CitySearch() {
+  const [text, setText] = useState('');
+  const [result, setResult] = useState<Result | null>(null);
+  const query = text.trim();
+
+  useEffect(() => {
+    if (query === '') return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/cities?q=${encodeURIComponent(query)}`, { signal: controller.signal });
+        if (!response.ok) throw new Error(`状态码 ${response.status}`);
+        const data: unknown = await response.json();
+        if (!isCityList(data)) throw new Error('数据格式不正确');
+        setResult({ query, cities: data });
+      } catch {
+        setResult({ query, error: true });
+      }
+    }, DELAY);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
+
+  const current = result !== null && result.query === query ? result : null;
+
+  const status =
+    query === ''
+      ? ''
+      : current === null
+        ? '正在搜索…'
+        : 'error' in current
+          ? ''
+          : current.cities.length === 0
+            ? '没有匹配的城市'
+            : `找到 ${current.cities.length} 个城市`;
+
+  return (
+    <div>
+      <label>
+        搜索城市 <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
+      </label>
+      <p role="status">{status}</p>
+      {current !== null && 'error' in current && <p role="alert">搜索失败，请重试</p>}
+      {current !== null && 'cities' in current && current.cities.length > 0 && (
+        <ul aria-label="建议">
+          {current.cities.map((city) => (
+            <li key={city}>{city}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=no-validation fails=tests reason="没有验证响应的格式，服务器返回的不是字符串数组时页面出错"}
+```tsx file=CitySearch.tsx
+import { useEffect, useState } from 'react';
+
+const DELAY = 300;
+
+type Result = { query: string; cities: readonly string[] } | { query: string; error: true };
+
+function isCityList(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item: unknown) => typeof item === 'string');
+}
+
+export function CitySearch() {
+  const [text, setText] = useState('');
+  const [result, setResult] = useState<Result | null>(null);
+  const query = text.trim();
+
+  useEffect(() => {
+    if (query === '') return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/cities?q=${encodeURIComponent(query)}`, { signal: controller.signal });
+        if (!response.ok) throw new Error(`状态码 ${response.status}`);
+        setResult({ query, cities: await response.json() });
+      } catch {
+        if (!controller.signal.aborted) setResult({ query, error: true });
+      }
+    }, DELAY);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [query]);
+
+  const current = result !== null && result.query === query ? result : null;
+
+  const status =
+    query === ''
+      ? ''
+      : current === null
+        ? '正在搜索…'
+        : 'error' in current
+          ? ''
+          : current.cities.length === 0
+            ? '没有匹配的城市'
+            : `找到 ${current.cities.length} 个城市`;
+
+  return (
+    <div>
+      <label>
+        搜索城市 <input value={text} onChange={(e) => setText(e.currentTarget.value)} />
+      </label>
+      <p role="status">{status}</p>
+      {current !== null && 'error' in current && <p role="alert">搜索失败，请重试</p>}
+      {current !== null && 'cities' in current && current.cities.length > 0 && (
         <ul aria-label="建议">
           {current.cities.map((city) => (
             <li key={city}>{city}</li>

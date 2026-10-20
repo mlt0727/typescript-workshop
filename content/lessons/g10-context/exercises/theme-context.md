@@ -35,8 +35,20 @@ export function ThemeToggle() {
 
 export function Panel({ title, children }: { title: string; children: ReactNode }) {
   const { theme } = useTheme();
+  const dark = theme === 'dark';
   return (
-    <section className={`panel panel-${theme}`} aria-label={title}>
+    <section
+      className={`panel panel-${theme}`}
+      aria-label={title}
+      style={{
+        padding: '0.25rem 1rem',
+        margin: '0.5rem 0',
+        border: '1px solid #9ca3af',
+        borderRadius: 8,
+        background: dark ? '#1f2937' : '#ffffff',
+        color: dark ? '#f9fafb' : '#111827',
+      }}
+    >
       <h2>{title}</h2>
       {children}
     </section>
@@ -94,8 +106,20 @@ export function ThemeToggle() {
 
 export function Panel({ title, children }: { title: string; children: ReactNode }) {
   const { theme } = useTheme();
+  const dark = theme === 'dark';
   return (
-    <section className={`panel panel-${theme}`} aria-label={title}>
+    <section
+      className={`panel panel-${theme}`}
+      aria-label={title}
+      style={{
+        padding: '0.25rem 1rem',
+        margin: '0.5rem 0',
+        border: '1px solid #9ca3af',
+        borderRadius: 8,
+        background: dark ? '#1f2937' : '#ffffff',
+        color: dark ? '#f9fafb' : '#111827',
+      }}
+    >
       <h2>{title}</h2>
       {children}
     </section>
@@ -129,7 +153,9 @@ test('切换主题时，Provider 中所有的面板一起变化', async () => {
   await user.click(screen.getByRole('button', { name: '切换到深色' }));
   expect(panel('甲')).toHaveClass('panel-dark');
   expect(panel('乙')).toHaveClass('panel-dark');
-  expect(screen.getByRole('button', { name: '切换到浅色' })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: '切换到浅色' }));
+  expect(panel('甲')).toHaveClass('panel-light');
+  expect(panel('乙')).toHaveClass('panel-light');
 });
 
 test('initial 决定初始主题', () => {
@@ -228,8 +254,74 @@ export function ThemeToggle() {
 
 export function Panel({ title, children }: { title: string; children: ReactNode }) {
   const { theme } = useTheme();
+  const dark = theme === 'dark';
   return (
-    <section className={`panel panel-${theme}`} aria-label={title}>
+    <section
+      className={`panel panel-${theme}`}
+      aria-label={title}
+      style={{
+        padding: '0.25rem 1rem',
+        margin: '0.5rem 0',
+        border: '1px solid #9ca3af',
+        borderRadius: 8,
+        background: dark ? '#1f2937' : '#ffffff',
+        color: dark ? '#f9fafb' : '#111827',
+      }}
+    >
+      <h2>{title}</h2>
+      {children}
+    </section>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=one-way-toggle fails=tests reason="toggle 只会切换到深色，切不回浅色"}
+```tsx file=theme.tsx
+import { createContext, useContext, useState, type ReactNode } from 'react';
+
+export type Theme = 'light' | 'dark';
+export type ThemeValue = { theme: Theme; toggle: () => void };
+
+const ThemeContext = createContext<ThemeValue | null>(null);
+
+export function ThemeProvider({ initial = 'light', children }: { initial?: Theme; children: ReactNode }) {
+  const [theme, setTheme] = useState<Theme>(initial);
+  const toggle = () => setTheme('dark');
+  return <ThemeContext value={{ theme, toggle }}>{children}</ThemeContext>;
+}
+
+export function useTheme(): ThemeValue {
+  const value = useContext(ThemeContext);
+  if (value === null) throw new Error('useTheme 必须在 <ThemeProvider> 中使用');
+  return value;
+}
+
+export function ThemeToggle() {
+  const { theme, toggle } = useTheme();
+  return (
+    <button type="button" onClick={toggle}>
+      {theme === 'light' ? '切换到深色' : '切换到浅色'}
+    </button>
+  );
+}
+
+export function Panel({ title, children }: { title: string; children: ReactNode }) {
+  const { theme } = useTheme();
+  const dark = theme === 'dark';
+  return (
+    <section
+      className={`panel panel-${theme}`}
+      aria-label={title}
+      style={{
+        padding: '0.25rem 1rem',
+        margin: '0.5rem 0',
+        border: '1px solid #9ca3af',
+        borderRadius: 8,
+        background: dark ? '#1f2937' : '#ffffff',
+        color: dark ? '#f9fafb' : '#111827',
+      }}
+    >
       <h2>{title}</h2>
       {children}
     </section>
@@ -268,8 +360,20 @@ export function ThemeToggle() {
 
 export function Panel({ title, children }: { title: string; children: ReactNode }) {
   const { theme } = useTheme();
+  const dark = theme === 'dark';
   return (
-    <section className={`panel panel-${theme}`} aria-label={title}>
+    <section
+      className={`panel panel-${theme}`}
+      aria-label={title}
+      style={{
+        padding: '0.25rem 1rem',
+        margin: '0.5rem 0',
+        border: '1px solid #9ca3af',
+        borderRadius: 8,
+        background: dark ? '#1f2937' : '#ffffff',
+        color: dark ? '#f9fafb' : '#111827',
+      }}
+    >
       <h2>{title}</h2>
       {children}
     </section>
@@ -310,8 +414,20 @@ export function ThemeToggle() {
 
 export function Panel({ title, children }: { title: string; children: ReactNode }) {
   const { theme } = useTheme();
+  const dark = theme === 'dark';
   return (
-    <section className={`panel panel-${theme}`} aria-label={title}>
+    <section
+      className={`panel panel-${theme}`}
+      aria-label={title}
+      style={{
+        padding: '0.25rem 1rem',
+        margin: '0.5rem 0',
+        border: '1px solid #9ca3af',
+        borderRadius: 8,
+        background: dark ? '#1f2937' : '#ffffff',
+        color: dark ? '#f9fafb' : '#111827',
+      }}
+    >
       <h2>{title}</h2>
       {children}
     </section>
@@ -350,8 +466,20 @@ export function ThemeToggle() {
 
 export function Panel({ title, children }: { title: string; children: ReactNode }) {
   const { theme } = useTheme();
+  const dark = theme === 'dark';
   return (
-    <section className={`panel panel-${theme}`} aria-label={title}>
+    <section
+      className={`panel panel-${theme}`}
+      aria-label={title}
+      style={{
+        padding: '0.25rem 1rem',
+        margin: '0.5rem 0',
+        border: '1px solid #9ca3af',
+        borderRadius: 8,
+        background: dark ? '#1f2937' : '#ffffff',
+        color: dark ? '#f9fafb' : '#111827',
+      }}
+    >
       <h2>{title}</h2>
       {children}
     </section>

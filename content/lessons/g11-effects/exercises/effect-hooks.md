@@ -12,7 +12,7 @@ title: 两个常用的 Effect Hook
 2. 总是调用**最新的** `callback`。组件每次渲染都会传入一个新的函数，**换函数不能让计时重新开始**；
 3. 组件消失之后不再调用。
 
-`Timer.tsx`（只读）是一个使用它们的计时器。注意它的 `useInterval(() => setSeconds(seconds + 1), …)` 依赖每次都能拿到最新的 `seconds`。
+`Timer.tsx`（只读）是一个使用它们的计时器。注意它的 `useInterval(() => setSeconds(seconds + 1), …)` 要求每次调用的都是最新的回调，否则读到的永远是第一次渲染时的 `seconds`。预览在 iframe 中，看不到页面标题的变化，标题由测试检查。
 
 :::files{role=starter}
 ```ts file=hooks.ts
@@ -87,9 +87,29 @@ export function useInterval(callback: () => void, delay: number | null): void {
 
 :::files{role=tests}
 ```tsx file=hooks.test.tsx
+import { Component, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { act, renderHook } from '@testing-library/react';
+import { act, render, renderHook, screen } from '@testing-library/react';
 import { useDocumentTitle, useInterval } from './hooks';
+
+class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  override state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  override render() {
+    return this.state.failed ? <p>渲染出错了</p> : this.props.children;
+  }
+}
+
+function Broken(): ReactNode {
+  throw new Error('渲染失败');
+}
+
+function Titled() {
+  useDocumentTitle('不应该出现的标题');
+  return null;
+}
 
 describe('useDocumentTitle', () => {
   test('设置标题，标题变化时更新，卸载时恢复原来的标题', () => {
@@ -98,6 +118,28 @@ describe('useDocumentTitle', () => {
     expect(document.title).toBe('第一页');
     rerender({ title: '第二页' });
     expect(document.title).toBe('第二页');
+    unmount();
+    expect(document.title).toBe('原来的标题');
+  });
+
+  test('渲染没有提交时不修改标题（渲染必须是纯的）', () => {
+    document.title = '原来的标题';
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(
+      <Boundary>
+        <Titled />
+        <Broken />
+      </Boundary>,
+    );
+    errors.mockRestore();
+    expect(screen.getByText('渲染出错了')).toBeInTheDocument();
+    expect(document.title, '组件没有显示出来，标题不应该改变').toBe('原来的标题');
+  });
+
+  test('StrictMode 中（React 会额外执行一次“清理、再执行”）结果也正确', () => {
+    document.title = '原来的标题';
+    const { unmount } = renderHook(() => useDocumentTitle('严格模式'), { reactStrictMode: true });
+    expect(document.title).toBe('严格模式');
     unmount();
     expect(document.title).toBe('原来的标题');
   });
@@ -146,6 +188,15 @@ describe('useInterval', () => {
     expect(tick).toHaveBeenCalledTimes(5);
   });
 
+  test('delay 从 1000 改成 200 时，按新的间隔计时', () => {
+    const tick = vi.fn();
+    const { rerender } = renderHook(({ delay }) => useInterval(tick, delay), { initialProps: { delay: 1000 } });
+    act(() => vi.advanceTimersByTime(500));
+    rerender({ delay: 200 });
+    act(() => vi.advanceTimersByTime(1000));
+    expect(tick).toHaveBeenCalledTimes(5);
+  });
+
   test('卸载之后不再调用', () => {
     const tick = vi.fn();
     const { unmount } = renderHook(() => useInterval(tick, 100));
@@ -167,9 +218,9 @@ describe('useInterval', () => {
 :::
 
 :::explanation
-`useDocumentTitle` 是 Effect 最典型的形状：**做一件事，并在清理函数中撤销它**。`title` 变化时，React 先运行上一次的清理函数（恢复成更早的标题），再用新的 `title` 执行 Effect；组件消失时只运行清理函数。
+`useDocumentTitle` 是 Effect 最典型的形状：**做一件事，并在清理函数中撤销它**。起始代码在渲染时直接设置 `document.title`，这违反了“渲染必须是纯的”：React 可能渲染了一个组件却最终没有把它显示出来（例如兄弟组件出错、渲染被更紧急的更新打断），标题却已经改了。修改外部世界的事都放进 Effect，它只在组件真正显示出来之后才运行。`title` 变化时，React 先运行上一次的清理函数（恢复成更早的标题），再用新的 `title` 执行 Effect；组件消失时只运行清理函数。
 
-`useInterval` 的难点在于 `callback`。调用方通常写一个内联函数，它每次渲染都是新的。把它放进依赖数组，每次渲染都会清除计时器、重新开始，间隔永远等不到；不放进依赖数组（直接在 `setInterval` 中调用第一次传入的 `callback`），用的就永远是第一次渲染时的函数，`Timer` 会一直显示 1 秒。`useEffectEvent` 正是为这种情况设计的：`onTick` 每次调用时都使用最新的 `callback`，而它本身不是依赖。
+`useInterval` 的难点在于 `callback`。调用方通常写一个内联函数，它每次渲染都是新的。把它放进依赖数组，每次渲染都会清除计时器、重新开始计时。在 `Timer` 中，每次 tick 之后才重新渲染，这个问题还不明显；但只要组件渲染得比 `delay` 更频繁（例如用户正在旁边的输入框中打字），计时器就一次也等不到（测试中“换 callback 不会重新计时”检查的就是这一点）；不放进依赖数组（直接在 `setInterval` 中调用第一次传入的 `callback`），用的就永远是第一次渲染时的函数，`Timer` 会一直显示 1 秒。`useEffectEvent` 正是为这种情况设计的：`onTick` 每次调用时都使用最新的 `callback`，而它本身不是依赖。
 
 在 `useEffectEvent` 出现之前，常见的写法是用一个 ref 保存最新的 `callback`（每次渲染后在另一个 Effect 中更新 `ref.current`），替代解就是这样写的。
 :::
@@ -196,6 +247,57 @@ export function useInterval(callback: () => void, delay: number | null): void {
     const id = setInterval(() => latest.current(), delay);
     return () => clearInterval(id);
   }, [delay]);
+}
+```
+:::
+
+:::variant{kind=wrong name=title-in-render fails=tests reason="在渲染时设置标题，只把恢复放进了 Effect：没有显示出来的组件也改了标题"}
+```ts file=hooks.ts
+import { useEffect, useEffectEvent, useState } from 'react';
+
+export function useDocumentTitle(title: string): void {
+  const [previous] = useState(() => document.title);
+  document.title = title;
+  useEffect(
+    () => () => {
+      document.title = previous;
+    },
+    [previous],
+  );
+}
+
+export function useInterval(callback: () => void, delay: number | null): void {
+  const onTick = useEffectEvent(callback);
+  useEffect(() => {
+    if (delay === null) return;
+    const id = window.setInterval(() => onTick(), delay);
+    return () => window.clearInterval(id);
+  }, [delay]);
+}
+```
+:::
+
+:::variant{kind=wrong name=null-only-deps fails=tests reason="依赖写成了 delay === null，间隔从 1000 改成 200 时没有重新开始"}
+```ts file=hooks.ts
+import { useEffect, useEffectEvent } from 'react';
+
+export function useDocumentTitle(title: string): void {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
+export function useInterval(callback: () => void, delay: number | null): void {
+  const onTick = useEffectEvent(callback);
+  useEffect(() => {
+    if (delay === null) return;
+    const id = window.setInterval(() => onTick(), delay);
+    return () => window.clearInterval(id);
+  }, [delay === null]);
 }
 ```
 :::

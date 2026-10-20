@@ -9,7 +9,7 @@ title: useUndoable：可以撤销和重做的 state
 - `undo()`：回到上一个值，当前的值进入“可重做”的记录；没有可撤销的记录时什么都不做；
 - `redo()`：撤销的反向操作；没有可重做的记录时什么都不做；
 - `canUndo`、`canRedo`：现在能不能撤销、重做；
-- 可撤销的记录最多保留 `limit` 条，超出时丢弃最早的。
+- 可撤销的记录最多保留 `limit` 条（`limit` 是正整数），超出时丢弃最早的。
 
 在同一个事件中连续调用 `set` 两次，两次都要被记录。`T` 由 `initial` 推断：`useUndoable(0)` 的 `set` 只接受数字。`TitleEditor.tsx`（只读）是一个使用它的小编辑器。
 
@@ -88,7 +88,12 @@ export type Undoable<T> = {
 
 type History<T> = { past: readonly T[]; present: T; future: readonly T[] };
 
-/** 数组的最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+/** 数组的第一项、最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+function firstOf<T>(items: readonly T[]): { value: T } | null {
+  for (const value of items) return { value };
+  return null;
+}
+
 function lastOf<T>(items: readonly T[]): { value: T } | null {
   return items.reduce<{ value: T } | null>((_, value) => ({ value }), null);
 }
@@ -112,7 +117,7 @@ export function useUndoable<T>(initial: T, limit = 100): Undoable<T> {
     },
     redo() {
       setHistory((h) => {
-        const next = lastOf(h.future.slice(0, 1));
+        const next = firstOf(h.future);
         if (next === null) return h;
         return { past: [...h.past, h.present].slice(-limit), present: next.value, future: h.future.slice(1) };
       });
@@ -198,6 +203,15 @@ describe('useUndoable', () => {
     expect(result.current.value).toBe('a');
   });
 
+  test('T 本身包含 undefined 时也能重做到 undefined', () => {
+    const { result } = renderHook(() => useUndoable<string | undefined>('a'));
+    act(() => result.current.set(undefined));
+    act(() => result.current.undo());
+    expect(result.current.value).toBe('a');
+    act(() => result.current.redo());
+    expect(result.current).toMatchObject({ value: undefined, canUndo: true, canRedo: false });
+  });
+
   test('值可以是对象，历史中保存的是同一个对象', () => {
     const first = { title: '草稿' };
     const second = { title: '定稿' };
@@ -240,7 +254,7 @@ counter.set('1');
 :::
 
 :::hint{level=2}
-`set(next)`：`setHistory((h) => ({ past: [...h.past, h.present].slice(-limit), present: next, future: [] }))`，相同的值时返回 `h` 本身。`undo`：取出 `h.past` 的最后一项作为新的 `present`，原来的 `present` 放到 `future` 的开头。`at(-1)` 取最后一项，`slice(0, -1)` 去掉最后一项。
+`set(next)`：`setHistory((h) => ({ past: [...h.past, h.present].slice(-limit), present: next, future: [] }))`，相同的值时返回 `h` 本身。`undo`：取出 `h.past` 的最后一项作为新的 `present`，原来的 `present` 放到 `future` 的开头，`slice(0, -1)` 去掉最后一项。注意 `h.past.at(-1)` 的类型是 `T | undefined`：`T` 本身可能包含 `undefined`，所以不能用“结果是不是 `undefined`”判断有没有记录。先检查 `length`，或者用 `for (const previous of h.past.slice(-1)) { … }`，只有数组非空时才进入循环体（解释中还有另一种写法）。
 :::
 
 :::explanation
@@ -250,7 +264,7 @@ counter.set('1');
 
 `slice(-limit)` 只保留最后 `limit` 项，实现“最多保留多少条”。所有数组操作都返回新数组（g04），`History<T>` 中的 `readonly` 让修改原数组的写法无法通过编译。
 
-取出最后一项时，不能用 `h.past.at(-1) === undefined` 判断“有没有记录”：如果 `T` 本身包含 `undefined`（例如 `useUndoable<string | undefined>(undefined)`），记录的值就可能是 `undefined`。参考解用一个小函数 `lastOf` 把元素包进对象，`null` 才表示“没有”。另一种写法是用 `for…of` 遍历：只有数组非空时才会进入循环体（见替代解）。
+取出最后一项时，不能用 `h.past.at(-1) === undefined` 判断“有没有记录”：如果 `T` 本身包含 `undefined`（例如 `useUndoable<string | undefined>(undefined)`），记录的值就可能是 `undefined`。参考解用两个小函数 `firstOf`、`lastOf` 把元素包进对象，`null` 才表示“没有”。`firstOf` 用的就是 `for…of`：只有数组非空时才会进入循环体，循环变量的类型就是 `T`（替代解直接这样写）。
 
 这个 Hook 是泛型的：`useUndoable({ title: '草稿', words: 0 })` 中，`T` 被推断为 `{ title: string; words: number }`，`set` 也就只接受这种对象。
 :::
@@ -333,18 +347,18 @@ export function useUndoable<T>(initial: T, limit = 100): Undoable<T> {
       setFuture([]);
     },
     undo() {
-      const previous = past.at(-1);
-      if (previous === undefined || past.length === 0) return;
-      setPast(past.slice(0, -1));
-      setPresent(previous);
-      setFuture([present, ...future]);
+      for (const previous of past.slice(-1)) {
+        setPast(past.slice(0, -1));
+        setPresent(previous);
+        setFuture([present, ...future]);
+      }
     },
     redo() {
-      const [next, ...rest] = future;
-      if (next === undefined || future.length === 0) return;
-      setPast([...past, present].slice(-limit));
-      setPresent(next);
-      setFuture(rest);
+      for (const next of future.slice(0, 1)) {
+        setPast([...past, present].slice(-limit));
+        setPresent(next);
+        setFuture(future.slice(1));
+      }
     },
     canUndo: past.length > 0,
     canRedo: future.length > 0,
@@ -368,7 +382,12 @@ export type Undoable<T> = {
 
 type History<T> = { past: readonly T[]; present: T; future: readonly T[] };
 
-/** 数组的最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+/** 数组的第一项、最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+function firstOf<T>(items: readonly T[]): { value: T } | null {
+  for (const value of items) return { value };
+  return null;
+}
+
 function lastOf<T>(items: readonly T[]): { value: T } | null {
   return items.reduce<{ value: T } | null>((_, value) => ({ value }), null);
 }
@@ -394,7 +413,7 @@ export function useUndoable<T>(initial: T, limit = 100): Undoable<T> {
     },
     redo() {
       setHistory((h) => {
-        const next = lastOf(h.future.slice(0, 1));
+        const next = firstOf(h.future);
         if (next === null) return h;
         return { past: [...h.past, h.present].slice(-limit), present: next.value, future: h.future.slice(1) };
       });
@@ -421,7 +440,12 @@ export type Undoable<T> = {
 
 type History<T> = { past: readonly T[]; present: T; future: readonly T[] };
 
-/** 数组的最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+/** 数组的第一项、最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+function firstOf<T>(items: readonly T[]): { value: T } | null {
+  for (const value of items) return { value };
+  return null;
+}
+
 function lastOf<T>(items: readonly T[]): { value: T } | null {
   return items.reduce<{ value: T } | null>((_, value) => ({ value }), null);
 }
@@ -443,7 +467,7 @@ export function useUndoable<T>(initial: T, limit = 100): Undoable<T> {
     },
     redo() {
       setHistory((h) => {
-        const next = lastOf(h.future.slice(0, 1));
+        const next = firstOf(h.future);
         if (next === null) return h;
         return { past: [...h.past, h.present].slice(-limit), present: next.value, future: h.future.slice(1) };
       });
@@ -470,7 +494,12 @@ export type Undoable<T> = {
 
 type History<T> = { past: readonly T[]; present: T; future: readonly T[] };
 
-/** 数组的最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+/** 数组的第一项、最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+function firstOf<T>(items: readonly T[]): { value: T } | null {
+  for (const value of items) return { value };
+  return null;
+}
+
 function lastOf<T>(items: readonly T[]): { value: T } | null {
   return items.reduce<{ value: T } | null>((_, value) => ({ value }), null);
 }
@@ -494,9 +523,65 @@ export function useUndoable<T>(initial: T, limit = 100): Undoable<T> {
     },
     redo() {
       setHistory((h) => {
-        const next = lastOf(h.future.slice(0, 1));
+        const next = firstOf(h.future);
         if (next === null) return h;
         return { past: [...h.past, h.present].slice(-limit), present: next.value, future: h.future.slice(1) };
+      });
+    },
+    canUndo: history.past.length > 0,
+    canRedo: history.future.length > 0,
+  };
+}
+```
+:::
+
+:::variant{kind=wrong name=redo-undefined-guard fails=tests reason="重做时用“是不是 undefined”判断有没有记录，T 包含 undefined 时无法重做"}
+```ts file=useUndoable.ts
+import { useState } from 'react';
+
+export type Undoable<T> = {
+  value: T;
+  set(next: T): void;
+  undo(): void;
+  redo(): void;
+  canUndo: boolean;
+  canRedo: boolean;
+};
+
+type History<T> = { past: readonly T[]; present: T; future: readonly T[] };
+
+/** 数组的第一项、最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+function firstOf<T>(items: readonly T[]): { value: T } | null {
+  for (const value of items) return { value };
+  return null;
+}
+
+function lastOf<T>(items: readonly T[]): { value: T } | null {
+  return items.reduce<{ value: T } | null>((_, value) => ({ value }), null);
+}
+
+export function useUndoable<T>(initial: T, limit = 100): Undoable<T> {
+  const [history, setHistory] = useState<History<T>>({ past: [], present: initial, future: [] });
+
+  return {
+    value: history.present,
+    set(next) {
+      setHistory((h) =>
+        Object.is(next, h.present) ? h : { past: [...h.past, h.present].slice(-limit), present: next, future: [] },
+      );
+    },
+    undo() {
+      setHistory((h) => {
+        const previous = lastOf(h.past);
+        if (previous === null) return h;
+        return { past: h.past.slice(0, -1), present: previous.value, future: [h.present, ...h.future] };
+      });
+    },
+    redo() {
+      setHistory((h) => {
+        const [next, ...rest] = h.future;
+        if (next === undefined) return h;
+        return { past: [...h.past, h.present].slice(-limit), present: next, future: rest };
       });
     },
     canUndo: history.past.length > 0,
@@ -521,7 +606,12 @@ export type Undoable<T> = {
 
 type History<T> = { past: readonly T[]; present: T; future: readonly T[] };
 
-/** 数组的最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+/** 数组的第一项、最后一项，数组为空时返回 null。用对象包住：T 本身包含 undefined 时也分得清 */
+function firstOf<T>(items: readonly T[]): { value: T } | null {
+  for (const value of items) return { value };
+  return null;
+}
+
 function lastOf<T>(items: readonly T[]): { value: T } | null {
   return items.reduce<{ value: T } | null>((_, value) => ({ value }), null);
 }
@@ -545,7 +635,7 @@ export function useUndoable<T>(initial: T, limit = 100): Undoable<T | string> {
     },
     redo() {
       setHistory((h) => {
-        const next = lastOf(h.future.slice(0, 1));
+        const next = firstOf(h.future);
         if (next === null) return h;
         return { past: [...h.past, h.present].slice(-limit), present: next.value, future: h.future.slice(1) };
       });

@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 组件的渲染必须是纯计算：根据 props 和 state 算出 JSX。可是有些事情不在 React 的管辖范围内：修改页面标题、监听窗口的尺寸、订阅网络状态、发起请求、启动计时器。它们要在组件显示出来之后进行，在组件消失或者数据变化时停止。Effect 就是用来“让组件与外部系统保持同步”的工具。这一课讲 useEffect 的执行时机、依赖数组、清理函数，在 Effect 中请求数据时怎样避免竞态，以及 React 19.2 加入的 useEffectEvent。
 objectives:
   - 理解 Effect 的作用是与外部系统同步，它在渲染提交到页面之后执行
@@ -54,7 +54,7 @@ function WindowWidth() {
     };
   }, []);
 
-  return <p>窗口宽度：{width}px（拖动预览区右下角改变它）</p>;
+  return <p>窗口宽度：{width}px（改变浏览器窗口的宽度试试）</p>;
 }
 
 export function App() {

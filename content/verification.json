@@ -7119,8 +7119,8 @@
       ]
     },
     "g08-custom-hooks": {
-      "verifiedAt": "2026-10-20T14:24:31.900Z",
-      "sourceHash": "a9f9070eb909a639",
+      "verifiedAt": "2026-10-20T15:14:10.615Z",
+      "sourceHash": "c95260d1b89831e9",
       "ok": true,
       "checks": [
         {
@@ -7134,9 +7134,19 @@
           "detail": "期望 done，实际 done；输出："
         },
         {
+          "target": "playground:use-list:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:use-list:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
           "target": "exercise:use-counter:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(useCounter › 初始值、增加、减少、重置 ⟶ expect(…).toBe(7),useCounter › 不超出范围；到达边界时 canIncrement / canDecrement 为 false ⟶ expect(…).toBe(true),useCounter › 默认从 min 开始、步长为 1；超出范围的初始值被限制在范围内 ⟶ expect(…).toBe(9),useCounter › 同一个事件中连续调用两次，两次都生效 ⟶ expect(…).toBe(20),useCounter › 每次调用都有自己的 state ⟶ expect(…).toBe(1),Stepper 组件使用这个 Hook ⟶ expect(…).toHaveTextContent('5'))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(useCounter › 初始值、增加、减少、重置 ⟶ expect(…).toBe(7),useCounter › 不超出范围；到达边界时 canIncrement / canDecrement 为 false ⟶ expect(…).toBe(true),useCounter › 默认从 min 开始、步长为 1；超出范围的初始值被限制在范围内 ⟶ expect(…).toBe(9),useCounter › 重置时同样限制在范围内 ⟶ expect(…).toBe(8),useCounter › 同一个事件中连续调用两次，两次都生效 ⟶ expect(…).toBe(20),useCounter › 每次调用都有自己的 state ⟶ expect(…).toBe(1),Stepper 组件使用这个 Hook ⟶ expect(…).toHaveTextContent('5'))"
         },
         {
           "target": "exercise:use-counter:solution:solution",
@@ -7156,7 +7166,7 @@
         {
           "target": "exercise:use-counter:wrong:no-clamp",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useCounter › 默认从 min 开始、步长为 1；超出范围的初始值被限制在范围内 ⟶ expect(…).toBe(9))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useCounter › 默认从 min 开始、步长为 1；超出范围的初始值被限制在范围内 ⟶ expect(…).toBe(9),useCounter › 重置时同样限制在范围内 ⟶ expect(…).toBe(8))"
         },
         {
           "target": "exercise:use-counter:wrong:ignore-step",
@@ -7169,9 +7179,14 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useCounter › 不超出范围；到达边界时 canIncrement / canDecrement 为 false ⟶ expect(…).toBe(false))"
         },
         {
+          "target": "exercise:use-counter:wrong:reset-unclamped",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useCounter › 重置时同样限制在范围内 ⟶ expect(…).toBe(9))"
+        },
+        {
           "target": "exercise:use-undo:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(useUndoable › 设置、撤销、重做 ⟶ expect(…).toMatchObject({ value: 3, canUndo: true, canRedo: false }),useUndoable › 撤销之后再设置新值，重做的记录被清空 ⟶ expect(…).toBe('a'),useUndoable › 同一个事件中连续设置两次，两次都被记录 ⟶ expect(…).toBe(1),useUndoable › 最多保留 limit 条可撤销的记录，丢弃最早的 ⟶ expect(…).toBe(2),useUndoable › T 本身包含 undefined 时也能撤销到 undefined ⟶ expect(…).toMatchObject({ value: undefined, canUndo: false, canRedo: true }),useUndoable › 值可以是对象，历史中保存的是同一个对象 ⟶ expect(…).toBe({ title: '草稿' }),TitleEditor：输入之后可以撤销 ⟶ TestingLibraryElementError: Unable to find an element with the text: 当前标题：周. This could be because the text is broken up by multiple elements. In this case, you)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(useUndoable › 设置、撤销、重做 ⟶ expect(…).toMatchObject({ value: 3, canUndo: true, canRedo: false }),useUndoable › 撤销之后再设置新值，重做的记录被清空 ⟶ expect(…).toBe('a'),useUndoable › 同一个事件中连续设置两次，两次都被记录 ⟶ expect(…).toBe(1),useUndoable › 最多保留 limit 条可撤销的记录，丢弃最早的 ⟶ expect(…).toBe(2),useUndoable › T 本身包含 undefined 时也能撤销到 undefined ⟶ expect(…).toMatchObject({ value: undefined, canUndo: false, canRedo: true }),useUndoable › T 本身包含 undefined 时也能重做到 undefined ⟶ expect(…).toBe('a'),useUndoable › 值可以是对象，历史中保存的是同一个对象 ⟶ expect(…).toBe({ title: '草稿' }),TitleEditor：输入之后可以撤销 ⟶ TestingLibraryElementError: Unable to find an element with the text: 当前标题：周. This could be because the text is broken up by multiple elements. In this case, you)"
         },
         {
           "target": "exercise:use-undo:solution:solution",
@@ -7186,12 +7201,12 @@
         {
           "target": "exercise:use-undo:wrong:three-states",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useUndoable › 同一个事件中连续设置两次，两次都被记录 ⟶ expect(…).toBe(1),useUndoable › T 本身包含 undefined 时也能撤销到 undefined ⟶ expect(…).toMatchObject({ value: undefined, canUndo: false, canRedo: true }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useUndoable › 同一个事件中连续设置两次，两次都被记录 ⟶ expect(…).toBe(1))"
         },
         {
           "target": "exercise:use-undo:wrong:mutate-past",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2339@useUndoable.ts:27 Property 'push' does not exist on type 'readonly T[]'.) rules=ok tests=ok"
+          "detail": "被拒绝（types）；types=fail(TS2339@useUndoable.ts:32 Property 'push' does not exist on type 'readonly T[]'.) rules=ok tests=ok"
         },
         {
           "target": "exercise:use-undo:wrong:no-limit",
@@ -7204,6 +7219,11 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useUndoable › 撤销之后再设置新值，重做的记录被清空 ⟶ expect(…).toMatchObject({ value: 'c', canRedo: false }))"
         },
         {
+          "target": "exercise:use-undo:wrong:redo-undefined-guard",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useUndoable › T 本身包含 undefined 时也能重做到 undefined ⟶ expect(…).toMatchObject({ value: undefined, canUndo: true, canRedo: false }))"
+        },
+        {
           "target": "exercise:use-undo:wrong:widened-type",
           "ok": true,
           "detail": "被拒绝（types）；types=fail(TS2344@useUndoable.test-d.tsx:6 Type '{ title: string; words: number; }' does not satisfy the constraint '\"Expected: ..., Actual: string\"'.；TS2344@useUndoable.test-d.tsx:11 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: string\"'.；TS2578@useUndoable.test-d.tsx:12 Unused '@t) rules=ok tests=ok"
@@ -7211,8 +7231,8 @@
       ]
     },
     "g09-refs": {
-      "verifiedAt": "2026-10-20T14:28:05.440Z",
-      "sourceHash": "8827725a83bffdc4",
+      "verifiedAt": "2026-10-20T15:14:16.631Z",
+      "sourceHash": "a2c1d15c0d84dc9a",
       "ok": true,
       "checks": [
         {
@@ -7238,7 +7258,7 @@
         {
           "target": "exercise:search-box:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点“清空”：清空内容，焦点回到输入框，“清空”变为不可用 ⟶ expect(…).toHaveFocus(),在输入框中按 Esc 也会清空，焦点留在输入框 ⟶ expect(…).toHaveValue(''),页面上有两个搜索框时，焦点回到被清空的那一个 ⟶ expect(…).toHaveFocus())"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点“清空”：清空内容，焦点回到输入框，“清空”变为不可用 ⟶ expect(…).toHaveFocus(),用键盘操作“清空”（Tab 过去，按回车），焦点同样回到输入框 ⟶ expect(…).toHaveFocus(),在输入框中按 Esc 也会清空，焦点留在输入框 ⟶ expect(…).toHaveValue(''),页面上有两个搜索框时，焦点回到被清空的那一个 ⟶ expect(…).toHaveFocus())"
         },
         {
           "target": "exercise:search-box:solution:solution",
@@ -7253,7 +7273,12 @@
         {
           "target": "exercise:search-box:wrong:no-focus",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点“清空”：清空内容，焦点回到输入框，“清空”变为不可用 ⟶ expect(…).toHaveFocus(),页面上有两个搜索框时，焦点回到被清空的那一个 ⟶ expect(…).toHaveFocus())"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点“清空”：清空内容，焦点回到输入框，“清空”变为不可用 ⟶ expect(…).toHaveFocus(),用键盘操作“清空”（Tab 过去，按回车），焦点同样回到输入框 ⟶ expect(…).toHaveFocus(),页面上有两个搜索框时，焦点回到被清空的那一个 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:search-box:wrong:prevent-mousedown",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(用键盘操作“清空”（Tab 过去，按回车），焦点同样回到输入框 ⟶ expect(…).toHaveFocus())"
         },
         {
           "target": "exercise:search-box:wrong:global-query",
@@ -7294,12 +7319,17 @@
           "target": "exercise:editable-title:wrong:rename-unchanged",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题为空时不保存，留在编辑状态；没有改动时直接退出 ⟶ expect(…).not.toHaveBeenCalled())"
+        },
+        {
+          "target": "exercise:editable-title:wrong:stale-draft",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Esc 或“取消”：不保存，焦点回到“编辑标题” ⟶ 再次进入编辑时，输入框应该显示当前的标题)"
         }
       ]
     },
     "g10-context": {
-      "verifiedAt": "2026-10-20T14:31:56.276Z",
-      "sourceHash": "e7608d044e77d230",
+      "verifiedAt": "2026-10-20T15:14:20.538Z",
+      "sourceHash": "cbfb66a1a083c9bf",
       "ok": true,
       "checks": [
         {
@@ -7338,6 +7368,11 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
+          "target": "exercise:theme-context:wrong:one-way-toggle",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(切换主题时，Provider 中所有的面板一起变化 ⟶ expect(…).toHaveClass('panel-light'))"
+        },
+        {
           "target": "exercise:theme-context:wrong:silent-default",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(在 Provider 之外使用 useTheme 立即报错 ⟶ expect(…).toThrow('useTheme 必须在 <ThemeProvider> 中使用'))"
@@ -7355,7 +7390,7 @@
         {
           "target": "exercise:cart-context:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(加入购物车：数量、件数、合计在各个组件中同步更新 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把绿茶加入购物车\",减少到 0 时从购物车中移除；移除；清空 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把绿茶加入购物车\",每种商品最多 99 件 ⟶ expect(…).toBe(99),价格来自最新的商品目录，而不是加入时的副本 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把蛋糕加入购物车\",两个 Provider 各有各的购物车 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把绿茶加入购物车\",在 Provider 之外使用 useCart 立即报错 ⟶ expect(…).toThrow('useCart 必须在 <CartProvider> 中使用'))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(加入购物车：数量、件数、合计在各个组件中同步更新 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把绿茶加入购物车\",减少到 0 时从购物车中移除；移除；清空 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把绿茶加入购物车\",每种商品最多 99 件 ⟶ expect(…).toBe(99),移除之后再加入的商品排在最后 ⟶ expect(…).toEqual([ 'cake', 'tea' ]),名字和价格来自最新的商品目录，而不是加入时的副本 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把蛋糕加入购物车\",两个 Provider 各有各的购物车 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把绿茶加入购物车\",在 Provider 之外使用 useCart 立即报错 ⟶ expect(…).toThrow('useCart 必须在 <CartProvider> 中使用'))"
         },
         {
           "target": "exercise:cart-context:solution:solution",
@@ -7370,7 +7405,12 @@
         {
           "target": "exercise:cart-context:wrong:store-copies",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每种商品最多 99 件 ⟶ expect(…).toEqual([ [ 'tea', 50 ], [ 'cake', 99 ] ]),价格来自最新的商品目录，而不是加入时的副本 ⟶ TestingLibraryElementError: Unable to find an element with the text: 合计 ¥30.00. This could be because the text is broken up by multiple elements. In this case, )"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(名字和价格来自最新的商品目录，而不是加入时的副本 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\" and name \"奶油蛋糕的数量\")"
+        },
+        {
+          "target": "exercise:cart-context:wrong:set-existing-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每种商品最多 99 件 ⟶ expect(…).toEqual([ [ 'tea', 50 ], [ 'cake', 99 ] ]))"
         },
         {
           "target": "exercise:cart-context:wrong:no-limit",
@@ -7380,7 +7420,7 @@
         {
           "target": "exercise:cart-context:wrong:keep-zero",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(减少到 0 时从购物车中移除；移除；清空 ⟶ expect(…).toBeNull())"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(减少到 0 时从购物车中移除；移除；清空 ⟶ expect(…).toBeNull(),移除之后再加入的商品排在最后 ⟶ expect(…).toEqual([ 'cake', 'tea' ]))"
         },
         {
           "target": "exercise:cart-context:wrong:silent-default",
@@ -7390,8 +7430,8 @@
       ]
     },
     "g11-effects": {
-      "verifiedAt": "2026-10-20T14:37:16.109Z",
-      "sourceHash": "552ee35c22950942",
+      "verifiedAt": "2026-10-20T15:14:59.180Z",
+      "sourceHash": "d2ae4e6d97bb6588",
       "ok": true,
       "checks": [
         {
@@ -7417,7 +7457,7 @@
         {
           "target": "exercise:effect-hooks:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(useDocumentTitle › 设置标题，标题变化时更新，卸载时恢复原来的标题 ⟶ expect(…).toBe('原来的标题'),useInterval › 每隔 delay 毫秒调用一次 ⟶ expect(…).toHaveBeenCalledTimes(1),useInterval › 总是调用最新的 callback，并且换 callback 不会重新计时 ⟶ expect(…).toHaveBeenCalledTimes(1),useInterval › delay 为 null 时暂停；改变 delay 按新的间隔重新开始 ⟶ expect(…).toHaveBeenCalledTimes(5),useInterval › 卸载之后不再调用 ⟶ expect(…).toHaveBeenCalledTimes(2))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(useDocumentTitle › 设置标题，标题变化时更新，卸载时恢复原来的标题 ⟶ expect(…).toBe('原来的标题'),useDocumentTitle › 渲染没有提交时不修改标题（渲染必须是纯的） ⟶ 组件没有显示出来，标题不应该改变,useDocumentTitle › StrictMode 中（React 会额外执行一次“清理、再执行”）结果也正确 ⟶ expect(…).toBe('原来的标题'),useInterval › 每隔 delay 毫秒调用一次 ⟶ expect(…).toHaveBeenCalledTimes(1),useInterval › 总是调用最新的 callback，并且换 callback 不会重新计时 ⟶ expect(…).toHaveBeenCalledTimes(1),useInterval › delay 为 null 时暂停；改变 delay 按新的间隔重新开始 ⟶ expect(…).toHaveBeenCalledTimes(5),useInterval › delay 从 1000 改成 200 时，按新的间隔计时 ⟶ expect(…).toHaveBeenCalledTimes(5),useInterval › 卸载之后不再调用 ⟶ expect(…).toHaveBeenCalledTimes(2))"
         },
         {
           "target": "exercise:effect-hooks:solution:solution",
@@ -7430,9 +7470,19 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
+          "target": "exercise:effect-hooks:wrong:title-in-render",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useDocumentTitle › 渲染没有提交时不修改标题（渲染必须是纯的） ⟶ 组件没有显示出来，标题不应该改变,useDocumentTitle › StrictMode 中（React 会额外执行一次“清理、再执行”）结果也正确 ⟶ expect(…).toBe('严格模式'))"
+        },
+        {
+          "target": "exercise:effect-hooks:wrong:null-only-deps",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useInterval › delay 从 1000 改成 200 时，按新的间隔计时 ⟶ expect(…).toHaveBeenCalledTimes(5))"
+        },
+        {
           "target": "exercise:effect-hooks:wrong:title-no-restore",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useDocumentTitle › 设置标题，标题变化时更新，卸载时恢复原来的标题 ⟶ expect(…).toBe('原来的标题'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useDocumentTitle › 设置标题，标题变化时更新，卸载时恢复原来的标题 ⟶ expect(…).toBe('原来的标题'),useDocumentTitle › StrictMode 中（React 会额外执行一次“清理、再执行”）结果也正确 ⟶ expect(…).toBe('原来的标题'))"
         },
         {
           "target": "exercise:effect-hooks:wrong:callback-in-deps",
@@ -7447,12 +7497,12 @@
         {
           "target": "exercise:effect-hooks:wrong:no-clear",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useInterval › delay 为 null 时暂停；改变 delay 按新的间隔重新开始 ⟶ expect(…).toHaveBeenCalledTimes(5),useInterval › 卸载之后不再调用 ⟶ expect(…).toHaveBeenCalledTimes(2))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useInterval › delay 为 null 时暂停；改变 delay 按新的间隔重新开始 ⟶ expect(…).toHaveBeenCalledTimes(5),useInterval › delay 从 1000 改成 200 时，按新的间隔计时 ⟶ expect(…).toHaveBeenCalledTimes(5),useInterval › 卸载之后不再调用 ⟶ expect(…).toHaveBeenCalledTimes(2))"
         },
         {
           "target": "exercise:city-search:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(输入停止 300 毫秒后才请求，连续输入只请求一次 ⟶ TestingLibraryElementError: Unable to find role=\"list\" and name \"建议\",慢的旧请求被中止，不会覆盖新的结果 ⟶ expect(…).toHaveBeenCalledTimes(1),没有结果和失败 ⟶ TestingLibraryElementError: Unable to find an element with the text: 没有匹配的城市. This could be because the text is broken up by multiple elements. In this case, yo,组件消失时取消正在进行的请求 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(输入停止 300 毫秒后才请求，连续输入只请求一次 ⟶ TestingLibraryElementError: Unable to find role=\"list\" and name \"建议\",被中止的请求不算失败 ⟶ expect(…).toHaveBeenCalledTimes(1),慢的旧请求被中止，不会覆盖新的结果 ⟶ expect(…).toHaveBeenCalledTimes(1),没有结果和失败 ⟶ TestingLibraryElementError: Unable to find an element with the text: 没有匹配的城市. This could be because the text is broken up by multiple elements. In this case, yo,数据格式不对、网络失败也算失败 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",组件消失时取消正在进行的请求 ⟶ expect(…).toHaveBeenCalledTimes(1))"
         },
         {
           "target": "exercise:city-search:solution:solution",
@@ -7472,12 +7522,22 @@
         {
           "target": "exercise:city-search:wrong:no-abort",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(慢的旧请求被中止，不会覆盖新的结果 ⟶ expect(…).toBe(true),组件消失时取消正在进行的请求 ⟶ expect(…).toBe(true))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(被中止的请求不算失败 ⟶ expect(…).toBe(true),慢的旧请求被中止，不会覆盖新的结果 ⟶ expect(…).toBe(true),组件消失时取消正在进行的请求 ⟶ expect(…).toBe(true))"
         },
         {
           "target": "exercise:city-search:wrong:no-clear-timer",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入停止 300 毫秒后才请求，连续输入只请求一次 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+        },
+        {
+          "target": "exercise:city-search:wrong:abort-as-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(被中止的请求不算失败 ⟶ “广”的请求是我们自己中止的，不应该显示失败)"
+        },
+        {
+          "target": "exercise:city-search:wrong:no-validation",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(数据格式不对、网络失败也算失败 ⟶ TestingLibraryElementError: Unable to find role=\"alert\")"
         }
       ]
     }

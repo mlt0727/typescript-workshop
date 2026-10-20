@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 有些数据几乎整个应用都要用：当前的主题、登录的用户、界面语言。按 g07 的做法把它们一层层传下去，中间的每个组件都要接收、再转手，代码又长又脆弱。Context 让上层组件把数据“提供”给下面的整棵子树，任何深度的组件都可以直接读取。这一课讲 createContext、Provider 和 useContext 的用法，怎样用 TypeScript 写出“忘了放 Provider 就立刻报错”的 Context，以及 Context 适合和不适合的场合。
 objectives:
   - 用 createContext 创建 Context，用 Provider 提供值，用 useContext 读取最近的 Provider 的值
@@ -82,7 +82,7 @@ createRoot(container).render(<App />);
 - `Card` 完全不知道主题，`Badge` 直接读到了它：数据跳过了中间的组件。
 - 第 29–31 行：内层的 Provider 覆盖了外层的值，它里面的 `Badge` 总是浅色。
 - 第 33 行：Provider 之外的 `Badge` 读到的是默认值 `'light'`。
-- 点“切换主题”：Provider 的 `value` 变了，所有读取它的组件都会重新渲染。
+- 点“切换主题”：外层 Provider 的 `value` 变了，外层卡片中的 `Badge` 读到了新的主题。注意这个例子中 state 保存在 `App` 里，`App` 重新渲染时，它的子组件本来就会全部重新渲染（包括 Provider 之外的卡片）。Context 额外保证的是：即使中间的组件跳过了渲染（例如用 `memo` 包起来，g12），读取这个 Context 的组件仍然会拿到新的值并重新渲染。
 :::
 
 ## 把 state 和操作一起提供

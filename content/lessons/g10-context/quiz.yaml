@@ -32,8 +32,8 @@
       explain: 一组紧密合作的组件共享状态，是 Context 的另一类典型用法。
     - text: 父组件要传给直接子组件的一个字符串
       explain: 只隔一层，直接用 props 更清楚。
-    - text: 中间组件只是转手、不使用的 props
-      explain: 先考虑组合：把 JSX 作为 children 或其他 props 传进去（g07），不一定需要 Context。
+    - text: 只隔一两层、可以用 children 组合解决的转手 props
+      explain: 先考虑组合：把 JSX 作为 children 或其他 props 传进去（g07），不一定需要 Context。层数很多、组合也解决不了时，才考虑 Context。
 - id: rerender
   type: single
   prompt: Provider 组件每次渲染时都写 `value={{ user, signIn, signOut }}`。会发生什么？

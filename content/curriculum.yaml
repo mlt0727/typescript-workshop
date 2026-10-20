@@ -128,10 +128,10 @@ stages:
       - { id: g05-lists-keys, title: 列表渲染与 key, status: published, prerequisites: [g04-immutable-updates] }
       - { id: g06-controlled-forms, title: 受控表单, status: published, prerequisites: [g05-lists-keys] }
       - { id: g07-lifting-state, title: 状态提升与组合, status: published, prerequisites: [g06-controlled-forms] }
-      - { id: g08-custom-hooks, title: 自定义 Hook, status: draft, prerequisites: [g07-lifting-state] }
-      - { id: g09-refs, title: ref 的合理用途, status: draft, prerequisites: [g08-custom-hooks] }
-      - { id: g10-context, title: Context 的合理用途, status: draft, prerequisites: [g08-custom-hooks] }
-      - { id: g11-effects, title: Effect：适用场景、依赖与清理, status: draft, prerequisites: [g09-refs] }
+      - { id: g08-custom-hooks, title: 自定义 Hook, status: published, prerequisites: [g07-lifting-state] }
+      - { id: g09-refs, title: ref 的合理用途, status: published, prerequisites: [g08-custom-hooks] }
+      - { id: g10-context, title: Context 的合理用途, status: published, prerequisites: [g08-custom-hooks] }
+      - { id: g11-effects, title: Effect：适用场景、依赖与清理, status: published, prerequisites: [g09-refs, e08-abort-races] }
       - { id: g12-effect-pitfalls, title: 避免滥用 Effect 与性能 Hook, status: planned, prerequisites: [g11-effects] }
       - { id: g13-routing, title: 用 React Router 组织页面, status: planned, prerequisites: [g07-lifting-state, e10-url-routing] }
       - { id: g14-async-data, title: 异步数据与错误状态, status: planned, prerequisites: [g11-effects, e08-abort-races] }

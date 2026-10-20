@@ -142,9 +142,18 @@ describe('useCounter', () => {
     expect(renderHook(() => useCounter({ min: 2, max: 9 })).result.current.value).toBe(2);
     expect(renderHook(() => useCounter({ min: 2, max: 9, initial: 50 })).result.current.value).toBe(9);
     expect(renderHook(() => useCounter({ min: 2, max: 9, initial: -1 })).result.current.value).toBe(2);
+    expect(renderHook(() => useCounter({ min: -5, max: 5 })).result.current.value).toBe(-5);
     const { result } = renderHook(() => useCounter({ min: 2, max: 9 }));
     act(() => result.current.increment());
     expect(result.current.value).toBe(3);
+  });
+
+  test('重置时同样限制在范围内', () => {
+    const { result } = renderHook(() => useCounter({ min: 2, max: 9, initial: 50 }));
+    act(() => result.current.decrement());
+    expect(result.current.value).toBe(8);
+    act(() => result.current.reset());
+    expect(result.current.value).toBe(9);
   });
 
   test('同一个事件中连续调用两次，两次都生效', () => {
@@ -339,6 +348,36 @@ export function useCounter({ min, max, initial = min, step = 1 }: CounterOptions
     reset: () => setValue(clamp(initial)),
     canIncrement: value <= max,
     canDecrement: value >= min,
+  };
+}
+```
+:::
+
+:::variant{kind=wrong name=reset-unclamped fails=tests reason="重置时直接用了 initial，没有限制在范围内"}
+```ts file=useCounter.ts
+import { useState } from 'react';
+
+export type CounterOptions = { min: number; max: number; initial?: number; step?: number };
+
+export type Counter = {
+  value: number;
+  increment(): void;
+  decrement(): void;
+  reset(): void;
+  canIncrement: boolean;
+  canDecrement: boolean;
+};
+
+export function useCounter({ min, max, initial = min, step = 1 }: CounterOptions): Counter {
+  const clamp = (n: number) => Math.min(max, Math.max(min, n));
+  const [value, setValue] = useState(() => clamp(initial));
+  return {
+    value,
+    increment: () => setValue((v) => Math.min(max, v + step)),
+    decrement: () => setValue((v) => Math.max(min, v - step)),
+    reset: () => setValue(initial),
+    canIncrement: value < max,
+    canDecrement: value > min,
   };
 }
 ```

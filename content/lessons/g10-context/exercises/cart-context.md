@@ -5,9 +5,9 @@ title: 购物车的 Context
 `cart.tsx` 中的三个组件 `ProductList`、`CartBadge`、`CartPanel` 已经写好，它们都通过 `useCart()` 读写购物车。实现 `CartProvider` 和 `useCart`：
 
 - `CartProvider` 接收商品目录 `products`，在 state 中保存购物车的内容，通过 Context 提供 `CartValue`；
-- `lines`：购物车中的每一种商品和数量，按**第一次加入的顺序**排列；`count` 是总件数，`total` 是总价；
+- `lines`：购物车中的每一种商品和数量，按**加入购物车的顺序**排列（移除之后再加入的，排在最后）；`count` 是总件数，`total` 是总价；
 - `add(id)`：这种商品加 1（没有就加入，数量为 1）；
-- `setQuantity(id, quantity)`：设置数量；小于等于 0 时从购物车中移除；
+- `setQuantity(id, quantity)`：设置数量；小于等于 0 时从购物车中移除；购物车中还没有这种商品、数量又大于 0 时，加入到最后；
 - 每种商品最多 99 件，超过的部分忽略；`clear()` 清空购物车；
 - 商品的名字和价格总是来自**最新的** `products`：目录中的价格变了，合计也要跟着变；
 - `useCart()` 在 Provider 之外调用时抛出错误 `useCart 必须在 <CartProvider> 中使用`。
@@ -74,7 +74,7 @@ export function CartPanel() {
             <button type="button" aria-label={`减少${product.name}`} onClick={() => setQuantity(product.id, quantity - 1)}>
               −
             </button>
-            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= 99} onClick={() => setQuantity(product.id, quantity + 1)}>
+            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= MAX} onClick={() => setQuantity(product.id, quantity + 1)}>
               +
             </button>
             <button type="button" aria-label={`移除${product.name}`} onClick={() => setQuantity(product.id, 0)}>
@@ -213,7 +213,7 @@ export function CartPanel() {
             <button type="button" aria-label={`减少${product.name}`} onClick={() => setQuantity(product.id, quantity - 1)}>
               −
             </button>
-            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= 99} onClick={() => setQuantity(product.id, quantity + 1)}>
+            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= MAX} onClick={() => setQuantity(product.id, quantity + 1)}>
               +
             </button>
             <button type="button" aria-label={`移除${product.name}`} onClick={() => setQuantity(product.id, 0)}>
@@ -309,11 +309,31 @@ test('每种商品最多 99 件', () => {
   expect(result.current.count).toBe(149);
 });
 
-test('价格来自最新的商品目录，而不是加入时的副本', async () => {
+test('移除之后再加入的商品排在最后', () => {
+  const wrapper = ({ children }: { children: ReactNode }) => <CartProvider products={products}>{children}</CartProvider>;
+  const { result } = renderHook(() => useCart(), { wrapper });
+  act(() => {
+    result.current.add('tea');
+    result.current.add('cake');
+    result.current.setQuantity('tea', 0);
+    result.current.add('tea');
+  });
+  expect(result.current.lines.map((line) => line.product.id)).toEqual(['cake', 'tea']);
+});
+
+test('名字和价格来自最新的商品目录，而不是加入时的副本', async () => {
   const user = userEvent.setup();
   const { rerender } = render(<Shop />);
   await user.click(button('把蛋糕加入购物车'));
-  rerender(<Shop catalog={[products[0] ?? { id: 'x', name: 'x', price: 0 }, { id: 'cake', name: '蛋糕', price: 30 }]} />);
+  rerender(
+    <Shop
+      catalog={[
+        { id: 'tea', name: '绿茶', price: 12.5 },
+        { id: 'cake', name: '奶油蛋糕', price: 30 },
+      ]}
+    />,
+  );
+  expect(quantityOf('奶油蛋糕')).toHaveTextContent('1');
   expect(screen.getByText('合计 ¥30.00')).toBeInTheDocument();
 });
 
@@ -351,7 +371,7 @@ state 中只存“哪种商品、几件”：`readonly { id: string; quantity: n
 :::
 
 :::hint{level=2}
-修改数组用更新函数和不修改原数组的方法（g04）：加入是 `[...current, { id, quantity: 1 }]`，修改是 `map`，移除是 `filter`。`lines` 可以用 `flatMap`：在 `products` 中找到对应的商品就返回 `[{ product, quantity }]`，找不到就返回 `[]`。
+修改数组用更新函数和不修改原数组的方法（g04）：加入是 `[...current, { id, quantity: 1 }]`，修改是 `map`，移除是 `filter`。`setQuantity` 也要处理“购物车中还没有这种商品”的情况：这时和加入一样，追加到最后。`lines` 可以用 `flatMap`：在 `products` 中找到对应的商品就返回 `[{ product, quantity }]`，找不到就返回 `[]`。
 :::
 
 :::explanation
@@ -464,7 +484,7 @@ export function CartPanel() {
             <button type="button" aria-label={`减少${product.name}`} onClick={() => setQuantity(product.id, quantity - 1)}>
               −
             </button>
-            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= 99} onClick={() => setQuantity(product.id, quantity + 1)}>
+            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= MAX} onClick={() => setQuantity(product.id, quantity + 1)}>
               +
             </button>
             <button type="button" aria-label={`移除${product.name}`} onClick={() => setQuantity(product.id, 0)}>
@@ -483,7 +503,7 @@ export function CartPanel() {
 ```
 :::
 
-:::variant{kind=wrong name=store-copies fails=tests reason="把加入时的商品对象存进了 state，目录中的价格变了，合计不变"}
+:::variant{kind=wrong name=store-copies fails=tests reason="把加入时的商品对象存进了 state，目录中的名字和价格变了，购物车不变"}
 ```tsx file=cart.tsx
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
@@ -510,7 +530,11 @@ export function CartProvider({ products, children }: { products: readonly Produc
     const next = Math.min(MAX, Math.trunc(quantity));
     setLines((current) => {
       if (next <= 0) return current.filter((line) => line.product.id !== id);
-      return current.map((line) => (line.product.id === id ? { ...line, quantity: next } : line));
+      if (current.some((line) => line.product.id === id)) {
+        return current.map((line) => (line.product.id === id ? { ...line, quantity: next } : line));
+      }
+      const product = products.find((p) => p.id === id);
+      return product === undefined ? current : [...current, { product, quantity: next }];
     });
   }
 
@@ -574,7 +598,120 @@ export function CartPanel() {
             <button type="button" aria-label={`减少${product.name}`} onClick={() => setQuantity(product.id, quantity - 1)}>
               −
             </button>
-            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= 99} onClick={() => setQuantity(product.id, quantity + 1)}>
+            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= MAX} onClick={() => setQuantity(product.id, quantity + 1)}>
+              +
+            </button>
+            <button type="button" aria-label={`移除${product.name}`} onClick={() => setQuantity(product.id, 0)}>
+              移除
+            </button>
+          </li>
+        ))}
+      </ul>
+      <p>合计 {yuan(total)}</p>
+      <button type="button" onClick={clear}>
+        清空购物车
+      </button>
+    </section>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=set-existing-only fails=tests reason="setQuantity 只修改已经在购物车中的商品，不在购物车中的被忽略了"}
+```tsx file=cart.tsx
+import { createContext, useContext, useState, type ReactNode } from 'react';
+
+export type Product = { id: string; name: string; price: number };
+export type CartLine = { product: Product; quantity: number };
+export type CartValue = {
+  products: readonly Product[];
+  lines: readonly CartLine[];
+  count: number;
+  total: number;
+  add: (id: string) => void;
+  setQuantity: (id: string, quantity: number) => void;
+  clear: () => void;
+};
+
+const MAX = 99;
+
+const CartContext = createContext<CartValue | null>(null);
+
+export function CartProvider({ products, children }: { products: readonly Product[]; children: ReactNode }) {
+  const [items, setItems] = useState<readonly { id: string; quantity: number }[]>([]);
+
+  const lines = items.flatMap(({ id, quantity }) => {
+    const product = products.find((p) => p.id === id);
+    return product === undefined ? [] : [{ product, quantity }];
+  });
+
+  function setQuantity(id: string, quantity: number) {
+    const next = Math.min(MAX, Math.trunc(quantity));
+    setItems((current) => {
+      if (next <= 0) return current.filter((item) => item.id !== id);
+      return current.map((item) => (item.id === id ? { id, quantity: next } : item));
+    });
+  }
+
+  const value: CartValue = {
+    products,
+    lines,
+    count: lines.reduce((sum, line) => sum + line.quantity, 0),
+    total: lines.reduce((sum, line) => sum + line.product.price * line.quantity, 0),
+    add: (id) =>
+      setItems((current) => {
+        const found = current.find((item) => item.id === id);
+        if (found === undefined) return [...current, { id, quantity: 1 }];
+        return current.map((item) => (item.id === id ? { id, quantity: Math.min(MAX, item.quantity + 1) } : item));
+      }),
+    setQuantity,
+    clear: () => setItems([]),
+  };
+  return <CartContext value={value}>{children}</CartContext>;
+}
+
+export function useCart(): CartValue {
+  const value = useContext(CartContext);
+  if (value === null) throw new Error('useCart 必须在 <CartProvider> 中使用');
+  return value;
+}
+
+const yuan = (n: number) => `¥${n.toFixed(2)}`;
+
+export function ProductList() {
+  const { products, add } = useCart();
+  return (
+    <ul aria-label="商品">
+      {products.map((p) => (
+        <li key={p.id}>
+          {p.name} {yuan(p.price)}{' '}
+          <button type="button" aria-label={`把${p.name}加入购物车`} onClick={() => add(p.id)}>
+            加入购物车
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function CartBadge() {
+  const { count } = useCart();
+  return <output aria-label="购物车中的商品数量">{count}</output>;
+}
+
+export function CartPanel() {
+  const { lines, total, setQuantity, clear } = useCart();
+  if (lines.length === 0) return <p>购物车是空的</p>;
+  return (
+    <section aria-label="购物车">
+      <ul>
+        {lines.map(({ product, quantity }) => (
+          <li key={product.id}>
+            {product.name} × <output aria-label={`${product.name}的数量`}>{quantity}</output>{' '}
+            <button type="button" aria-label={`减少${product.name}`} onClick={() => setQuantity(product.id, quantity - 1)}>
+              −
+            </button>
+            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= MAX} onClick={() => setQuantity(product.id, quantity + 1)}>
               +
             </button>
             <button type="button" aria-label={`移除${product.name}`} onClick={() => setQuantity(product.id, 0)}>
@@ -688,7 +825,7 @@ export function CartPanel() {
             <button type="button" aria-label={`减少${product.name}`} onClick={() => setQuantity(product.id, quantity - 1)}>
               −
             </button>
-            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= 99} onClick={() => setQuantity(product.id, quantity + 1)}>
+            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= MAX} onClick={() => setQuantity(product.id, quantity + 1)}>
               +
             </button>
             <button type="button" aria-label={`移除${product.name}`} onClick={() => setQuantity(product.id, 0)}>
@@ -801,7 +938,7 @@ export function CartPanel() {
             <button type="button" aria-label={`减少${product.name}`} onClick={() => setQuantity(product.id, quantity - 1)}>
               −
             </button>
-            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= 99} onClick={() => setQuantity(product.id, quantity + 1)}>
+            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= MAX} onClick={() => setQuantity(product.id, quantity + 1)}>
               +
             </button>
             <button type="button" aria-label={`移除${product.name}`} onClick={() => setQuantity(product.id, 0)}>
@@ -915,7 +1052,7 @@ export function CartPanel() {
             <button type="button" aria-label={`减少${product.name}`} onClick={() => setQuantity(product.id, quantity - 1)}>
               −
             </button>
-            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= 99} onClick={() => setQuantity(product.id, quantity + 1)}>
+            <button type="button" aria-label={`增加${product.name}`} disabled={quantity >= MAX} onClick={() => setQuantity(product.id, quantity + 1)}>
               +
             </button>
             <button type="button" aria-label={`移除${product.name}`} onClick={() => setQuantity(product.id, 0)}>

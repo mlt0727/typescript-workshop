@@ -223,6 +223,7 @@ test('Esc 或“取消”：不保存，焦点回到“编辑标题”', async (
   await user.keyboard('随便写写{Escape}');
   expect(editButton()).toHaveFocus();
   await user.click(editButton());
+  expect(input(), '再次进入编辑时，输入框应该显示当前的标题').toHaveValue('第三季度计划');
   await user.keyboard('又写了一些');
   await user.click(screen.getByRole('button', { name: '取消' }));
   expect(editButton()).toHaveFocus();
@@ -237,7 +238,7 @@ test('标题为空时不保存，留在编辑状态；没有改动时直接退�
   await user.click(screen.getByRole('button', { name: '保存' }));
   expect(input()).toHaveFocus();
   expect(onRename).not.toHaveBeenCalled();
-  await user.type(input(), '第三季度计划{Enter}');
+  await user.type(input(), ' 第三季度计划 {Enter}');
   expect(onRename).not.toHaveBeenCalled();
   expect(editButton()).toHaveFocus();
 });
@@ -274,9 +275,11 @@ test('两个实例：焦点在各自的元素之间移动', async () => {
 :::explanation
 这道题的核心是**时机**。设置 state 只是安排一次渲染；在同一个事件处理函数中，新的元素还不存在，`inputRef.current` 仍然是 `null`。`flushSync` 让 React 同步完成渲染，返回之后 ref 已经指向新的元素。
 
-为什么不在输入框上写 `ref={(node) => { node?.focus(); node?.select(); }}`？这个箭头函数每次渲染都是一个新函数，React 每次渲染都会重新调用它：每输入一个字，文字就被重新选中一次，下一个字会替换掉已经输入的内容（一个错误解就是这样写的）。`autoFocus` 能解决“聚焦”，但做不到“选中文字”，也解决不了“焦点回到按钮”。
+为什么不在输入框上写 `ref={(node) => { node?.focus(); node?.select(); }}`？这个箭头函数每次渲染都是一个新函数，React 每次渲染都会重新调用它：每输入一个字，文字就被重新选中一次，下一个字会替换掉已经输入的内容（一个错误解就是这样写的）。`autoFocus` 本身只负责聚焦（选中文字还要再加 `onFocus`），也解决不了“焦点回到按钮”。
 
-焦点管理是可访问性的重要部分（g02、e07）：用户的操作让一块内容消失时，要把焦点放到一个合理的位置，否则键盘和读屏用户就“掉”到了页面的开头。这里的合理位置，是用户最初点击的那个按钮。
+焦点管理是可访问性的重要部分（d09 把焦点移到第一个错误，e07 讲过禁用按钮导致焦点丢失）：用户的操作让一块内容消失时，要把焦点放到一个合理的位置，否则键盘和读屏用户就“掉”到了页面的开头。这里的合理位置，是用户最初点击的那个按钮。
+
+真实的产品中还可以再改进两点：页面上有多个可编辑的标题时，几个按钮都叫“编辑标题”，读屏用户分不清，可以用 `aria-describedby` 把按钮和各自的标题关联起来；保存空标题时，除了留在编辑状态，还应该显示错误提示并设置 `aria-invalid`（d04、d09）。
 :::
 
 :::variant{kind=alt name=mode-union}
@@ -606,7 +609,79 @@ export function EditableTitle({ title, onRename }: EditableTitleProps) {
       inputRef.current?.focus();
       return;
     }
-    if (text === title) onRename(text);
+    onRename(text);
+    finish();
+  }
+
+  if (!editing) {
+    return (
+      <div>
+        <h2>{title}</h2>
+        <button type="button" ref={editButtonRef} onClick={startEditing}>
+          编辑标题
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        save();
+      }}
+    >
+      <label>
+        新标题
+        <input
+          ref={inputRef}
+          value={draft}
+          onChange={(e) => setDraft(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') finish();
+          }}
+        />
+      </label>
+      <button type="submit">保存</button>
+      <button type="button" onClick={finish}>
+        取消
+      </button>
+    </form>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=stale-draft fails=tests reason="进入编辑时没有把草稿重置为当前标题，上次取消时输入的文字还留在输入框里"}
+```tsx file=EditableTitle.tsx
+import { useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
+
+type EditableTitleProps = { title: string; onRename: (title: string) => void };
+
+export function EditableTitle({ title, onRename }: EditableTitleProps) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(title);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const editButtonRef = useRef<HTMLButtonElement>(null);
+
+  function startEditing() {
+    flushSync(() => setEditing(true));
+    inputRef.current?.focus();
+    inputRef.current?.select();
+  }
+
+  function finish() {
+    flushSync(() => setEditing(false));
+    editButtonRef.current?.focus();
+  }
+
+  function save() {
+    const text = draft.trim();
+    if (text === '') {
+      inputRef.current?.focus();
+      return;
+    }
     if (text !== title) onRename(text);
     finish();
   }

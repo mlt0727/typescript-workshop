@@ -4,5 +4,7 @@
   {"url": "/api/cities?q=%E5%B9%BF", "delayMs": 800, "body": ["广州", "广元"]},
   {"url": "/api/cities?q=%E6%B7%B1", "delayMs": 50, "body": ["深圳"]},
   {"url": "/api/cities?q=%E9%9B%AA", "delayMs": 50, "body": []},
-  {"url": "/api/cities?q=%E9%94%99", "delayMs": 50, "status": 500, "body": {"message": "出错了"}}
+  {"url": "/api/cities?q=%E9%94%99", "delayMs": 50, "status": 500, "body": {"message": "出错了"}},
+  {"url": "/api/cities?q=%E5%9D%8F", "delayMs": 50, "body": {"cities": ["坏"]}},
+  {"url": "/api/cities?q=%E6%96%AD", "delayMs": 50, "networkError": true}
 ]

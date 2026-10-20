@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 66 / 规划总数 126**（草稿 4，规划中 56）
+**已发布 70 / 规划总数 126**（草稿 0，规划中 56）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -131,7 +131,7 @@
 | `f11-lint-format` 格式化与静态检查 | ⬜ 规划中 | `f03-tsconfig` |
 | `f12-build-ci` 生产构建与 CI | ⬜ 规划中 | `f11-lint-format`、`f10-git` |
 
-## G. React + TypeScript（已发布 7 / 15）
+## G. React + TypeScript（已发布 11 / 15）
 
 组件、props、state、表单、Hook、Effect、路由与测试，全部在真实预览中练习。
 
@@ -144,10 +144,10 @@
 | `g05-lists-keys` 列表渲染与 key | ✅ 已发布 | `g04-immutable-updates` |
 | `g06-controlled-forms` 受控表单 | ✅ 已发布 | `g05-lists-keys` |
 | `g07-lifting-state` 状态提升与组合 | ✅ 已发布 | `g06-controlled-forms` |
-| `g08-custom-hooks` 自定义 Hook | 📝 草稿 | `g07-lifting-state` |
-| `g09-refs` ref 的合理用途 | 📝 草稿 | `g08-custom-hooks` |
-| `g10-context` Context 的合理用途 | 📝 草稿 | `g08-custom-hooks` |
-| `g11-effects` Effect：适用场景、依赖与清理 | 📝 草稿 | `g09-refs` |
+| `g08-custom-hooks` 自定义 Hook | ✅ 已发布 | `g07-lifting-state` |
+| `g09-refs` ref 的合理用途 | ✅ 已发布 | `g08-custom-hooks` |
+| `g10-context` Context 的合理用途 | ✅ 已发布 | `g08-custom-hooks` |
+| `g11-effects` Effect：适用场景、依赖与清理 | ✅ 已发布 | `g09-refs`、`e08-abort-races` |
 | `g12-effect-pitfalls` 避免滥用 Effect 与性能 Hook | ⬜ 规划中 | `g11-effects` |
 | `g13-routing` 用 React Router 组织页面 | ⬜ 规划中 | `g07-lifting-state`、`e10-url-routing` |
 | `g14-async-data` 异步数据与错误状态 | ⬜ 规划中 | `g11-effects`、`e08-abort-races` |
