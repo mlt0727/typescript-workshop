@@ -1,0 +1,45 @@
+- id: push-or-replace
+  type: single
+  prompt: 搜索框中每输入一个字，都要把搜索词同步到地址的查询参数里。应该用哪个方法？
+  options:
+    - text: "`history.replaceState`"
+      correct: true
+      explain: 连续的变化替换当前的历史记录，否则用户按一次后退只能退回一个字。
+    - text: "`history.pushState`"
+      explain: 每个字都新增一条历史记录，后退键几乎没法用。
+    - text: "`location.href = 新地址`"
+      explain: 这会让浏览器真正跳转、重新加载页面。
+- id: popstate
+  type: multiple
+  prompt: 关于 `popstate` 事件，哪些说法正确？
+  options:
+    - text: 用户按后退或前进键、地址在同一个页面内变化时触发
+      correct: true
+      explain: 监听它，从地址中重新读取状态并渲染。
+    - text: 调用 `history.pushState` 时也会触发
+      explain: pushState 和 replaceState 不触发 popstate，改变地址后要自己渲染。
+    - text: 它在 `window` 上触发
+      correct: true
+      explain: 用 `window.addEventListener('popstate', …)` 监听。
+- id: intercept-links
+  type: single
+  prompt: 前端路由拦截链接点击时，下面哪种点击**应该**交给浏览器处理？
+  options:
+    - text: 用户按住 Ctrl（或 ⌘）点击站内链接
+      correct: true
+      explain: 用户想在新标签页中打开。同样不应该拦截的还有带 target 或 download 属性的链接，以及外部链接。
+    - text: 普通的左键点击站内链接
+      explain: 这正是路由要拦截的情况：阻止默认的跳转，改用 pushState 并渲染。
+    - text: 点击站内链接里面的图标
+      explain: 用 closest('a') 找到链接本身，同样按站内链接处理。
+- id: deep-link-404
+  type: single
+  prompt: 单页应用部署后，在 `/users/42` 页面刷新得到了 404，本地开发时却没问题。原因是什么？
+  options:
+    - text: 服务器上没有 /users/42 这个文件，需要配置服务器把这些路径都返回 index.html
+      correct: true
+      explain: 刷新时浏览器真的向服务器请求这个路径。开发服务器通常默认这样配置，部署时要自己加上（例如 Vercel 的 rewrites）。
+    - text: pushState 生成的地址只在当前标签页有效
+      explain: 地址本身没有问题，问题在于服务器如何响应这个路径。
+    - text: 浏览器缓存了旧的页面
+      explain: 与缓存无关。

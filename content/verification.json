@@ -6053,6 +6053,98 @@
         }
       ]
     },
+    "e10-url-routing": {
+      "verifiedAt": "2026-10-20T12:39:55.565Z",
+      "sourceHash": "38ad46d9dbc59e71",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:url-parts:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:url-parts:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] https://shop.example /products/42 ?tab=reviews&page=2 #comments | [log] 第 2 页，标签页： reviews ，不存在的参数： null | [log] 相对地址解析后： https://shop.example/cart?from=detail | [log] 本页面的地址： /sandbox/index.html"
+        },
+        {
+          "target": "playground:filters-in-url:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:filters-in-url:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:url-filters:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseFilters › 读取各个参数，有没有开头的 ? 都可以,parseFilters › 解码：+ 表示空格，%26 表示 &,toSearch › 全部是默认值时返回空字符串,toSearch › 只包含非默认的参数，按 q、status、page 的顺序,toSearch › 特殊字符被正确编码,toSearch › 来回转换不丢信息)"
+        },
+        {
+          "target": "exercise:url-filters:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:url-filters:alt:entries-array",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:url-filters:wrong:string-concat",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toSearch › 特殊字符被正确编码,toSearch › 来回转换不丢信息)"
+        },
+        {
+          "target": "exercise:url-filters:wrong:keep-defaults",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toSearch › 全部是默认值时返回空字符串,toSearch › 只包含非默认的参数，按 q、status、page 的顺序,toSearch › 特殊字符被正确编码)"
+        },
+        {
+          "target": "exercise:url-filters:wrong:loose-page",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseFilters › 不合法的 status 和 page 退回默认值)"
+        },
+        {
+          "target": "exercise:mini-router:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(matchRoute › 匹配普通段和参数段,matchRoute › 参数被解码,createRouter › start 渲染当前地址,createRouter › 点击站内链接：不跳转页面，改变地址并渲染，焦点移到标题,createRouter › 后退时重新渲染,createRouter › 没有匹配的路由)"
+        },
+        {
+          "target": "exercise:mini-router:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:mini-router:alt:pattern-regex",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:mini-router:wrong:intercept-everything",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRouter › 不拦截：Ctrl/⌘ 点击、target、download、外部链接)"
+        },
+        {
+          "target": "exercise:mini-router:wrong:no-popstate",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRouter › 后退时重新渲染,createRouter › 没有匹配的路由)"
+        },
+        {
+          "target": "exercise:mini-router:wrong:no-decode",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchRoute › 参数被解码,createRouter › 点击站内链接：不跳转页面，改变地址并渲染，焦点移到标题)"
+        },
+        {
+          "target": "exercise:mini-router:wrong:no-focus-or-title",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRouter › start 渲染当前地址,createRouter › 点击站内链接：不跳转页面，改变地址并渲染，焦点移到标题)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",
