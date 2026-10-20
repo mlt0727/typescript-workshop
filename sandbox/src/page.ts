@@ -112,8 +112,12 @@ export function applyPage(page: { html?: string; css: Record<string, string> } |
   const title = parsed.title;
   const htmlLang = parsed.documentElement.getAttribute('lang') ?? 'zh-CN';
 
+  // 记下初始地址：学生代码可能用 history.pushState 改了地址，每个测试前恢复它
+  const initialUrl = location.href;
+
   const reset = () => {
     clearTracked();
+    if (location.href !== initialUrl) history.replaceState(null, '', initialUrl);
     for (const node of [...document.head.childNodes]) {
       if (!(node instanceof HTMLElement && node.dataset.tswKeep !== undefined)) node.remove();
     }

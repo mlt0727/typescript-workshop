@@ -272,6 +272,30 @@ test.describe('DOM 模式', () => {
     expect(r.passed).toBe(true);
   });
 
+  test('每个测试前恢复页面的初始地址（history.pushState 不会影响下一个测试）', async ({ page }) => {
+    await open(page);
+    const tests = {
+      'url.test.ts': [
+        'import { expect, test } from "vitest";',
+        'let initial = "";',
+        'test("修改地址", () => {',
+        '  initial = location.href;',
+        '  history.pushState({ step: 1 }, "", "/users/42?tab=info#top");',
+        '  expect(location.pathname).toBe("/users/42");',
+        '});',
+        'test("下一个测试看到的是初始地址", () => {',
+        '  expect(location.href).toBe(initial);',
+        '  expect(history.state).toBeNull();',
+        '});',
+      ].join('\n'),
+    };
+    const r = await judge(page, baseSpec('dom', 'index.html'), { student: { 'index.html': '<p>hi</p>' }, support: {}, tests });
+    expect(r.tests.results.map((t) => [t.name, t.status, t.error?.message])).toEqual([
+      ['修改地址', 'pass', undefined],
+      ['下一个测试看到的是初始地址', 'pass', undefined],
+    ]);
+  });
+
   test('DOM 模式的同步死循环被循环保护中止，页面不会卡死', async ({ page }) => {
     await open(page);
     const started = Date.now();
