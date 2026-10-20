@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 43 / 规划总数 126**（草稿 11，规划中 72）
+**已发布 52 / 规划总数 126**（草稿 4，规划中 70）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -68,8 +68,8 @@
 | `e04-promise-combinators` Promise.all、allSettled、race 与 any | ✅ 已发布 | `e03-async-await`、`b09-discriminated-unions`、`b13-inheritance-implements` |
 | `e05-fetch-json` fetch、HTTP 状态与 JSON | 📝 草稿 | `e04-promise-combinators` |
 | `e06-runtime-validation` 运行时数据校验 | 📝 草稿 | `e05-fetch-json`、`b08-type-guards` |
-| `e07-loading-states` 加载、空与失败状态 | ⬜ 规划中 | `e06-runtime-validation`、`d06-dom-create-update` |
-| `e08-abort-races` AbortController、取消请求与竞态 | ⬜ 规划中 | `e07-loading-states` |
+| `e07-loading-states` 加载、空与失败状态 | 📝 草稿 | `e06-runtime-validation`、`d06-dom-create-update` |
+| `e08-abort-races` AbortController、取消请求与竞态 | 📝 草稿 | `e07-loading-states` |
 | `e09-storage-serialization` 浏览器存储与序列化 | ⬜ 规划中 | `e06-runtime-validation` |
 | `e10-url-routing` URL、History 与基础路由 | ⬜ 规划中 | `d07-events` |
 | `e11-cors` CORS 的真实边界 | ⬜ 规划中 | `e05-fetch-json` |
@@ -95,22 +95,22 @@
 | `c11-strict-options` strict、strictNullChecks 与 noUncheckedIndexedAccess | ⬜ 规划中 | `c10-avoid-any` |
 | `c12-modules-dts` 模块与 .d.ts 基础 | ⬜ 规划中 | `c11-strict-options`、`f03-tsconfig` |
 
-## D. HTML、CSS 与 DOM（已发布 1 / 10）
+## D. HTML、CSS 与 DOM（已发布 10 / 10）
 
 足以完成项目的 HTML/CSS，以及类型安全的 DOM 操作、事件与表单。
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `d01-html-semantics` HTML 语义结构 | 📝 草稿 | `a01-where-ts-runs` |
-| `d02-html-forms` 表单元素与标签 | 📝 草稿 | `d01-html-semantics` |
-| `d03-css-layout` CSS 布局：Flexbox 与 Grid | 📝 草稿 | `d01-html-semantics` |
-| `d04-responsive-a11y` 响应式与可访问性基础 | 📝 草稿 | `d03-css-layout`、`d02-html-forms` |
-| `d05-dom-query` DOM 查询、null 检查与元素类型收窄 | 📝 草稿 | `d01-html-semantics`、`b07-narrowing` |
-| `d06-dom-create-update` 创建与更新节点 | 📝 草稿 | `d05-dom-query` |
+| `d01-html-semantics` HTML 语义结构 | ✅ 已发布 | `a01-where-ts-runs` |
+| `d02-html-forms` 表单元素与标签 | ✅ 已发布 | `d01-html-semantics` |
+| `d03-css-layout` CSS 布局：Flexbox 与 Grid | ✅ 已发布 | `d01-html-semantics` |
+| `d04-responsive-a11y` 响应式与可访问性基础 | ✅ 已发布 | `d03-css-layout`、`d02-html-forms` |
+| `d05-dom-query` DOM 查询、null 检查与元素类型收窄 | ✅ 已发布 | `d01-html-semantics`、`b07-narrowing` |
+| `d06-dom-create-update` 创建与更新节点 | ✅ 已发布 | `d05-dom-query` |
 | `d07-events` 事件监听、target 与 currentTarget | ✅ 已发布 | `d06-dom-create-update`、`b10-function-types` |
-| `d08-bubbling-delegation` 冒泡、委托、preventDefault 与清理监听器 | 📝 草稿 | `d07-events` |
-| `d09-form-validation` 类型安全的表单输入与验证 | 📝 草稿 | `d08-bubbling-delegation`、`d02-html-forms` |
-| `d10-state-and-render` 状态与渲染：从数据到界面 | 📝 草稿 | `d09-form-validation`、`b09-discriminated-unions` |
+| `d08-bubbling-delegation` 冒泡、委托、preventDefault 与清理监听器 | ✅ 已发布 | `d07-events` |
+| `d09-form-validation` 类型安全的表单输入与验证 | ✅ 已发布 | `d08-bubbling-delegation`、`d02-html-forms` |
+| `d10-state-and-render` 状态与渲染：从数据到界面 | ✅ 已发布 | `d09-form-validation`、`b09-discriminated-unions` |
 
 ## F. 工程化、测试与调试（已发布 0 / 12）
 

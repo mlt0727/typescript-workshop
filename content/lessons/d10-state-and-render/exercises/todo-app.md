@@ -24,7 +24,7 @@ title: 可以撤销的待办应用
       <form id="add-form">
         <label for="new-todo">新的待办</label>
         <input id="new-todo" autocomplete="off" />
-        <button>添加</button>
+        <button type="submit">添加</button>
       </form>
       <div role="group" aria-label="筛选" id="filters">
         <button type="button" data-filter="all">全部</button>
@@ -281,8 +281,10 @@ test('勾选、筛选、删除', async () => {
   expect(texts()).toEqual(['买牛奶']);
 });
 
-test('添加：清空输入框；空白输入不添加，也不产生历史', async () => {
+test('添加：阻止默认提交；清空输入框；空白输入不添加，也不产生历史', async () => {
   const user = userEvent.setup();
+  const prevented: boolean[] = [];
+  document.querySelector('form')?.addEventListener('submit', (event) => prevented.push(event.defaultPrevented));
   const input = screen.getByLabelText('新的待办');
   await user.type(input, '   ');
   await user.click(screen.getByRole('button', { name: '添加' }));
@@ -294,6 +296,7 @@ test('添加：清空输入框；空白输入不添加，也不产生历史', as
   await user.click(screen.getByRole('button', { name: '添加' }));
   expect(texts()).toEqual(['买牛奶', '写周报', '读书']);
   expect(input).toHaveValue('');
+  expect(prevented).toEqual([true, true]);
   expect(status()).toHaveTextContent('剩余 2 项');
 });
 

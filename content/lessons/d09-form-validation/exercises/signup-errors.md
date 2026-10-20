@@ -49,7 +49,7 @@ title: 可访问的错误提示
         <input id="confirm" name="confirm" type="password" aria-describedby="confirm-error" />
         <span class="error" id="confirm-error"></span>
       </p>
-      <button>注册</button>
+      <button type="submit">注册</button>
     </form>
     <p id="status" role="status"></p>
     <script type="module" src="./main.ts"></script>
@@ -227,9 +227,13 @@ test('没有修改的字段变得合法时，再次提交会清除它过时的�
   expect(errorText('confirm')).toBe('两次输入的密码不一致');
   await user.clear(field('密码'));
   await user.type(field('密码'), 'correct horsf');
+  await user.clear(field('年龄'));
   await submit();
+  // 这次提交仍然失败（年龄没填），但确认密码已经合法：它过时的错误要被清除
+  expect(errorText('age')).toBe('请填写年龄');
   expect(errorText('confirm')).toBe('');
   expect(field('确认密码')).not.toHaveAttribute('aria-invalid');
+  expect(screen.getByRole('status')).toHaveTextContent('有 1 处需要修改');
 });
 
 test('在有错误的输入框里输入时，立即清除这个字段的错误', async () => {
@@ -262,7 +266,7 @@ test('成功：清除错误、显示成功状态、重置表单', async () => {
 :::
 
 :::hint{level=1}
-写两个小工具：`parts(field)` 返回这个字段的输入框和错误元素（在里面做好 `instanceof` 检查）；`showError(field, text)` 在 `text` 为 `undefined` 时清除、否则显示错误。提交时对五个字段都调用一次 `showError(field, result.errors[field])`。注意用箭头函数定义它们，才能使用文件开头已经收窄的变量。
+写两个小工具：`parts(field)` 返回这个字段的输入框和错误元素（在里面做好 `instanceof` 检查）；`showError(field, text)` 在 `text` 为 `undefined` 时清除、否则显示错误。提交时对五个字段都调用一次 `showError(field, result.errors[field])`。如果辅助函数要用到文件开头收窄过的变量（例如 `form`、`status`），就用箭头函数（函数表达式）定义它，函数声明里不保留收窄。
 :::
 
 :::hint{level=2}

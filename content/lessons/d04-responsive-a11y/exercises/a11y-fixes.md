@@ -5,9 +5,9 @@ title: 修复订阅卡片的可访问性问题
 这张订阅卡片看起来没什么问题，但对很多用户来说并不好用。修改 `index.html` 和 `style.css`，满足：
 
 1. 说明文字（“每周一封邮件……”）与背景的**对比度至少 4.5:1**；
-2. 用键盘操作时，两个按钮获得焦点后都有清晰的轮廓：`outline` 不是 `none`，宽度**至少 2px**；
-3. 关闭按钮的可访问名称是“**关闭通知**”，可点击区域至少 **24×24** 像素；
-4. 邮箱输入框有标签“**邮箱**”；
+2. 用键盘操作时，两个按钮获得焦点后都有清晰的轮廓：`outline` 不是 `none`，宽度**至少 2px**，颜色与背景的对比度至少 3:1；
+3. 关闭按钮的可访问名称是“**关闭通知**”，可点击区域至少 **24×24** 像素（本题不考虑 WCAG 中关于间距的例外）；
+4. 邮箱输入框有一个可见的 `<label>`，文字是“**邮箱**”；
 5. 邮箱填写有误时**不只用红色**表示：输入框标记为 `aria-invalid="true"`，并通过 `aria-describedby` 关联一段可见的文字说明“**请输入有效的邮箱地址**”。
 
 测试会计算实际显示的颜色的对比度，用模拟的 Tab 键移动焦点，并按角色和名称查找元素。
@@ -91,17 +91,29 @@ import { expect, test } from 'vitest';
 import { screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
-function luminance(color: string): number {
-  const [r = 0, g = 0, b = 0] = (color.match(/\d+(\.\d+)?/g) ?? []).slice(0, 3).map((part) => {
-    const c = Number(part) / 255;
-    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+/** 用 canvas 把任意 CSS 颜色（包括 oklch 等）画在背景色上，读出实际显示的 RGB */
+function displayedRgb(color: string, background = 'rgb(255, 255, 255)'): [number, number, number] {
+  const ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx) throw new Error('无法创建 canvas');
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, 1, 1);
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, 1, 1);
+  const [r = 0, g = 0, b = 0] = ctx.getImageData(0, 0, 1, 1).data;
+  return [r, g, b];
 }
 
-function contrast(a: string, b: string): number {
-  const la = luminance(a);
-  const lb = luminance(b);
+function luminance([r, g, b]: [number, number, number]): number {
+  const [lr = 0, lg = 0, lb = 0] = [r, g, b].map((v) => {
+    const c = v / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+}
+
+function contrast(foreground: string, background: string): number {
+  const la = luminance(displayedRgb(foreground, background));
+  const lb = luminance(displayedRgb(background));
   return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
 }
 
@@ -109,9 +121,18 @@ function contrast(a: string, b: string): number {
 function backgroundOf(el: Element): string {
   for (let e: Element | null = el; e; e = e.parentElement) {
     const bg = getComputedStyle(e).backgroundColor;
-    if (bg !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(bg)) return bg;
+    const alpha = displayedRgbAlpha(bg);
+    if (alpha > 0) return bg;
   }
   return 'rgb(255, 255, 255)';
+}
+
+function displayedRgbAlpha(color: string): number {
+  const ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx) throw new Error('无法创建 canvas');
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, 1, 1);
+  return ctx.getImageData(0, 0, 1, 1).data[3] ?? 0;
 }
 
 test('说明文字的对比度至少 4.5:1', () => {
@@ -130,6 +151,8 @@ test.each([['关闭通知'], ['订阅']])('用键盘聚焦“%s”按钮时有�
   const style = getComputedStyle(button);
   expect(style.outlineStyle).not.toBe('none');
   expect(Number.parseFloat(style.outlineWidth)).toBeGreaterThanOrEqual(2);
+  const outlineContrast = contrast(style.outlineColor, backgroundOf(button.parentElement ?? document.body));
+  expect(outlineContrast, `轮廓颜色的对比度 ${outlineContrast.toFixed(2)}:1`).toBeGreaterThanOrEqual(3);
 });
 
 test('关闭按钮有名字，可点击区域至少 24×24 像素', () => {
@@ -139,8 +162,10 @@ test('关闭按钮有名字，可点击区域至少 24×24 像素', () => {
   expect(rect.height).toBeGreaterThanOrEqual(24);
 });
 
-test('邮箱输入框有标签', () => {
-  expect(screen.getByLabelText('邮箱')).toHaveAttribute('type', 'email');
+test('邮箱输入框有可见的标签', () => {
+  const input = screen.getByLabelText('邮箱');
+  expect(input).toHaveAttribute('type', 'email');
+  expect(input instanceof HTMLInputElement ? input.labels?.length : 0, '需要一个关联的 <label> 元素').toBeGreaterThan(0);
 });
 
 test('邮箱错误不只用颜色表示', () => {
@@ -170,7 +195,7 @@ test('邮箱错误不只用颜色表示', () => {
 
 - **对比度**：`#aaa` 配白色只有约 2.3:1，视力不好或者在阳光下看手机的人很难看清。`#595959` 约 7:1。
 - **焦点样式**：`outline: none` 让键盘用户完全不知道焦点在哪里。`:focus-visible` 只在需要时（例如键盘操作）显示轮廓，用鼠标点击时不会出现，所以没有理由把焦点样式整个去掉。
-- **图标按钮**：屏幕阅读器读不出“×”的含义，`aria-label` 提供了名字。16×16 的按钮在手机上也很难点中，WCAG 2.2 要求至少 24×24。
+- **图标按钮**：屏幕阅读器读不出“×”的含义，`aria-label` 提供了名字。16×16 的按钮在手机上也很难点中。WCAG 2.2 的 AA 级要求至少 24×24（小目标周围留有足够间距时可以例外），本题按严格的要求处理。
 - **标签**：placeholder 不能代替 label（d02）。
 - **只用颜色表示错误**：色觉障碍的用户可能看不出红边框。`aria-invalid="true"` 让屏幕阅读器读出“无效”，`aria-describedby` 关联的说明会在聚焦输入框时被读出来；页面上也显示了文字。
 
@@ -350,6 +375,48 @@ body { font-family: system-ui, sans-serif; background: #fff; }
 .close { position: absolute; top: 4px; right: 4px; width: 32px; height: 32px; padding: 0; border: 0; background: none; font-size: 20px; line-height: 1; }
 .hint { color: #595959; }
 .invalid { border: 2px solid #d00; }
+.subscribe { padding: 4px 12px; }
+button:focus-visible { outline: 3px solid #0a6cff; outline-offset: 2px; }
+```
+:::
+
+:::variant{kind=wrong name=oklch-light-gray fails=tests reason="用 oklch() 写的浅灰色，对比度仍然不到 4.5:1"}
+```html file=index.html
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <section class="notice" aria-labelledby="notice-title">
+      <button type="button" class="close" aria-label="关闭通知">×</button>
+      <h2 id="notice-title">订阅每周更新</h2>
+      <p class="hint">每周一封邮件，随时可以退订。</p>
+      <form>
+        <label for="email">邮箱</label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          class="invalid"
+          value="ada@"
+          aria-invalid="true"
+          aria-describedby="email-error"
+        />
+        <p id="email-error" class="error-text">请输入有效的邮箱地址</p>
+        <button type="submit" class="subscribe">订阅</button>
+      </form>
+    </section>
+  </body>
+</html>
+```
+```css file=style.css
+body { font-family: system-ui, sans-serif; background: #fff; }
+.notice { position: relative; max-width: 420px; padding: 16px; border: 1px solid #ddd; border-radius: 8px; }
+.close { position: absolute; top: 4px; right: 4px; width: 32px; height: 32px; padding: 0; border: 0; background: none; font-size: 20px; line-height: 1; }
+.hint { color: oklch(0.82 0 0); }
+.invalid { border: 2px solid #d00; }
+.error-text { color: #b00020; margin: 4px 0; }
 .subscribe { padding: 4px 12px; }
 button:focus-visible { outline: 3px solid #0a6cff; outline-offset: 2px; }
 ```

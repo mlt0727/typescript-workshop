@@ -115,8 +115,8 @@ export function readSettings(): Settings {
   }
 
   const topics: string[] = [];
-  for (const box of topicsBox.querySelectorAll('input[type="checkbox"]')) {
-    if (box instanceof HTMLInputElement && box.checked) {
+  for (const box of topicsBox.querySelectorAll('input')) {
+    if (box.checked) {
       topics.push(box.value);
     }
   }
@@ -199,7 +199,7 @@ test('“显示设置”按钮显示结果', async () => {
 :::
 
 :::hint{level=2}
-主题标签：先找到 `#topics`，再用 `topicsBox.querySelectorAll('input[type="checkbox"]')` **只在它里面**查找，逐个收窄并检查 `checked`。滑块的数字用 `valueAsNumber`（或者 `Number(value)`）。
+主题标签：先找到 `#topics`，再用 `topicsBox.querySelectorAll('input')` **只在它里面**查找（`#topics` 里只有复选框；选择器正好是标签名，元素的类型直接就是 `HTMLInputElement`），逐个检查 `checked`。滑块的数字用 `valueAsNumber`（或者 `Number(value)`）。
 :::
 
 :::explanation
@@ -207,7 +207,7 @@ test('“显示设置”按钮显示结果', async () => {
 
 起始代码的三种写法（泛型参数、`as`、`!`）都只是告诉编译器“相信我”。测试里删掉 `#volume` 之后，起始代码会在读取 `volume.value` 时抛出 `TypeError: Cannot read properties of null`，完全看不出是哪个元素出了问题。
 
-`topicsBox.querySelectorAll(…)` 只在 `#topics` 内部查找。如果写成 `document.querySelectorAll('input[type="checkbox"]:checked')`，“静音”复选框以及页面上其他的复选框也会被算进去。`querySelectorAll` 的选择器不是标签名，所以每个元素都是 `Element`，同样需要收窄。
+`topicsBox.querySelectorAll('input')` 只在 `#topics` 内部查找。如果在整个文档里找（例如 `document.querySelectorAll('input:checked')`），“静音”复选框以及页面上其他的复选框也会被算进去。选择器 `'input'` 正好是标签名，所以元素的类型直接就是 `HTMLInputElement`；如果用了更复杂的选择器（例如属性选择器 `'input[type="checkbox"]'`），得到的就是 `Element`，还要再收窄。
 :::
 
 :::variant{kind=alt name=get-element-by-id-and-checked-selector}

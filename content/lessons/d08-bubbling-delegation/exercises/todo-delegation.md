@@ -21,7 +21,7 @@ title: 用事件委托管理待办
     <form id="add-form">
       <label for="new-todo">新的待办</label>
       <input id="new-todo" name="text" autocomplete="off" />
-      <button>添加</button>
+      <button type="submit">添加</button>
     </form>
     <ul id="todos">
       <li>
@@ -178,6 +178,22 @@ test('提交表单：阻止默认行为，添加到末尾并清空输入框', as
   expect(screen.getByLabelText('新的待办')).toHaveValue('');
 });
 
+test('不经过表单、直接插入列表的项也能完成和删除（事件委托）', async () => {
+  const user = userEvent.setup();
+  const template = document.querySelector('#todo-template');
+  const list = document.querySelector('#todos');
+  if (!(template instanceof HTMLTemplateElement) || !list) throw new Error('缺少模板或列表');
+  const fragment = document.importNode(template.content, true);
+  const text = fragment.querySelector('.text');
+  if (text) text.textContent = '外部插入';
+  list.append(fragment);
+  const inserted = itemByText('外部插入');
+  await user.click(within(inserted).getByRole('button', { name: '完成' }));
+  expect(inserted).toHaveClass('done');
+  await user.click(within(inserted).getByRole('button', { name: '删除' }));
+  expect(items()).toHaveLength(2);
+});
+
 test('新添加的项也能完成和删除', async () => {
   const user = userEvent.setup();
   await addTodo('写代码');
@@ -213,7 +229,7 @@ test('空白输入不添加；文字原样显示', async () => {
 
 `classList.toggle` 返回切换之后的状态（`true` 表示现在有这个 class），正好用来设置 `aria-pressed`，屏幕阅读器会读出“完成，切换按钮，已按下”。
 
-如果想把“创建一项”抽成辅助函数，要注意一个细节：在文件开头的检查之后，用箭头函数（`const createItem = (text: string) => { … }`）可以直接使用已经收窄的 `template`；改用 `function createItem() { … }` 声明，TypeScript 会认为 `template` 仍可能是 `null`。函数声明会被提升到文件开头，可能在检查之前就被调用，所以 TypeScript 不把检查的结果带进去。
+如果想把“创建一项”抽成辅助函数，要注意一个细节：在文件开头的检查之后，用函数**表达式**（例如箭头函数 `const createItem = (text: string) => { … }`）定义它，就可以直接使用已经收窄的 `template`；改用 `function createItem() { … }` **声明**，TypeScript 会认为 `template` 仍然是检查之前的类型 `Element | null`（既可能是 `null`，也没有 `content` 属性）。函数声明会被提升到文件开头，可能在检查之前就被调用，所以 TypeScript 不把检查的结果带进去。
 
 表单的 `submit` 监听器必须调用 `preventDefault()`：否则浏览器会提交表单并跳转页面（本平台的沙箱会拦截跳转并报告），测试中检查了 `event.defaultPrevented`。用 `<template>` 复制结构，比一行行 `createElement` 更容易和 HTML 保持一致。
 :::

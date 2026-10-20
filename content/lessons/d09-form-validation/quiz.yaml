@@ -9,17 +9,17 @@
       explain: FormData 中的值都是字符串（或文件），不会自动转换成数字。
     - text: "`string`"
       explain: 还可能是 File 或 null，使用前要先确认是字符串。
-- id: number-empty
+- id: custom-validity
   type: single
-  prompt: 年龄输入框没有填写，`Number(data.get('age'))` 会得到什么？
+  prompt: 确认密码框用 `setCustomValidity('两次输入的密码不一致')` 标记了错误。用户把两个密码改成一致后，表单仍然无法提交。最可能的原因是什么？
   options:
-    - text: "`0`"
+    - text: 条件满足后没有调用 `setCustomValidity('')` 清除自定义错误
       correct: true
-      explain: 空输入的值是空字符串，`Number('')` 是 0，“没填”会被当作 0。要先判断空字符串。
-    - text: "`NaN`"
-      explain: "`Number('')` 是 0；`Number('abc')` 才是 NaN。"
-    - text: "`null`"
-      explain: 值是空字符串而不是 null；即使是 null，`Number(null)` 也是 0。
+      explain: 自定义错误会一直保留，直到用空字符串清除。通常在每次输入时重新检查，并在满足时清除。
+    - text: setCustomValidity 只能调用一次
+      explain: 它可以反复调用，每次都会替换之前的消息。
+    - text: 浏览器要刷新页面才会重新验证
+      explain: 验证在每次提交、调用 checkValidity 时都会重新进行。
 - id: parse-result
   type: single
   prompt: "解析函数返回 `{ ok: true; value: Data } | { ok: false; errors: … }`，而不是 `{ ok: boolean; value?: Data; errors?: … }`。好处是什么？"
@@ -33,7 +33,7 @@
       explain: 正好相反，联合类型保证两者只有一个。
 - id: accessible-errors
   type: multiple
-  prompt: 用 `novalidate` 接管错误显示后，哪些做法能让错误对所有用户可见？
+  prompt: 用 `novalidate` 接管错误显示后，哪些做法能让所有用户都感知到错误？
   options:
     - text: 错误文字通过 `aria-describedby` 关联到输入框
       correct: true

@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: HTML 决定页面有什么，CSS 决定它们长什么样、放在哪里。对有编程背景的人来说，CSS 最难的往往不是语法，而是布局：元素为什么挤在一起、为什么换行、为什么不居中。现代 CSS 有两个专门的布局工具：Flexbox 沿一条轴排列一组元素（导航栏、按钮组），Grid 同时控制行和列（卡片网格、页面框架）。这一课先用最短的篇幅讲清 CSS 的基本规则和盒模型，再讲这两个布局工具。
 objectives:
   - 读懂 CSS 规则：选择器、属性与值，知道层叠与优先级的基本规则
@@ -38,7 +38,11 @@ references:
 }
 ```
 
-常用的选择器：元素名 `p`、类 `.card`、id `#main`、后代 `.card h2`（`.card` 里面的所有 `h2`）、子元素 `.list > li`、状态 `a:hover`。一个元素可以同时被多条规则选中，冲突时，**更具体**的选择器获胜（id 比类具体，类比元素名具体）；一样具体时，**后写**的获胜。实际项目里尽量用类选择器，让优先级保持简单。
+样式表通常写在单独的 `.css` 文件里，用 HTML 的 `<link rel="stylesheet" href="./style.css">` 引入。
+
+常用的选择器：元素名 `p`、类 `.card`、id `#main`、后代 `.card h2`（`.card` 里面的所有 `h2`）、子元素 `.list > li`、状态 `a:hover`、属性 `input[type="checkbox"]`、所有元素 `*`。用逗号分隔的 `h1, h2` 表示“同时选中这两类”。一个元素可以同时被多条规则选中，冲突时，**更具体**的选择器获胜（id 比类具体，类比元素名具体）；一样具体时，**后写**的获胜。实际项目里尽量用类选择器，让优先级保持简单。
+
+几个写法上的约定：长度单位最常用 `px`（像素）和 `rem`（根元素字号的倍数，默认 1rem = 16px，下一课讲为什么推荐它）；`margin`、`padding` 这类属性可以一次写多个值：两个值是“上下 左右”（`margin: 10px 0`），四个值按顺时针“上 右 下 左”。
 
 每个元素都是一个矩形的**盒子**，从内到外依次是：内容（content）、内边距（padding）、边框（border）、外边距（margin）。默认情况下，`width` 只指内容的宽度，padding 和 border 会加在外面，这经常让人算错尺寸。几乎所有现代项目都会把它改成 `box-sizing: border-box`：`width` 包含 padding 和 border。
 
@@ -89,7 +93,7 @@ for (const id of ['content-box', 'border-box']) {
 | --- | --- |
 | `flex-direction` | 主轴方向：`row` 或 `column` |
 | `justify-content` | 项目在**主轴**上怎么分布：`flex-start`、`center`、`space-between`… |
-| `align-items` | 项目在**交叉轴**上怎么对齐：默认 `stretch`（拉伸到一样高），还有 `center`、`flex-start`… |
+| `align-items` | 项目在**交叉轴**上怎么对齐：默认效果是拉伸到一样高（初始值写作 `normal`，在弹性布局中相当于 `stretch`），还有 `center`、`flex-start`… |
 | `gap` | 项目之间的间距 |
 | `flex-wrap: wrap` | 一行放不下时换行（默认不换行，项目会被压缩） |
 
@@ -153,7 +157,7 @@ body { font-family: system-ui, sans-serif; margin: 8px; }
 
 - `200px 1fr`：第一列 200 像素，第二列占据剩余空间。`fr` 是“剩余空间的份数”；
 - `repeat(3, 1fr)`：三列等宽；
-- `repeat(auto-fill, minmax(160px, 1fr))`：每列至少 160 像素，能放几列就放几列，多出来的空间平均分给各列。容器变窄时列数自动减少，**不需要媒体查询**。
+- `repeat(auto-fill, minmax(160px, 1fr))`：每列至少 160 像素，能放几列就放几列，多出来的空间平均分给各列。容器变窄时列数自动减少，**不需要媒体查询**。项目比列数少时，`auto-fill` 会保留空着的列（右侧留白）；换成 `auto-fit`，空列会被折叠，现有的项目拉伸占满整行。
 
 项目按顺序依次填入格子，放满一行就换到下一行；同一行的格子默认一样高。`gap` 同时设置行间距和列间距。
 

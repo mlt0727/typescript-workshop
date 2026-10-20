@@ -6,9 +6,9 @@ title: 一份有结构的菜谱
 
 1. 所有内容放在 `main` 中，菜名“番茄炒蛋”是页面唯一的一级标题；
 2. 第一张图片是成品照片，要有替代文字，内容包含“番茄炒蛋”；第二张图片只是装饰用的分隔线，应该被屏幕阅读器跳过；
-3. “配料”和“步骤”各是一个**以自己的二级标题命名**的区块；
+3. “配料”和“步骤”各是一个区块，区块的名字与它的二级标题相同（最好用 `aria-labelledby` 引用标题）；
 4. 配料是无序列表（4 项）；步骤是有序列表（3 项，顺序不变）；
-5. “小贴士”是一个与正文相关的旁注；
+5. “小贴士”是一个与正文相关的旁注（页面中的 complementary 地标）；
 6. “加入收藏”是一个按钮（这里不需要它做任何事）。
 
 测试会按角色和名称检查页面，例如“名叫‘配料’的区块里有一个列表”。本题不需要写 TypeScript。
@@ -105,11 +105,14 @@ function textsOf(elements: HTMLElement[]): string[] {
   return elements.map((el) => (el.textContent ?? '').trim());
 }
 
-test('内容在 main 中，菜名是唯一的一级标题', () => {
+test('所有内容在 main 中，菜名是唯一的一级标题', () => {
   const main = screen.getByRole('main');
   expect(main).toContainElement(screen.getByRole('heading', { level: 1, name: '番茄炒蛋' }));
   expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
   expect(main).toContainElement(screen.getByRole('button', { name: '加入收藏' }));
+  for (const img of document.querySelectorAll('img')) expect(main).toContainElement(img);
+  for (const name of ['配料', '步骤']) expect(main).toContainElement(screen.getByRole('region', { name }));
+  expect(main).toContainElement(screen.getByText(/先炒蛋再炒番茄/));
 });
 
 test('成品照片有替代文字，装饰图片被跳过', () => {
@@ -140,7 +143,12 @@ test('步骤是一个以二级标题命名的区块，里面是有序列表', ()
 });
 
 test('小贴士是旁注', () => {
-  expect(screen.getByRole('complementary')).toHaveTextContent('先炒蛋再炒番茄，蛋会更嫩');
+  // aside 放在 article、section 等区块中、又没有名字时，浏览器不把它当作地标
+  const asides = screen
+    .getAllByRole('complementary')
+    .filter((el) => el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby') || !el.parentElement?.closest('article, aside, nav, section'));
+  expect(asides).toHaveLength(1);
+  expect(asides[0]).toHaveTextContent('先炒蛋再炒番茄，蛋会更嫩');
 });
 
 test('加入收藏是按钮', () => {
@@ -162,7 +170,7 @@ test('加入收藏是按钮', () => {
 
 - **区块的名字**：`<section>` 本身只是一个普通的分组，只有通过 `aria-labelledby`（或 `aria-label`）得到名字后，才是一个 region 地标。引用标题的 `id`，名字就和屏幕上看到的标题一致，修改标题时也不用同步修改别处。
 - **列表的类型**：`<ul>` 和 `<ol>` 的角色都是 list，区别在于含义：步骤的顺序很重要，用 `<ol>`，浏览器还会自动编号；配料没有顺序，用 `<ul>`。
-- **图片的替代文字**：有内容的图片要描述它传达的信息；纯装饰的图片写 `alt=""`，它的角色变成 presentation，屏幕阅读器会跳过它。完全省略 `alt` 是另一回事：屏幕阅读器不知道它是装饰，可能会读出文件名，这里就会读出一长串 data URL。
+- **图片的替代文字**：有内容的图片要描述它传达的信息；纯装饰的图片写 `alt=""`，它的角色变成 presentation，屏幕阅读器会跳过它。完全省略 `alt` 是另一回事：屏幕阅读器不知道它是装饰，可能读出文件名（这里是一长串 data URL），也可能只读出“图片”“未标记的图形”，用户无从得知图片的内容。
 - **旁注**：`<aside>` 表示和正文相关但可以独立出来的内容，例如小贴士、相关链接。
 
 测试中的 `getByRole('region', { name: '配料' })` 正是屏幕阅读器用户的视角：“跳到名叫‘配料’的区块”。
@@ -202,9 +210,9 @@ test('加入收藏是按钮', () => {
             <li>倒回鸡蛋，加盐和葱花，翻炒均匀。</li>
           </ol>
         </section>
-        <aside>小贴士：先炒蛋再炒番茄，蛋会更嫩。</aside>
         <button type="button">加入收藏</button>
       </article>
+      <aside>小贴士：先炒蛋再炒番茄，蛋会更嫩。</aside>
     </main>
   </body>
 </html>

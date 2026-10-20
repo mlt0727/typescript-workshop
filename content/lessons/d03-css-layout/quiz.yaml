@@ -26,9 +26,9 @@
   options:
     - text: 每列至少 200px，能放几列就放几列，剩余空间平均分给各列
       correct: true
-      explain: 容器变宽时列数增加，变窄时减少，不需要媒体查询。
+      explain: 容器变宽时列数增加，变窄时减少，不需要媒体查询。（项目少于列数时，auto-fill 会保留空列；auto-fit 会折叠空列。）
     - text: 固定 200px 宽的列，放满为止，右边留出空白
-      explain: "`1fr` 让列可以变宽，剩余空间会分给各列，不会留在右边。"
+      explain: "`1fr` 让列可以变宽，列宽不会固定在 200px，多出的空间分给所有列。"
     - text: 每列最多 200px
       explain: "`minmax(200px, 1fr)` 中 200px 是最小值，最大值是 `1fr`。"
 - id: flex-or-grid

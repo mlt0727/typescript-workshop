@@ -17,7 +17,7 @@ mode: ts
 | `password` | 至少 8 个字符（**不**去掉空白） | `密码至少 8 个字符` |
 | `confirm` | 与 `password` 完全相同 | `两次输入的密码不一致` |
 
-成功时 `value` 中是去掉首尾空白的 `name`、`email`，数字类型的 `age`，以及原样的 `password`。字段的值不是字符串（例如是文件）或者不存在时，当作空字符串处理。
+“字符”按字符串的 `length` 计算（和 HTML 的 `maxlength` 一样，一个 emoji 可能算 2 个）。成功时 `value` 中是去掉首尾空白的 `name`、`email`，数字类型的 `age`，以及原样的 `password`。字段的值不是字符串（例如是文件）或者不存在时，当作空字符串处理。
 
 :::files{role=starter}
 ```ts file=parse.ts

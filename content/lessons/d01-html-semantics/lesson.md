@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 网页的内容写在 HTML 里。HTML 不只是“让东西显示出来”：每个元素都带着含义（语义），浏览器、屏幕阅读器、搜索引擎，以及本课程的测试，都依靠这些含义理解页面。全部用 div 也能做得“看起来一样”，但这样的按钮无法用键盘操作，导航无法被辅助技术找到，测试也无法按角色查询。这一课讲 HTML 文档的结构，以及怎样为内容选择正确的元素。
 objectives:
   - 读懂 HTML 文档的基本结构：doctype、lang、head 中的 meta 与 title、body
@@ -78,9 +78,15 @@ HTML 的解析器很宽容：标签写错了通常不会报错，浏览器会按
 | `<aside>` | complementary | 与主要内容相关的旁注、侧栏 |
 | `<footer>` | contentinfo | 页面底部：版权、联系方式等 |
 | `<section>` | region（有名字时） | 一个有标题的主题区块 |
-| `<article>` | article | 可以独立存在的内容，例如一篇文章、一条评论 |
+| `<search>` | search | 搜索功能所在的区域（2023 年起各主流浏览器都已支持） |
 
-两个细节：`<header>` 和 `<footer>` 只有直接属于页面（不在 `article`、`aside`、`main`、`nav`、`section` 之内）时才是 banner 和 contentinfo；写在一篇文章里时，它们只是这篇文章的头部和尾部。`<section>` 只有通过 `aria-labelledby` 或 `aria-label` 得到名字时，才是一个 region 地标。
+几个细节：
+
+- `<header>` 和 `<footer>` 只有直接属于页面（不在 `article`、`aside`、`main`、`nav`、`section` 之内）时才是 banner 和 contentinfo；写在一篇文章里时，它们只是这篇文章的头部和尾部。
+- `<aside>` 类似：在页面或 `<main>` 中是 complementary 地标；放在 `article`、`section` 这类区块里时，只有给了名字（`aria-label` 等）才是地标，否则只是普通的分组。
+- `<section>` 只有通过 `aria-labelledby` 或 `aria-label` 得到名字时，才是一个 region 地标；有名字的 `<form>` 也是一个地标。
+
+另一个常用的结构元素 `<article>` 表示可以独立存在的内容（一篇文章、一条评论、一张商品卡片），它的角色是 article，但**不是**地标。
 
 **标题**（`<h1>`～`<h6>`）构成页面的大纲。一般每个页面一个 `<h1>`，下面依次是 `<h2>`、`<h3>`，不要为了字号大小跳级——大小交给 CSS。
 
@@ -126,7 +132,7 @@ header, main, footer, aside, section { border: 1px dashed #999; margin: 6px; pad
 nav ul { display: flex; gap: 12px; list-style: none; padding: 0; }
 ```
 - 虚线框标出了每个地标和区块。去掉 CSS，页面看起来就是普通的文字，但结构仍然在：屏幕阅读器可以直接跳到“主导航”或“课程”区块。
-- 第 9 行：`aria-label` 给导航起了名字。页面上有多个导航时（例如顶部和底部各一个），名字能区分它们。
+- `index.html` 第 9 行：`aria-label` 给导航起了名字。页面上有多个导航时（例如顶部和底部各一个），名字能区分它们。
 - 第 18 行：`aria-labelledby` 引用第 19 行标题的 `id`，让这个 `section` 以“课程”为名，成为一个 region 地标。
 - 第 20 行：步骤有先后顺序，用有序列表 `<ol>`；没有顺序的一组东西用 `<ul>`。
 :::
@@ -139,7 +145,7 @@ nav ul { display: flex; gap: 12px; list-style: none; padding: 0; }
 - 它没有 button 角色，屏幕阅读器不知道它能点；
 - 测试中的 `getByRole('button')` 找不到它。
 
-选择的原则：**执行一个操作**（提交、打开对话框、切换状态）用 `<button>`；**去往一个地方**（另一个页面、页面中的某个位置）用带 `href` 的 `<a>`。表单外的按钮要写 `type="button"`：`<button>` 默认的 `type` 是 `submit`，放在表单里会提交表单（下一课详讲）。
+选择的原则：**执行一个操作**（提交、打开对话框、切换状态）用 `<button>`；**去往一个地方**（另一个页面、页面中的某个位置）用带 `href` 的 `<a>`。不用于提交表单的按钮，一律写上 `type="button"`：`<button>` 默认的 `type` 是 `submit`，一旦它被放进表单，点击就会提交表单（下一课详讲）。
 
 :::playground{#button-vs-div}
 ```html file=index.html
@@ -174,7 +180,7 @@ for (const id of ['#fake', '#real']) {
 ```
 - 用鼠标点击，两个“按钮”都会计数。
 - 现在点一下预览区域，按 Tab 键：焦点会跳过 `div`，只落在真按钮上；按 Enter 或空格，真按钮被触发。`div` 用键盘完全无法使用。
-- 第 6 行用了可选链 `?.`（a08）：找不到元素时直接跳过。这里只是演示，正式代码应该像第 2 行那样检查。
+- `main.ts` 第 6 行用了可选链 `?.`（a08）：找不到元素时直接跳过。这里只是演示，正式代码应该像第 2 行那样检查。
 :::
 
 ## 角色与测试

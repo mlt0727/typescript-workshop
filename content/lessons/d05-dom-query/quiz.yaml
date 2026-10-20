@@ -38,10 +38,10 @@
   type: single
   prompt: "`<li data-price=\"12\">` 中，`li.dataset.price` 的值和类型是什么？"
   options:
-    - text: 字符串 `\"12\"`，类型是 `string | undefined`
+    - text: '字符串 `"12"`，类型是 `string | undefined`'
       correct: true
       explain: data-* 属性的值总是字符串；属性可能不存在，所以类型包含 `undefined`。需要数字时用 `Number()` 转换并检查。
     - text: 数字 `12`，类型是 `number`
       explain: HTML 属性没有数字类型，dataset 不会自动转换。
-    - text: 字符串 `\"12\"`，类型是 `string`
+    - text: '字符串 `"12"`，类型是 `string`'
       explain: TypeScript 不知道页面上的元素有没有这个属性，所以类型包含 `undefined`。

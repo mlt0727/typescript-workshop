@@ -41,11 +41,11 @@ title: 修好注册表单
     <form id="signup">
       <p>
         <label for="email">邮箱</label>
-        <input id="email" type="email" name="email" required />
+        <input id="email" type="email" name="email" autocomplete="email" required />
       </p>
       <p>
         <label for="password">密码</label>
-        <input id="password" type="password" name="password" minlength="8" required />
+        <input id="password" type="password" name="password" autocomplete="new-password" minlength="8" required />
       </p>
       <fieldset>
         <legend>学习方向</legend>
@@ -107,6 +107,8 @@ test('学习方向：一组单选按钮，默认选中前端，只能选一个',
   const frontend = within(group).getByRole('radio', { name: '前端' });
   const fullstack = within(group).getByRole('radio', { name: '全栈' });
   expect(frontend).toBeChecked();
+  expect(frontend).toHaveAttribute('value', 'frontend');
+  expect(frontend).toHaveAttribute('name', 'track');
   await user.click(fullstack);
   expect(fullstack).toBeChecked();
   expect(frontend).not.toBeChecked();
@@ -156,6 +158,8 @@ test('“注册”提交表单；必填项没填时浏览器不提交', async ()
 - 空的必填项、格式不对的邮箱、太短的密码、没勾选的协议，都会让浏览器拒绝提交，并提示用户；
 - 同名的单选按钮自动互斥，`fieldset` 和 `legend` 让屏幕阅读器读出“学习方向，组”；
 - `label` 让每个控件有了名字，测试中的 `getByLabelText` 和 `getByRole(…, { name })` 也因此能找到它们。
+
+参考答案还给邮箱和密码加上了 `autocomplete`，方便浏览器和密码管理器自动填写（测试没有要求）。
 
 最后一个测试展示了提交时浏览器收集的数据：每个控件的 `name` 是键，`value` 是值。复选框如果不写 `value`，勾选后提交的是 `"on"`。
 

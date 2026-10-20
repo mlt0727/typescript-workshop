@@ -4011,8 +4011,8 @@
       ]
     },
     "d01-html-semantics": {
-      "verifiedAt": "2026-10-20T11:45:06.412Z",
-      "sourceHash": "88d9e47ce68663a4",
+      "verifiedAt": "2026-10-20T12:29:36.404Z",
+      "sourceHash": "35c36f09a41f3c03",
       "ok": true,
       "checks": [
         {
@@ -4048,7 +4048,7 @@
         {
           "target": "exercise:semantic-page:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面语言是简体中文,顶部 header 中的网站名称是唯一的一级标题,导航在顶部的 header 里，链接放在列表中,文章在 main 中，标题是二级标题，正文是两个段落,“开始学习”是文章中的真按钮,版权信息在页面底部的 footer 中)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面语言是简体中文,顶部 header 中的网站名称是唯一的一级标题,导航在顶部的 header 里，链接放在列表中,文章在 main 中，标题是二级标题，正文是两个段落,“开始学习”是文章末尾的真按钮,版权信息在页面底部的 footer 中)"
         },
         {
           "target": "exercise:semantic-page:solution:solution",
@@ -4063,7 +4063,7 @@
         {
           "target": "exercise:semantic-page:wrong:div-button",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(“开始学习”是文章中的真按钮)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(“开始学习”是文章末尾的真按钮)"
         },
         {
           "target": "exercise:semantic-page:wrong:links-without-list",
@@ -4083,7 +4083,7 @@
         {
           "target": "exercise:recipe:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(内容在 main 中，菜名是唯一的一级标题,成品照片有替代文字，装饰图片被跳过,配料是一个以二级标题命名的区块，里面是无序列表,步骤是一个以二级标题命名的区块，里面是有序列表,小贴士是旁注,加入收藏是按钮)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(所有内容在 main 中，菜名是唯一的一级标题,成品照片有替代文字，装饰图片被跳过,配料是一个以二级标题命名的区块，里面是无序列表,步骤是一个以二级标题命名的区块，里面是有序列表,小贴士是旁注,加入收藏是按钮)"
         },
         {
           "target": "exercise:recipe:solution:solution",
@@ -4098,7 +4098,7 @@
         {
           "target": "exercise:recipe:wrong:unnamed-sections",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(配料是一个以二级标题命名的区块，里面是无序列表,步骤是一个以二级标题命名的区块，里面是有序列表)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(所有内容在 main 中，菜名是唯一的一级标题,配料是一个以二级标题命名的区块，里面是无序列表,步骤是一个以二级标题命名的区块，里面是有序列表)"
         },
         {
           "target": "exercise:recipe:wrong:unordered-steps",
@@ -4118,8 +4118,8 @@
       ]
     },
     "d02-html-forms": {
-      "verifiedAt": "2026-10-20T11:45:11.969Z",
-      "sourceHash": "10f6444d8395406d",
+      "verifiedAt": "2026-10-20T12:29:42.058Z",
+      "sourceHash": "31169b0fc9ebd3f0",
       "ok": true,
       "checks": [
         {
@@ -4230,8 +4230,8 @@
       ]
     },
     "d03-css-layout": {
-      "verifiedAt": "2026-10-20T11:45:13.711Z",
-      "sourceHash": "82f5c0087dbbf3d9",
+      "verifiedAt": "2026-10-20T12:29:43.761Z",
+      "sourceHash": "3a0e8427cbadc259",
       "ok": true,
       "checks": [
         {
@@ -4302,7 +4302,7 @@
         {
           "target": "exercise:card-grid:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面宽 1024 像素时，一行放 4 张卡片,页面宽 800 像素时，一行放 3 张卡片,页面宽 600 像素时，一行放 2 张卡片,行间距和列间距都是 16px)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面宽 1024 像素时，一行放 4 张卡片,页面宽 900 像素时，一行放 3 张卡片,页面宽 800 像素时，一行放 3 张卡片,页面宽 600 像素时，一行放 2 张卡片,行间距和列间距都是 16px)"
         },
         {
           "target": "exercise:card-grid:solution:solution",
@@ -4317,7 +4317,7 @@
         {
           "target": "exercise:card-grid:wrong:fixed-columns",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面宽 800 像素时，一行放 3 张卡片,页面宽 600 像素时，一行放 2 张卡片,页面宽 375 像素时，一行放 1 张卡片)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面宽 900 像素时，一行放 3 张卡片,页面宽 800 像素时，一行放 3 张卡片,页面宽 600 像素时，一行放 2 张卡片,页面宽 375 像素时，一行放 1 张卡片)"
         },
         {
           "target": "exercise:card-grid:wrong:flex-wrap-grow",
@@ -4327,7 +4327,7 @@
         {
           "target": "exercise:card-grid:wrong:no-gap",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(行间距和列间距都是 16px)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面宽 900 像素时，一行放 3 张卡片,行间距和列间距都是 16px)"
         },
         {
           "target": "exercise:card-grid:wrong:align-start",
@@ -4337,8 +4337,8 @@
       ]
     },
     "d04-responsive-a11y": {
-      "verifiedAt": "2026-10-20T11:47:54.447Z",
-      "sourceHash": "1b701851e7594db4",
+      "verifiedAt": "2026-10-20T12:29:45.605Z",
+      "sourceHash": "d5c55e9c8683225e",
       "ok": true,
       "checks": [
         {
@@ -4409,7 +4409,7 @@
         {
           "target": "exercise:a11y-fixes:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(说明文字的对比度至少 4.5:1,用键盘聚焦“关闭通知”按钮时有清晰的轮廓,用键盘聚焦“订阅”按钮时有清晰的轮廓,关闭按钮有名字，可点击区域至少 24×24 像素,邮箱输入框有标签,邮箱错误不只用颜色表示)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(说明文字的对比度至少 4.5:1,用键盘聚焦“关闭通知”按钮时有清晰的轮廓,用键盘聚焦“订阅”按钮时有清晰的轮廓,关闭按钮有名字，可点击区域至少 24×24 像素,邮箱输入框有可见的标签,邮箱错误不只用颜色表示)"
         },
         {
           "target": "exercise:a11y-fixes:solution:solution",
@@ -4440,12 +4440,17 @@
           "target": "exercise:a11y-fixes:wrong:color-only-error",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(邮箱错误不只用颜色表示)"
+        },
+        {
+          "target": "exercise:a11y-fixes:wrong:oklch-light-gray",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(说明文字的对比度至少 4.5:1)"
         }
       ]
     },
     "d05-dom-query": {
-      "verifiedAt": "2026-10-20T11:51:33.782Z",
-      "sourceHash": "da2e0fffbb2b16fa",
+      "verifiedAt": "2026-10-20T12:29:48.348Z",
+      "sourceHash": "b7b85ddfec4b1f46",
       "ok": true,
       "checks": [
         {
@@ -4551,8 +4556,8 @@
       ]
     },
     "d06-dom-create-update": {
-      "verifiedAt": "2026-10-20T11:54:47.575Z",
-      "sourceHash": "24184152ca397361",
+      "verifiedAt": "2026-10-20T12:29:51.298Z",
+      "sourceHash": "ebe5cad9ffb7f976",
       "ok": true,
       "checks": [
         {
@@ -4584,6 +4589,16 @@
           "target": "playground:attr-vs-prop:run",
           "ok": true,
           "detail": "期望 done，实际 done；输出：[log] 当前值（property）： Grace | [log] 初始值（attribute）： Ada"
+        },
+        {
+          "target": "playground:template:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:template:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 卡片数量： 2"
         },
         {
           "target": "exercise:render-todos:starter:starter",
@@ -4623,7 +4638,7 @@
         {
           "target": "exercise:sync-list:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(复用已有的元素：保留用户输入的备注,新增、删除、重新排序,名称变化时更新文字和 aria-label，元素仍然复用)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(复用已有的元素：保留用户输入的备注,新增、删除、重新排序,名称变化时更新文字和 aria-label，元素仍然复用,只在必要时移动元素：正在输入的输入框保持焦点)"
         },
         {
           "target": "exercise:sync-list:solution:solution",
@@ -4631,29 +4646,34 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:sync-list:alt:append-in-order",
+          "target": "exercise:sync-list:alt:cursor-walk",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
+          "target": "exercise:sync-list:wrong:reinsert-all",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(只在必要时移动元素：正在输入的输入框保持焦点)"
+        },
+        {
           "target": "exercise:sync-list:wrong:rebuild-everything",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(复用已有的元素：保留用户输入的备注,新增、删除、重新排序,名称变化时更新文字和 aria-label，元素仍然复用)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(复用已有的元素：保留用户输入的备注,新增、删除、重新排序,名称变化时更新文字和 aria-label，元素仍然复用,只在必要时移动元素：正在输入的输入框保持焦点)"
         },
         {
           "target": "exercise:sync-list:wrong:match-by-index",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(复用已有的元素：保留用户输入的备注,新增、删除、重新排序)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(复用已有的元素：保留用户输入的备注,新增、删除、重新排序,只在必要时移动元素：正在输入的输入框保持焦点)"
         },
         {
           "target": "exercise:sync-list:wrong:keep-stale",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(新增、删除、重新排序,更新为空数组时清空列表)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(新增、删除、重新排序,只在必要时移动元素：正在输入的输入框保持焦点,更新为空数组时清空列表)"
         },
         {
           "target": "exercise:sync-list:wrong:no-label-update",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(名称变化时更新文字和 aria-label，元素仍然复用)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(名称变化时更新文字和 aria-label，元素仍然复用,只在必要时移动元素：正在输入的输入框保持焦点)"
         }
       ]
     },
@@ -4765,8 +4785,8 @@
       ]
     },
     "d08-bubbling-delegation": {
-      "verifiedAt": "2026-10-20T11:58:41.396Z",
-      "sourceHash": "162bee460a7a2b30",
+      "verifiedAt": "2026-10-20T12:29:55.465Z",
+      "sourceHash": "845d7d4b1dee89fc",
       "ok": true,
       "checks": [
         {
@@ -4802,7 +4822,7 @@
         {
           "target": "exercise:todo-delegation:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点击“完成”切换 done 和 aria-pressed,点击按钮里的图标同样生效,点击“删除”删除这一项,提交表单：阻止默认行为，添加到末尾并清空输入框,新添加的项也能完成和删除,空白输入不添加；文字原样显示)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点击“完成”切换 done 和 aria-pressed,点击按钮里的图标同样生效,点击“删除”删除这一项,提交表单：阻止默认行为，添加到末尾并清空输入框,不经过表单、直接插入列表的项也能完成和删除（事件委托）,新添加的项也能完成和删除,空白输入不添加；文字原样显示)"
         },
         {
           "target": "exercise:todo-delegation:solution:solution",
@@ -4817,7 +4837,7 @@
         {
           "target": "exercise:todo-delegation:wrong:per-button-listeners",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(新添加的项也能完成和删除)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(不经过表单、直接插入列表的项也能完成和删除（事件委托）,新添加的项也能完成和删除)"
         },
         {
           "target": "exercise:todo-delegation:wrong:target-without-closest",
@@ -4872,8 +4892,8 @@
       ]
     },
     "d09-form-validation": {
-      "verifiedAt": "2026-10-20T12:02:54.270Z",
-      "sourceHash": "510d7f6275431c0e",
+      "verifiedAt": "2026-10-20T12:30:01.809Z",
+      "sourceHash": "01065e1fc63010b6",
       "ok": true,
       "checks": [
         {
@@ -4964,8 +4984,8 @@
       ]
     },
     "d10-state-and-render": {
-      "verifiedAt": "2026-10-20T12:07:23.675Z",
-      "sourceHash": "2c1e560316984353",
+      "verifiedAt": "2026-10-20T12:30:03.842Z",
+      "sourceHash": "470022db270eeb23",
       "ok": true,
       "checks": [
         {
@@ -5026,7 +5046,7 @@
         {
           "target": "exercise:todo-app:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面加载后渲染初始状态,勾选、筛选、删除,添加：清空输入框；空白输入不添加，也不产生历史,清除已完成；没有已完成的项时按钮禁用,撤销一步步恢复到初始状态)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面加载后渲染初始状态,勾选、筛选、删除,添加：阻止默认提交；清空输入框；空白输入不添加，也不产生历史,清除已完成；没有已完成的项时按钮禁用,撤销一步步恢复到初始状态)"
         },
         {
           "target": "exercise:todo-app:solution:solution",
@@ -5041,7 +5061,7 @@
         {
           "target": "exercise:todo-app:wrong:history-always",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加：清空输入框；空白输入不添加，也不产生历史)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加：阻止默认提交；清空输入框；空白输入不添加，也不产生历史)"
         },
         {
           "target": "exercise:todo-app:wrong:dom-as-state",

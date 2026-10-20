@@ -122,6 +122,7 @@ test('导航在顶部的 header 里，链接放在列表中', () => {
   const links = within(nav)
     .getAllByRole('listitem')
     .map((item) => within(item).getByRole('link'));
+  expect(within(nav).getAllByRole('link'), '导航中的链接都应该在列表里').toHaveLength(links.length);
   expect(links.map((a) => a.textContent)).toEqual(['首页', '课程', '关于']);
   expect(links.map((a) => a.getAttribute('href'))).toEqual(['#home', '#lessons', '#about']);
 });
@@ -133,10 +134,15 @@ test('文章在 main 中，标题是二级标题，正文是两个段落', () =>
   expect(paragraphs.map((p) => p.textContent)).toEqual(['不会重新赋值的变量用 const 声明。', '需要重新赋值时，用 let。']);
 });
 
-test('“开始学习”是文章中的真按钮', () => {
+test('“开始学习”是文章末尾的真按钮', () => {
   const button = screen.getByRole('button', { name: '开始学习' });
   expect(button).toHaveAttribute('type', 'button');
-  expect(within(screen.getByRole('main')).getByRole('article')).toContainElement(button);
+  const article = within(screen.getByRole('main')).getByRole('article');
+  expect(article).toContainElement(button);
+  for (const p of within(article).getAllByRole('paragraph')) {
+    // 按钮在每个段落之后
+    expect(p.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  }
 });
 
 test('版权信息在页面底部的 footer 中', () => {

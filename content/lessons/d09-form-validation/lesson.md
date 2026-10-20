@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: 浏览器自带的表单验证（d02）能处理“必填”“格式”这类简单规则，但真实的表单还需要更多：两次输入的密码要一致、年龄要转换成数字、错误提示要用自己的文案显示在合适的位置。这一课用 TypeScript 接管表单：把 FormData 中类型不确定的值解析成明确的类型，把“成功或失败”表示成可辨识联合，再把错误以可访问的方式显示出来。
 objectives:
   - 从 FormData 读取值，处理 FormDataEntryValue（string | File）和 null
@@ -43,7 +43,7 @@ references:
       <p><label>昵称 <input name="name" value="  Ada  " /></label></p>
       <p><label>年龄 <input name="age" type="number" value="36" /></label></p>
       <p><label>头像 <input name="avatar" type="file" /></label></p>
-      <button>提交</button>
+      <button type="submit">提交</button>
     </form>
     <script type="module" src="./main.ts"></script>
   </body>
@@ -72,6 +72,7 @@ form.addEventListener('submit', (event) => {
 - 点击“提交”：`age` 是字符串 `'36'`；没有选择文件时，`avatar` 的值是一个空的 `File` 对象，而不是 `null`。
 - 第 1–4 行：`text` 把 `FormDataEntryValue | null` 统一变成去掉首尾空白的字符串，文件和缺失的字段都当作空字符串。
 - 把年龄清空再提交：`Number('')` 是 `0`，而不是“没填”。转换数字之前要先检查空字符串，挑战题会处理这个问题。
+- 再在年龄框里输入 `1e`（不是合法的数字）：`type="number"` 的输入框此时的值同样是空字符串 `""`。只看值无法区分“没填”和“填错”，需要时读取 `input.validity.badInput`。
 :::
 
 ## 解析的结果：成功的数据，或者错误
@@ -87,7 +88,7 @@ type ParseResult =
   | { ok: false; errors: Partial<Record<Field, string>> };
 ```
 
-调用方检查 `result.ok` 之后，TypeScript 就知道该读 `value` 还是 `errors`。`Partial<Record<Field, string>>` 表示“每个字段最多一条错误消息”（`Record` 与 `Partial` 在 C 阶段详讲，这里理解成“键是这些字段、值是字符串、每个键都可以没有”即可）。
+调用方检查 `result.ok` 之后，TypeScript 就知道该读 `value` 还是 `errors`。`Partial<Record<Field, string>>` 表示“每个字段最多一条错误消息”（`Record` 见 b01，`Partial` 见 b03：合起来就是“键是这些字段、值是字符串、每个键都可以没有”）。
 
 解析函数不碰 DOM，只处理数据，所以很容易测试：小任务就是写这样一个函数。
 
@@ -110,7 +111,7 @@ HTML 属性的验证结果也可以在 TypeScript 中读取和扩展：
     <form id="password-form">
       <p><label>密码 <input id="password" type="password" minlength="8" required /></label></p>
       <p><label>确认密码 <input id="confirm" type="password" required /></label></p>
-      <button>修改密码</button>
+      <button type="submit">修改密码</button>
     </form>
     <script type="module" src="./main.ts"></script>
   </body>
@@ -137,7 +138,7 @@ form.addEventListener('submit', (event) => {
 });
 ```
 - 两个框分别输入 `abcdefgh` 和 `abcdefgx`，点“修改密码”：浏览器拦下提交，在确认框旁显示“两次输入的密码不一致”。改成一致后再提交，输出“提交成功”。
-- 第 8 行用箭头函数定义 `checkMatch`：它在第 4 行的检查之后创建，可以直接使用已经收窄的 `again` 和 `password`。如果改用 `function checkMatch() { … }` 声明，TypeScript 会报告它们可能是 `null`：函数声明会被提升到文件开头，可能在检查之前就被调用，所以 TypeScript 不把检查的结果带进去。
+- 第 8 行用箭头函数定义 `checkMatch`：它是一个函数**表达式**，在第 4 行的检查之后创建，可以直接使用已经收窄的 `again` 和 `password`。如果改用 `function checkMatch() { … }` **声明**，TypeScript 会认为它们仍是检查之前的 `Element | null`，报告“可能是 null”以及“`Element` 上没有 `value`”：函数声明会被提升到文件开头，可能在检查之前就被调用，所以 TypeScript 不把检查的结果带进去。
 :::
 
 ## 接管错误显示
@@ -147,7 +148,7 @@ form.addEventListener('submit', (event) => {
 - 错误文字显示在对应控件旁边，并用 `aria-describedby` 关联到控件；
 - 不合格的控件设置 `aria-invalid="true"`，改正后移除；
 - 提交失败后，把焦点移到**第一个**有错误的控件上，键盘和屏幕阅读器用户能立刻知道问题在哪；
-- 提交成功等状态消息放在 `role="status"` 的元素里，屏幕阅读器会在内容变化时读出它，而不需要移动焦点。
+- 提交成功等状态消息放在 `role="status"` 的元素里，屏幕阅读器会在内容变化时读出它，而不需要移动焦点。这个元素要在内容变化**之前**就已经在页面上（可以先是空的）；另外，连续两次设置相同的文字，屏幕阅读器可能不会重复朗读。
 
 ::exercise{#parse-signup}
 

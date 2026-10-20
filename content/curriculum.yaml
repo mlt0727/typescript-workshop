@@ -89,16 +89,16 @@ stages:
     title: HTML、CSS 与 DOM
     summary: 足以完成项目的 HTML/CSS，以及类型安全的 DOM 操作、事件与表单。
     lessons:
-      - { id: d01-html-semantics, title: HTML 语义结构, status: draft, prerequisites: [a01-where-ts-runs] }
-      - { id: d02-html-forms, title: 表单元素与标签, status: draft, prerequisites: [d01-html-semantics] }
-      - { id: d03-css-layout, title: CSS 布局：Flexbox 与 Grid, status: draft, prerequisites: [d01-html-semantics] }
-      - { id: d04-responsive-a11y, title: 响应式与可访问性基础, status: draft, prerequisites: [d03-css-layout, d02-html-forms] }
-      - { id: d05-dom-query, title: DOM 查询、null 检查与元素类型收窄, status: draft, prerequisites: [d01-html-semantics, b07-narrowing] }
-      - { id: d06-dom-create-update, title: 创建与更新节点, status: draft, prerequisites: [d05-dom-query] }
+      - { id: d01-html-semantics, title: HTML 语义结构, status: published, prerequisites: [a01-where-ts-runs] }
+      - { id: d02-html-forms, title: 表单元素与标签, status: published, prerequisites: [d01-html-semantics] }
+      - { id: d03-css-layout, title: CSS 布局：Flexbox 与 Grid, status: published, prerequisites: [d01-html-semantics] }
+      - { id: d04-responsive-a11y, title: 响应式与可访问性基础, status: published, prerequisites: [d03-css-layout, d02-html-forms] }
+      - { id: d05-dom-query, title: DOM 查询、null 检查与元素类型收窄, status: published, prerequisites: [d01-html-semantics, b07-narrowing] }
+      - { id: d06-dom-create-update, title: 创建与更新节点, status: published, prerequisites: [d05-dom-query] }
       - { id: d07-events, title: 事件监听、target 与 currentTarget, status: published, prerequisites: [d06-dom-create-update, b10-function-types] }
-      - { id: d08-bubbling-delegation, title: 冒泡、委托、preventDefault 与清理监听器, status: draft, prerequisites: [d07-events] }
-      - { id: d09-form-validation, title: 类型安全的表单输入与验证, status: draft, prerequisites: [d08-bubbling-delegation, d02-html-forms] }
-      - { id: d10-state-and-render, title: 状态与渲染：从数据到界面, status: draft, prerequisites: [d09-form-validation, b09-discriminated-unions] }
+      - { id: d08-bubbling-delegation, title: 冒泡、委托、preventDefault 与清理监听器, status: published, prerequisites: [d07-events] }
+      - { id: d09-form-validation, title: 类型安全的表单输入与验证, status: published, prerequisites: [d08-bubbling-delegation, d02-html-forms] }
+      - { id: d10-state-and-render, title: 状态与渲染：从数据到界面, status: published, prerequisites: [d09-form-validation, b09-discriminated-unions] }
 
   - id: F
     title: 工程化、测试与调试

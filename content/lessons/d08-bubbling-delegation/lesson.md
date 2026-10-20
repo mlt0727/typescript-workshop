@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 上一课的监听器都直接挂在目标元素上。但一个列表可能有几百项，而且项目会被动态地添加和删除，给每一项单独挂监听器既浪费，又容易漏掉新加的元素。浏览器的事件会沿着 DOM 树传播，利用这一点，只在外层挂一个监听器就能处理所有子元素的事件，这就是事件委托。这一课还讲如何阻止浏览器的默认行为（链接跳转、表单提交），以及哪些事件不会冒泡。
 objectives:
   - 理解事件传播的三个阶段：捕获、目标、冒泡，知道 capture 选项的作用
@@ -32,7 +32,7 @@ references:
 2. **目标**：到达被点击的元素本身；
 3. **冒泡**：再从目标向上，经过每一层祖先，回到 `window`。
 
-`addEventListener` 默认在**冒泡**阶段调用监听器；第三个参数传 `{ capture: true }`（或 `true`），则在**捕获**阶段调用。绝大多数时候用冒泡就够了。`event.eventPhase` 是当前阶段的编号：1 捕获、2 目标、3 冒泡。
+`addEventListener` 默认在**冒泡**阶段调用监听器；第三个参数传 `{ capture: true }`（或 `true`），则在**捕获**阶段调用。绝大多数时候用冒泡就够了。`event.eventPhase` 是当前阶段的编号：1 捕获、2 目标、3 冒泡。在目标元素自己身上，捕获阶段的监听器总是先于普通监听器执行，与注册的先后无关。
 
 :::playground{#phases}
 ```html file=index.html
@@ -174,22 +174,39 @@ locked.addEventListener('click', (event) => {
 });
 ```
 - 依次点击链接、“搜索”按钮（或在输入框里按 Enter）、复选框，观察输出：三种默认行为都被阻止了。
-- 处理链接点击时要谨慎：用户可能想用中键或 Ctrl+点击在新标签页中打开，一律阻止会破坏这些习惯。真正执行操作的应该是按钮，链接就让它跳转。
+- 处理链接点击时要谨慎：用户可能想用 Ctrl/⌘+点击或 Shift+点击在新标签页、新窗口中打开，这些操作同样会触发 `click`，一律阻止会破坏这些习惯（中键点击触发的是 `auxclick`，不受影响）。真正执行操作的应该是按钮，链接就让它跳转。
 :::
 
 ## 不冒泡的事件
 
 少数事件不会冒泡，在外层监听时收不到：
 
-| 不冒泡 | 会冒泡的替代 |
+| 不冒泡 | 替代做法 |
 | --- | --- |
-| `focus`、`blur` | `focusin`、`focusout` |
-| `mouseenter`、`mouseleave` | `mouseover`、`mouseout`（进出子元素时也会触发） |
-| `load`、`error`（图片等资源）、`invalid`（d02）、`scroll`（元素上的） | 在捕获阶段监听：`{ capture: true }` |
+| `focus`、`blur` | 改用会冒泡的 `focusin`、`focusout` |
+| `mouseenter`、`mouseleave` | 改用会冒泡的 `mouseover`、`mouseout`（进出子元素时也会触发） |
+| `load`、`error`（图片等资源）、`invalid`（d02）、`scroll`（元素上的） | 在外层的捕获阶段监听：`{ capture: true }`（捕获阶段对所有事件都有效） |
 
 所以对一组输入框做事件委托时，监听 `focusin`/`focusout`，而不是 `focus`/`blur`。
 
-另外，`touchstart`、`wheel` 这类事件的监听器可以声明 `{ passive: true }`，表示自己不会调用 `preventDefault()`，浏览器就不必等待监听器执行完再滚动页面，滚动更流畅。
+另外，`touchstart`、`wheel` 这类事件的监听器可以声明 `{ passive: true }`，表示自己不会调用 `preventDefault()`，浏览器就不必等待监听器执行完再滚动页面，滚动更流畅。挂在 `window`、`document`、`body` 上的 `touchstart`、`touchmove`、`wheel` 监听器默认就是 passive 的；在这些位置确实要阻止滚动时，必须显式写 `{ passive: false }`。
+
+## 清理监听器
+
+委托让监听器的数量不再随项数增长，但挂在容器上的监听器本身仍然一直有效。界面中的一部分被关闭或替换时（例如关闭一个弹窗、切换到另一个页面），要把它注册的监听器移除，否则它们会继续响应事件，访问已经不存在的数据。
+
+d07 讲过的 `AbortController` 在这里很方便：一部分界面的所有监听器都用同一个 `signal` 注册，关闭时调用一次 `abort()` 就全部移除。如果你写了一个“挂上监听器”的函数，最好让它**返回一个清理函数**，调用方就不必关心内部用的是哪种方式（挑战题就是这样设计的；React 的 Effect 也采用同样的约定，G 阶段会讲）。
+
+```ts
+function setupPanel(panel: HTMLElement): () => void {
+  const controller = new AbortController();
+  panel.addEventListener('click', onClick, { signal: controller.signal });
+  panel.addEventListener('keydown', onKeydown, { signal: controller.signal });
+  return () => controller.abort();
+}
+```
+
+（这里的 `onClick`、`onKeydown` 是在别处定义好的监听函数。）
 
 ::exercise{#todo-delegation}
 
@@ -201,7 +218,7 @@ locked.addEventListener('click', (event) => {
 
 ## 常见错误
 
-- **给列表的每一项单独挂监听器**：新加的项要记得补挂，删除时要记得移除。用事件委托。
+- **给列表的每一项单独挂监听器**：新加的项要记得补挂，整体替换列表之后要全部重挂，监听器的数量也随项数增长。用事件委托。
 - **直接使用 `event.target`**：点中的可能是按钮里面的图标或文字。用 `closest` 找到真正关心的元素。
 - **委托时不检查 `contains`**：`closest` 可能找到容器外面的祖先元素。
 - **处理表单时忘了 `preventDefault()`**：页面会提交并跳转（本平台的沙箱会拦截这种跳转并报告）。

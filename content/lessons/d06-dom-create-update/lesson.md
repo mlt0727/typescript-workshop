@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 找到元素之后，下一步是改变页面：显示一段文字、添加一个列表项、切换一个样式、删除一条记录。DOM 提供了很多方法做这些事，它们之间的差别却很重要：innerHTML 会把字符串当作 HTML 解析，用它显示用户输入的内容会造成安全漏洞；设置属性（attribute）和设置 DOM 属性（property）不总是一回事；每次都清空重建整个列表，会丢掉输入框的焦点和内容。这一课讲创建、插入、更新、删除节点的常用方法和它们的类型。
 objectives:
   - 区分 textContent 与 innerHTML，用 textContent 显示不可信的文字
@@ -117,8 +117,8 @@ console.log([...list.children].map((li) => li.textContent));
 
 - **class**：`el.classList.add('done')`、`remove`、`toggle('done', 条件)`、`contains`。比直接改 `el.style` 更好：样式留在 CSS 里，代码只负责切换状态。
 - **data-* 属性**：`el.dataset.id = 't1'` 会在 HTML 上写出 `data-id="t1"`（d05 讲过读取）。
-- **hidden**：`el.hidden = true` 隐藏元素（等同于 HTML 的 `hidden` 属性）。
-- **DOM 属性与 HTML 属性**：HTML 中写的 `value="Ada"`、`checked` 是**属性**（attribute），表示**初始值**；`input.value`、`input.checked` 是 DOM 对象上的**属性**（property），表示**当前值**。用户输入之后，`input.value` 变了，`getAttribute('value')` 仍然是初始值。读写当前状态时用 DOM 属性；`aria-*` 这类没有对应 DOM 属性的，用 `setAttribute`。
+- **hidden**：`el.hidden = true` 隐藏元素（等同于 HTML 的 `hidden` 属性）。注意：如果 CSS 给这个元素写了 `display: flex` 之类的规则，它会盖过 `hidden` 的效果，元素仍然显示。
+- **DOM 属性与 HTML 属性**：HTML 中写的 `value="Ada"`、`checked` 是**属性**（attribute），表示**初始值**；`input.value`、`input.checked` 是 DOM 对象上的**属性**（property），表示**当前值**。用户输入之后，`input.value` 变了，`getAttribute('value')` 仍然是初始值。读写当前状态时用 DOM 属性；需要初始值时，也有对应的 DOM 属性 `input.defaultValue`、`input.defaultChecked`。`aria-*` 属性多数也有对应的 DOM 属性（例如 `el.ariaPressed`，值同样是字符串），但用 `setAttribute` 更常见；`aria-describedby` 这类引用元素 `id` 的属性只能这样写。
 
 :::playground{#attr-vs-prop}
 ```html file=index.html
@@ -150,26 +150,63 @@ star.addEventListener('click', () => {
 });
 ```
 - 第 7–9 行：改变的是当前值，HTML 属性中的初始值不受影响。表单的“重置”恢复的正是这个初始值（d02）。
-- 第 12–14 行：`aria-pressed` 告诉屏幕阅读器这是一个“按下/未按下”的切换按钮，它没有对应的 DOM 属性，用 `getAttribute`/`setAttribute` 读写，值是字符串。
+- 第 12–14 行：`aria-pressed` 告诉屏幕阅读器这是一个“按下/未按下”的切换按钮。这里用 `getAttribute`/`setAttribute` 读写（也可以用 `star.ariaPressed`），值是字符串 `'true'` 或 `'false'`。
 :::
 
 ## template：重复的结构
 
 每一项结构比较复杂时，用代码一个个 `createElement` 会很长。`<template>` 元素里的内容不会显示，专门用来被复制：
 
-```ts
-const template = document.querySelector('#card-template');
-if (!(template instanceof HTMLTemplateElement)) throw new Error('缺少模板');
-const card = template.content.cloneNode(true); // 深拷贝模板的内容
-```
+模板的内容在 `template.content` 中，它是一个 `DocumentFragment`（一个不在页面上的“节点片段”）。`document.importNode(template.content, true)` 深拷贝出一份新的片段，类型仍然是 `DocumentFragment`；在片段里查询、填入数据，再把它插入页面，片段里的节点就被移动到了页面上。
 
-`cloneNode` 的返回类型是笼统的 `Node`，复制的又是模板内容（一个 `DocumentFragment`），所以通常用 `template.content.firstElementChild?.cloneNode(true)` 取出第一个元素，再用 `instanceof` 收窄后填入数据。挑战题会用到它。
+:::playground{#template}
+```html file=index.html
+<!doctype html>
+<html lang="zh-CN">
+  <body>
+    <ul id="cards"></ul>
+    <template id="card-template">
+      <li class="card"><strong class="title"></strong> <span class="price"></span></li>
+    </template>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
+```
+```ts file=main.ts
+const list = document.querySelector('#cards');
+const template = document.querySelector('#card-template');
+if (!(list instanceof HTMLUListElement) || !(template instanceof HTMLTemplateElement)) {
+  throw new Error('页面结构不完整');
+}
+
+const products = [
+  { name: '笔记本', price: 12 },
+  { name: '铅笔', price: 3.5 },
+];
+
+for (const product of products) {
+  const fragment = document.importNode(template.content, true);
+  const title = fragment.querySelector('.title');
+  const price = fragment.querySelector('.price');
+  if (title) title.textContent = product.name;
+  if (price) price.textContent = `${product.price} 元`;
+  list.append(fragment);
+}
+
+console.log('卡片数量：', list.children.length);
+```
+- 第 13 行：把鼠标停在 `fragment` 上，类型是 `DocumentFragment`。每次循环都复制一份新的，模板本身不变。
+- 第 18 行：插入片段时，插入的是它里面的节点，片段本身变空。
+- 另一种写法是 `template.content.firstElementChild?.cloneNode(true)`，但 `cloneNode` 的返回类型是笼统的 `Node`，还要再用 `instanceof` 收窄。d08 的小任务会用到模板。
+:::
 
 ## 重建还是复用
 
-数据变化后更新列表，最简单的办法是 `list.replaceChildren(...新的元素)`：全部删掉，重新创建。数据量不大时这完全可以。但它有代价：原来的元素都被丢弃，如果某一项里有正在输入的文本框，用户的焦点和输入的内容就没了；屏幕阅读器也可能把整个列表重新朗读一遍。
+数据变化后更新列表，最简单的办法是 `list.replaceChildren(...新的元素)`：全部删掉，重新创建。数据量不大时这完全可以。但它有代价：原来的元素都被丢弃，元素上的状态也随之丢失——文本框里正在输入的内容、键盘焦点、滚动位置、正在进行的 CSS 过渡。
 
 另一种做法是给每个元素记下数据的 id（例如 `data-id`），更新时**复用**还在的元素、只修改变化的部分，删除不再需要的、创建新增的。React 之类的框架内部就是这样做的（G 阶段的 `key`）。
+
+复用时还要注意焦点：把一个获得焦点的元素从页面上移走，哪怕马上又插回来，它也会失去焦点。所以调整顺序时，只移动位置不对的元素，不要把所有元素重新插入一遍。（较新的浏览器提供了 `moveBefore()` 方法，可以在移动的同时保留焦点等状态，但它还不是所有浏览器都支持。）
 
 ::exercise{#render-todos}
 

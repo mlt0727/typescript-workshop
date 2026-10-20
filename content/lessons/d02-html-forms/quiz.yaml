@@ -29,7 +29,7 @@
       explain: 填到一半，用户可能忘了这个框是填什么的。
     - text: 它不一定会被当作控件的可访问名称
       correct: true
-      explain: 屏幕阅读器和 `getByLabelText` 依靠的都是 label。
+      explain: 浏览器只在没有其他名字时才把 placeholder 当作最后的备选，各种屏幕阅读器表现不一；`getByLabelText` 则完全不认它。label 才是可靠的名字。
     - text: 浏览器会把 placeholder 的文字当作值提交
       explain: placeholder 只是显示的提示，不会被提交。
     - text: 点击 placeholder 文字不会聚焦输入框

@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 登录、注册、搜索、设置——网页上的大部分输入都通过表单完成。HTML 已经为表单提供了大量现成的能力：点击文字就能聚焦输入框的 label、各种类型的输入控件、提交与重置按钮、不用写一行代码的格式验证。用对这些元素，表单就天然可以用键盘操作、能被屏幕阅读器理解，后面用 TypeScript 处理表单时也会简单得多。
 objectives:
   - 用 label 为每个控件提供名字，知道 placeholder 不能代替 label
@@ -35,7 +35,7 @@ references:
 - 标签文字成为控件的**可访问名称**，屏幕阅读器会读出“邮箱，编辑框”；
 - 测试可以用 `getByLabelText('邮箱')` 找到它。
 
-`placeholder`（输入框里的浅色提示文字）**不能代替** label：用户一开始输入，它就消失了；它的颜色通常对比度很低；而且它并不总是被当作名字。
+`placeholder`（输入框里的浅色提示文字）**不能代替** label：用户一开始输入，它就消失了；它的颜色通常对比度很低；浏览器只在没有其他名字时，才把它当作最后的备选名字，各种屏幕阅读器的处理也不一致；Testing Library 的 `getByLabelText` 和 `getByRole(…, { name })` 则完全不认它。
 
 :::playground{#labels}
 ```html file=index.html
@@ -73,8 +73,8 @@ references:
 label { cursor: pointer; }
 input:focus { outline: 3px solid #0a6cff; }
 ```
-- 点击“邮箱”或“昵称”这两个字，对应的输入框获得焦点；点击“订阅每周更新”，复选框被勾选。
-- 第 19 行只有 `placeholder`：在框里输入一个字，提示就消失了，用户再也看不到这个框是填什么的。
+- 点击“邮箱”或“昵称”这两个字，对应的输入框获得焦点；点击“订阅每周更新”，复选框切换勾选状态。
+- `index.html` 第 19 行只有 `placeholder`：在框里输入一个字，提示就消失了，用户再也看不到这个框是填什么的。
 :::
 
 ## 常用的控件
@@ -93,6 +93,8 @@ input:focus { outline: 3px solid #0a6cff; }
 一组相关的控件（尤其是单选按钮和复选框）放在 `<fieldset>` 里，用 `<legend>` 给这一组起名字。屏幕阅读器会先读出组名，例如“学习方向，组；前端，单选按钮”。
 
 每个控件的 `name` 属性决定了提交时这项数据的**键**，`value` 是值。单选按钮和复选框的 `value` 要自己写出来，否则勾选后提交的值是字符串 `"on"`。
+
+收集用户个人信息的输入框，还应该写上 `autocomplete` 属性说明它的用途，例如 `autocomplete="email"`、`"name"`、`"new-password"`（注册时的新密码）、`"current-password"`（登录时的密码）。浏览器和密码管理器据此自动填写，这也是 WCAG 2.2 的要求之一。
 
 :::playground{#controls}
 ```html file=index.html
@@ -139,7 +141,7 @@ form.addEventListener('submit', (event) => {
   }
 });
 ```
-- 点击“提交”，看输出：每一项都是“`name` = `value`”。两个勾选的复选框同名，所以 `topics` 出现了两次；没有勾选的复选框根本不会出现。
+- 点击“提交”，看输出：每一项都是“`name` = `value`”。两个勾选的复选框同名，所以 `topics` 出现了两次；没有勾选的复选框根本不会出现；而空着的“备注”会出现，值是空字符串（`note =`）。
 - 改几个选项再提交一次。然后点击“恢复默认”：所有控件回到页面加载时的状态（`checked`、`selected`、`value` 属性指定的初始值）。
 - `main.ts` 中的 `event.preventDefault()` 阻止了浏览器默认的提交行为（把数据发送出去并跳转页面）。处理表单事件的细节在 d09 讲。
 :::
@@ -152,7 +154,7 @@ form.addEventListener('submit', (event) => {
 - `reset`：把表单恢复成初始值；
 - `button`：什么都不做，只用来配合脚本。
 
-所以表单里“预览”“添加一行”这类按钮一定要写 `type="button"`，否则点击它就会提交表单。另外，在单行输入框里按 Enter，也会提交表单（相当于点击第一个提交按钮）。
+所以表单里“预览”“添加一行”这类按钮一定要写 `type="button"`，否则点击它就会提交表单。另外，在单行输入框里按 Enter，通常也会提交表单（相当于点击第一个提交按钮）。
 
 ## 浏览器自带的验证
 
@@ -166,7 +168,7 @@ form.addEventListener('submit', (event) => {
 | `pattern` | 整个值必须匹配这个正则表达式 |
 | `type="email"`、`type="url"` | 值必须符合格式（空值除外，空值由 `required` 管） |
 
-提交时，浏览器先检查所有控件。有不合格的，就**不会提交**（也不会触发 `submit` 事件），而是聚焦第一个不合格的控件并显示提示。CSS 可以用 `:invalid` 和 `:user-invalid` 选中不合格的控件；后者只在用户修改过、或者尝试提交之后才生效，不会一打开页面就满屏红框。
+提交时，浏览器先检查所有控件。有不合格的，就**不会提交**（也不会触发 `submit` 事件），而是聚焦第一个不合格的控件并显示提示。CSS 可以用 `:invalid` 和 `:user-invalid` 选中不合格的控件（CSS 选择器的写法在 d03 讲）；后者只在用户修改过、或者尝试提交之后才生效，不会一打开页面就满屏红框。
 
 :::playground{#validation}
 ```html file=index.html
@@ -213,7 +215,7 @@ form.addEventListener('submit', (event) => {
 ```
 - 直接点“注册”：邮箱是必填的，表单没有提交，输出显示哪一项不合格以及浏览器给出的原因（提示文字的语言取决于浏览器）。
 - 依次试试：邮箱填 `abc`；年龄填 `5`；邀请码填 `12a4`。最后填一组合格的值再提交。
-- 第 4–12 行监听 `invalid` 事件。它不会冒泡，所以要在捕获阶段（第三个参数 `true`）监听，冒泡与捕获在 d08 讲。
+- `main.ts` 第 4–12 行监听 `invalid` 事件。它不会冒泡，所以要在捕获阶段（第三个参数 `true`）监听，冒泡与捕获在 d08 讲。
 :::
 
 浏览器验证是为了**用户体验**：及时告诉用户哪里填错了。它不是安全措施：任何人都可以绕过网页直接发送请求，服务端必须重新验证所有数据（H 阶段）。
@@ -228,7 +230,7 @@ form.addEventListener('submit', (event) => {
 
 ## 常见错误
 
-- **用 placeholder 代替 label**：输入后提示消失，也不一定被当作名字。
+- **用 placeholder 代替 label**：输入后提示消失，也不能可靠地充当控件的名字。
 - **表单里的普通按钮忘了写 `type="button"`**：点击就会提交表单。
 - **单选按钮的 `name` 不一样**：它们就不是一组，可以同时选中多个。
 - **控件没有 `name`**：提交时这一项不会出现在表单数据里。

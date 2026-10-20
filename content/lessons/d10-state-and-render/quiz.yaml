@@ -11,7 +11,7 @@
       explain: 这是把 DOM 当作数据来源；筛选之后页面上只显示一部分项，结果就错了。
 - id: immutable-why
   type: multiple
-  prompt: "`update` 返回新的状态对象、不修改旧状态，有哪些好处？"
+  prompt: "不可变更新（update 返回新的状态对象、不修改旧状态，配合 readonly 类型）有哪些好处？"
   options:
     - text: 旧状态保存下来就能实现撤销
       correct: true

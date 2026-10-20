@@ -128,6 +128,14 @@ test('文字原样显示，不被当作 HTML', () => {
   expect(within(list).getByRole('checkbox', { name: '<b>重要</b> 的事' })).toBeInTheDocument();
 });
 
+test('每一项的结构：label 里是复选框和放文字的 span', () => {
+  renderTodos(list, todos);
+  const [milk] = within(list).getAllByRole('listitem');
+  const label = milk?.querySelector('label');
+  expect(label?.querySelector('input[type="checkbox"]')).not.toBeNull();
+  expect(label?.querySelector('span')).toHaveTextContent('买牛奶');
+});
+
 test('已完成的项带有 done，复选框勾选；未完成的都没有', () => {
   renderTodos(list, todos);
   const [milk, report, important] = within(list).getAllByRole('listitem');

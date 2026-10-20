@@ -13,7 +13,7 @@ const items = queryAll('li', HTMLLIElement, list); // 类型是 HTMLLIElement[]
 - `queryAll(selector, type, root?)`：返回所有匹配元素组成的**数组**（真正的数组，可以直接 `map`）；没有匹配时返回空数组；只要有一个元素不是 `type` 的实例，就抛出 `TypeError`，消息包含选择器。
 - 返回类型由传入的 `type` 决定。
 
-起始代码已经给出了表示“元素的构造函数”的类型 `ElementType<T>`：`HTMLButtonElement` 这样的值既是构造函数，又可以用在 `instanceof` 的右边，TypeScript 会据此把元素收窄成 `T`。
+起始代码已经给出了类型 `ElementType<T>`，它需要一点解释。`HTMLButtonElement` 不只是类型名，它在运行时也是一个值（一个类），所以可以写在 `instanceof` 的右边（b07）。描述“一个能用 `new` 创建出 `T` 的值”的类型写作 `new (...args: never[]) => T`，叫**构造签名**。参数写成 `never[]`，表示“不关心它要什么参数”，这样任何构造函数都能赋值给它，又不用写 `any`。（这些元素类其实不能直接 `new`，会报“Illegal constructor”，要用 `document.createElement`；这里只用它们来做 `instanceof` 检查。）TypeScript 看到 `el instanceof type` 通过后，会把 `el` 收窄成 `T`。
 
 :::files{role=support}
 ```html file=index.html readonly

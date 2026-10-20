@@ -16,13 +16,13 @@
     - text: 之后动态添加的项不需要再挂监听器
       correct: true
       explain: 新元素的事件同样会冒泡到列表上。
-    - text: 删除某一项时不用操心它的监听器
+    - text: 整体替换列表的内容（例如 replaceChildren）之后，不需要重新挂监听器
       correct: true
-      explain: 监听器挂在列表上，与每一项无关。
+      explain: 监听器挂在列表上，与每一项无关；监听器的数量也不随项数增长。
     - text: 可以不再检查 event.target
       explain: 正好相反，委托必须通过 `event.target` 和 `closest` 判断点中的是什么。
-    - text: focus 和 blur 事件也能这样委托
-      explain: 它们不冒泡，委托时要改用 focusin 和 focusout。
+    - text: 用默认（冒泡阶段）的监听器，也能这样委托 focus 和 blur 事件
+      explain: 它们不冒泡，委托时要改用 focusin 和 focusout（或者在捕获阶段监听）。
 - id: closest-contains
   type: single
   prompt: 事件委托中，为什么要在 `closest(…)` 之后再检查 `list.contains(found)`？
