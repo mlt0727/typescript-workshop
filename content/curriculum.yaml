@@ -130,7 +130,7 @@ stages:
       - { id: g07-lifting-state, title: 状态提升与组合, status: draft, prerequisites: [g06-controlled-forms] }
       - { id: g08-custom-hooks, title: 自定义 Hook, status: draft, prerequisites: [g07-lifting-state] }
       - { id: g09-refs, title: ref 的合理用途, status: draft, prerequisites: [g08-custom-hooks] }
-      - { id: g10-context, title: Context 的合理用途, status: planned, prerequisites: [g08-custom-hooks] }
+      - { id: g10-context, title: Context 的合理用途, status: draft, prerequisites: [g08-custom-hooks] }
       - { id: g11-effects, title: Effect：适用场景、依赖与清理, status: planned, prerequisites: [g09-refs] }
       - { id: g12-effect-pitfalls, title: 避免滥用 Effect 与性能 Hook, status: planned, prerequisites: [g11-effects] }
       - { id: g13-routing, title: 用 React Router 组织页面, status: planned, prerequisites: [g07-lifting-state, e10-url-routing] }

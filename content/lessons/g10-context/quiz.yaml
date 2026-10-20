@@ -1,0 +1,47 @@
+- id: nearest-provider
+  type: single
+  prompt: 组件 C 在两个嵌套的 `<ThemeContext value=…>` 里面，外层的 value 是 `'dark'`，内层是 `'light'`。C 中的 `useContext(ThemeContext)` 得到什么？
+  options:
+    - text: "'light'，离它最近的那个 Provider 的值"
+      correct: true
+      explain: 内层的 Provider 覆盖了外层的值。
+    - text: "'dark'，最外层的 Provider 的值"
+      explain: useContext 向上找到的是最近的 Provider。
+    - text: createContext 时传入的默认值
+      explain: 默认值只在上方没有任何 Provider 时使用。
+- id: null-default
+  type: single
+  prompt: "`createContext<AuthValue | null>(null)` 再配一个在值为 null 时抛出错误的 `useAuth()`，好处是什么？"
+  options:
+    - text: 忘了放 Provider 时立即得到明确的错误，并且 useAuth 的返回类型不含 null
+      correct: true
+      explain: 如果默认值是一个“能用”的对象，没有 Provider 时程序会悄悄地不工作，很难发现。
+    - text: 这样 Context 的值就不会触发重新渲染
+      explain: 默认值和重新渲染无关。Provider 的 value 变化时，使用者都会重新渲染。
+    - text: React 要求 Context 的默认值必须是 null
+      explain: 默认值可以是任何值，null 加检查只是一种常见的、更安全的写法。
+- id: when-context
+  type: multiple
+  prompt: 下面哪些数据适合放进 Context？
+  options:
+    - text: 整个应用都要用的主题、界面语言、当前登录的用户
+      correct: true
+      explain: 这类“环境”数据在很多深层的组件中都要用，逐层传递很繁琐。
+    - text: 选项卡组件和它的各个面板之间共享的“当前选中的选项卡”
+      correct: true
+      explain: 一组紧密合作的组件共享状态，是 Context 的另一类典型用法。
+    - text: 父组件要传给直接子组件的一个字符串
+      explain: 只隔一层，直接用 props 更清楚。
+    - text: 中间组件只是转手、不使用的 props
+      explain: 先考虑组合：把 JSX 作为 children 或其他 props 传进去（g07），不一定需要 Context。
+- id: rerender
+  type: single
+  prompt: Provider 组件每次渲染时都写 `value={{ user, signIn, signOut }}`。会发生什么？
+  options:
+    - text: 每次 Provider 重新渲染，value 都是一个新对象，所有使用这个 Context 的组件也会重新渲染
+      correct: true
+      explain: React 用 Object.is 比较 value。大多数情况下这没有问题；需要优化时用 useMemo 保持 value 不变，或者拆分 Context（g12）。
+    - text: React 会比较对象的每个属性，只有属性变了才重新渲染使用者
+      explain: React 只比较引用，不做深比较。
+    - text: 使用者永远不会重新渲染
+      explain: value 变化时，使用者都会重新渲染。

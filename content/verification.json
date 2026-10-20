@@ -7246,6 +7246,98 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题为空时不保存，留在编辑状态；没有改动时直接退出 ⟶ expect(…).not.toHaveBeenCalled())"
         }
       ]
+    },
+    "g10-context": {
+      "verifiedAt": "2026-10-20T14:31:56.276Z",
+      "sourceHash": "e7608d044e77d230",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:basic-context:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:basic-context:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:provider-hook:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:provider-hook:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:theme-context:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(切换主题时，Provider 中所有的面板一起变化 ⟶ expect(…).toHaveClass('panel-dark'),initial 决定初始主题 ⟶ expect(…).toHaveClass('panel-dark'),两个 Provider 互不影响 ⟶ expect(…).toHaveClass('panel-dark'),在 Provider 之外使用 useTheme 立即报错 ⟶ expect(…).toThrow('useTheme 必须在 <ThemeProvider> 中使用'))"
+        },
+        {
+          "target": "exercise:theme-context:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:theme-context:alt:use-and-provider",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:theme-context:wrong:silent-default",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(在 Provider 之外使用 useTheme 立即报错 ⟶ expect(…).toThrow('useTheme 必须在 <ThemeProvider> 中使用'))"
+        },
+        {
+          "target": "exercise:theme-context:wrong:ignore-initial",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(initial 决定初始主题 ⟶ expect(…).toHaveClass('panel-dark'))"
+        },
+        {
+          "target": "exercise:theme-context:wrong:nullable-hook",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2339@theme.tsx:19 Property 'theme' does not exist on type 'ThemeValue | null'.；TS2339@theme.tsx:19 Property 'toggle' does not exist on type 'ThemeValue | null'.；TS2339@theme.tsx:28 Property 'theme' does not exist on type 'ThemeValue | null'.；TS2344@theme.test-d.tsx:5 Type 'ThemeValue' does not sat) rules=ok tests=fail(在 Provider 之外使用 useTheme 立即报错 ⟶ expect(…).toThrow('useTheme 必须在 <ThemeProvider> 中使用'))"
+        },
+        {
+          "target": "exercise:cart-context:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(加入购物车：数量、件数、合计在各个组件中同步更新 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把绿茶加入购物车\",减少到 0 时从购物车中移除；移除；清空 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把绿茶加入购物车\",每种商品最多 99 件 ⟶ expect(…).toBe(99),价格来自最新的商品目录，而不是加入时的副本 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把蛋糕加入购物车\",两个 Provider 各有各的购物车 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"把绿茶加入购物车\",在 Provider 之外使用 useCart 立即报错 ⟶ expect(…).toThrow('useCart 必须在 <CartProvider> 中使用'))"
+        },
+        {
+          "target": "exercise:cart-context:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:cart-context:alt:map-state",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:cart-context:wrong:store-copies",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每种商品最多 99 件 ⟶ expect(…).toEqual([ [ 'tea', 50 ], [ 'cake', 99 ] ]),价格来自最新的商品目录，而不是加入时的副本 ⟶ TestingLibraryElementError: Unable to find an element with the text: 合计 ¥30.00. This could be because the text is broken up by multiple elements. In this case, )"
+        },
+        {
+          "target": "exercise:cart-context:wrong:no-limit",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每种商品最多 99 件 ⟶ expect(…).toBe(99))"
+        },
+        {
+          "target": "exercise:cart-context:wrong:keep-zero",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(减少到 0 时从购物车中移除；移除；清空 ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:cart-context:wrong:silent-default",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(在 Provider 之外使用 useCart 立即报错 ⟶ expect(…).toThrow('useCart 必须在 <CartProvider> 中使用'))"
+        }
+      ]
     }
   }
 }
