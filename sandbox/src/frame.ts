@@ -21,8 +21,8 @@ import { captureConsole, LogSink } from './console-capture.ts';
 import { formatUncaught, locate, registerModules, serializeError } from './errors.ts';
 import { getDeps, linkBundle } from './linker.ts';
 import { enableFocusEmulation, focusEmulationUsed, focusIsBlocked, resetFocusEmulation } from './focus-emulation.ts';
-import { installHistoryGuard } from './history-guard.ts';
-import { createMemoryStorage, createMockFetch, type SimulatedFeature } from './mocks.ts';
+import { installHistoryGuard, resetHistoryGuard } from './history-guard.ts';
+import { createMemoryStorage, createMockFetch, MemoryStorage, type SimulatedFeature } from './mocks.ts';
 import { applyPage, installLoopGuard, installTracking, listenUntracked, untracked } from './page.ts';
 import { TestCollector } from './testing/runner.ts';
 import { realTimers } from './testing/timers.ts';
@@ -66,7 +66,14 @@ async function setViewport(width: number, height: number): Promise<void> {
     await new Promise<void>((resolve) => realTimers.setTimeout(resolve, 10));
   }
 }
-deps['vitest/browser'] = { page: { viewport: setViewport } };
+// —— 平台扩展 page.reload()：模拟刷新页面（DOM 模式）。地址与模拟的 localStorage/sessionStorage 保留 ——
+let reloadPage: (() => Promise<void>) | null = null;
+
+async function reload(): Promise<void> {
+  if (reloadPage === null) throw new Error('page.reload() 只能在 DOM 模式的测试中使用');
+  await reloadPage();
+}
+deps['vitest/browser'] = { page: { viewport: setViewport, reload } };
 
 let port: MessagePort | null = null;
 
@@ -198,6 +205,7 @@ function installPageEnvironment(runId: string, fixtures: Parameters<typeof creat
     configurable: true,
     writable: true,
   });
+  Object.defineProperty(window, 'Storage', { value: MemoryStorage, configurable: true, writable: true });
   Object.defineProperty(window, 'localStorage', { value: createMemoryStorage('localStorage', onUse), configurable: true });
   Object.defineProperty(window, 'sessionStorage', { value: createMemoryStorage('sessionStorage', onUse), configurable: true });
   const notice = (name: string) => (message?: unknown) => {
@@ -287,6 +295,25 @@ async function testPage(cmd: Extract<HostToSandbox, { type: 'test' }>) {
     if (collector.size === 0) throw new Error('测试文件中没有任何测试');
 
     const rtl = deps['@testing-library/react'] as { cleanup?: () => void } | undefined;
+    // 重新执行学生代码：使用新的 blob URL 得到全新的模块实例
+    const runStudentEntries = async () => {
+      if (mode !== 'dom' || studentEntries.length === 0) return;
+      const g = linkBundle(cmd.bundle, { entries: studentEntries, css: 'inject' });
+      registerModules(g.urlToModule);
+      for (const e of studentEntries) await import(/* @vite-ignore */ g.urls.get(e)!);
+      document.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
+    };
+    reloadPage =
+      mode === 'dom'
+        ? async () => {
+            const href = location.href;
+            page.reset();
+            if (location.href !== href) history.replaceState(null, '', href);
+            resetHistoryGuard();
+            resetFocusEmulation();
+            await runStudentEntries();
+          }
+        : null;
     await collector.run(
       {
         locate,
@@ -296,14 +323,11 @@ async function testPage(cmd: Extract<HostToSandbox, { type: 'test' }>) {
           }
           page.reset();
           resetFocusEmulation();
+          // 每个测试都从空的存储开始；page.reload() 不清空它们，用来测试“刷新之后数据还在”
+          window.localStorage.clear();
+          window.sessionStorage.clear();
           simulated.clear();
-          if (mode === 'dom' && studentEntries.length > 0) {
-            // 每个测试前重新执行学生代码：使用新的 blob URL 得到全新的模块实例
-            const g = linkBundle(cmd.bundle, { entries: studentEntries, css: 'inject' });
-            registerModules(g.urlToModule);
-            for (const e of studentEntries) await import(/* @vite-ignore */ g.urls.get(e)!);
-            document.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
-          }
+          await runStudentEntries();
         },
         afterEach: async () => {
           rtl?.cleanup?.();

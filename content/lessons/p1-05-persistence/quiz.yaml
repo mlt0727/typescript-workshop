@@ -1,0 +1,44 @@
+- id: why-version
+  type: single
+  prompt: 为什么要在保存的数据中加上 version 字段？
+  options:
+    - text: 读取时能分清是哪一版的格式，旧版本可以转换，不认识的版本可以当作失败
+      correct: true
+      explain: 版本号是给自己的应用看的：格式变化之后，读取代码按版本决定怎样验证、怎样迁移。
+    - text: localStorage 要求每个值都带有版本号
+      explain: localStorage 只保存字符串，不关心内容。
+    - text: 这样 JSON.parse 就不会抛出异常
+      explain: 不合法的 JSON 照样会让 JSON.parse 抛出异常，与版本号无关。
+- id: load-failure
+  type: single
+  prompt: 读取保存的数据失败（例如 JSON 被改坏了）时，下面哪种做法最好？
+  options:
+    - text: 把原来的字符串保存到备份的键中，提示用户，从空的任务板开始；在用户修改之前不覆盖原来的键
+      correct: true
+      explain: 应用能继续工作，用户的数据也没有悄悄消失。
+    - text: 立刻用空的任务板覆盖原来的数据，这样下次就能正常读取
+      explain: 原来的数据就永远丢失了，哪怕只是一个字段坏了。
+    - text: 抛出异常，让页面停止运行，提醒用户清除浏览器数据
+      explain: 用户什么都做不了，而且清除数据同样会丢掉原来的内容。
+- id: what-to-save
+  type: multiple
+  prompt: 在任务板中，哪些状态应该保存到 localStorage？
+  options:
+    - text: 任务列表与 nextId（board）
+      correct: true
+      explain: 这是用户的数据，下次打开时要恢复。
+    - text: 正在改名的任务（view）
+      explain: 它只属于这一次打开的页面，下次打开不应该还停在编辑状态。
+    - text: 当前的筛选条件
+      explain: 筛选条件保存在地址中（p1-04），可以通过链接分享。
+- id: quota
+  type: single
+  prompt: localStorage.setItem 因为存储空间已满而抛出异常时，dispatch 应该怎样处理？
+  options:
+    - text: 捕获异常并提示用户，刚才的操作照常完成、界面照常更新
+      correct: true
+      explain: 说明原因，下一次保存成功时再隐藏提示。
+    - text: 不处理，异常会自动被浏览器忽略
+      explain: 没有捕获的异常会中断 dispatch，界面不会重新渲染，用户会以为“添加”坏了。
+    - text: 撤销刚才的操作，让任务板保持原样
+      explain: 用户的操作是有效的，只是暂时没能保存；撤销会让人困惑。

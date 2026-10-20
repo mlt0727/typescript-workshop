@@ -133,43 +133,73 @@ export function createMockFetch(
   };
 }
 
-/** 内存版 Storage，行为与 Web Storage 一致（值都会被转成字符串）。 */
+type StorageState = { data: Map<string, string>; use: () => void };
+
+const storageStates = new WeakMap<object, StorageState>();
+const constructToken = Symbol('MemoryStorage');
+
+function stateOf(storage: unknown): StorageState {
+  const state = typeof storage === 'object' && storage !== null ? storageStates.get(storage) : undefined;
+  if (state === undefined) throw new TypeError('Illegal invocation');
+  return state;
+}
+
+/**
+ * 沙箱中的 Storage 类（安装为 window.Storage）。和浏览器一样，方法在原型上，
+ * 所以测试可以用 vi.spyOn(Storage.prototype, 'setItem') 监视或模拟 localStorage、sessionStorage 的方法。
+ */
+export class MemoryStorage {
+  constructor(token?: symbol) {
+    if (token !== constructToken) throw new TypeError('Illegal constructor');
+  }
+  get length(): number {
+    const s = stateOf(this);
+    s.use();
+    return s.data.size;
+  }
+  key(index: number): string | null {
+    const s = stateOf(this);
+    s.use();
+    return [...s.data.keys()][index] ?? null;
+  }
+  getItem(key: string): string | null {
+    const s = stateOf(this);
+    s.use();
+    return s.data.get(String(key)) ?? null;
+  }
+  setItem(key: string, value: unknown): void {
+    const s = stateOf(this);
+    s.use();
+    s.data.set(String(key), String(value));
+  }
+  removeItem(key: string): void {
+    const s = stateOf(this);
+    s.use();
+    s.data.delete(String(key));
+  }
+  clear(): void {
+    const s = stateOf(this);
+    s.use();
+    s.data.clear();
+  }
+  get [Symbol.toStringTag](): string {
+    return 'Storage';
+  }
+}
+
+/** 内存版 Storage，行为与 Web Storage 一致（值都会被转成字符串；也可以像普通属性一样读写条目）。 */
 export function createMemoryStorage(name: SimulatedFeature, onUse: (f: SimulatedFeature) => void): Storage {
-  const data = new Map<string, string>();
-  const api = {
-    get length() {
-      onUse(name);
-      return data.size;
-    },
-    key(i: number) {
-      onUse(name);
-      return [...data.keys()][i] ?? null;
-    },
-    getItem(key: string) {
-      onUse(name);
-      return data.get(String(key)) ?? null;
-    },
-    setItem(key: string, value: unknown) {
-      onUse(name);
-      data.set(String(key), String(value));
-    },
-    removeItem(key: string) {
-      onUse(name);
-      data.delete(String(key));
-    },
-    clear() {
-      onUse(name);
-      data.clear();
-    },
-  };
-  return new Proxy(api, {
-    get(target, prop, receiver) {
-      if (typeof prop === 'symbol' || prop in target) return Reflect.get(target, prop, receiver);
+  const target = new MemoryStorage(constructToken);
+  const state: StorageState = { data: new Map<string, string>(), use: () => onUse(name) };
+  const { data } = state;
+  const storage = new Proxy(target, {
+    get(t, prop, receiver) {
+      if (typeof prop === 'symbol' || prop in t) return Reflect.get(t, prop, receiver);
       onUse(name);
       return data.get(prop) ?? undefined;
     },
-    set(target, prop, value) {
-      if (typeof prop === 'symbol' || prop in target) return false;
+    set(t, prop, value) {
+      if (typeof prop === 'symbol' || prop in t) return false;
       onUse(name);
       data.set(prop, String(value));
       return true;
@@ -187,5 +217,8 @@ export function createMemoryStorage(name: SimulatedFeature, onUse: (f: Simulated
       }
       return undefined;
     },
-  }) as unknown as Storage;
+  });
+  storageStates.set(target, state);
+  storageStates.set(storage, state);
+  return storage as unknown as Storage;
 }

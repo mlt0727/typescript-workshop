@@ -102,9 +102,21 @@ export function spyOn(object: Record<PropertyKey, unknown>, method: PropertyKey)
   const restore = () => {
     object[method] = original;
   };
+  // 和 Vitest 一样，用调用时的 this 调用原来的函数（监视原型上的方法时，this 是实例）
+  const spy = fn(function (this: unknown, ...args: unknown[]) {
+    return (original as Procedure).apply(this, args);
+  }, restore);
+  try {
+    object[method] = spy;
+  } catch {
+    // 下面统一报告
+  }
+  if (object[method] !== spy) {
+    throw new TypeError(
+      `vi.spyOn：无法替换 ${String(method)}，这个对象不允许修改它。localStorage、sessionStorage 的方法要在原型上监视：vi.spyOn(Storage.prototype, '${String(method)}')`,
+    );
+  }
   restorers.add(restore);
-  const spy = fn((...args: unknown[]) => (original as Procedure).apply(object, args), restore);
-  object[method] = spy;
   return spy;
 }
 

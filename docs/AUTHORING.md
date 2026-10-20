@@ -130,7 +130,7 @@ DOM 模式的测试：每个测试开始前，平台会把页面恢复成 `index
 学习者可能用 Safari 或 iPhone（iOS 上所有浏览器都是 WebKit）。练习的测试必须在两种引擎中都成立：
 
 - **焦点**：WebKit 不允许跨源 iframe（本平台的沙箱）用脚本移动焦点。测试运行时平台会自动改用“模拟焦点”：`document.activeElement`、focus/blur 事件、Testing Library 的输入与 Tab、`:focus`/`:focus-visible`/`:focus-within` 的计算样式都与真实焦点一致；但 `element.matches(':focus')` 这类选择器查询得不到模拟的焦点，测试中改用 `toHaveFocus()` 或 `document.activeElement`。
-- **地址**：WebKit 不允许沙箱文档用 `pushState`/`replaceState` 修改**路径**（只能改查询参数和 `#` 片段）。DOM 测试和示例中不要修改路径；路由类练习把历史记录作为参数注入（见 e10 的 `RouterHistory`）。沙箱中越界的 `history.back()` 会被平台忽略并提示。
+- **地址**：WebKit 不允许沙箱文档用 `pushState`/`replaceState` 修改**路径**（只能改查询参数和 `#` 片段）。DOM 测试和示例中不要修改路径；路由类练习把历史记录作为参数注入（见 e10 的 `RouterHistory`）。沙箱中越界的 `history.back()` 会被平台忽略并提示。不透明来源的 iframe 中浏览器自身的后退、前进会重新加载页面（Chromium 后退到加载时的那条记录、WebKit 任意两条记录之间都是如此，已实测），所以平台在本页面自己的条目之间模拟 `back`/`forward`/`go`：在下一个任务中恢复地址和 `history.state`，触发 `popstate`（只有片段不同时再触发 `hashchange`）。测试中后退之后要等待（`findBy…`/`waitFor`），不能立即断言。
 - **`response.json()` 的错误**：Safari 中解析失败时是 `name` 为 `'SyntaxError'` 的 `DOMException`，不是 `SyntaxError`。测试用 `toMatchObject({ name: 'SyntaxError' })`，不要用 `toBeInstanceOf(SyntaxError)`；`JSON.parse` 在所有浏览器中都抛出 `SyntaxError`。
 - **像素**：行内元素的盒子高度取决于字体，不同引擎会差 1 像素左右；比较文字盒子的位置时，容差至少 2px。
 - **排序**：`localeCompare(…, 'zh-CN')` 把汉字（按拼音）排在拉丁字母前面，写期望值前先实际运行一次。
@@ -148,6 +148,8 @@ React 模式提供 `react-router` 与 `react-router/dom`（与平台本身使用
 
 - `toHaveTextContent('')` 与 jest-dom 一致：只有内容为空才通过。检查“提示消失了”时更推荐 `not.toHaveTextContent('已保存')` 或 `toBeEmptyDOMElement()`；
 - 统计渲染次数时用 `<Profiler onRender>`（开发版的 React 每次提交都会调用它，见 g12），不要在组件的渲染过程中计数。
+- 模拟的 `localStorage`、`sessionStorage` 在每个测试开始前清空。要测试“保存之后刷新页面，数据还在”，在测试中写入或操作之后调用 `await page.reload()`（`import { page } from 'vitest/browser'`，平台扩展，只能用于 DOM 模式）：页面恢复成初始内容，入口文件重新执行，地址和存储中的数据保留。要从一份特定的存储数据开始，先 `localStorage.setItem(…)`，再 `await page.reload()`。
+- 模拟存储失败（例如存储空间已满）时监视原型：`vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('…', 'QuotaExceededError'); })`。和真实的浏览器、jsdom 一样，`localStorage` 实例上的方法不能直接替换，平台的 `vi.spyOn(localStorage, 'setItem')` 会报错并给出这个写法。
 
 ## 4. 验证与发布流程
 

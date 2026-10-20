@@ -2,7 +2,7 @@
   "tsVersion": "6.0.3",
   "lessons": {
     "a01-where-ts-runs": {
-      "verifiedAt": "2026-10-20T14:05:08.249Z",
+      "verifiedAt": "2026-10-20T17:24:42.218Z",
       "sourceHash": "96f2639660bdcf67",
       "ok": true,
       "checks": [
@@ -109,7 +109,7 @@
       ]
     },
     "a02-compile-vs-runtime": {
-      "verifiedAt": "2026-10-20T14:05:08.643Z",
+      "verifiedAt": "2026-10-20T17:24:42.637Z",
       "sourceHash": "d740472dd62ea000",
       "ok": true,
       "checks": [
@@ -206,7 +206,7 @@
       ]
     },
     "a03-let-const-inference": {
-      "verifiedAt": "2026-10-20T14:05:09.131Z",
+      "verifiedAt": "2026-10-20T17:24:43.165Z",
       "sourceHash": "08c74ac95adc45b5",
       "ok": true,
       "checks": [
@@ -323,7 +323,7 @@
       ]
     },
     "a04-primitives-strings": {
-      "verifiedAt": "2026-10-20T14:05:09.651Z",
+      "verifiedAt": "2026-10-20T17:24:43.650Z",
       "sourceHash": "d4e98392db010a70",
       "ok": true,
       "checks": [
@@ -435,7 +435,7 @@
       ]
     },
     "a05-null-undefined": {
-      "verifiedAt": "2026-10-20T14:05:10.144Z",
+      "verifiedAt": "2026-10-20T17:24:44.166Z",
       "sourceHash": "f5b91e119d9913ae",
       "ok": true,
       "checks": [
@@ -547,7 +547,7 @@
       ]
     },
     "a06-operators-equality": {
-      "verifiedAt": "2026-10-20T14:05:10.593Z",
+      "verifiedAt": "2026-10-20T17:24:44.580Z",
       "sourceHash": "e4efaae6b72a7c46",
       "ok": true,
       "checks": [
@@ -654,7 +654,7 @@
       ]
     },
     "a07-truthy-falsy": {
-      "verifiedAt": "2026-10-20T14:05:11.040Z",
+      "verifiedAt": "2026-10-20T17:24:45.026Z",
       "sourceHash": "ce981082c8a7ab3f",
       "ok": true,
       "checks": [
@@ -761,7 +761,7 @@
       ]
     },
     "a08-optional-chaining-nullish": {
-      "verifiedAt": "2026-10-20T14:05:11.628Z",
+      "verifiedAt": "2026-10-20T17:24:45.623Z",
       "sourceHash": "7d438c40c3026e6d",
       "ok": true,
       "checks": [
@@ -913,7 +913,7 @@
       ]
     },
     "a09-control-flow": {
-      "verifiedAt": "2026-10-20T14:05:12.044Z",
+      "verifiedAt": "2026-10-20T17:24:46.051Z",
       "sourceHash": "d0adb89f20612ea7",
       "ok": true,
       "checks": [
@@ -1020,7 +1020,7 @@
       ]
     },
     "a10-arrays": {
-      "verifiedAt": "2026-10-20T14:05:12.445Z",
+      "verifiedAt": "2026-10-20T17:24:46.462Z",
       "sourceHash": "cb81fe04cae4ff08",
       "ok": true,
       "checks": [
@@ -1122,7 +1122,7 @@
       ]
     },
     "a11-objects-references": {
-      "verifiedAt": "2026-10-20T14:05:12.859Z",
+      "verifiedAt": "2026-10-20T17:24:46.888Z",
       "sourceHash": "9c6e39e4993e3a91",
       "ok": true,
       "checks": [
@@ -1224,7 +1224,7 @@
       ]
     },
     "a12-destructuring-spread": {
-      "verifiedAt": "2026-10-20T14:05:13.340Z",
+      "verifiedAt": "2026-10-20T17:24:47.391Z",
       "sourceHash": "2920a1138db44b85",
       "ok": true,
       "checks": [
@@ -1331,7 +1331,7 @@
       ]
     },
     "a13-functions": {
-      "verifiedAt": "2026-10-20T14:05:13.879Z",
+      "verifiedAt": "2026-10-20T17:24:47.960Z",
       "sourceHash": "c030cb3dec600d6e",
       "ok": true,
       "checks": [
@@ -1448,7 +1448,7 @@
       ]
     },
     "a14-scope-closures": {
-      "verifiedAt": "2026-10-20T14:05:14.422Z",
+      "verifiedAt": "2026-10-20T17:24:48.494Z",
       "sourceHash": "2ae5b2e3638a5b49",
       "ok": true,
       "checks": [
@@ -1570,7 +1570,7 @@
       ]
     },
     "a15-this": {
-      "verifiedAt": "2026-10-20T14:05:14.758Z",
+      "verifiedAt": "2026-10-20T17:24:48.836Z",
       "sourceHash": "a880078bef84a31e",
       "ok": true,
       "checks": [
@@ -1672,7 +1672,7 @@
       ]
     },
     "a16-array-methods": {
-      "verifiedAt": "2026-10-20T14:05:15.252Z",
+      "verifiedAt": "2026-10-20T17:24:49.356Z",
       "sourceHash": "9011a3f39f0b8a88",
       "ok": true,
       "checks": [
@@ -1794,7 +1794,7 @@
       ]
     },
     "a17-sort-and-mutation": {
-      "verifiedAt": "2026-10-20T14:05:15.692Z",
+      "verifiedAt": "2026-10-20T17:24:49.816Z",
       "sourceHash": "e93fd6b7286514ce",
       "ok": true,
       "checks": [
@@ -1906,7 +1906,7 @@
       ]
     },
     "a18-map-set": {
-      "verifiedAt": "2026-10-20T14:05:16.201Z",
+      "verifiedAt": "2026-10-20T17:24:50.338Z",
       "sourceHash": "4394bd40180ec60d",
       "ok": true,
       "checks": [
@@ -2023,7 +2023,7 @@
       ]
     },
     "a19-modules": {
-      "verifiedAt": "2026-10-20T14:05:16.602Z",
+      "verifiedAt": "2026-10-20T17:24:50.723Z",
       "sourceHash": "d867938cbbec323c",
       "ok": true,
       "checks": [
@@ -2130,7 +2130,7 @@
       ]
     },
     "a20-errors": {
-      "verifiedAt": "2026-10-20T14:05:17.031Z",
+      "verifiedAt": "2026-10-20T17:24:51.287Z",
       "sourceHash": "23006d6d51a93994",
       "ok": true,
       "checks": [
@@ -2232,7 +2232,7 @@
       ]
     },
     "b01-type-alias-interface": {
-      "verifiedAt": "2026-10-20T14:05:17.558Z",
+      "verifiedAt": "2026-10-20T17:24:51.853Z",
       "sourceHash": "a2ba11985f662cf0",
       "ok": true,
       "checks": [
@@ -2339,7 +2339,7 @@
       ]
     },
     "b02-structural-typing": {
-      "verifiedAt": "2026-10-20T14:05:17.961Z",
+      "verifiedAt": "2026-10-20T17:24:52.285Z",
       "sourceHash": "e3b05a429f1ffaa8",
       "ok": true,
       "checks": [
@@ -2431,7 +2431,7 @@
       ]
     },
     "b03-optional-readonly": {
-      "verifiedAt": "2026-10-20T14:05:18.431Z",
+      "verifiedAt": "2026-10-20T17:24:52.716Z",
       "sourceHash": "88f063b369af4012",
       "ok": true,
       "checks": [
@@ -2538,7 +2538,7 @@
       ]
     },
     "b04-union-literal": {
-      "verifiedAt": "2026-10-20T14:05:18.910Z",
+      "verifiedAt": "2026-10-20T17:24:53.224Z",
       "sourceHash": "16d820d8c2581d32",
       "ok": true,
       "checks": [
@@ -2640,7 +2640,7 @@
       ]
     },
     "b05-intersection-tuple": {
-      "verifiedAt": "2026-10-20T14:05:19.417Z",
+      "verifiedAt": "2026-10-20T17:24:53.735Z",
       "sourceHash": "4142cea7107ead35",
       "ok": true,
       "checks": [
@@ -2747,7 +2747,7 @@
       ]
     },
     "b06-any-unknown-never-void": {
-      "verifiedAt": "2026-10-20T14:05:19.819Z",
+      "verifiedAt": "2026-10-20T17:24:54.177Z",
       "sourceHash": "cc371768db05441b",
       "ok": true,
       "checks": [
@@ -2854,7 +2854,7 @@
       ]
     },
     "b07-narrowing": {
-      "verifiedAt": "2026-10-20T14:05:20.240Z",
+      "verifiedAt": "2026-10-20T17:24:54.666Z",
       "sourceHash": "11b9c7c5911ecd78",
       "ok": true,
       "checks": [
@@ -2966,7 +2966,7 @@
       ]
     },
     "b08-type-guards": {
-      "verifiedAt": "2026-10-20T14:05:20.626Z",
+      "verifiedAt": "2026-10-20T17:24:55.159Z",
       "sourceHash": "60f6d3b91e78c8b3",
       "ok": true,
       "checks": [
@@ -3063,7 +3063,7 @@
       ]
     },
     "b09-discriminated-unions": {
-      "verifiedAt": "2026-10-20T14:05:21.113Z",
+      "verifiedAt": "2026-10-20T17:24:55.698Z",
       "sourceHash": "49752a141ce3f081",
       "ok": true,
       "checks": [
@@ -3170,7 +3170,7 @@
       ]
     },
     "b10-function-types": {
-      "verifiedAt": "2026-10-20T14:05:21.729Z",
+      "verifiedAt": "2026-10-20T17:24:56.263Z",
       "sourceHash": "ae90adddb616d52c",
       "ok": true,
       "checks": [
@@ -3282,7 +3282,7 @@
       ]
     },
     "b11-overloads": {
-      "verifiedAt": "2026-10-20T14:05:22.195Z",
+      "verifiedAt": "2026-10-20T17:24:56.700Z",
       "sourceHash": "2dfe447caed64048",
       "ok": true,
       "checks": [
@@ -3304,7 +3304,7 @@
         {
           "target": "playground:return-depends:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 43 2 | [log] [ '7' ]"
+          "detail": "期望 done，实际 done；输出：[log] 43 2 | [log] 7"
         },
         {
           "target": "playground:prefer-union:types",
@@ -3314,7 +3314,7 @@
         {
           "target": "playground:prefer-union:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 2 3 | [log] 3"
+          "detail": "期望 done，实际 done；输出：[log] 2 3 | [log] 2"
         },
         {
           "target": "exercise:first-item:starter:starter",
@@ -3384,7 +3384,7 @@
       ]
     },
     "b12-classes": {
-      "verifiedAt": "2026-10-20T14:05:22.719Z",
+      "verifiedAt": "2026-10-20T17:24:57.202Z",
       "sourceHash": "245eb61998874571",
       "ok": true,
       "checks": [
@@ -3511,7 +3511,7 @@
       ]
     },
     "b13-inheritance-implements": {
-      "verifiedAt": "2026-10-20T14:05:23.153Z",
+      "verifiedAt": "2026-10-20T17:24:57.634Z",
       "sourceHash": "652eb5e170b7822f",
       "ok": true,
       "checks": [
@@ -3618,7 +3618,7 @@
       ]
     },
     "b14-generics": {
-      "verifiedAt": "2026-10-20T14:05:23.988Z",
+      "verifiedAt": "2026-10-20T17:24:58.599Z",
       "sourceHash": "138f1f959f851ed4",
       "ok": true,
       "checks": [
@@ -3720,7 +3720,7 @@
       ]
     },
     "b15-generic-constraints": {
-      "verifiedAt": "2026-10-20T14:05:24.518Z",
+      "verifiedAt": "2026-10-20T17:24:59.191Z",
       "sourceHash": "528259f2d604df0a",
       "ok": true,
       "checks": [
@@ -3827,7 +3827,7 @@
       ]
     },
     "b16-assertions-as-const-satisfies": {
-      "verifiedAt": "2026-10-20T14:05:24.919Z",
+      "verifiedAt": "2026-10-20T17:24:59.661Z",
       "sourceHash": "dcf8757a3213b05e",
       "ok": true,
       "checks": [
@@ -3924,7 +3924,7 @@
       ]
     },
     "b17-enums-and-alternatives": {
-      "verifiedAt": "2026-10-20T14:05:25.335Z",
+      "verifiedAt": "2026-10-20T17:25:00.044Z",
       "sourceHash": "66c70085712d293e",
       "ok": true,
       "checks": [
@@ -4011,7 +4011,7 @@
       ]
     },
     "d01-html-semantics": {
-      "verifiedAt": "2026-10-20T14:05:27.287Z",
+      "verifiedAt": "2026-10-20T17:25:01.990Z",
       "sourceHash": "35c36f09a41f3c03",
       "ok": true,
       "checks": [
@@ -4118,7 +4118,7 @@
       ]
     },
     "d02-html-forms": {
-      "verifiedAt": "2026-10-20T14:05:32.879Z",
+      "verifiedAt": "2026-10-20T17:25:07.783Z",
       "sourceHash": "31169b0fc9ebd3f0",
       "ok": true,
       "checks": [
@@ -4230,7 +4230,7 @@
       ]
     },
     "d03-css-layout": {
-      "verifiedAt": "2026-10-20T14:05:34.547Z",
+      "verifiedAt": "2026-10-20T17:25:09.508Z",
       "sourceHash": "da6de6699f6b7807",
       "ok": true,
       "checks": [
@@ -4337,7 +4337,7 @@
       ]
     },
     "d04-responsive-a11y": {
-      "verifiedAt": "2026-10-20T14:05:36.514Z",
+      "verifiedAt": "2026-10-20T17:25:11.583Z",
       "sourceHash": "d5c55e9c8683225e",
       "ok": true,
       "checks": [
@@ -4449,7 +4449,7 @@
       ]
     },
     "d05-dom-query": {
-      "verifiedAt": "2026-10-20T14:05:39.250Z",
+      "verifiedAt": "2026-10-20T17:25:14.288Z",
       "sourceHash": "b7b85ddfec4b1f46",
       "ok": true,
       "checks": [
@@ -4556,7 +4556,7 @@
       ]
     },
     "d06-dom-create-update": {
-      "verifiedAt": "2026-10-20T14:05:42.008Z",
+      "verifiedAt": "2026-10-20T17:25:17.293Z",
       "sourceHash": "ebe5cad9ffb7f976",
       "ok": true,
       "checks": [
@@ -4678,7 +4678,7 @@
       ]
     },
     "d07-events": {
-      "verifiedAt": "2026-10-20T14:05:47.430Z",
+      "verifiedAt": "2026-10-20T17:25:22.762Z",
       "sourceHash": "5fb16b205d4ef535",
       "ok": true,
       "checks": [
@@ -4785,7 +4785,7 @@
       ]
     },
     "d08-bubbling-delegation": {
-      "verifiedAt": "2026-10-20T14:05:51.549Z",
+      "verifiedAt": "2026-10-20T17:25:26.977Z",
       "sourceHash": "845d7d4b1dee89fc",
       "ok": true,
       "checks": [
@@ -4892,7 +4892,7 @@
       ]
     },
     "d09-form-validation": {
-      "verifiedAt": "2026-10-20T14:05:57.923Z",
+      "verifiedAt": "2026-10-20T17:25:33.472Z",
       "sourceHash": "01065e1fc63010b6",
       "ok": true,
       "checks": [
@@ -4984,7 +4984,7 @@
       ]
     },
     "d10-state-and-render": {
-      "verifiedAt": "2026-10-20T14:05:59.982Z",
+      "verifiedAt": "2026-10-20T17:25:35.534Z",
       "sourceHash": "470022db270eeb23",
       "ok": true,
       "checks": [
@@ -5076,7 +5076,7 @@
       ]
     },
     "e01-event-loop": {
-      "verifiedAt": "2026-10-20T14:06:00.803Z",
+      "verifiedAt": "2026-10-20T17:25:36.364Z",
       "sourceHash": "883cb12fb24c3566",
       "ok": true,
       "checks": [
@@ -5173,7 +5173,7 @@
       ]
     },
     "e02-promises": {
-      "verifiedAt": "2026-10-20T14:06:01.505Z",
+      "verifiedAt": "2026-10-20T17:25:37.068Z",
       "sourceHash": "8f3e67a17837ffc3",
       "ok": true,
       "checks": [
@@ -5290,7 +5290,7 @@
       ]
     },
     "e03-async-await": {
-      "verifiedAt": "2026-10-20T14:06:05.633Z",
+      "verifiedAt": "2026-10-20T17:25:41.229Z",
       "sourceHash": "1b2f511ac620deb4",
       "ok": true,
       "checks": [
@@ -5437,7 +5437,7 @@
       ]
     },
     "e04-promise-combinators": {
-      "verifiedAt": "2026-10-20T14:06:06.893Z",
+      "verifiedAt": "2026-10-20T17:25:42.520Z",
       "sourceHash": "e48032b238bce25f",
       "ok": true,
       "checks": [
@@ -5559,7 +5559,7 @@
       ]
     },
     "e05-fetch-json": {
-      "verifiedAt": "2026-10-20T14:06:10.821Z",
+      "verifiedAt": "2026-10-20T17:25:46.510Z",
       "sourceHash": "211dbf9d411ce153",
       "ok": true,
       "checks": [
@@ -5676,7 +5676,7 @@
       ]
     },
     "e06-runtime-validation": {
-      "verifiedAt": "2026-10-20T14:06:11.232Z",
+      "verifiedAt": "2026-10-20T17:25:46.951Z",
       "sourceHash": "f26e78e8606f3117",
       "ok": true,
       "checks": [
@@ -5773,7 +5773,7 @@
       ]
     },
     "e07-loading-states": {
-      "verifiedAt": "2026-10-20T14:16:12.388Z",
+      "verifiedAt": "2026-10-20T17:26:15.958Z",
       "sourceHash": "88e28d8c7211e9c1",
       "ok": true,
       "checks": [
@@ -5870,7 +5870,7 @@
       ]
     },
     "e08-abort-races": {
-      "verifiedAt": "2026-10-20T14:16:23.719Z",
+      "verifiedAt": "2026-10-20T17:26:27.177Z",
       "sourceHash": "0f3928890be14e34",
       "ok": true,
       "checks": [
@@ -5987,7 +5987,7 @@
       ]
     },
     "e09-storage-serialization": {
-      "verifiedAt": "2026-10-20T14:16:25.186Z",
+      "verifiedAt": "2026-10-20T17:26:28.638Z",
       "sourceHash": "237ffd886ed726ca",
       "ok": true,
       "checks": [
@@ -6079,7 +6079,7 @@
       ]
     },
     "e10-url-routing": {
-      "verifiedAt": "2026-10-20T14:54:58.924Z",
+      "verifiedAt": "2026-10-20T17:26:33.689Z",
       "sourceHash": "34a7b0289d2c3a57",
       "ok": true,
       "checks": [
@@ -6196,7 +6196,7 @@
       ]
     },
     "e11-cors": {
-      "verifiedAt": "2026-10-20T14:16:25.526Z",
+      "verifiedAt": "2026-10-20T17:26:34.008Z",
       "sourceHash": "ceca70dde8708dad",
       "ok": true,
       "checks": [
@@ -6278,7 +6278,7 @@
       ]
     },
     "e12-xss": {
-      "verifiedAt": "2026-10-20T14:16:26.994Z",
+      "verifiedAt": "2026-10-20T17:26:35.437Z",
       "sourceHash": "6289c56e8d06b561",
       "ok": true,
       "checks": [
@@ -6385,7 +6385,7 @@
       ]
     },
     "g01-jsx-components": {
-      "verifiedAt": "2026-10-20T15:46:39.049Z",
+      "verifiedAt": "2026-10-20T17:26:38.168Z",
       "sourceHash": "5d8c2030fa5446fd",
       "ok": true,
       "checks": [
@@ -6487,7 +6487,7 @@
       ]
     },
     "g02-props": {
-      "verifiedAt": "2026-10-20T14:55:03.857Z",
+      "verifiedAt": "2026-10-20T17:26:40.965Z",
       "sourceHash": "853cbe3532944ac6",
       "ok": true,
       "checks": [
@@ -6589,7 +6589,7 @@
       ]
     },
     "g03-events-state": {
-      "verifiedAt": "2026-10-20T14:07:06.715Z",
+      "verifiedAt": "2026-10-20T17:26:44.219Z",
       "sourceHash": "0a98baee8e519cd3",
       "ok": true,
       "checks": [
@@ -6681,7 +6681,7 @@
       ]
     },
     "g04-immutable-updates": {
-      "verifiedAt": "2026-10-20T14:55:07.477Z",
+      "verifiedAt": "2026-10-20T17:26:47.964Z",
       "sourceHash": "189224b1be89db30",
       "ok": true,
       "checks": [
@@ -6783,7 +6783,7 @@
       ]
     },
     "g05-lists-keys": {
-      "verifiedAt": "2026-10-20T14:55:10.884Z",
+      "verifiedAt": "2026-10-20T17:26:51.758Z",
       "sourceHash": "43cb5b39f6d96bea",
       "ok": true,
       "checks": [
@@ -6885,7 +6885,7 @@
       ]
     },
     "g06-controlled-forms": {
-      "verifiedAt": "2026-10-20T15:46:50.503Z",
+      "verifiedAt": "2026-10-20T17:27:03.065Z",
       "sourceHash": "da7f9a37b76fb57a",
       "ok": true,
       "checks": [
@@ -7002,7 +7002,7 @@
       ]
     },
     "g07-lifting-state": {
-      "verifiedAt": "2026-10-20T15:46:54.954Z",
+      "verifiedAt": "2026-10-20T17:27:07.470Z",
       "sourceHash": "ae3e7ea05ac3dd88",
       "ok": true,
       "checks": [
@@ -7119,7 +7119,7 @@
       ]
     },
     "g08-custom-hooks": {
-      "verifiedAt": "2026-10-20T15:14:10.615Z",
+      "verifiedAt": "2026-10-20T17:27:10.207Z",
       "sourceHash": "c95260d1b89831e9",
       "ok": true,
       "checks": [
@@ -7231,7 +7231,7 @@
       ]
     },
     "g09-refs": {
-      "verifiedAt": "2026-10-20T15:47:01.189Z",
+      "verifiedAt": "2026-10-20T17:27:16.537Z",
       "sourceHash": "9c6fe568c2cc6506",
       "ok": true,
       "checks": [
@@ -7328,7 +7328,7 @@
       ]
     },
     "g10-context": {
-      "verifiedAt": "2026-10-20T15:14:20.538Z",
+      "verifiedAt": "2026-10-20T17:27:20.348Z",
       "sourceHash": "cbfb66a1a083c9bf",
       "ok": true,
       "checks": [
@@ -7430,7 +7430,7 @@
       ]
     },
     "g11-effects": {
-      "verifiedAt": "2026-10-20T15:14:59.180Z",
+      "verifiedAt": "2026-10-20T17:27:59.202Z",
       "sourceHash": "d2ae4e6d97bb6588",
       "ok": true,
       "checks": [
@@ -7542,7 +7542,7 @@
       ]
     },
     "g12-effect-pitfalls": {
-      "verifiedAt": "2026-10-20T15:53:25.625Z",
+      "verifiedAt": "2026-10-20T17:28:05.748Z",
       "sourceHash": "b55f6bd650208eaf",
       "ok": true,
       "checks": [
@@ -7664,7 +7664,7 @@
       ]
     },
     "g13-routing": {
-      "verifiedAt": "2026-10-20T16:10:07.713Z",
+      "verifiedAt": "2026-10-20T17:28:12.083Z",
       "sourceHash": "66559c5aee8754f9",
       "ok": true,
       "checks": [
@@ -7781,7 +7781,7 @@
       ]
     },
     "g14-async-data": {
-      "verifiedAt": "2026-10-20T16:33:16.081Z",
+      "verifiedAt": "2026-10-20T17:29:06.797Z",
       "sourceHash": "648b42b191539ad3",
       "ok": true,
       "checks": [
@@ -7903,7 +7903,7 @@
       ]
     },
     "p1-01-plan-and-model": {
-      "verifiedAt": "2026-10-20T16:15:16.153Z",
+      "verifiedAt": "2026-10-20T17:29:07.259Z",
       "sourceHash": "b227af8bbf995e7f",
       "ok": true,
       "checks": [
@@ -7995,7 +7995,7 @@
       ]
     },
     "p1-02-render-and-add": {
-      "verifiedAt": "2026-10-20T16:19:24.047Z",
+      "verifiedAt": "2026-10-20T17:29:11.271Z",
       "sourceHash": "969d29e53acd6988",
       "ok": true,
       "checks": [
@@ -8092,7 +8092,7 @@
       ]
     },
     "p1-03-edit-delete": {
-      "verifiedAt": "2026-10-20T16:28:41.827Z",
+      "verifiedAt": "2026-10-20T17:29:15.657Z",
       "sourceHash": "fc6c57ebaa395f54",
       "ok": true,
       "checks": [
@@ -8179,7 +8179,7 @@
       ]
     },
     "p1-04-filters": {
-      "verifiedAt": "2026-10-20T16:50:56.372Z",
+      "verifiedAt": "2026-10-20T17:29:23.832Z",
       "sourceHash": "1f2df3a0304046a5",
       "ok": true,
       "checks": [
@@ -8272,6 +8272,103 @@
           "target": "exercise:url-filters:wrong:summary-without-total",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入时按标题筛选（不区分大小写），用 replaceState 更新地址 ⟶ expect(…).toHaveTextContent('显示 1 / 共 4 个任务'),文字和标签可以同时使用 ⟶ expect(…).toHaveTextContent('显示 1 / 共 4 个任务'),筛选时添加的任务按条件决定是否显示；总数随之变化 ⟶ expect(…).toHaveTextContent('显示 3 / 共 6 个任务'))"
+        }
+      ]
+    },
+    "p1-05-persistence": {
+      "verifiedAt": "2026-10-20T17:29:27.318Z",
+      "sourceHash": "3a140018b1a00491",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:versioned-load:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:versioned-load:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] null → {\n  ok: true,\n  settings: { theme: 'light', fontSize: 16 },\n  migrated: false\n} | [log] {\"version\":2,\"theme\":\"dark\",\"fontSize\":18} → {\n  ok: true,\n  settings: { theme: 'dark', fontSize: 18 },\n  migrated: false\n} | [log] {\"version\":1,\"dark\":true} → { ok: true, settings: { theme: 'dark', fontSize: 16 }, migrated: true } | [log] {\"version\":3} → { ok: false, error: '不支持的版本：3' } | [log] {\"version\":2,\"theme\":\"blue\",\"fontSize\":18} → { ok: false, error: '第 2 版的数据不正确' } | [log] not json → { ok: false, error: 'JSON 格式不正确' }"
+        },
+        {
+          "target": "exercise:storage-format:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(loadBoard › 不是 JSON、不是对象、不认识的版本 ⟶ SyntaxError: Unexpected token '不', \"不是 JSON\" is not valid JSON,loadBoard › 第 2 版中不合法的任务：报告是第几个 ⟶ {\"status\":\"archived\"},loadBoard › 编号重复、nextId 不正确 ⟶ expect(…).toEqual({ ok: false, error: '任务的编号重复：t2' }),loadBoard › 只保留认识的字段（例如不会把界面状态读进来） ⟶ expect(…).toEqual({,loadBoard › 第 1 版的数据：转换成第 2 版 ⟶ expect(…).toEqual({,loadBoard › 第 1 版中不合法的数据 ⟶ expect(…).toEqual({ ok: false, error: '第 2 个待办的数据不正确' }))"
+        },
+        {
+          "target": "exercise:storage-format:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:storage-format:alt:check-functions",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:storage-format:wrong:trust-json",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@17) tests=fail(loadBoard › 不是 JSON、不是对象、不认识的版本 ⟶ expect(…).toEqual({ ok: false, error: '数据的格式不正确' }),loadBoard › 第 2 版中不合法的任务：报告是第几个 ⟶ {\"status\":\"archived\"},loadBoard › 编号重复、nextId 不正确 ⟶ expect(…).toEqual({ ok: false, error: '任务的编号重复：t2' }),loadBoard › 只保留认识的字段（例如不会把界面状态读进来） ⟶ expect(…).toEqual({,loadBoard › 第 1 版的数据：转换成第 2 版 ⟶ expect(…).toEqual({,loadBoard › 第 1 版中不合法的数据 ⟶ expect(…).toEqual({ ok: false, error: '第 2 个待办的数据不正确' }))"
+        },
+        {
+          "target": "exercise:storage-format:wrong:keep-unknown-fields",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadBoard › 只保留认识的字段（例如不会把界面状态读进来） ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:storage-format:wrong:no-duplicate-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadBoard › 编号重复、nextId 不正确 ⟶ expect(…).toEqual({ ok: false, error: '任务的编号重复：t2' }),loadBoard › 第 1 版中不合法的数据 ⟶ expect(…).toEqual({ ok: false, error: '任务的编号重复：t1' }))"
+        },
+        {
+          "target": "exercise:storage-format:wrong:migrate-ignores-done",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadBoard › 第 1 版的数据：转换成第 2 版 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:storage-format:wrong:guess-version",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadBoard › 不是 JSON、不是对象、不认识的版本 ⟶ expect(…).toEqual({ ok: false, error: '不支持的版本：3' }))"
+        },
+        {
+          "target": "exercise:persist-board:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(添加之后按第 2 版的格式保存；刷新之后还在 ⟶ expect(…).toMatchObject({ version: 2, board: { nextId: 6 } }),移动、改名、删除都会保存 ⟶ expect(…).toEqual([ '写周报', '修好自行车' ]),旧版本的数据：转换之后显示，并用新的格式保存 ⟶ expect(…).toEqual([ '交房租' ]),保存的数据无法读取：从空的任务板开始，备份原来的数据，提示用户 ⟶ expect(…).toEqual([]),结构不对的数据同样说明原因 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",保存失败：提示用户，操作照常完成；下一次保存成功后提示消失 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",只保存任务板：改名中的状态、筛选条件都不保存 ⟶ expect(…).toEqual([ 'board', 'version' ]))"
+        },
+        {
+          "target": "exercise:persist-board:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:persist-board:alt:load-first",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:persist-board:wrong:no-backup",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保存的数据无法读取：从空的任务板开始，备份原来的数据，提示用户 ⟶ expect(…).toBe('{\"version\":2,\"board\":坏掉了'))"
+        },
+        {
+          "target": "exercise:persist-board:wrong:overwrite-on-failure",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保存的数据无法读取：从空的任务板开始，备份原来的数据，提示用户 ⟶ 在用户修改之前，不要覆盖原来的数据)"
+        },
+        {
+          "target": "exercise:persist-board:wrong:rename-not-saved",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(移动、改名、删除都会保存 ⟶ expect(…).toEqual([ '写周报', '修好自行车' ]))"
+        },
+        {
+          "target": "exercise:persist-board:wrong:quota-breaks-action",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保存失败：提示用户，操作照常完成；下一次保存成功后提示消失 ⟶ expect(…).toContain('很重要的任务'))"
+        },
+        {
+          "target": "exercise:persist-board:wrong:save-view-state",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(旧版本的数据：转换之后显示，并用新的格式保存 ⟶ expect(…).toMatchObject({ version: 2, board: { nextId: 6 } }),只保存任务板：改名中的状态、筛选条件都不保存 ⟶ expect(…).toEqual([ 'board', 'version' ]))"
         }
       ]
     }

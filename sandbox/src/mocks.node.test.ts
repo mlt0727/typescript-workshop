@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { createMockFetch } from './mocks.ts';
+import { createMemoryStorage, createMockFetch, MemoryStorage } from './mocks.ts';
+import { restoreAllMocks, spyOn } from './testing/mock.ts';
 
 const fixtures = [
   { url: '/api/user', body: { name: 'Ada' } },
@@ -79,5 +80,81 @@ describe('createMockFetch', () => {
     const err = await rejection(res.json());
     expect(err).toBeInstanceOf(DOMException);
     expect(err).toMatchObject({ name: 'TimeoutError' });
+  });
+});
+
+describe('createMemoryStorage', () => {
+  test('与 Web Storage 一致：值转成字符串，条目也可以像属性一样读写', () => {
+    const used = new Set<string>();
+    const storage = createMemoryStorage('localStorage', (f) => used.add(f));
+    storage.setItem('n', String(1));
+    storage.setItem('obj', { a: 1 } as unknown as string);
+    expect(storage.getItem('n')).toBe('1');
+    expect(storage.getItem('obj')).toBe('[object Object]');
+    expect(storage.getItem('missing')).toBeNull();
+    storage['x'] = 'y';
+    expect(storage.getItem('x')).toBe('y');
+    expect(Object.keys(storage)).toEqual(['n', 'obj', 'x']);
+    expect(storage.length).toBe(3);
+    expect(storage.key(0)).toBe('n');
+    storage.removeItem('n');
+    storage.clear();
+    expect(storage.length).toBe(0);
+    expect([...used]).toEqual(['localStorage']);
+  });
+
+  test('方法在原型上：instanceof、toString 与浏览器一致；不能直接构造', () => {
+    const storage = createMemoryStorage('sessionStorage', () => {});
+    expect(storage).toBeInstanceOf(MemoryStorage);
+    expect(Object.prototype.toString.call(storage)).toBe('[object Storage]');
+    expect(Object.hasOwn(storage, 'setItem')).toBe(false);
+    expect(() => new MemoryStorage()).toThrow(TypeError);
+    const { getItem } = storage;
+    expect(() => getItem('a')).toThrow(TypeError);
+  });
+
+  test('平台的 vi.spyOn：监视 Storage.prototype 上的方法；直接替换实例的方法会得到说明', () => {
+    const a = createMemoryStorage('localStorage', () => {});
+    const b = createMemoryStorage('sessionStorage', () => {});
+    try {
+      const spy = spyOn(MemoryStorage.prototype as unknown as Record<PropertyKey, unknown>, 'setItem');
+      a.setItem('k', 'v');
+      b.setItem('k', 'w');
+      expect(spy.mock.calls).toEqual([
+        ['k', 'v'],
+        ['k', 'w'],
+      ]);
+      expect(a.getItem('k')).toBe('v');
+      expect(b.getItem('k')).toBe('w');
+      spy.mockImplementation(() => {
+        throw new Error('满了');
+      });
+      expect(() => a.setItem('k', 'x')).toThrow('满了');
+      spy.mockRestore();
+      a.setItem('k', 'z');
+      expect(a.getItem('k')).toBe('z');
+      expect(() => spyOn(a as unknown as Record<PropertyKey, unknown>, 'setItem')).toThrow(/Storage\.prototype/);
+    } finally {
+      restoreAllMocks();
+    }
+  });
+
+  test('平台的 vi.spyOn 用调用时的 this 调用原来的函数', () => {
+    class Counter {
+      n = 0;
+      inc() {
+        this.n += 1;
+        return this.n;
+      }
+    }
+    const c = new Counter();
+    try {
+      const spy = spyOn(Counter.prototype as unknown as Record<PropertyKey, unknown>, 'inc');
+      expect(c.inc()).toBe(1);
+      expect(spy.mock.calls).toEqual([[]]);
+      expect(c.n).toBe(1);
+    } finally {
+      restoreAllMocks();
+    }
   });
 });

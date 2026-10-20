@@ -272,6 +272,91 @@ test.describe('DOM 模式', () => {
     expect(r.passed).toBe(true);
   });
 
+  test('page.reload() 模拟刷新：页面重新开始，地址与 localStorage 保留；下一个测试的存储是空的', async ({ page }) => {
+    await open(page);
+    const html = '<!doctype html><html lang="zh-CN"><body><button type="button" id="inc">加一</button><output id="n"></output><script type="module" src="./main.ts"></script></body></html>';
+    const main = [
+      'const button = document.getElementById("inc");',
+      'const out = document.getElementById("n");',
+      'let n = Number(localStorage.getItem("n") ?? "0");',
+      'if (out) out.textContent = String(n);',
+      'button?.addEventListener("click", () => {',
+      '  n += 1;',
+      '  localStorage.setItem("n", String(n));',
+      '  if (out) out.textContent = String(n);',
+      '});',
+    ].join('\n');
+    const tests = {
+      'reload.test.ts': [
+        'import { expect, test } from "vitest";',
+        'import { page } from "vitest/browser";',
+        'const shown = () => document.getElementById("n")?.textContent;',
+        'test("刷新之后，保存的数据还在", async () => {',
+        '  document.getElementById("inc")?.click();',
+        '  document.getElementById("inc")?.click();',
+        '  history.replaceState(null, "", "?from=test");',
+        '  expect(shown()).toBe("2");',
+        '  await page.reload();',
+        '  expect(shown()).toBe("2");',
+        '  expect(location.search).toBe("?from=test");',
+        '  document.getElementById("inc")?.click();',
+        '  expect(shown()).toBe("3");',
+        '});',
+        'test("从一份特定的存储数据开始", async () => {',
+        '  expect(shown(), "每个测试开始前存储是空的").toBe("0");',
+        '  localStorage.setItem("n", "41");',
+        '  await page.reload();',
+        '  expect(shown()).toBe("41");',
+        '});',
+      ].join('\n'),
+    };
+    const r = await judge(page, baseSpec('dom', 'index.html'), { student: { 'index.html': html, 'main.ts': main }, support: {}, tests });
+    expect(r.tests.results.map((t) => [t.name, t.status, t.error?.message])).toEqual([
+      ['刷新之后，保存的数据还在', 'pass', undefined],
+      ['从一份特定的存储数据开始', 'pass', undefined],
+    ]);
+  });
+
+  test('测试中的后退、前进在同一个页面中完成（异步、popstate 与 hashchange），之后页面不会被重新加载', async ({ page }) => {
+    await open(page);
+    const html = '<!doctype html><html lang="zh-CN"><body><p id="out"></p><script type="module" src="./main.ts"></script></body></html>';
+    const tests = {
+      'history.test.ts': [
+        'import { expect, test } from "vitest";',
+        'const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));',
+        'test("后退两条、前进一条", async () => {',
+        '  const events: string[] = [];',
+        '  window.addEventListener("popstate", (e) => events.push(`popstate ${location.search}${location.hash} ${JSON.stringify(e.state)}`));',
+        '  window.addEventListener("hashchange", () => events.push(`hashchange ${location.hash}`));',
+        '  history.pushState({ n: 1 }, "", "?step=1");',
+        '  history.pushState({ n: 2 }, "", "?step=1#detail");',
+        '  history.back();',
+        '  history.back();',
+        '  expect(location.hash, "后退是异步的").toBe("#detail");',
+        '  await wait(50);',
+        '  expect(events).toEqual(["popstate ?step=1 {\\"n\\":1}", "hashchange ", "popstate  null"]);',
+        '  expect(location.search).toBe("");',
+        '  history.forward();',
+        '  await wait(50);',
+        '  expect(location.search).toBe("?step=1");',
+        '  expect(history.state).toEqual({ n: 1 });',
+        '  await wait(1000);',
+        '  expect(document.getElementById("out")?.textContent, "页面没有被重新加载").toBe("loaded once");',
+        '});',
+        'test("下一个测试照常运行", () => {',
+        '  expect(location.search).toBe("");',
+        '});',
+      ].join('\n'),
+    };
+    const main = 'const out = document.getElementById("out");\nif (out) out.textContent = "loaded once";\nexport {};';
+    const r = await judge(page, baseSpec('dom', 'index.html'), { student: { 'index.html': html, 'main.ts': main }, support: {}, tests });
+    expect(r.tests.error).toBeUndefined();
+    expect(r.tests.results.map((t) => [t.name, t.status, t.error?.message])).toEqual([
+      ['后退两条、前进一条', 'pass', undefined],
+      ['下一个测试照常运行', 'pass', undefined],
+    ]);
+  });
+
   test('每个测试前恢复页面的初始地址（history.pushState 不会影响下一个测试）', async ({ page }) => {
     await open(page);
     const tests = {

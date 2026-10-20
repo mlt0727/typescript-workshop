@@ -8,7 +8,7 @@
 |---|---|
 | 平台功能（M1） | ✅ 最小完整学习闭环已实现并通过自动化测试 |
 | 同步 / 问 AI / 部署（M2） | ✅ 同步与部署已上线并验证；问 AI 已实现，**未配置密钥，未做线上调用验证** |
-| 课程编写 | ⚠ 已发布 **73 / 126** 节：A 阶段 20 节、B 阶段 17 节、D 阶段 10 节、E 阶段 12 节（e01–e12）、G 阶段 14 节（g01–g14）；草稿 3 节（项目 1 的里程碑 p1-01–p1-03，已在 Chromium 与 WebKit 中通过浏览器验证，尚未审查）；其余 50 节为规划中 |
+| 课程编写 | ⚠ 已发布 **73 / 126** 节：A 阶段 20 节、B 阶段 17 节、D 阶段 10 节、E 阶段 12 节（e01–e12）、G 阶段 14 节（g01–g14）；草稿 5 节（项目 1 的里程碑 p1-01–p1-05，已在 Chromium 与 WebKit 中通过浏览器验证，尚未审查）；其余 48 节为规划中 |
 | 课程审核 | ⚠ 已发布的 73 节：浏览器自动验证 + 独立 AI 审查 + 按意见修正（`self-reviewed`）；**没有人工审核** |
 | 项目实验（I 阶段） | ⬜ 未开始 |
 | Next.js 实验（H 阶段） | ⬜ 未开始 |
@@ -49,6 +49,9 @@
 | 课程 Markdown 中作者写的原始 HTML（例如没有加反引号的 `<T>`）当作文字显示，`content:check` 报告为错误 | ✅ | 单元测试 3 项；全部课程的检查 |
 | 测试 API 的 `toHaveTextContent('')` 与 jest-dom 一致（只有内容为空才通过） | ✅ | 单元测试 2 项 |
 | 课程验证：声明“在测试中失败”的错误解必须能通过类型与规则检查（否则它是因为一个无关的错误被拒绝的） | ✅ | 全部课程的验证记录中没有违反的错误解；g14 中新写的测试有类型错误时被它发现 |
+| 测试中模拟刷新页面：`page.reload()`（平台扩展，DOM 模式）重新执行入口文件，保留地址与模拟的存储；每个测试开始前清空 `localStorage`/`sessionStorage` | ✅ | e2e（Chromium、WebKit）；p1-05 的挑战使用它 |
+| 模拟的 `Storage`：方法在原型上（`localStorage instanceof Storage`），可以 `vi.spyOn(Storage.prototype, 'setItem')` 模拟存储已满；直接替换实例的方法时报错并给出写法。`vi.spyOn` 用调用时的 `this` 调用原函数（与 Vitest 一致） | ✅ | 单元测试 4 项 |
+| 沙箱中的 `history.back/forward/go`：在本页面自己的条目之间模拟完成（异步；恢复地址与 `history.state`，触发 `popstate`，只有片段不同时再触发 `hashchange`）。修复前，后退之后页面会被浏览器重新加载（Chromium 后退到加载时的条目、WebKit 任意条目之间，已实测），之后的测试被“页面被导航离开”中止 | ✅ | e2e（Chromium、WebKit）；e10、g13、p1-04 在 WebKit 中重新验证 |
 
 ## 已运行的检查（2026-10-20，Windows 11，Node 24.13）
 
@@ -56,13 +59,13 @@
 |---|---|
 | `npm run typecheck` | 通过 |
 | `npm run lint` | 通过 |
-| `npm test` | 7 个文件、107 项全部通过 |
-| `npm run content:check` | 已发布 73、草稿 3、错误 0、提醒 0 |
+| `npm test` | 8 个文件、112 项全部通过 |
+| `npm run content:check` | 已发布 73、草稿 5、错误 0、提醒 0 |
 | `npm run content:links` | 235 个参考链接全部可访问 |
-| `npm run content:verify`（Chromium） | 已发布的 73 节与草稿 p1-01–p1-03 全部通过，验证记录与当前源文件一致（每节 15–29 项检查：示例的诊断与运行结果、参考解、替代解、错误解、起始代码） |
-| `npm run content:verify:webkit` | A、B 阶段 37 节（修复前的一次运行）与 D、E、G 阶段 29 节（修复后）全部通过；第 14 轮修改后的 7 节（e10、g01、g02、g04–g07）再次通过；g08–g11 在第 15 轮修改后通过；g12–g14、p1-01–p1-03 通过 |
+| `npm run content:verify`（Chromium） | 平台修改（模拟存储、`vi.spyOn`、历史记录）后全部重新验证：已发布的 73 节与草稿 p1-01–p1-05 全部通过，验证记录与当前源文件一致（每节 15–29 项检查：示例的诊断与运行结果、参考解、替代解、错误解、起始代码） |
+| `npm run content:verify:webkit` | 平台修改后全部重新验证：已发布的 73 节与草稿 p1-01–p1-05 全部通过（11.8 分钟） |
 | `npm run build` | 通过 |
-| `npx playwright test --project=e2e --project=e2e-webkit`（生产预览，含 CSP） | 65 项全部通过（Chromium 45、WebKit 20） |
+| `npx playwright test --project=e2e --project=e2e-webkit`（生产预览，含 CSP） | 69 项全部通过（新增 `page.reload()` 与历史记录模拟的两个测试，各在两个引擎中运行） |
 
 **未验证**：Firefox（本机 Playwright 无法启动 Firefox：`spawn UNKNOWN`）；真实的 Safari 和 iPhone（WebKit 的结果来自 Playwright 的 WebKit 构建）；真实移动设备（只做了视口模拟）；问 AI 的真实模型调用；中国大陆网络下访问 `*.vercel.app` 的可用性。
 
@@ -127,7 +130,7 @@
 
 ## 下一步（按计划顺序）
 
-1. 项目 1（原生 TS 任务板）：p1-01–p1-03 已完成草稿，接着是 p1-04（筛选与地址）、p1-05（保存与验证），然后统一审查后发布；p1-06 依赖 F 阶段。
+1. 项目 1（原生 TS 任务板）：p1-01–p1-05 已完成草稿并通过两个浏览器的验证，接着统一做独立审查，修改后发布；p1-06 依赖 F 阶段。
 2. g15 的先修课 f08（DOM 测试）属于 F 阶段，需要先编写 F 阶段或调整先修关系。
 3. F 阶段（工程化、测试、调试、Git、构建与 CI）与 e13（密钥边界）。
 4. 为“课程更新后草稿处理”补充 e2e。

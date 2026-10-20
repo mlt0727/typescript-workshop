@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 73 / 规划总数 126**（草稿 4，规划中 49）
+**已发布 73 / 规划总数 126**（草稿 5，规划中 48）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -179,7 +179,7 @@
 | `p1-02-render-and-add` 项目 1·任务板：渲染与新增 | 📝 草稿 | `p1-01-plan-and-model` |
 | `p1-03-edit-delete` 项目 1·任务板：编辑与删除（事件委托） | 📝 草稿 | `p1-02-render-and-add` |
 | `p1-04-filters` 项目 1·任务板：过滤与 URL 状态 | 📝 草稿 | `p1-03-edit-delete`、`e10-url-routing` |
-| `p1-05-persistence` 项目 1·任务板：持久化与数据校验 | ⬜ 规划中 | `p1-04-filters`、`e09-storage-serialization` |
+| `p1-05-persistence` 项目 1·任务板：持久化与数据校验 | 📝 草稿 | `p1-04-filters`、`e09-storage-serialization` |
 | `p1-06-local-project` 项目 1·任务板：本地工程、测试与导出 | ⬜ 规划中 | `p1-05-persistence`、`f08-dom-tests` |
 | `i01-static-vs-server` 静态站点与服务端应用的区别 | ⬜ 规划中 | `f12-build-ci` |
 | `i02-deploy-static` 部署静态站点：构建、路由刷新与资源路径 | ⬜ 规划中 | `i01-static-vs-server` |
