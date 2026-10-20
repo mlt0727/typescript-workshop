@@ -1,0 +1,47 @@
+- id: default-button-type
+  type: single
+  prompt: 表单里有一个 `<button>添加一行</button>`，没有写 `type`。点击它会怎样？
+  options:
+    - text: 提交表单
+      correct: true
+      explain: "`<button>` 的 `type` 默认是 `submit`。只用来配合脚本的按钮要写 `type=\"button\"`。"
+    - text: 什么都不做，等待脚本处理
+      explain: 那是 `type="button"` 的行为，需要明确写出来。
+    - text: 把表单恢复成初始值
+      explain: 那是 `type="reset"` 的行为。
+- id: radio-group
+  type: single
+  prompt: 两个单选按钮可以同时被选中，最可能的原因是什么？
+  options:
+    - text: 它们的 `name` 不一样
+      correct: true
+      explain: 只有 `name` 相同的单选按钮才是一组、互相排斥。
+    - text: 它们没有放在 `<fieldset>` 里
+      explain: "`fieldset` 只是给这组控件命名和分组，互斥取决于 `name`。"
+    - text: 它们的 `value` 一样
+      explain: "`value` 只是提交时的值，和互斥无关。"
+- id: placeholder
+  type: multiple
+  prompt: 为什么不应该只用 `placeholder` 代替 `<label>`？
+  options:
+    - text: 用户开始输入后，提示文字就消失了
+      correct: true
+      explain: 填到一半，用户可能忘了这个框是填什么的。
+    - text: 它不一定会被当作控件的可访问名称
+      correct: true
+      explain: 屏幕阅读器和 `getByLabelText` 依靠的都是 label。
+    - text: 浏览器会把 placeholder 的文字当作值提交
+      explain: placeholder 只是显示的提示，不会被提交。
+    - text: 点击 placeholder 文字不会聚焦输入框
+      explain: placeholder 就在输入框里面，点击它当然会聚焦输入框；真正的问题是前两项。
+- id: client-validation
+  type: single
+  prompt: 注册表单已经用 `required`、`type="email"`、`minlength` 做了验证。服务端还需要验证这些数据吗？
+  options:
+    - text: 需要。浏览器验证只是为了用户体验，任何人都可以绕过网页直接发送请求
+      correct: true
+      explain: 客户端的一切都在用户的控制之下，服务端必须把收到的数据当作不可信的输入。
+    - text: 不需要，浏览器已经保证数据合格
+      explain: 关掉验证（`novalidate`）、修改页面，或者直接用工具发请求，都能绕过它。
+    - text: 只有密码需要再验证
+      explain: 所有数据都需要。

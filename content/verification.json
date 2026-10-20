@@ -4117,6 +4117,118 @@
         }
       ]
     },
+    "d02-html-forms": {
+      "verifiedAt": "2026-10-20T11:31:30.326Z",
+      "sourceHash": "10f6444d8395406d",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:labels:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:labels:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:controls:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:controls:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:validation:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:validation:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:signup-form:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(邮箱：有标签、必填、检查格式,密码：内容被遮住，至少 8 个字符，必填,学习方向：一组单选按钮，默认选中前端，只能选一个,同意协议：必须勾选的复选框,“注册”提交表单；必填项没填时浏览器不提交)"
+        },
+        {
+          "target": "exercise:signup-form:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:signup-form:alt:wrapping-labels-and-input-submit",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:signup-form:wrong:placeholder-as-label",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(邮箱：有标签、必填、检查格式,“注册”提交表单；必填项没填时浏览器不提交)"
+        },
+        {
+          "target": "exercise:signup-form:wrong:email-as-text",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(邮箱：有标签、必填、检查格式)"
+        },
+        {
+          "target": "exercise:signup-form:wrong:separate-radio-names",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(学习方向：一组单选按钮，默认选中前端，只能选一个,“注册”提交表单；必填项没填时浏览器不提交)"
+        },
+        {
+          "target": "exercise:signup-form:wrong:button-not-submit",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(“注册”提交表单；必填项没填时浏览器不提交)"
+        },
+        {
+          "target": "exercise:signup-form:wrong:checkbox-without-value",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(“注册”提交表单；必填项没填时浏览器不提交)"
+        },
+        {
+          "target": "exercise:settings-form:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(推送频率：下拉选择，默认每周,每次最多推送：1 到 10 的整数，默认 5，必填,感兴趣的主题：一组同名复选框，默认只勾选类型系统,备注：多行文本框，最多 200 个字符,“预览”不提交表单，“保存”提交表单,“恢复默认”把所有控件恢复成默认值，不提交表单)"
+        },
+        {
+          "target": "exercise:settings-form:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings-form:alt:wrapping-labels",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings-form:wrong:preview-submits",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(“预览”不提交表单，“保存”提交表单)"
+        },
+        {
+          "target": "exercise:settings-form:wrong:reset-as-button",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(“恢复默认”把所有控件恢复成默认值，不提交表单)"
+        },
+        {
+          "target": "exercise:settings-form:wrong:no-range",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每次最多推送：1 到 10 的整数，默认 5，必填)"
+        },
+        {
+          "target": "exercise:settings-form:wrong:default-by-text",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(推送频率：下拉选择，默认每周,“恢复默认”把所有控件恢复成默认值，不提交表单)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",
