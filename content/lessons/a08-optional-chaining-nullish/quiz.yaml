@@ -1,0 +1,56 @@
+- id: predict-or-nullish
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    const count: number = 0;
+    const text: string = '';
+    console.log([count || 10, count ?? 10, text ?? '默认']);
+    ```
+  options:
+    - text: "`[ 10, 0, '' ]`"
+      correct: true
+      explain: "`0` 是 falsy，所以 `count || 10` 得到 `10`；但 `0` 不是 `null`/`undefined`，`count ?? 10` 保留 `0`；同理空字符串也被 `??` 保留。"
+    - text: "`[ 10, 10, '默认' ]`"
+      explain: 这是把 `??` 当成 `||` 的结果。`??` 只在左边为 `null` 或 `undefined` 时才取右边。
+    - text: "`[ 0, 0, '' ]`"
+      explain: "`||` 在左边为任何 falsy 值（包括 `0`）时都会取右边，所以第一项是 `10`。"
+    - text: "`[ 10, 0, '默认' ]`"
+      explain: 空字符串不是 `null` 或 `undefined`，`??` 不会替换它。
+- id: which-trigger
+  type: multiple
+  prompt: 当 `x` 是下列哪些值时，`x ?? 'd'` 的结果是 `'d'`？
+  options:
+    - text: "`undefined`"
+      correct: true
+      explain: "`??` 对 `undefined` 生效。"
+    - text: "`null`"
+      correct: true
+      explain: "`??` 对 `null` 生效。"
+    - text: "`0`"
+      explain: "`0` 是 falsy，但不是 null/undefined，`??` 返回 `0` 本身。"
+    - text: "`''`（空字符串）"
+      explain: 空字符串同样只是 falsy，`??` 原样返回它。
+    - text: "`NaN`"
+      explain: "`NaN` 是 falsy，但不是 null/undefined，`??` 返回 `NaN`。"
+- id: short-circuit
+  type: single
+  prompt: |
+    下面的代码会怎样？
+
+    ```ts
+    type Doc = { meta?: { tags: string[] } };
+    const doc: Doc = {};
+    console.log(doc.meta?.tags.length);
+    ```
+  options:
+    - text: 输出 `undefined`
+      correct: true
+      explain: "`doc.meta` 是 `undefined`，在 `?.` 处整条链短路，后面的 `.tags.length` 都不会执行。TypeScript 推断这个表达式的类型是 `number | undefined`。"
+    - text: 抛出 `TypeError`，因为 `.tags` 前面没有 `?.`
+      explain: 短路会跳过同一条链上后面的所有访问，所以 `.tags` 不会在 `undefined` 上执行。只有当 `meta` 存在而 `tags` 缺失时才需要第二个 `?.`——这里 `tags` 不是可选属性。
+    - text: 输出 `0`
+      explain: "`?.` 短路的结果是 `undefined`，不是 `0`。"
+    - text: 无法通过类型检查
+      explain: 这段代码没有类型错误：`meta` 可能缺失，已经用 `?.` 处理；`tags` 在 `meta` 存在时一定存在。

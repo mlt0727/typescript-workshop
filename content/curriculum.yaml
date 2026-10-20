@@ -14,7 +14,7 @@ stages:
       - { id: a05-null-undefined, title: null 与 undefined, status: planned, prerequisites: [a04-primitives-strings] }
       - { id: a06-operators-equality, title: 运算符、=== 与类型转换, status: planned, prerequisites: [a05-null-undefined] }
       - { id: a07-truthy-falsy, title: truthy 与 falsy, status: planned, prerequisites: [a06-operators-equality] }
-      - { id: a08-optional-chaining-nullish, title: ?.、?? 与 || 的区别, status: planned, prerequisites: [a07-truthy-falsy] }
+      - { id: a08-optional-chaining-nullish, title: ?.、?? 与 || 的区别, status: draft, prerequisites: [a07-truthy-falsy] }
       - { id: a09-control-flow, title: 条件与循环的快速迁移, status: planned, prerequisites: [a07-truthy-falsy] }
       - { id: a10-arrays, title: 数组基础与越界访问, status: planned, prerequisites: [a09-control-flow] }
       - { id: a11-objects-references, title: 对象、引用与浅拷贝, status: planned, prerequisites: [a10-arrays] }

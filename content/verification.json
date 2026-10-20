@@ -1,0 +1,152 @@
+{
+  "tsVersion": "6.0.3",
+  "lessons": {
+    "a08-optional-chaining-nullish": {
+      "verifiedAt": "2026-10-20T08:35:12.838Z",
+      "sourceHash": "0daf762c12bd945d",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:crash:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:crash:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of undefined (reading 'nickname')）；输出：[log] 开始读取 | [error] Uncaught TypeError: Cannot read properties of undefined (reading 'nickname')\n    at main.ts:11:25"
+        },
+        {
+          "target": "playground:forms:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:forms:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] undefined | [log] bobby | [log] math | [log] undefined | [log] undefined | [log] hi | [log] undefined"
+        },
+        {
+          "target": "playground:or-vs-nullish:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:or-vs-nullish:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] || 的结果： { volume: 50, title: '未命名', muted: true } | [log] ?? 的结果： { volume: 0, title: '', muted: false } | [log] 字段缺失时： { volume: 50, title: '未命名' }"
+        },
+        {
+          "target": "playground:mixing:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:mixing:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（SyntaxError: Unexpected token '??'）；输出：[error] Uncaught SyntaxError: Unexpected token '??'"
+        },
+        {
+          "target": "playground:nullish-assign:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:nullish-assign:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { label: '', retries: 3 }"
+        },
+        {
+          "target": "exercise:get-city:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS18048@city.ts:12 'order.customer' is possibly 'undefined'.；TS18048@city.ts:12 'order.customer.address' is possibly 'undefined'.) rules=ok tests=fail(没有顾客时返回 undefined,有顾客但没有地址时返回 undefined)"
+        },
+        {
+          "target": "exercise:get-city:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:get-city:alt:and-chain",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:get-city:wrong:only-first-level",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18048@city.ts:12 'order.customer.address' is possibly 'undefined'.) rules=ok tests=fail(有顾客但没有地址时返回 undefined)"
+        },
+        {
+          "target": "exercise:get-city:wrong:non-null",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(non-null-assertion@12,non-null-assertion@12) tests=fail(没有顾客时返回 undefined,有顾客但没有地址时返回 undefined)"
+        },
+        {
+          "target": "exercise:get-city:wrong:hardcoded",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(没有顾客时返回 undefined,有顾客但没有地址时返回 undefined)"
+        },
+        {
+          "target": "exercise:with-defaults:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(保留 0、空字符串和 false,每个字段独立处理)"
+        },
+        {
+          "target": "exercise:with-defaults:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-defaults:alt:explicit-undefined-check",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-defaults:wrong:keeps-or",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保留 0、空字符串和 false)"
+        },
+        {
+          "target": "exercise:with-defaults:wrong:truthy-ternary",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保留 0、空字符串和 false,每个字段独立处理)"
+        },
+        {
+          "target": "exercise:format-profile:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(formatProfile › 数据完整,formatProfile › 0 不算缺失,formatProfile › 嵌套对象缺失或为 null,formatProfile › 名字为空字符串时显示编号 ,formatProfile › 名字为null时显示编号 null,formatProfile › 名字为缺失时显示编号 undefined,formatProfile › 题目中的示例)"
+        },
+        {
+          "target": "exercise:format-profile:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:format-profile:alt:explicit-checks",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:format-profile:wrong:all-or",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 0 不算缺失,formatProfile › 题目中的示例)"
+        },
+        {
+          "target": "exercise:format-profile:wrong:all-nullish",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 名字为空字符串时显示编号 )"
+        },
+        {
+          "target": "exercise:format-profile:wrong:non-null-stats",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(non-null-assertion@15,non-null-assertion@16) tests=fail(formatProfile › 嵌套对象缺失或为 null)"
+        },
+        {
+          "target": "exercise:format-profile:wrong:no-defaults",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatProfile › 嵌套对象缺失或为 null,formatProfile › 题目中的示例)"
+        }
+      ]
+    }
+  }
+}

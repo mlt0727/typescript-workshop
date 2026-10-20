@@ -56,7 +56,10 @@ export class TestCollector {
           (name: string, body: (...args: unknown[]) => unknown, timeout?: number) => {
             cases.forEach((c, i) => {
               const args = Array.isArray(c) ? c : [c];
-              const title = /%[sdijoO#]/.test(name) ? format(name.replace(/%#/g, String(i)), ...args) : `${name} (${i})`;
+              // 与 Vitest 相同：只替换占位符，不把多余的参数追加到标题末尾
+              const template = name.replace(/%#/g, String(i));
+              const placeholders = (template.match(/%[sdifjoO]/g) ?? []).length;
+              const title = placeholders > 0 ? format(template, ...args.slice(0, placeholders)) : `${template} (${i})`;
               this.register(title, () => body(...args), timeout, false);
             });
           },

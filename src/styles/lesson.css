@@ -1,0 +1,256 @@
+.lesson {
+  max-width: var(--content-width);
+}
+.breadcrumb {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+.lesson-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.lesson-intro {
+  margin: 1rem 0 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.lesson-problem {
+  margin-top: 0;
+}
+.objectives {
+  margin: 0.2rem 0 0.6rem;
+  padding-left: 1.3rem;
+}
+.prereqs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.6rem;
+  align-items: baseline;
+  font-size: 0.92rem;
+}
+.prereqs ul {
+  display: contents;
+  list-style: none;
+}
+.prereqs li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.prereq-note {
+  flex-basis: 100%;
+  margin: 0.3rem 0 0;
+  color: var(--text-muted);
+}
+
+/* —— 正文排版 —— */
+.prose {
+  line-height: 1.8;
+}
+.prose p {
+  margin: 0.7rem 0;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.4rem;
+}
+.prose li {
+  margin: 0.2rem 0;
+}
+.prose :not(pre) > code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  font-size: 0.88em;
+}
+.prose table {
+  border-collapse: collapse;
+  margin: 0.8rem 0;
+  font-size: 0.92rem;
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.prose th,
+.prose td {
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+.prose th {
+  background: var(--surface-sunken);
+}
+.prose blockquote {
+  margin: 0.8rem 0;
+  padding: 0.3rem 1rem;
+  border-left: 4px solid var(--accent);
+  background: var(--info-soft);
+  border-radius: 0 var(--radius-small) var(--radius-small) 0;
+}
+.code-block {
+  margin: 0.8rem 0;
+}
+.code-block pre.shiki {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  white-space: pre;
+  font-size: 0.9em;
+  line-height: 1.6;
+  background-color: var(--shiki-light-bg, var(--surface-sunken));
+}
+.code-block pre.shiki span {
+  color: var(--shiki-light);
+}
+:root[data-theme='dark'] .code-block pre.shiki {
+  background-color: var(--shiki-dark-bg, var(--surface-sunken));
+}
+:root[data-theme='dark'] .code-block pre.shiki span {
+  color: var(--shiki-dark);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-theme='system'] .code-block pre.shiki {
+    background-color: var(--shiki-dark-bg, var(--surface-sunken));
+  }
+  :root[data-theme='system'] .code-block pre.shiki span {
+    color: var(--shiki-dark);
+  }
+}
+.read-sentinel {
+  height: 1px;
+}
+
+/* —— 参考资料与课程导航 —— */
+.references {
+  margin-top: 2.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+.references ul {
+  padding-left: 1.2rem;
+}
+.references li {
+  margin: 0.3rem 0;
+}
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+.lesson-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-decoration: none;
+  max-width: 100%;
+}
+
+/* —— 测验 —— */
+.quiz {
+  margin: 2rem 0;
+}
+.quiz-question {
+  margin: 1rem 0;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  min-width: 0;
+}
+.quiz-question legend {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0 0.3rem;
+  font-weight: 600;
+}
+.quiz-question.correct {
+  border-color: var(--ok);
+}
+.quiz-question.incorrect {
+  border-color: var(--danger);
+}
+.quiz-options {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+}
+.quiz-option {
+  margin: 0.4rem 0;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-small);
+}
+.quiz-option label {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+  cursor: pointer;
+}
+.quiz-option-text {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+.quiz-option-text p {
+  margin: 0;
+}
+.quiz-option.right {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+.quiz-option.wrong {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+.verdict {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.quiz-option.right .verdict {
+  color: var(--ok);
+}
+.quiz-option.wrong .verdict {
+  color: var(--danger);
+}
+.quiz-explain {
+  margin-top: 0.3rem;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+.quiz-explain p {
+  margin: 0.3rem 0;
+}
+.quiz-more summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+.quiz-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+}
+.quiz-result {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  font-weight: 600;
+}
+.quiz-index {
+  color: var(--text-muted);
+}

@@ -3,6 +3,7 @@ import { judge, pageInput, type JudgeFiles, type JudgeSpec } from '../judge/judg
 import { startRun, type RunOptions } from '../runner/runner.ts';
 import type { LogEntry, RunStatus, SerializedError } from '../shared/sandbox-protocol.ts';
 import type { ProjectSpec } from '../compiler/core/types.ts';
+import { listLessonIds, verifyLesson } from './content-verify.ts';
 
 export interface RunCodeResult {
   status: RunStatus;
@@ -14,6 +15,8 @@ export interface RunCodeResult {
 
 /** 在验证页上暴露给 Playwright 的接口。 */
 const api = {
+  listLessonIds,
+  verifyLesson,
   async diagnostics(projectId: string, spec: ProjectSpec) {
     return getCompiler().call('diagnostics', { projectId, spec });
   },

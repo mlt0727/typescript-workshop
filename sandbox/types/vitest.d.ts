@@ -10,8 +10,12 @@ export interface TestAPI {
   (name: string, fn: TestFunction, timeout?: number): void;
   /** 跳过此测试（结果中显示为“跳过”）。 */
   skip(name: string, fn: TestFunction, timeout?: number): void;
-  /** 为每组参数生成一个测试；名称中的 %s / %d / %j / %o 会被参数替换。 */
-  each<T>(cases: readonly T[]): (name: string, fn: (...args: T extends readonly unknown[] ? T : [T]) => Awaitable<void>, timeout?: number) => void;
+  /**
+   * 为每组参数生成一个测试；名称中的 %s / %d / %i / %j / %o 依次被参数替换。
+   * 每组参数是数组时展开为多个参数（与 Vitest 相同）。
+   */
+  each<T extends readonly unknown[] | [unknown]>(cases: readonly T[]): (name: string, fn: (...args: T) => Awaitable<void>, timeout?: number) => void;
+  each<T>(cases: readonly T[]): (name: string, fn: (arg: T) => Awaitable<void>, timeout?: number) => void;
 }
 
 export declare const test: TestAPI;
