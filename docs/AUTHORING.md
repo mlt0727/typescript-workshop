@@ -93,7 +93,7 @@ title: 安全地读取收货城市
 
 测试使用平台内置的 Vitest 兼容子集（`import { test, expect, describe, vi } from 'vitest'`，可用的 API 见 `sandbox/types/vitest.d.ts`），以及 `@testing-library/dom`、`@testing-library/react`、`@testing-library/user-event`。类型测试用 `expectTypeOf` 或 `// @ts-expect-error`。
 
-DOM 模式的测试：每个测试开始前，平台会把页面恢复成 `index.html` 的初始状态并重新运行学生的入口文件。React 模式的测试：在测试里 `render(<组件 />)`，每个测试后自动 `cleanup()`。
+DOM 模式的测试：每个测试开始前，平台会把页面恢复成 `index.html` 的初始状态并重新运行学生的入口文件。纯 HTML/CSS 的页面（`index.html` 里没有 module script，也没有 `main.ts`）不运行任何脚本，适合 HTML 语义与 CSS 布局的练习：学生文件就是 `index.html`/`style.css`，测试用角色查询（`getByRole`）检查结构，用 `toHaveStyle` 检查计算后的样式（只检查与布局尺寸无关的属性，例如 `display`、`flex-direction`，因为预览区的宽度不固定）。React 模式的测试：在测试里 `render(<组件 />)`，每个测试后自动 `cleanup()`。
 
 ### 测验 quiz.yaml
 

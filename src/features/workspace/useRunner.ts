@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getCompiler } from '../../compiler/client.ts';
 import type { CompilerOverrides, RunMode } from '../../compiler/config.ts';
-import { entryFromHtml, pageInput } from '../../judge/judge.ts';
+import { pageInput, runEntries } from '../../judge/judge.ts';
 import { startRun, type RunHandle } from '../../runner/runner.ts';
 import type { FetchFixture, LogEntry, RunStatus, SerializedError } from '../../shared/sandbox-protocol.ts';
 
@@ -49,13 +49,12 @@ export function useRunner(opts: {
     handleRef.current = null;
     const seq = ++runSeq.current;
     setState({ status: 'compiling', logs: [], simulated: [], ranFiles: files, startedAt: Date.now() });
-    const entry = o.mode === 'dom' ? (entryFromHtml(files['index.html']) ?? o.entry) : o.entry;
     let bundle;
     try {
       const built = await getCompiler().call('buildRun', {
         projectId: o.projectId,
         spec: { mode: o.mode, overrides: o.overrides, files },
-        entries: [entry],
+        entries: runEntries(o.mode, files, o.entry),
         loopGuard: o.mode !== 'ts',
       });
       bundle = built.bundle;

@@ -1,5 +1,5 @@
 import { getCompiler } from '../compiler/client.ts';
-import { judge, pageInput, type JudgeFiles, type JudgeSpec } from '../judge/judge.ts';
+import { judge, pageInput, runEntries, type JudgeFiles, type JudgeSpec } from '../judge/judge.ts';
 import { startRun, type RunOptions } from '../runner/runner.ts';
 import type { LogEntry, RunStatus, SerializedError } from '../shared/sandbox-protocol.ts';
 import type { ProjectSpec } from '../compiler/core/types.ts';
@@ -30,7 +30,7 @@ const api = {
     const { bundle } = await getCompiler().call('buildRun', {
       projectId: params.projectId,
       spec: params.spec,
-      entries: [params.entry],
+      entries: runEntries(params.spec.mode, params.spec.files, params.entry),
       loopGuard: params.spec.mode !== 'ts',
     });
     const container = document.createElement('div');

@@ -75,6 +75,8 @@ export interface Matchers<R> {
   toHaveAccessibleName(name?: string | RegExp): R;
   toBeInvalid(): R;
   toBeValid(): R;
+  toContainElement(element: Element | null): R;
+  toHaveStyle(css: string | Record<string, string>): R;
 }
 
 export interface Assertion<T = unknown> extends Matchers<void> {

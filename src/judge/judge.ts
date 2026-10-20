@@ -80,6 +80,17 @@ export function entryFromHtml(html: string | undefined): string | undefined {
   return undefined;
 }
 
+/**
+ * 要运行的入口模块。DOM 模式以 index.html 中的 module script 为准；
+ * 页面没有脚本时，退回到存在的 .ts 入口文件；两者都没有（纯 HTML/CSS 页面）时不运行任何代码。
+ */
+export function runEntries(mode: RunMode, files: Record<string, string>, fallback: string): string[] {
+  if (mode !== 'dom' || files['index.html'] === undefined) return [fallback];
+  const fromHtml = entryFromHtml(files['index.html']);
+  if (fromHtml) return [fromHtml];
+  return /\.tsx?$/.test(fallback) && files[fallback] !== undefined ? [fallback] : [];
+}
+
 export function pageInput(files: Record<string, string>): PageInput {
   const css: Record<string, string> = {};
   for (const [p, c] of Object.entries(files)) if (p.endsWith('.css')) css[p] = c;
@@ -97,7 +108,6 @@ export async function judge(spec: JudgeSpec, files: JudgeFiles): Promise<JudgeRe
   const studentFiles = Object.keys(snapshot);
   const testFiles = Object.keys(files.tests);
   const runtimeTests = testFiles.filter(isRuntimeTest);
-  const entry = spec.mode === 'dom' ? (entryFromHtml(all['index.html']) ?? spec.entry) : spec.entry;
 
   const result: JudgeResult = {
     snapshotHash,
@@ -117,7 +127,7 @@ export async function judge(spec: JudgeSpec, files: JudgeFiles): Promise<JudgeRe
       testFiles,
       forbid: spec.forbid,
       // React 模式的测试直接渲染组件，不运行入口；DOM 模式每个测试前运行入口
-      runEntries: spec.mode === 'dom' ? [entry] : [],
+      runEntries: spec.mode === 'dom' ? runEntries('dom', all, spec.entry) : [],
       loopGuard: spec.mode !== 'ts',
     });
     bundle = compiled.bundle;

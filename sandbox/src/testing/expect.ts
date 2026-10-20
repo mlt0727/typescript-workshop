@@ -312,6 +312,38 @@ const matchers: Record<string, Matcher> = {
     const pass = list.length === 0 ? el.classList.length > 0 : list.every((n) => el.classList.contains(n));
     return { pass, message: '期望包含这些 class', expected: show(list), actual: show(el.className) };
   },
+  toContainElement: (a, other) => {
+    const el = requireElement(a, 'toContainElement');
+    const child = other === null ? null : requireElement(other, 'toContainElement');
+    return { pass: child !== null && el.contains(child), message: '期望包含这个元素', actual: child === null ? 'null' : child.isConnected ? '不在其中' : '不在文档中' };
+  },
+  toHaveStyle: (a, css) => {
+    const el = requireElement(a, 'toHaveStyle');
+    const expected: [string, string][] =
+      typeof css === 'string'
+        ? css
+            .split(';')
+            .map((d) => d.trim())
+            .filter((d) => d.includes(':'))
+            .map((d) => [d.slice(0, d.indexOf(':')).trim(), d.slice(d.indexOf(':') + 1).trim()])
+        : Object.entries(css as Record<string, string>).map(([k, v]) => [k.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`), String(v)]);
+    const computed = getComputedStyle(el);
+    // 用一个临时元素把期望值也规范化成计算值（例如 red → rgb(255, 0, 0)）
+    const probe = el.ownerDocument.createElement(el.tagName);
+    probe.style.cssText = expected.map(([k, v]) => `${k}: ${v}`).join('; ');
+    el.parentElement?.append(probe);
+    const probeStyle = getComputedStyle(probe);
+    const mismatches = expected
+      .map(([k, v]) => ({ k, want: probe.isConnected ? probeStyle.getPropertyValue(k) || v : v, got: computed.getPropertyValue(k) }))
+      .filter((m) => m.want !== m.got);
+    probe.remove();
+    return {
+      pass: mismatches.length === 0,
+      message: '期望计算后的样式',
+      expected: expected.map(([k, v]) => `${k}: ${v}`).join('; '),
+      actual: mismatches.map((m) => `${m.k}: ${m.got}`).join('; ') || '一致',
+    };
+  },
   toHaveAccessibleName: (a, ...rest) => {
     const el = requireElement(a, 'toHaveAccessibleName');
     const name = computeAccessibleName(el);

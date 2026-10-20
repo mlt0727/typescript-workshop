@@ -5,7 +5,7 @@
  */
 import { getCompiler } from '../compiler/client.ts';
 import type { Exercise, Lesson, PlaygroundBlock, VerifyData } from '../content/types.ts';
-import { judge, pageInput, type JudgeResult } from '../judge/judge.ts';
+import { judge, pageInput, runEntries, type JudgeResult } from '../judge/judge.ts';
 import { startRun } from '../runner/runner.ts';
 
 export interface CheckResult {
@@ -57,7 +57,7 @@ async function verifyPlayground(lesson: Lesson, pg: PlaygroundBlock): Promise<Ch
   });
 
   if (pg.expectRun === 'skip') return out;
-  const { bundle } = await getCompiler().call('buildRun', { projectId, spec, entries: [pg.entry], loopGuard: pg.mode !== 'ts' });
+  const { bundle } = await getCompiler().call('buildRun', { projectId, spec, entries: runEntries(pg.mode, files, pg.entry), loopGuard: pg.mode !== 'ts' });
   const container = document.createElement('div');
   container.style.cssText = 'width:600px;height:300px';
   document.body.append(container);

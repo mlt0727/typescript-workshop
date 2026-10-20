@@ -190,16 +190,20 @@ async function runPage(cmd: Extract<HostToSandbox, { type: 'run' }>) {
   const mode = cmd.mode === 'react' ? 'react' : 'dom';
   const sink = installPageEnvironment(cmd.runId, cmd.fixtures ?? []);
   try {
-    const page = applyPage(cmd.page, mode);
+    const page = applyPage(cmd.page);
     for (const w of page.warnings) sink.push('system', w);
     const entry = page.entryFromHtml ? `file:${page.entryFromHtml}` : cmd.bundle.entries[0];
-    if (!entry || !cmd.bundle.modules.some((m) => m.id === entry)) {
-      throw new Error(`找不到入口模块 ${entry ?? ''}`);
+    if (entry === undefined) {
+      // 纯 HTML/CSS 页面：没有要运行的脚本，只显示页面
+      send({ type: 'status', runId: cmd.runId, status: 'running' });
+    } else {
+      if (!cmd.bundle.modules.some((m) => m.id === entry)) throw new Error(`找不到入口模块 ${entry}`);
+      if (mode === 'dom' && !page.entryFromHtml) sink.push('system', 'index.html 中没有 <script type="module" src="…">，将直接运行入口文件。');
+      const graph = linkBundle(cmd.bundle, { entries: [entry], css: 'inject' });
+      registerModules(graph.urlToModule);
+      send({ type: 'status', runId: cmd.runId, status: 'running' });
+      await import(/* @vite-ignore */ graph.urls.get(entry)!);
     }
-    const graph = linkBundle(cmd.bundle, { entries: [entry], css: 'inject' });
-    registerModules(graph.urlToModule);
-    send({ type: 'status', runId: cmd.runId, status: 'running' });
-    await import(/* @vite-ignore */ graph.urls.get(entry)!);
     document.dispatchEvent(new Event('DOMContentLoaded', { bubbles: true }));
     sink.flush();
     send({ type: 'status', runId: cmd.runId, status: 'done', simulated: [...simulated] });
@@ -221,7 +225,7 @@ async function testPage(cmd: Extract<HostToSandbox, { type: 'test' }>) {
     port = null;
   }, cmd.timeoutMs);
   try {
-    const page = applyPage(cmd.page, mode);
+    const page = applyPage(cmd.page);
     const studentEntries = cmd.bundle.entries.filter((e) => !cmd.testEntries.includes(e));
     const collector = new TestCollector();
     deps.vitest = collector.api();

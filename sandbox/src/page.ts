@@ -75,7 +75,7 @@ function normalizePath(src: string): string {
   return src.replace(/^\.\//, '').replace(/^\//, '');
 }
 
-export function applyPage(page: { html?: string; css: Record<string, string> } | undefined, mode: 'dom' | 'react'): AppliedPage {
+export function applyPage(page: { html?: string; css: Record<string, string> } | undefined): AppliedPage {
   const warnings: string[] = [];
   const html = page?.html ?? DEFAULT_REACT_HTML;
   const parsed = new DOMParser().parseFromString(html, 'text/html');
@@ -127,7 +127,6 @@ export function applyPage(page: { html?: string; css: Record<string, string> } |
     body.replaceChildren(...[...bodyTemplate.childNodes].map((n) => document.importNode(n, true)));
   };
   reset();
-  if (mode === 'dom' && !entryFromHtml) warnings.push('index.html 中没有 <script type="module" src="…">，将直接运行入口文件。');
   return { entryFromHtml, warnings, reset };
 }
 

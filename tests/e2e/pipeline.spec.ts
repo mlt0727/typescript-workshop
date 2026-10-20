@@ -201,6 +201,38 @@ test.describe('DOM 模式', () => {
     expect(nonNull.passed).toBe(false);
   });
 
+  test('纯 HTML/CSS 页面：没有脚本也能运行和判题', async ({ page }) => {
+    await open(page);
+    const htmlOnly = '<!doctype html><html lang="zh-CN"><head><link rel="stylesheet" href="./style.css" /></head><body><main><h1>你好</h1></main></body></html>';
+    const r = await run(page, { projectId: 'html-only', entry: 'index.html', timeoutMs: 5000, spec: { mode: 'dom', files: { 'index.html': htmlOnly, 'style.css': 'h1 { color: green; }' } } });
+    expect(r.status).toBe('done');
+    expect(r.logs.filter((l) => l.level === 'error' || l.level === 'system')).toEqual([]);
+    const semanticTests = {
+      'page.test.ts': [
+        'import { expect, test } from "vitest";',
+        'import { screen } from "@testing-library/dom";',
+        'test("有 main 地标和一级标题", () => {',
+        '  expect(screen.getByRole("main")).toContainElement(screen.getByRole("heading", { level: 1, name: "你好" }));',
+        '});',
+        'test("计算后的样式", () => {',
+        '  const h1 = screen.getByRole("heading", { level: 1 });',
+        '  expect(h1).toHaveStyle("color: green; display: block");',
+        '  expect(h1).toHaveStyle({ fontWeight: "700" });',
+        '  expect(h1).not.toHaveStyle({ color: "red" });',
+        '});',
+      ].join('\n'),
+    };
+    const ok = await judge(page, baseSpec('dom', 'index.html'), { student: { 'index.html': htmlOnly }, support: { 'style.css': 'h1 { color: green; }' }, tests: semanticTests });
+    expect(ok.types.ok && ok.rules.ok).toBe(true);
+    expect(ok.passed).toBe(true);
+    const bad = await judge(page, baseSpec('dom', 'index.html'), {
+      student: { 'index.html': htmlOnly.replace('<main>', '<div>').replace('</main>', '</div>') },
+      support: { 'style.css': 'h1 { color: green; }' },
+      tests: semanticTests,
+    });
+    expect(bad.tests.results.map((t) => t.status)).toEqual(['fail', 'pass']);
+  });
+
   test('DOM 模式的同步死循环被循环保护中止，页面不会卡死', async ({ page }) => {
     await open(page);
     const started = Date.now();
