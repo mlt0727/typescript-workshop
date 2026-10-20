@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 网页的数据通常来自服务器：浏览器发出 HTTP 请求，服务器返回状态码、头部和响应体（大多是 JSON）。fetch 是浏览器发请求的标准方式，用起来只要一行，但有几个出人意料的地方：服务器返回 404 或 500 时 fetch 并不会失败；response.json() 的类型是 any，TypeScript 什么也不检查；响应体只能读取一次。这一课讲清 fetch 的这些行为，并写出一个可以放心使用的请求函数。
 objectives:
   - 理解 HTTP 请求与响应的组成，认识常见的状态码

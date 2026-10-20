@@ -5559,8 +5559,8 @@
       ]
     },
     "e05-fetch-json": {
-      "verifiedAt": "2026-10-20T13:06:40.264Z",
-      "sourceHash": "8be7b367d907a625",
+      "verifiedAt": "2026-10-20T13:15:20.705Z",
+      "sourceHash": "a1cc3d3bc848df81",
       "ok": true,
       "checks": [
         {
@@ -5676,8 +5676,8 @@
       ]
     },
     "e06-runtime-validation": {
-      "verifiedAt": "2026-10-20T13:05:15.331Z",
-      "sourceHash": "d19f65d2ad9bffbd",
+      "verifiedAt": "2026-10-20T13:15:21.169Z",
+      "sourceHash": "f26e78e8606f3117",
       "ok": true,
       "checks": [
         {
@@ -6351,6 +6351,108 @@
           "target": "exercise:markdown-lite:wrong:split-on-blank-line",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(段落与换行 › 多个空行、只有空白的行、开头结尾的空行，以及 \\r\\n)"
+        }
+      ]
+    },
+    "g01-jsx-components": {
+      "verifiedAt": "2026-10-20T13:20:15.554Z",
+      "sourceHash": "cd510eebeb00edd2",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:first-jsx:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:first-jsx:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:conditional:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:conditional:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:fix-jsx:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2657@Newsletter.tsx:3 JSX expressions must have one parent element.；TS17008@Newsletter.tsx:4 JSX element 'form' has no corresponding closing tag.；TS17008@Newsletter.tsx:6 JSX element 'input' has no corresponding closing tag.；TS17002@Newsletter.tsx:10 Expected corresponding JSX closing tag for 'hr') rules=ok tests=fail(标题和表单是并列的两个元素，没有多余的包裹元素,class 都保留了下来,标签和邮箱输入框关联在一起,提示文字是灰色的,分隔线和订阅按钮都在表单里)"
+        },
+        {
+          "target": "exercise:fix-jsx:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-jsx:alt:fragment-and-wrapping-label",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-jsx:wrong:extra-div",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题和表单是并列的两个元素，没有多余的包裹元素)"
+        },
+        {
+          "target": "exercise:fix-jsx:wrong:class-attribute",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@Newsletter.tsx:4 Type '{ children: string; class: string; }' is not assignable to type 'DetailedHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>'.；TS2322@Newsletter.tsx:5 Type '{ children: Element[]; class: string; }' is not assignable to type 'DetailedHTMLProps<FormHTMLAttri) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:fix-jsx:wrong:style-string",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2559@Newsletter.tsx:8 Type 'string' has no properties in common with type 'Properties<string | number, string & {}>'.) rules=ok tests=fail(标题和表单是并列的两个元素，没有多余的包裹元素,class 都保留了下来,标签和邮箱输入框关联在一起,提示文字是灰色的,分隔线和订阅按钮都在表单里)"
+        },
+        {
+          "target": "exercise:fix-jsx:wrong:deleted-for",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标签和邮箱输入框关联在一起)"
+        },
+        {
+          "target": "exercise:order-summary:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(orderSummary › 完整的订单：各部分按顺序出现,orderSummary › 每种状态的文字和 class,orderSummary › 金额保留两位小数；只有已取消的订单加删除线,orderSummary › 没有赠品、没有备注时什么都不显示，也不会多出一个 0,orderSummary › 用户输入的文字原样显示)"
+        },
+        {
+          "target": "exercise:order-summary:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:order-summary:alt:switch-and-helpers",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:order-summary:wrong:zero-and",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(orderSummary › 没有赠品、没有备注时什么都不显示，也不会多出一个 0)"
+        },
+        {
+          "target": "exercise:order-summary:wrong:truthy-note",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(orderSummary › 没有赠品、没有备注时什么都不显示，也不会多出一个 0)"
+        },
+        {
+          "target": "exercise:order-summary:wrong:no-to-fixed",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(orderSummary › 完整的订单：各部分按顺序出现,orderSummary › 金额保留两位小数；只有已取消的订单加删除线)"
+        },
+        {
+          "target": "exercise:order-summary:wrong:no-strike",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(orderSummary › 金额保留两位小数；只有已取消的订单加删除线)"
+        },
+        {
+          "target": "exercise:order-summary:wrong:inner-html",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(orderSummary › 用户输入的文字原样显示)"
         }
       ]
     },

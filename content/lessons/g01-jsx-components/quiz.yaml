@@ -1,0 +1,48 @@
+- id: jsx-is-call
+  type: single
+  prompt: 关于 JSX，哪个说法正确？
+  options:
+    - text: 每个 JSX 标签都会被编译成一次函数调用，得到一个描述界面的对象
+      correct: true
+      explain: "例如 <h2>{title}</h2> 会变成 jsx('h2', { children: title })。所以 TypeScript 能检查标签的属性，一个 JSX 表达式也只能有一个根元素。"
+    - text: JSX 是一种 HTML 字符串，React 用 innerHTML 把它插入页面
+      explain: JSX 不是字符串。花括号中的文字会被当作文字插入，不会被解析成 HTML。
+    - text: JSX 只是写法上的提示，TypeScript 不检查其中的内容
+      explain: .tsx 文件中的 JSX 同样经过类型检查：写错属性名、传错属性值的类型都会报错。
+- id: html-to-jsx
+  type: multiple
+  prompt: 把 HTML 代码搬进 JSX 时，哪些地方需要修改？
+  options:
+    - text: "`class` 改成 `className`，`for` 改成 `htmlFor`"
+      correct: true
+      explain: JSX 的属性名对应 DOM 属性的名字。
+    - text: "`style=\"color: gray\"` 改成 `style={{ color: 'gray' }}`"
+      correct: true
+      explain: style 接收一个对象，CSS 属性名用驼峰写法，例如 fontSize。
+    - text: "`<input>` 改成 `<input />`"
+      correct: true
+      explain: JSX 中每个标签都必须闭合。
+    - text: "`aria-label` 改成 `ariaLabel`"
+      explain: aria-* 和 data-* 属性保持 HTML 的写法。
+- id: zero-and
+  type: single
+  prompt: "`count` 是 0 时，`<div>{count && <span>{count} 条新消息</span>}</div>` 会渲染出什么？"
+  options:
+    - text: 一个显示“0”的 div
+      correct: true
+      explain: 0 && … 的结果是 0，React 会把数字渲染成文字。写成 count > 0 && … 才能什么都不显示。
+    - text: 一个空的 div
+      explain: 只有 null、undefined、true、false 才不渲染任何内容；数字 0 会被显示出来。
+    - text: 一个显示“0 条新消息”的 div
+      explain: "&& 左边是假值时，右边根本不会被求值。"
+- id: component-name
+  type: single
+  prompt: 为什么组件的名字必须以大写字母开头？
+  options:
+    - text: React 用首字母区分它们：小写的标签是 HTML 元素，大写的才是组件
+      correct: true
+      explain: 写成 <header /> 会创建一个 HTML 的 header 元素，而不是调用你的 header 函数。
+    - text: 这只是代码风格的约定，小写也能正常工作
+      explain: 这不只是约定，小写开头的标签会被当作 HTML 元素。
+    - text: 因为 TypeScript 要求函数名以大写字母开头
+      explain: TypeScript 没有这个要求，这是 JSX 的规则。

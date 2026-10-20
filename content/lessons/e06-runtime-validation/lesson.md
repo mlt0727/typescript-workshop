@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: TypeScript 的类型在编译后就消失了（a02）。服务器返回的 JSON、localStorage 中保存的数据、URL 中的参数，在运行时可能是任何样子：字段缺失、类型不对、多出意料之外的内容。上一课把它们标成了 unknown，这一课把 unknown 变成可以放心使用的类型：在数据进入程序的地方验证一次，给出指向具体位置的错误信息，之后的代码就只和类型明确的数据打交道。
 objectives:
   - 知道哪些数据来自程序之外、必须在运行时验证
