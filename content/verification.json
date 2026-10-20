@@ -5773,8 +5773,8 @@
       ]
     },
     "e07-loading-states": {
-      "verifiedAt": "2026-10-20T14:06:40.220Z",
-      "sourceHash": "c18e50de6ae79883",
+      "verifiedAt": "2026-10-20T14:16:12.388Z",
+      "sourceHash": "88e28d8c7211e9c1",
       "ok": true,
       "checks": [
         {
@@ -5870,8 +5870,8 @@
       ]
     },
     "e08-abort-races": {
-      "verifiedAt": "2026-10-20T14:06:51.489Z",
-      "sourceHash": "fcb7474552d1a447",
+      "verifiedAt": "2026-10-20T14:16:23.719Z",
+      "sourceHash": "0f3928890be14e34",
       "ok": true,
       "checks": [
         {
@@ -5987,8 +5987,8 @@
       ]
     },
     "e09-storage-serialization": {
-      "verifiedAt": "2026-10-20T14:06:52.999Z",
-      "sourceHash": "ed1ab3fc68ff6c5e",
+      "verifiedAt": "2026-10-20T14:16:25.186Z",
+      "sourceHash": "237ffd886ed726ca",
       "ok": true,
       "checks": [
         {
@@ -6186,8 +6186,8 @@
       ]
     },
     "e11-cors": {
-      "verifiedAt": "2026-10-20T14:06:57.506Z",
-      "sourceHash": "17cd93c1709a36d0",
+      "verifiedAt": "2026-10-20T14:16:25.526Z",
+      "sourceHash": "ceca70dde8708dad",
       "ok": true,
       "checks": [
         {
@@ -6268,8 +6268,8 @@
       ]
     },
     "e12-xss": {
-      "verifiedAt": "2026-10-20T14:06:58.914Z",
-      "sourceHash": "6450d7c1787e3aec",
+      "verifiedAt": "2026-10-20T14:16:26.994Z",
+      "sourceHash": "6289c56e8d06b561",
       "ok": true,
       "checks": [
         {
@@ -6962,8 +6962,8 @@
       ]
     },
     "g07-lifting-state": {
-      "verifiedAt": "2026-10-20T14:15:12.768Z",
-      "sourceHash": "c0498a25a1f2ae06",
+      "verifiedAt": "2026-10-20T14:16:57.596Z",
+      "sourceHash": "6f729c6991bdbe7e",
       "ok": true,
       "checks": [
         {
@@ -7003,6 +7003,11 @@
         },
         {
           "target": "exercise:faq:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:faq:alt:interface-and-spread",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },

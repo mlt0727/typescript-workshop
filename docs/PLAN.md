@@ -44,13 +44,14 @@
 - [x] E1–E4（事件循环、Promise、async/await、组合方法）：已发布
 - [x] 每课：至少 1 挑战 + 2–4 测验 + ≥2 错误解 + ≥1 替代正确解，全部通过 `content:verify`
 - [x] 独立二次审查（审查轮）并记录结果：第 1–9 轮，记录见 STATUS
+- [x] Safari/WebKit 兼容：沙箱历史记录保护、测试中的焦点模拟、测试 iframe 计时器节流、`content:verify:webkit`
 
 ## M4 浏览器与 React 项目主线（依赖 M3）
 
-- [ ] D 阶段（HTML/CSS/DOM）：d01–d03 草稿已通过浏览器验证；平台已支持纯 HTML/CSS 页面、计算样式断言与 `page.viewport()`
-- [ ] E5–E13（fetch、校验、加载状态、取消与竞态、存储、URL、CORS、XSS、密钥边界）
+- [x] D 阶段（HTML/CSS/DOM）：d01–d10 已发布；平台支持纯 HTML/CSS 页面、计算样式断言与 `page.viewport()`
+- [~] E5–E13：e05–e09、e11、e12 已发布；e10 的路由挑战重新设计后待审查；e13（密钥边界）依赖 F 阶段
 - [ ] F 阶段（工程化、测试、调试、Git、构建与 CI），配本地实验项目
-- [ ] G 阶段（React + TS）
+- [~] G 阶段（React + TS）：g03 已发布；g01、g02、g04–g07 草稿已通过 Chromium 与 WebKit 验证，正在审查
 - [ ] 项目 1（原生 TS 任务板）全部里程碑 + 导出
 - [ ] 项目 2（React 项目管理面板）全部里程碑 + 导出
 - [ ] 静态部署实验（本地生产构建、路由刷新、资源路径）
@@ -64,4 +65,4 @@
 
 ## 每阶段固定检查
 
-`npm run typecheck` · `npm run lint` · `npm test` · `npm run content:check` · `npm run build` · `npm run content:verify` · `npm run test:e2e` · 浏览器人工检查（桌面 + 窄屏）
+`npm run typecheck` · `npm run lint` · `npm test` · `npm run content:check` · `npm run build` · `npm run content:verify` · `npm run content:verify:webkit` · `npm run test:e2e`（含 `--project=e2e-webkit`）· 浏览器人工检查（桌面 + 窄屏）

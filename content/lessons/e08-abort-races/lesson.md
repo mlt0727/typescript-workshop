@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 用户在搜索框里先输入 t，又很快输入了 ty。两个请求都发了出去，但服务器处理 t 的请求更慢，它的结果比 ty 的结果晚到了一步，于是页面最终显示的是过时的 t 的结果。这种“后发先至”的竞态条件在任何异步界面里都会遇到，单靠禁用按钮解决不了。这一课讲两种办法：只采用最新请求的结果，以及用 AbortController 真正取消过时的请求；还会用同样的机制实现超时。
 objectives:
   - 识别异步请求中的竞态条件：结果到达的顺序不一定是发出的顺序

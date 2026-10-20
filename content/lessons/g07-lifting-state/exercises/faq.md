@@ -193,6 +193,51 @@ console.log(uncontrolled, controlled);
 答案一直留在页面中、用 `hidden` 隐藏，而不是 `{isOpen && …}`：这样按钮的 `aria-controls` 始终指向一个存在的元素（WAI-ARIA 的手风琴模式就是这样写的）；`hidden` 的元素不会显示，也不会被读屏软件读到。
 :::
 
+:::variant{kind=alt name=interface-and-spread}
+```tsx file=Faq.tsx
+import { useState } from 'react';
+
+export interface Faq {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+interface FaqItemProps extends Faq {
+  isOpen: boolean;
+  onToggle(): void;
+}
+
+export function FaqItem(props: FaqItemProps) {
+  const buttonId = 'faq-button-' + props.id;
+  const panelId = 'faq-panel-' + props.id;
+  return (
+    <section>
+      <h3>
+        <button type="button" id={buttonId} aria-expanded={props.isOpen ? 'true' : 'false'} aria-controls={panelId} onClick={() => props.onToggle()}>
+          {props.question}
+        </button>
+      </h3>
+      <div id={panelId} role="region" aria-labelledby={buttonId} hidden={props.isOpen ? undefined : true}>
+        {props.answer}
+      </div>
+    </section>
+  );
+}
+
+export function FaqList({ items }: { items: readonly Faq[] }) {
+  const [openId, setOpenId] = useState<Faq['id'] | null>(null);
+  return (
+    <div>
+      {items.map((item) => (
+        <FaqItem key={item.id} {...item} isOpen={item.id === openId} onToggle={() => setOpenId((current) => (current === item.id ? null : item.id))} />
+      ))}
+    </div>
+  );
+}
+```
+:::
+
 :::variant{kind=wrong name=set-of-open fails=tests reason="提升了 state，但用集合记录展开的项，几个问题可以同时展开"}
 ```tsx file=Faq.tsx
 import { useState } from 'react';

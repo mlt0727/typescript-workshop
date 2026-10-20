@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 评论区要显示换行和加粗，开发者图省事，把用户的评论拼进字符串，再用 innerHTML 放进页面。某天，一条评论里藏着一个 `<img src=x onerror=…>`：之后每个打开这个页面的人，浏览器都执行了攻击者写的代码，它能以这个用户的身份读取页面上的数据、发出请求。这就是跨站脚本（XSS）。这一课讲 XSS 从哪里来，以及前端的几道防线：用 textContent 插入文字、只允许安全协议的链接、确实需要 HTML 时用清理库，再用内容安全策略（CSP）兜底。
 objectives:
   - 理解 XSS 的危害：攻击者的脚本以用户的身份在你的页面上运行

@@ -8,8 +8,8 @@
 |---|---|
 | 平台功能（M1） | ✅ 最小完整学习闭环已实现并通过自动化测试 |
 | 同步 / 问 AI / 部署（M2） | ✅ 同步与部署已上线并验证；问 AI 已实现，**未配置密钥，未做线上调用验证** |
-| 课程编写 | ⚠ 已发布 **43 / 126** 节：A 阶段 20 节、B 阶段 17 节、E1–E4 四节，以及两节代表案例（d07 DOM、g03 React）；草稿 3 节（d01–d03，已通过浏览器验证，待独立审查）；其余 80 节为规划中 |
-| 课程审核 | ⚠ 已发布的 43 节：浏览器自动验证 + 独立 AI 审查 + 按意见修正（`self-reviewed`）；**没有人工审核**。d01–d03 只做了浏览器验证 |
+| 课程编写 | ⚠ 已发布 **59 / 126** 节：A 阶段 20 节、B 阶段 17 节、D 阶段 10 节、E 阶段 11 节（e01–e09、e11、e12），以及 React 代表课 g03；草稿 7 节（e10、g01、g02、g04–g07，已在 Chromium 与 WebKit 中通过浏览器验证，正在独立审查）；其余 60 节为规划中 |
+| 课程审核 | ⚠ 已发布的 59 节：浏览器自动验证 + 独立 AI 审查 + 按意见修正（`self-reviewed`）；**没有人工审核** |
 | 项目实验（I 阶段） | ⬜ 未开始 |
 | Next.js 实验（H 阶段） | ⬜ 未开始 |
 
@@ -31,6 +31,11 @@
 | 纯 HTML/CSS 页面（没有脚本时只显示页面）；DOM 断言 `toContainElement`、`toHaveStyle`（计算样式） | ✅ | e2e |
 | 测试中的 `page.viewport()`（`vitest/browser`，与 Vitest 4 浏览器模式同名）；测试 iframe 默认 1024×768，每个测试前恢复 | ✅ | e2e（Chromium、WebKit） |
 | 示例“查看 JS”：显示与运行时相同设置转译出的 JavaScript | ✅ | e2e |
+| Safari/WebKit：沙箱中越界的 `history.back()` 被忽略（WebKit 中会让课程页面后退）；修改路径时的 `SecurityError` 给出中文说明 | ✅ | e2e（Chromium、WebKit） |
+| Safari/WebKit：测试中的“模拟焦点”（WebKit 禁止跨源 iframe 用脚本移动焦点）：`activeElement`、焦点事件、`:focus`/`:focus-visible`/`:focus-within` 样式、元素移除后失去焦点 | ✅ | e2e（Chromium、WebKit）；D、E、G 阶段全部课程在 WebKit 中验证通过 |
+| 测试 iframe 留在视口内（透明、在内容之下）：避免 WebKit 把屏幕外跨源 iframe 的计时器节流到每秒一次 | ✅ | WebKit 实测（输入 10 个字符从 12.7 秒降到 0.1 秒） |
+| 测试库（user-event、React）在 document 上注册的监听器在测试之间保留；学生代码的监听器每个测试前清除 | ✅ | e2e（受控输入框在每个测试中都能输入） |
+| 模拟 fetch：`bodyDelayMs`（响应头先到、响应体随后到达），期间中止时读取响应体以中止原因失败 | ✅ | 单元测试 6 项；e08 课程验证 |
 | 运行错误信息把内部模块地址映射回文件名（例如 `./geometry.ts`） | ✅ | e2e |
 | 沙箱隔离：不透明来源、CSP 禁网络与远程脚本、专属 MessageChannel、schema 校验、伪造消息无效 | ✅ | e2e（Chromium、WebKit） |
 | 课页：讲解/示例/小任务/挑战/三级提示/答案确认/测验解释/参考资料/上一课下一课/先修提醒 | ✅ | e2e |
@@ -39,7 +44,7 @@
 | 跨设备同步（单用户密码、乐观并发、可交换的合并、重置跟随） | ✅ | 单元测试；本地 e2e（两个浏览器上下文）；线上 API 读写验证 |
 | 问 AI（服务端代理 Claude，`claude-opus-5-5`，流式，默认先给思路） | ✅ 已实现 | ⚠ 未配置 API 密钥，未做真实调用；接口鉴权与未配置时的降级有单元测试 |
 | 浅色/深色、字号、可折叠目录、窄屏抽屉、目录搜索 | ✅ | e2e（手机/平板/桌面无横向溢出） |
-| 课程内容管线与发布验收（`content:check`、`content:verify`、链接检查） | ✅ | 实际运行 |
+| 课程内容管线与发布验收（`content:check`、`content:verify`、`content:verify:webkit`、链接检查） | ✅ | 实际运行 |
 
 ## 已运行的检查（2026-10-20，Windows 11，Node 24.13）
 
@@ -47,17 +52,15 @@
 |---|---|
 | `npm run typecheck` | 通过 |
 | `npm run lint` | 通过 |
-| `npm test` | 4 个文件、93 项全部通过 |
-| `npm run content:check` | 已发布 22、草稿 6、错误 0、提醒 0 |
-| `npm run content:links` | 87 个参考链接全部可访问 |
-| `npm run content:verify` | 已发布与草稿的 28 节全部通过（每节 17–29 项检查：示例的诊断与运行结果、参考解、替代解、错误解、起始代码） |
-| `npm run build` | 通过；全新克隆后 `npm ci && npm run build` 也通过 |
-| `npm run test:e2e`（Chromium，生产预览，含 CSP） | 35 项全部通过 |
-| `npx playwright test --project=e2e-webkit`（管线与安全） | 14 项全部通过 |
-| `npx playwright test -c playwright.sync.config.ts` | 2 项全部通过 |
-| 线上冒烟（Playwright + curl） | 首页/深层路由/CSP 头/类型检查/运行/判题/React 预览正常；`/api/health` 显示同步已配置；同步接口 401/200/409 行为正确 |
+| `npm test` | 5 个文件、102 项全部通过 |
+| `npm run content:check` | 已发布 59、草稿 7、错误 0、提醒 0 |
+| `npm run content:links` | 198 个参考链接全部可访问 |
+| `npm run content:verify`（Chromium） | 已发布与草稿的 66 节全部通过（每节 15–29 项检查：示例的诊断与运行结果、参考解、替代解、错误解、起始代码） |
+| `npm run content:verify:webkit` | A、B 阶段 37 节（修复前的一次运行）与 D、E、G 阶段 29 节（修复后）全部通过 |
+| `npm run build` | 通过 |
+| `npx playwright test --project=e2e --project=e2e-webkit`（生产预览，含 CSP） | 65 项全部通过（Chromium 45、WebKit 20） |
 
-**未验证**：Firefox（本机 Playwright 无法启动 Firefox：`spawn UNKNOWN`）；真实移动设备（只做了视口模拟）；问 AI 的真实模型调用；中国大陆网络下访问 `*.vercel.app` 的可用性。
+**未验证**：Firefox（本机 Playwright 无法启动 Firefox：`spawn UNKNOWN`）；真实的 Safari 和 iPhone（WebKit 的结果来自 Playwright 的 WebKit 构建）；真实移动设备（只做了视口模拟）；问 AI 的真实模型调用；中国大陆网络下访问 `*.vercel.app` 的可用性。
 
 ## 课程审查记录
 
@@ -74,6 +77,9 @@
 | 7 | b11–b14 | 规格补全；Java 重载与泛型擦除的对比；override 与 noImplicitOverride 的分工；泛型字面量推断的真实规则 | 全部修改后发布 |
 | 8 | b15–b17 | 3 处错误（把 esbuild/Vite 说成只擦除类型；一个错误解的说明与代码不符；悬停 keyof 别名不会展开），3 处误导（satisfies “不改变推断”、“as const 不是断言”、用展开构造泛型返回值）；一个练习针对教学目标的错误解不足 | 全部修改后发布；顺带修正 a02 的一处课程引用 |
 | 9 | e01–e04 | 1 处错误（Promise `catch` 回调参数实为 `any` 而非 `unknown`）；4 处测试漏洞（防抖、failAfter、超时时刻、结果顺序）；“同步执行到第一个 await”未讲先考；缺少 `return await` 讲解；若干行号与先修关系 | 全部修改后发布；补充测试与对应的错误解 |
+| 10–11 | d01–d10 | 语义（aside 的作用域、article 不是地标、search 元素）、placeholder 与可访问名称；多处测试漏洞（委托、失败时清除字段、阻止默认提交、按钮位置等）；对比度测试改用 canvas 换算颜色；d06 复用节点保留焦点；d08 中键与修饰键 | 全部修改后发布 |
+| 12 | e05–e08 | 2 处错误（e08 参考解在读取响应体时超时抛错类型不对；“请求完成后 abort 不受影响”说法相反）；e07 每次新插入 `role="status"`、状态提示放在 `aria-busy` 区域中；多处测试漏洞（Promise.race 不中止请求、404/非 JSON/逐项验证、网络失败退避）；e06 日期只检查 NaN；e05 补讲 `encodeURIComponent` | 全部修改；平台新增响应体延迟的模拟；e05、e06 发布 |
+| 13 | e09–e12，复查 e07 | **Safari 中沙箱的 `history.back()` 会让课程页面后退**、e10 路由题在 Safari 中无法完成（平台问题）；e12 测试没有覆盖协议白名单（黑名单解法能生成 `javascript:` 链接）；e10 路由题多处漏洞（XSS、修饰键、丢失查询参数）；e09 测验解释错误、日期验证与 e06 矛盾；e11 cookie 动机与 `Vary` 范围；e07 测试依赖计时 | 全部修改；平台新增历史记录保护、WebKit 焦点模拟、WebKit 课程验证；e10 路由题重新设计（待审查）；e07–e09、e11、e12 发布 |
 
 ## 已知限制与安全边界
 
@@ -82,6 +88,8 @@
 - 练习中的 `fetch`、`localStorage`/`sessionStorage`、`alert` 都是**模拟**的（界面会标注）；真实行为需要在本地项目中验证（相关课程尚未编写）。
 - 只支持平台提供的依赖（react、react-dom、Testing Library、vitest 子集），不支持安装任意 npm 包；不支持循环导入。
 - `console.log(promise)` 无法显示 Promise 状态（显示 `Promise { <unknown> }`）；`%o` 不显示隐藏属性。
+- Safari/WebKit 中，测试运行时的焦点是模拟的：`element.matches(':focus')` 这类选择器查询得不到模拟的焦点（`toHaveFocus()`、`document.activeElement` 和计算样式没有问题）。可见的预览中，脚本移动焦点（例如路由把焦点移到标题）在 Safari 中不起作用，这是浏览器对跨源 iframe 的限制。
+- Safari/WebKit 中，沙箱页面不能用 `pushState` 修改路径（只能改查询参数和 `#` 片段）；`response.json()` 解析失败时是名为 `SyntaxError` 的 `DOMException`（课程中已说明）。
 - 同步是单用户方案：同步密码保存在设备的 localStorage 中；任何拿到密码的人都能读写进度。
 - 没有离线缓存（PWA）。
 
@@ -108,7 +116,8 @@
 
 ## 下一步（按计划顺序）
 
-1. M3 已完成（A、B、E1–E4 全部发布）。M4 进行中：D 阶段（d01–d03 草稿已完成）。
-2. 为“课程更新后草稿处理”补充 e2e。
-3. M4：D、E5–E13、F、G 阶段与项目 1、项目 2，以及静态部署实验。
-4. M5：C 阶段、Next.js 本地实验、项目 3、服务端部署说明。
+1. 第 14 轮审查（g01、g02、g04–g07 与 e10 的路由题）进行中；按意见修改后发布。
+2. G 阶段其余课时（g08–g15），以及项目 1（原生 TS 任务板）。
+3. F 阶段（工程化、测试、调试、Git、构建与 CI）与 e13（密钥边界）。
+4. 为“课程更新后草稿处理”补充 e2e。
+5. M5：C 阶段、Next.js 本地实验、项目 3、服务端部署说明。

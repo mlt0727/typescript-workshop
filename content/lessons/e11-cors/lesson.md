@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 前端代码请求另一个域名的接口，控制台里出现了一行红字：“has been blocked by CORS policy”。很多人的第一反应是在前端找办法绕过去，或者装个浏览器插件把它关掉。理解了 CORS 到底在保护什么，就会明白为什么不能这样做：它保护的是浏览器里的用户，规则由被请求的服务器制定，解决办法也在服务器那一边。
 objectives:
   - 判断两个地址是否同源，理解同源策略限制的是“读取跨源响应”

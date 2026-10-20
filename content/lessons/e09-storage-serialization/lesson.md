@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 刷新页面后，用户的设置、草稿、购物车都没了，体验很差。浏览器的 localStorage 可以把数据保存在本机，下次打开时再读出来。但它只能存字符串，日期、Set、Map 经过 JSON 之后会变样；读出来的数据可能来自旧版本的程序，也可能被用户手动改过，甚至根本无法解析；写入时还可能因为空间不足而失败。这一课讲如何可靠地保存和恢复数据。
 objectives:
   - 使用 localStorage 和 sessionStorage，知道它们只存字符串、同步、按来源隔离
