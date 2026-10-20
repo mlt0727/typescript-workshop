@@ -912,6 +912,317 @@
         }
       ]
     },
+    "a09-control-flow": {
+      "verifiedAt": "2026-10-20T09:31:14.351Z",
+      "sourceHash": "e5c2347cbd1e9f38",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 及格 | [log] 通过 | [log] 2500 | [log] 1"
+        },
+        {
+          "target": "playground:switch:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:switch:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 中 大 未知"
+        },
+        {
+          "target": "playground:of-vs-in:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:of-vs-in:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] of: 苹果 | [log] of: 香蕉 | [log] in: 0 string | [log] in: 1 string | [log] name | [log] born"
+        },
+        {
+          "target": "playground:string-iteration:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:string-iteration:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] of: 好 | [log] of: 😀 | [log] 下标 0 好 | [log] 下标 1 \ud83d | [log] 下标 2 \ude00"
+        },
+        {
+          "target": "exercise:delivery-days:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS7029@delivery.ts:4 Fallthrough case in switch.；TS7029@delivery.ts:11 Fallthrough case in switch.) rules=ok tests=fail(华东 需要 1 天,西北 需要 4 天,西南 需要 4 天)"
+        },
+        {
+          "target": "exercise:delivery-days:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:delivery-days:alt:returns",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:delivery-days:wrong:fix-first-only",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS7029@delivery.ts:12 Fallthrough case in switch.) rules=ok tests=fail(西北 需要 4 天,西南 需要 4 天)"
+        },
+        {
+          "target": "exercise:delivery-days:wrong:default-zero",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(不支持的地区返回 null)"
+        },
+        {
+          "target": "exercise:first-repeated:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(firstRepeated › 找到第一个重复的字符,firstRepeated › 按“第二次出现”的先后，而不是第一次出现的先后,firstRepeated › emoji 是一个完整的字符)"
+        },
+        {
+          "target": "exercise:first-repeated:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:first-repeated:alt:single-exit",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:first-repeated:wrong:index-loop",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(firstRepeated › emoji 是一个完整的字符)"
+        },
+        {
+          "target": "exercise:first-repeated:wrong:for-in",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2407@repeat.ts:3 The right-hand side of a 'for...in' statement must be of type 'any', an object type or a type parameter, but here has type 'string'.) rules=ok tests=fail(firstRepeated › 找到第一个重复的字符,firstRepeated › 按“第二次出现”的先后，而不是第一次出现的先后,firstRepeated › emoji 是一个完整的字符)"
+        },
+        {
+          "target": "exercise:first-repeated:wrong:record-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(firstRepeated › 找到第一个重复的字符,firstRepeated › 按“第二次出现”的先后，而不是第一次出现的先后,firstRepeated › 没有重复时返回 null,firstRepeated › emoji 是一个完整的字符)"
+        },
+        {
+          "target": "exercise:first-repeated:wrong:empty-string",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(firstRepeated › 没有重复时返回 null,firstRepeated › emoji 是一个完整的字符)"
+        }
+      ]
+    },
+    "a10-arrays": {
+      "verifiedAt": "2026-10-20T09:31:03.172Z",
+      "sourceHash": "8f2e240230abc14d",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 4 [ 90, 72, 85, 60 ] | [log] true 2 -1 | [log] 90 / 72 / 85 / 60"
+        },
+        {
+          "target": "playground:out-of-bounds:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:out-of-bounds:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] undefined | [log] ADA | [log] GRACE | [log] 3 | [log] 5 | [log] Grace"
+        },
+        {
+          "target": "playground:slice-splice:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:slice-splice:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 'b', 'c' ] [ 'a', 'b', 'c', 'd', 'e' ] | [log] [ 'b', 'c' ] [ 'a', 'd', 'e' ] | [log] e [ 'a', 'd' ]"
+        },
+        {
+          "target": "exercise:max-score:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS18048@max.ts:4 'max' is possibly 'undefined'.；TS2322@max.ts:8 Type 'number | undefined' is not assignable to type 'number | null'.) rules=ok tests=fail(空数组返回 null)"
+        },
+        {
+          "target": "exercise:max-score:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:max-score:alt:length-check",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:max-score:wrong:start-at-zero",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(全是负数)"
+        },
+        {
+          "target": "exercise:max-score:wrong:non-null",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(non-null-assertion@2) tests=fail(空数组返回 null)"
+        },
+        {
+          "target": "exercise:max-score:wrong:length-then-index",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18048@max.ts:7 'max' is possibly 'undefined'.；TS2322@max.ts:11 Type 'number | undefined' is not assignable to type 'number | null'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:chunk:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(chunk › 最后一组不足 size 个,chunk › 正好分完时没有空组,chunk › size 大于数组长度,chunk › size 为 1)"
+        },
+        {
+          "target": "exercise:chunk:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:chunk:alt:accumulate",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:chunk:wrong:splice-mutates",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(chunk › 不修改传入的数组)"
+        },
+        {
+          "target": "exercise:chunk:wrong:extra-empty-group",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(chunk › 正好分完时没有空组,chunk › size 为 1,chunk › 空数组)"
+        },
+        {
+          "target": "exercise:chunk:wrong:drop-remainder",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(chunk › 最后一组不足 size 个,chunk › size 大于数组长度)"
+        },
+        {
+          "target": "exercise:chunk:wrong:unchecked-index",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@chunk.ts:6 Argument of type 'string | undefined' is not assignable to parameter of type 'string'.) rules=ok tests=ok"
+        }
+      ]
+    },
+    "a11-objects-references": {
+      "verifiedAt": "2026-10-20T09:33:38.384Z",
+      "sourceHash": "aa8d7e3580485853",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:object-basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:object-basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 三体 302 | [log] { title: '三体', pages: 310, author: '刘慈欣' }"
+        },
+        {
+          "target": "playground:references:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:references:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Grace | [log] 改过了"
+        },
+        {
+          "target": "playground:shallow-copy:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:shallow-copy:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { name: 'Ada', tags: [ 'math', 'poetry' ] } | [log] { name: 'Grace', tags: [ 'math', 'poetry' ] } | [log] [ 'math', 'poetry' ] [ 'math', 'poetry', 'engine' ]"
+        },
+        {
+          "target": "playground:entries:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:entries:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 'apple', 'banana', 'cherry' ] | [log] [ 3, 0, 12 ] | [log] apple: 3 | [log] banana: 0 | [log] cherry: 12"
+        },
+        {
+          "target": "exercise:with-nickname:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(不修改传入的对象,返回的是另一个对象)"
+        },
+        {
+          "target": "exercise:with-nickname:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-nickname:alt:spread-override",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-nickname:wrong:alias",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(不修改传入的对象,返回的是另一个对象)"
+        },
+        {
+          "target": "exercise:with-nickname:wrong:copy-after-mutate",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(不修改传入的对象)"
+        },
+        {
+          "target": "exercise:add-tag:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(addTag › 不修改原文章和原标签数组,addTag › 返回新的对象和新的数组,addTag › 已有的标签不重复添加，但仍然返回新的对象和数组)"
+        },
+        {
+          "target": "exercise:add-tag:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:add-tag:alt:structured-clone",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:add-tag:wrong:shallow-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTag › 不修改原文章和原标签数组,addTag › 返回新的对象和新的数组,addTag › 已有的标签不重复添加，但仍然返回新的对象和数组)"
+        },
+        {
+          "target": "exercise:add-tag:wrong:same-when-exists",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTag › 已有的标签不重复添加，但仍然返回新的对象和数组)"
+        },
+        {
+          "target": "exercise:add-tag:wrong:no-duplicate-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTag › 已有的标签不重复添加，但仍然返回新的对象和数组)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

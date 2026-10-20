@@ -1,0 +1,66 @@
+- id: alias
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    const a = { count: 1 };
+    const b = a;
+    b.count = 2;
+    console.log(a.count);
+    ```
+  options:
+    - text: "`2`"
+      correct: true
+      explain: "`b = a` 复制的是引用，`a` 和 `b` 指向同一个对象。"
+    - text: "`1`"
+      explain: 赋值不会复制对象。要得到独立的副本，需要 `{ ...a }` 或 `structuredClone(a)`。
+    - text: TypeScript 报错：`const` 对象不能修改
+      explain: "`const` 只禁止重新赋值，不禁止修改对象的属性。"
+- id: shallow-nested
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    const team = { name: 'A', members: ['Ada'] };
+    const copy = { ...team };
+    copy.name = 'B';
+    copy.members.push('Grace');
+    console.log(team.name, team.members.length);
+    ```
+  options:
+    - text: "`A 2`"
+      correct: true
+      explain: 展开是浅拷贝：`name` 被复制了，修改副本不影响原对象；`members` 数组是共享的，`push` 影响了原对象。
+    - text: "`A 1`"
+      explain: "`{ ...team }` 只复制一层，`copy.members` 和 `team.members` 是同一个数组。"
+    - text: "`B 2`"
+      explain: "`copy.name = 'B'` 修改的是新对象自己的属性，不影响 `team`。"
+    - text: "`B 1`"
+      explain: 正好相反：`name` 是独立的，`members` 是共享的。
+- id: independent-copy
+  type: multiple
+  prompt: "`const data = { list: [1, 2] };` 下列哪些写法得到的 `copy`，在执行 `copy.list.push(3)` 后**不会**影响 `data.list`？"
+  options:
+    - text: "`const copy = structuredClone(data);`"
+      correct: true
+      explain: 深拷贝会复制嵌套的数组。
+    - text: "`const copy = { ...data, list: [...data.list] };`"
+      correct: true
+      explain: 对象和嵌套的数组都单独复制了。
+    - text: "`const copy = { ...data };`"
+      explain: 浅拷贝，`list` 数组仍然共享。
+    - text: "`const copy = data;`"
+      explain: 这根本不是复制，`copy` 和 `data` 是同一个对象。
+- id: add-property
+  type: single
+  prompt: "`const point = { x: 1, y: 2 };` 之后写 `point.z = 3;` 会怎样？"
+  options:
+    - text: TypeScript 报错：类型上不存在属性 `z`
+      correct: true
+      explain: "TypeScript 根据字面量推断出形状 `{ x: number; y: number }`，不允许添加不存在的属性（TS2339）。JavaScript 本身允许，所以这是 TypeScript 帮你拦下的问题。"
+    - text: 没有问题，对象会多一个属性 `z`
+      explain: 运行时确实会这样，但 TypeScript 会先报错。
+    - text: 运行时抛出 `TypeError`
+      explain: JavaScript 允许给普通对象添加属性，不会抛异常；报错的是 TypeScript。

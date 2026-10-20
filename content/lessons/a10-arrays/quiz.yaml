@@ -1,0 +1,56 @@
+- id: out-of-bounds
+  type: single
+  prompt: "`const a = [1, 2, 3];` 之后，运行 `console.log(a[3]);` 会怎样？"
+  options:
+    - text: 输出 `undefined`
+      correct: true
+      explain: JavaScript 读取不存在的下标时返回 `undefined`，不会抛出异常。
+    - text: 抛出越界异常
+      explain: 这是 Java（`ArrayIndexOutOfBoundsException`）和 Python（`IndexError`）的行为。
+    - text: 输出 `3`
+      explain: 下标从 0 开始，`a[3]` 是第四个元素，不存在。
+- id: indexed-type
+  type: multiple
+  prompt: "在开启 `noUncheckedIndexedAccess` 的本平台中，`const names: string[] = ['Ada'];` 之后，下列哪些表达式的类型是 `string | undefined`？"
+  options:
+    - text: "`names[0]`"
+      correct: true
+      explain: 下标访问可能越界，类型包含 `undefined`。
+    - text: "`names.at(-1)`"
+      correct: true
+      explain: "`at` 在越界时返回 `undefined`。"
+    - text: "`names.pop()`"
+      correct: true
+      explain: 空数组 `pop` 得到 `undefined`。
+    - text: "`for (const n of names)` 中的 `n`"
+      explain: "`for...of` 只取真实存在的元素，`n` 的类型是 `string`。"
+- id: slice-vs-splice
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    const xs = [1, 2, 3, 4];
+    const a = xs.slice(0, 2);
+    const b = xs.splice(0, 2);
+    console.log(a, b, xs);
+    ```
+  options:
+    - text: "`[ 1, 2 ] [ 1, 2 ] [ 3, 4 ]`"
+      correct: true
+      explain: "`slice` 复制一段，不改变 `xs`；`splice` 从 `xs` 中删除前两个元素并返回它们，`xs` 只剩 `[3, 4]`。"
+    - text: "`[ 1, 2 ] [ 1, 2 ] [ 1, 2, 3, 4 ]`"
+      explain: "`splice` 会修改原数组。"
+    - text: "`[ 1, 2 ] [ 3, 4 ] [ 1, 2 ]`"
+      explain: "`splice(0, 2)` 返回被删除的元素 `[1, 2]`，原数组剩下 `[3, 4]`。"
+- id: const-array
+  type: single
+  prompt: "`const list: string[] = [];` 之后，`list.push('a')` 会怎样？"
+  options:
+    - text: 正常执行，`list` 变成 `['a']`
+      correct: true
+      explain: "`const` 只禁止让 `list` 指向另一个数组，不禁止修改数组的内容。"
+    - text: TypeScript 报错，`const` 数组不能修改
+      explain: 想要只读数组要用 `readonly string[]`（B 阶段会讲），`const` 做不到这一点。
+    - text: 运行时抛出 `TypeError`
+      explain: 修改 `const` 数组的内容是合法的。

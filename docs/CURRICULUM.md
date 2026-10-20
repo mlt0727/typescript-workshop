@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 3 / 规划总数 126**（草稿 7，规划中 116）
+**已发布 3 / 规划总数 126**（草稿 10，规划中 113）
 
 ## A. 起步与 JavaScript 共同语法（已发布 1 / 20）
 
@@ -19,9 +19,9 @@
 | `a06-operators-equality` 运算符、=== 与类型转换 | 📝 草稿 | `a05-null-undefined` |
 | `a07-truthy-falsy` truthy 与 falsy | 📝 草稿 | `a06-operators-equality` |
 | `a08-optional-chaining-nullish` ?.、?? 与 || 的区别 | ✅ 已发布 | `a07-truthy-falsy` |
-| `a09-control-flow` 条件与循环的快速迁移 | ⬜ 规划中 | `a07-truthy-falsy` |
-| `a10-arrays` 数组基础与越界访问 | ⬜ 规划中 | `a09-control-flow` |
-| `a11-objects-references` 对象、引用与浅拷贝 | ⬜ 规划中 | `a10-arrays` |
+| `a09-control-flow` 条件与循环的快速迁移 | 📝 草稿 | `a07-truthy-falsy` |
+| `a10-arrays` 数组基础与越界访问 | 📝 草稿 | `a09-control-flow` |
+| `a11-objects-references` 对象、引用与浅拷贝 | 📝 草稿 | `a10-arrays` |
 | `a12-destructuring-spread` 解构与展开 | ⬜ 规划中 | `a11-objects-references` |
 | `a13-functions` 普通函数、箭头函数与参数 | ⬜ 规划中 | `a12-destructuring-spread` |
 | `a14-scope-closures` 作用域与闭包 | ⬜ 规划中 | `a13-functions` |

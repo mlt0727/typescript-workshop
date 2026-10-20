@@ -1,0 +1,78 @@
+- id: for-in-array
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    const colors = ['红', '绿'];
+    for (const c in colors) {
+      console.log(c);
+    }
+    ```
+  options:
+    - text: "`0` 和 `1`（字符串）"
+      correct: true
+      explain: "`for...in` 遍历的是键，数组的键是下标字符串。要遍历元素请用 `for...of`。"
+    - text: "`红` 和 `绿`"
+      explain: 这是 `for...of` 的结果（也是 Python `for c in colors` 的结果）。
+    - text: TypeScript 报错，数组不能用 `for...in`
+      explain: TypeScript 允许对数组使用 `for...in`，所以这个错误不会被编译器发现，需要你自己注意。
+- id: switch-fallthrough
+  type: single
+  prompt: |
+    在没有开启 `noFallthroughCasesInSwitch` 的项目里，`level(1)` 返回什么？
+
+    ```ts
+    function level(n: number): string {
+      let result = '';
+      switch (n) {
+        case 1:
+          result += '一';
+        case 2:
+          result += '二';
+          break;
+        default:
+          result += '其他';
+      }
+      return result;
+    }
+    ```
+  options:
+    - text: "`'一二'`"
+      correct: true
+      explain: "`case 1` 没有 `break`，执行完后贯穿到 `case 2`，遇到 `break` 才停止。"
+    - text: "`'一'`"
+      explain: 没有 `break` 时不会在 `case 1` 结束。
+    - text: "`'一二其他'`"
+      explain: "`case 2` 末尾有 `break`，不会继续执行 `default`。"
+- id: string-for-of
+  type: single
+  prompt: "`const s = '😀';` 时，`for (const ch of s)` 的循环体执行几次？`s.length` 是多少？"
+  options:
+    - text: 执行 1 次；`length` 是 2
+      correct: true
+      explain: "`for...of` 按完整的字符（码点）遍历；`length` 按 UTF-16 编码单元计数，这个 emoji 占 2 个。"
+    - text: 执行 2 次；`length` 是 2
+      explain: 按下标循环才会执行 2 次。`for...of` 不会拆开 emoji。
+    - text: 执行 1 次；`length` 是 1
+      explain: "`length` 统计 UTF-16 编码单元，这个 emoji 是 2。"
+- id: do-while
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    let n = 10;
+    do {
+      n++;
+    } while (n < 5);
+    console.log(n);
+    ```
+  options:
+    - text: "`11`"
+      correct: true
+      explain: "`do...while` 先执行一次循环体再判断条件，所以 `n` 至少加 1。"
+    - text: "`10`"
+      explain: 这是 `while (n < 5) { n++; }` 的结果。`do...while` 至少执行一次。
+    - text: "`5`"
+      explain: "`n` 从 10 开始，只会增加，不可能变成 5。循环体执行一次后条件 `n < 5` 不成立，循环结束。"

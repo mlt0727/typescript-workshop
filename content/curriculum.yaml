@@ -15,9 +15,9 @@ stages:
       - { id: a06-operators-equality, title: 运算符、=== 与类型转换, status: draft, prerequisites: [a05-null-undefined] }
       - { id: a07-truthy-falsy, title: truthy 与 falsy, status: draft, prerequisites: [a06-operators-equality] }
       - { id: a08-optional-chaining-nullish, title: ?.、?? 与 || 的区别, status: published, prerequisites: [a07-truthy-falsy] }
-      - { id: a09-control-flow, title: 条件与循环的快速迁移, status: planned, prerequisites: [a07-truthy-falsy] }
-      - { id: a10-arrays, title: 数组基础与越界访问, status: planned, prerequisites: [a09-control-flow] }
-      - { id: a11-objects-references, title: 对象、引用与浅拷贝, status: planned, prerequisites: [a10-arrays] }
+      - { id: a09-control-flow, title: 条件与循环的快速迁移, status: draft, prerequisites: [a07-truthy-falsy] }
+      - { id: a10-arrays, title: 数组基础与越界访问, status: draft, prerequisites: [a09-control-flow] }
+      - { id: a11-objects-references, title: 对象、引用与浅拷贝, status: draft, prerequisites: [a10-arrays] }
       - { id: a12-destructuring-spread, title: 解构与展开, status: planned, prerequisites: [a11-objects-references] }
       - { id: a13-functions, title: 普通函数、箭头函数与参数, status: planned, prerequisites: [a12-destructuring-spread] }
       - { id: a14-scope-closures, title: 作用域与闭包, status: planned, prerequisites: [a13-functions] }
