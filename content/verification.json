@@ -3806,6 +3806,103 @@
         }
       ]
     },
+    "b16-assertions-as-const-satisfies": {
+      "verifiedAt": "2026-10-20T10:49:34.864Z",
+      "sourceHash": "a13c51dc73faef39",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:assertion:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:assertion:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of undefined (reading 'toFixed')）；输出：[log] Ada | [error] Uncaught TypeError: Cannot read properties of undefined (reading 'toFixed')\n    at main.ts:4:22"
+        },
+        {
+          "target": "playground:as-const:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:as-const:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 涂成 green 3 dark"
+        },
+        {
+          "target": "playground:satisfies:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:satisfies:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] undefined | [log] undefined | [log] /me { home: { path: '/', auth: 'no' } }"
+        },
+        {
+          "target": "exercise:status-list:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@status.test-d.ts:4 Type '\"draft\" | \"published\" | \"archived\"' does not satisfy the constraint '\"Expected: literal string: draft, Actual: string\" | \"Expected: literal string: published, Actual: string\" | \"Expected: literal string: archived, Actual: string\"'.；TS2344@status.test-d.ts:5 Type 'read) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:status-list:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:status-list:alt:set-lookup",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:status-list:wrong:handwritten-type",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@status.test-d.ts:5 Type 'readonly [\"draft\", \"published\", \"archived\"]' does not satisfy the constraint '{ [x: number]: \"Expected: literal string: draft, Actual: string\" | \"Expected: literal string: published, Actual: string\" | \"Expected: literal string: archived, Actual: string\" | undefined; .) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:status-list:wrong:assert-includes",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@6) tests=ok"
+        },
+        {
+          "target": "exercise:status-list:wrong:boolean-guard",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@status.test-d.ts:9 Type '\"draft\" | \"published\" | \"archived\"' does not satisfy the constraint '\"Expected: literal string: draft, Actual: string\" | \"Expected: literal string: published, Actual: string\" | \"Expected: literal string: archived, Actual: string\"'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:route-table:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2305@routes.test.ts:2 Module '\"./routes\"' has no exported member 'requiresAuth'.；TS2344@routes.test-d.ts:4 Type '\"home\" | \"profile\" | \"comment\"' does not satisfy the constraint '\"Expected: literal string: home, Actual: string\" | \"Expected: literal string: profile, Actual: string\" | \"Expected: lite) rules=ok tests=fail(SyntaxError: The requested module './routes.ts' does not provide an export named 'requiresAuth')"
+        },
+        {
+          "target": "exercise:route-table:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:route-table:alt:as-const-satisfies",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:route-table:wrong:annotation-widens",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@routes.test-d.ts:4 Type '\"home\" | \"profile\" | \"comment\"' does not satisfy the constraint '\"Expected: literal string: home, Actual: string\" | \"Expected: literal string: profile, Actual: string\" | \"Expected: literal string: comment, Actual: string\"'.；TS2578@routes.test-d.ts:6 Unused '@ts-expect) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:route-table:wrong:assertion-table",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@3) tests=ok"
+        },
+        {
+          "target": "exercise:route-table:wrong:no-encoding",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(buildPath › 编码参数，忽略多余的参数)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

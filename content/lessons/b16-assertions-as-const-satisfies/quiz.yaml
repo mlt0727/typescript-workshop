@@ -1,0 +1,54 @@
+- id: as-runtime
+  type: single
+  prompt: "`const user = JSON.parse(text) as { name: string };` 在运行时会做什么检查？"
+  options:
+    - text: 不做任何检查，类型断言在编译后完全消失
+      correct: true
+      explain: "`as` 只是告诉编译器“相信我”。如果 `text` 里没有 `name`，错误会在之后使用时才暴露。"
+    - text: 检查对象是否有 `name` 属性，没有就抛出异常
+      explain: TypeScript 不生成运行时检查代码。
+    - text: "把没有 `name` 的对象补上 `name: ''`"
+      explain: 断言不会修改值。
+- id: as-const-effect
+  type: multiple
+  prompt: "`const point = { x: 1, tags: ['a'] } as const;` 之后，下列哪些说法正确？"
+  options:
+    - text: "`point.x` 的类型是 `1`"
+      correct: true
+      explain: "`as const` 阻止了拓宽，数字保持字面量类型。"
+    - text: "`point.x = 2` 会被 TypeScript 拒绝"
+      correct: true
+      explain: 所有属性都变成了 `readonly`。
+    - text: "`point.tags` 的类型是 `readonly ['a']`"
+      correct: true
+      explain: 嵌套的数组也变成了只读元组。
+    - text: 运行时 `point` 被冻结，修改会抛出异常
+      explain: "`as const` 只影响类型，运行时需要 `Object.freeze`。"
+- id: satisfies-vs-annotation
+  type: single
+  prompt: |
+    `type Theme = Record<string, string>`。下面两种写法中，`b.primary` 和 `b.secondary` 各会怎样？
+
+    ```ts
+    const a: Theme = { primary: '#06c' };
+    const b = { primary: '#06c' } satisfies Theme;
+    ```
+  options:
+    - text: "`b.primary` 的类型是 `string`；`b.secondary` 报错，因为 `b` 只有 `primary`"
+      correct: true
+      explain: "`satisfies` 保留了具体的键。相比之下，`a.secondary` 不会报错，类型是 `string | undefined`。"
+    - text: 两者都是 `string | undefined`，都不报错
+      explain: 这是 `a` 的情况：注解为 `Record<string, string>` 后，任何键都“存在”。
+    - text: "`satisfies` 会把 `b` 的类型变成 `Theme`"
+      explain: "`satisfies` 只检查，不改变推断出的类型。"
+- id: double-assertion
+  type: single
+  prompt: "`const n = 'hello' as unknown as number;` 为什么危险？"
+  options:
+    - text: 它绕过了 TS2352 的检查，`n` 的类型是 `number`，实际却是字符串
+      correct: true
+      explain: 先断言成 `unknown` 再断言成任何类型，编译器不再提出任何异议。
+    - text: 它会在运行时把字符串转换成 NaN
+      explain: 断言不做任何转换，`n` 在运行时仍然是 `'hello'`。
+    - text: 它没有危险，这是推荐的类型转换方式
+      explain: 需要把字符串转换成数字时用 `Number(…)`（a06），并检查结果。
