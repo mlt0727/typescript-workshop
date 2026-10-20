@@ -1,0 +1,44 @@
+- id: where-state
+  type: single
+  prompt: 组件 A 和组件 B 都需要“当前选中的城市”，它们的共同父组件是 Page。state 应该放在哪里？
+  options:
+    - text: 放在 Page 中，通过 props 把值和修改它的函数传给 A 和 B
+      correct: true
+      explain: 这就是状态提升：放在需要它的组件最近的共同父组件中，只存一份。
+    - text: A 和 B 各存一份，变化时互相通知
+      explain: 两份数据迟早会不一致，而且 React 的组件之间没有直接通知的渠道。
+    - text: 放在一个全局变量中
+      explain: 修改普通变量不会触发重新渲染，React 也不知道它变了。
+- id: controlled-component
+  type: single
+  prompt: 什么样的组件叫“受控组件”？
+  options:
+    - text: 它显示的内容完全由 props 决定，自己不保存这部分 state，通过回调告诉父组件“应该变成什么”
+      correct: true
+      explain: 例如 value + onChange 的组件。父组件保存 state，受控组件只负责显示和通知。
+    - text: 用 TypeScript 写了 props 类型的组件
+      explain: 类型与“受控”无关，受控说的是 state 由谁保存。
+    - text: 被父组件用 ref 直接操作的组件
+      explain: 那是另一种（应尽量少用的）方式，受控组件只通过 props 交流。
+- id: selected-id
+  type: single
+  prompt: 列表中“选中的项”应该怎样存进 state？
+  options:
+    - text: 存它的 id，渲染时用 id 在列表中找出这一项
+      correct: true
+      explain: 列表中的数据被修改后，用 id 找出来的永远是最新的那一份。
+    - text: 存这一项对象的副本
+      explain: 列表中的这一项被修改后，副本还是旧的，界面上会出现两个不一致的版本。
+    - text: 存它在数组中的下标
+      explain: 排序、删除、插入之后，下标就指向了别的项。
+- id: noinfer
+  type: single
+  prompt: "`function Pick<T extends string>(props: { options: readonly T[]; value: NoInfer<T> })` 中，`NoInfer<T>` 的作用是什么？"
+  options:
+    - text: 让 T 只从 options 推断，写错的 value 会报错，而不是把 T 放宽
+      correct: true
+      explain: 没有 NoInfer 时，TypeScript 会同时根据 value 推断 T，写错的值反而成了 T 的一部分。
+    - text: 禁止调用者传入 value
+      explain: value 仍然要传，只是它不参与推断 T。
+    - text: 让 value 的类型变成 any
+      explain: NoInfer<T> 的类型就是 T 本身，只是阻止从这里推断。

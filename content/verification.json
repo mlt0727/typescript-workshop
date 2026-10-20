@@ -6960,6 +6960,108 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(合法时提交整理好的数据，然后重置表单 ⟶ expect(…).toHaveBeenCalledWith({)"
         }
       ]
+    },
+    "g07-lifting-state": {
+      "verifiedAt": "2026-10-20T14:15:12.768Z",
+      "sourceHash": "c0498a25a1f2ae06",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:separate-state:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:separate-state:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:lifted-state:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:lifted-state:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:selected-copy:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:selected-copy:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:faq:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2578@Faq.test-d.tsx:3 Unused '@ts-expect-error' directive.；TS2322@Faq.test-d.tsx:5 Type '{ id: string; question: string; answer: string; isOpen: boolean; onToggle: () => void; }' is not assignable to type 'IntrinsicAttributes & FaqItemProps'.) rules=ok tests=fail(一开始都是收起的；答案在页面中，但被隐藏 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,同时只展开一个 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,展开的答案是一个以问题命名的区域 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"多久发货？\")"
+        },
+        {
+          "target": "exercise:faq:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:faq:wrong:set-of-open",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(同时只展开一个 ⟶ expect(…).toHaveAttribute('aria-expanded', 'false'))"
+        },
+        {
+          "target": "exercise:faq:wrong:no-collapse",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(再点一次已经展开的问题，把它收起 ⟶ expect(…).toHaveAttribute('aria-expanded', 'false'))"
+        },
+        {
+          "target": "exercise:faq:wrong:conditional-panel",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(一开始都是收起的；答案在页面中，但被隐藏 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素,同时只展开一个 ⟶ Error: “如何退货？”的 aria-controls 没有指向一个存在的元素)"
+        },
+        {
+          "target": "exercise:segmented-control:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2322@report.test.tsx:15 Type '{ label: string; options: readonly [{ readonly value: \"s\"; readonly label: \"小\"; }, { readonly value: \"m\"; readonly label: \"中\"; }, { readonly value: \"l\"; readonly label: \"大\"; }]; value: string; onChange: () => void; }' is not assignable to type 'IntrinsicAttributes & S) rules=ok tests=fail(SegmentedControl › 按 value 显示选中的选项 ⟶ expect(…).toEqual([ 'false', 'true', 'false' ]),SegmentedControl › 点击时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).toHaveBeenCalledWith('l'),ReportPanel › 默认是本周的销售额，“恢复默认”不可用 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),ReportPanel › 两个选择器的值都由 ReportPanel 保存，标题随之变化 ⟶ expect(…).toHaveTextContent(/^本月的销售额$/),ReportPanel › 恢复默认 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+        },
+        {
+          "target": "exercise:segmented-control:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:segmented-control:alt:interface-props",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:segmented-control:wrong:no-noinfer",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2578@report.test-d.tsx:9 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:segmented-control:wrong:string-options",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@ReportPanel.tsx:30 Type 'Dispatch<SetStateAction<Period>>' is not assignable to type '(value: string) => void'.；TS2322@ReportPanel.tsx:31 Type 'Dispatch<SetStateAction<Metric>>' is not assignable to type '(value: string) => void'.；TS2578@report.test-d.tsx:9 Unused '@ts-expect-error' directive) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:segmented-control:wrong:notify-when-selected",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(SegmentedControl › 点击时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+        },
+        {
+          "target": "exercise:segmented-control:wrong:method-syntax",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2578@report.test-d.tsx:23 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:segmented-control:wrong:local-copy",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(SegmentedControl › 点击时只通知父组件，自己不改变选中项；点击已选中的不通知 ⟶ expect(…).toHaveAttribute('aria-pressed', 'false'),ReportPanel › 恢复默认 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'))"
+        }
+      ]
     }
   }
 }
