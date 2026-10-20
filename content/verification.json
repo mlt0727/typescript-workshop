@@ -6649,6 +6649,93 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Stepper › 到达边界时禁用相应按钮)"
         }
       ]
+    },
+    "g04-immutable-updates": {
+      "verifiedAt": "2026-10-20T13:27:58.568Z",
+      "sourceHash": "261ff444f468f6ef",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:mutation-bug:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:mutation-bug:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:readonly-state:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:readonly-state:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:todo-helpers:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(addTodo › 在末尾添加，原来的项保持原样,toggleTodo 与 renameTodo › 只替换被修改的那一项,removeTodo › 删除一项,moveUp › 和前一项交换位置)"
+        },
+        {
+          "target": "exercise:todo-helpers:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-helpers:alt:index-based",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-helpers:wrong:always-new-array",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toggleTodo 与 renameTodo › 找不到 id 或标题为空时返回原数组,removeTodo › 删除一项)"
+        },
+        {
+          "target": "exercise:todo-helpers:wrong:deep-clone",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTodo › 在末尾添加，原来的项保持原样,toggleTodo 与 renameTodo › 只替换被修改的那一项,removeTodo › 删除一项,moveUp › 和前一项交换位置)"
+        },
+        {
+          "target": "exercise:todo-helpers:wrong:no-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTodo › 在末尾添加，原来的项保持原样,addTodo › 标题为空时返回原数组,toggleTodo 与 renameTodo › 只替换被修改的那一项,toggleTodo 与 renameTodo › 找不到 id 或标题为空时返回原数组)"
+        },
+        {
+          "target": "exercise:settings-panel:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(切换主题,字号每次变化 2，范围 12–24，到达边界时按钮禁用,两种通知可以分别切换,保存时交出新对象，原来的设置没有被修改,只改了字号时，通知设置仍是原来的对象,撤销修改：回到初始设置；没有修改时不可用)"
+        },
+        {
+          "target": "exercise:settings-panel:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings-panel:alt:updater-and-patch",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:settings-panel:wrong:mutate-nested",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2540@SettingsPanel.tsx:26 Cannot assign to 'email' because it is a read-only property.；TS2540@SettingsPanel.tsx:26 Cannot assign to 'push' because it is a read-only property.) rules=ok tests=fail(两种通知可以分别切换,保存时交出新对象，原来的设置没有被修改)"
+        },
+        {
+          "target": "exercise:settings-panel:wrong:clone-on-every-change",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(只改了字号时，通知设置仍是原来的对象)"
+        },
+        {
+          "target": "exercise:settings-panel:wrong:undo-with-copy",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(撤销修改：回到初始设置；没有修改时不可用)"
+        }
+      ]
     }
   }
 }

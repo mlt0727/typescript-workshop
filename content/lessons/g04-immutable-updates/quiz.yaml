@@ -1,0 +1,47 @@
+- id: push-then-set
+  type: single
+  prompt: "`items` 是一个数组 state。执行 `items.push(x); setItems(items);` 之后会怎样？"
+  options:
+    - text: React 用 Object.is 比较，发现还是同一个数组，跳过这次渲染，界面不更新
+      correct: true
+      explain: 数组已经被修改了，但 React 不知道。要创建新数组：setItems([...items, x])。
+    - text: 界面正常更新，只是写法不够好
+      explain: 新旧 state 是同一个引用，React 会跳过渲染。
+    - text: TypeScript 一定会报错
+      explain: 只有把 state 的类型写成 readonly 数组时，push 才会报错；普通数组类型不会。
+- id: nested-update
+  type: single
+  prompt: "state 是 `{ name: string; address: { city: string } }`。正确修改城市的写法是？"
+  options:
+    - text: "`setUser({ ...user, address: { ...user.address, city: '上海' } })`"
+      correct: true
+      explain: 外层对象和 address 都创建了新的，其他属性原样复制。
+    - text: "`setUser({ ...user, city: '上海' })`"
+      explain: 这样会在外层多出一个 city 属性，address.city 没有变。
+    - text: "`user.address.city = '上海'; setUser({ ...user })`"
+      explain: 外层是新对象，但 address 还是原来那个，并且被直接修改了。之前保存的快照和历史记录都会跟着变。
+- id: array-methods
+  type: multiple
+  prompt: 下面哪些方法**不会**修改原数组，可以直接用来计算新的数组 state？
+  options:
+    - text: "`map`、`filter`"
+      correct: true
+      explain: 它们总是返回新数组。
+    - text: "`toSorted`、`toSpliced`、`with`"
+      correct: true
+      explain: ES2023 加入的“复制后修改”的方法，返回新数组，原数组不变。
+    - text: "`sort`、`reverse`"
+      explain: 它们会就地修改原数组。用 toSorted、toReversed，或者先复制 [...arr]。
+    - text: "`splice`"
+      explain: splice 会修改原数组。用 toSpliced 或 filter。
+- id: readonly-type
+  type: single
+  prompt: 把 state 的类型写成 `readonly Todo[]` 有什么作用？
+  options:
+    - text: 在编译时阻止 push、splice、sort 和下标赋值这些修改操作，运行时没有任何开销
+      correct: true
+      explain: readonly 只存在于类型检查中。运行时真正冻结对象要用 Object.freeze。
+    - text: 让数组在运行时无法被修改
+      explain: 类型在编译后就被擦除了（a02），运行时什么也不检查。
+    - text: 让 React 自动复制数组
+      explain: React 不会替你复制数据，创建新数组仍然是你的工作。
