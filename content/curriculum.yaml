@@ -40,7 +40,7 @@ stages:
       - { id: b06-any-unknown-never-void, title: any、unknown、never 与 void, status: draft, prerequisites: [b04-union-literal] }
       - { id: b07-narrowing, title: 类型收窄, status: draft, prerequisites: [b06-any-unknown-never-void] }
       - { id: b08-type-guards, title: 自定义类型守卫与断言函数, status: draft, prerequisites: [b07-narrowing] }
-      - { id: b09-discriminated-unions, title: 可辨识联合与穷尽检查, status: planned, prerequisites: [b08-type-guards] }
+      - { id: b09-discriminated-unions, title: 可辨识联合与穷尽检查, status: draft, prerequisites: [b08-type-guards] }
       - { id: b10-function-types, title: 函数类型与回调, status: planned, prerequisites: [b07-narrowing, a16-array-methods] }
       - { id: b11-overloads, title: 函数重载：何时用，何时不用, status: planned, prerequisites: [b10-function-types] }
       - { id: b12-classes, title: 类、字段与访问控制, status: planned, prerequisites: [b10-function-types, a15-this] }

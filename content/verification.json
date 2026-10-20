@@ -3062,6 +3062,113 @@
         }
       ]
     },
+    "b09-discriminated-unions": {
+      "verifiedAt": "2026-10-20T10:29:03.824Z",
+      "sourceHash": "8362c9d0e77fb083",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:shapes:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:shapes:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 12 3.141592653589793"
+        },
+        {
+          "target": "playground:states:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:states:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { loading: true, data: [ 'a' ], error: '超时' } 共 2 条 出错：超时"
+        },
+        {
+          "target": "playground:exhaustive:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:exhaustive:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 银行卡（尾号 1234）"
+        },
+        {
+          "target": "playground:result:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:result:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 数量 3 | [log] 错误 没有填写数量 | [log] 错误 “2.5”不是正整数"
+        },
+        {
+          "target": "exercise:shape-perimeter:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@shape.ts:17 Argument of type '{ kind: \"triangle\"; a: number; b: number; c: number; }' is not assignable to parameter of type 'never'.) rules=ok tests=fail(三角形)"
+        },
+        {
+          "target": "exercise:shape-perimeter:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shape-perimeter:alt:if-chain",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shape-perimeter:wrong:remove-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(三角形)"
+        },
+        {
+          "target": "exercise:shape-perimeter:wrong:wrong-fields",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2339@shape.ts:17 Property 'width' does not exist on type '{ kind: \"triangle\"; a: number; b: number; c: number; }'.) rules=ok tests=fail(三角形)"
+        },
+        {
+          "target": "exercise:request-reducer:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@request.test-d.ts:5 Type '{ status: \"idle\"; } | { status: \"loading\"; startedAt: number; } | { status: \"success\"; items: string[]; loadedAt: number; } | { status: \"error\"; message: string; }' does not satisfy the constraint '{ status: \"Expected: literal string: idle, Actual: string\" | \"Expecte) rules=ok tests=fail(transition › fetch 开始加载,transition › resolve 只在加载中有效，并复制 items,transition › reject 只在加载中有效,transition › reset 回到初始状态,label › 四种状态)"
+        },
+        {
+          "target": "exercise:request-reducer:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:request-reducer:alt:state-first",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:request-reducer:wrong:optional-fields",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@request.test-d.ts:5 Type '{ status: \"idle\"; } | { status: \"loading\"; startedAt: number; } | { status: \"success\"; items: string[]; loadedAt: number; } | { status: \"error\"; message: string; }' does not satisfy the constraint '{ status: \"idle\" | \"loading\" | \"success\" | \"error\"; startedAt: \"Expec) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:request-reducer:wrong:resolve-anytime",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(transition › resolve 只在加载中有效，并复制 items,transition › reject 只在加载中有效)"
+        },
+        {
+          "target": "exercise:request-reducer:wrong:new-object-when-ignored",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(transition › 正在加载时忽略 fetch,transition › resolve 只在加载中有效，并复制 items,transition › reject 只在加载中有效)"
+        },
+        {
+          "target": "exercise:request-reducer:wrong:shared-items",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(transition › resolve 只在加载中有效，并复制 items)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

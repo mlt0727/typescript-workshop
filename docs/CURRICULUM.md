@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 22 / 规划总数 126**（草稿 8，规划中 96）
+**已发布 22 / 规划总数 126**（草稿 9，规划中 95）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -46,7 +46,7 @@
 | `b06-any-unknown-never-void` any、unknown、never 与 void | 📝 草稿 | `b04-union-literal` |
 | `b07-narrowing` 类型收窄 | 📝 草稿 | `b06-any-unknown-never-void` |
 | `b08-type-guards` 自定义类型守卫与断言函数 | 📝 草稿 | `b07-narrowing` |
-| `b09-discriminated-unions` 可辨识联合与穷尽检查 | ⬜ 规划中 | `b08-type-guards` |
+| `b09-discriminated-unions` 可辨识联合与穷尽检查 | 📝 草稿 | `b08-type-guards` |
 | `b10-function-types` 函数类型与回调 | ⬜ 规划中 | `b07-narrowing`、`a16-array-methods` |
 | `b11-overloads` 函数重载：何时用，何时不用 | ⬜ 规划中 | `b10-function-types` |
 | `b12-classes` 类、字段与访问控制 | ⬜ 规划中 | `b10-function-types`、`a15-this` |

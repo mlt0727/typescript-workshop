@@ -1,0 +1,56 @@
+- id: narrowing-by-tag
+  type: single
+  prompt: |
+    在 `case 'ok'` 分支里，可以直接读取哪些属性？
+
+    ```ts
+    type Reply =
+      | { kind: 'ok'; data: string }
+      | { kind: 'fail'; code: number };
+
+    function handle(r: Reply) {
+      switch (r.kind) {
+        case 'ok':
+          // 这里
+      }
+    }
+    ```
+  options:
+    - text: "`kind` 和 `data`"
+      correct: true
+      explain: 判别属性 `kind` 为 `'ok'` 时，`r` 被收窄成第一种类型。
+    - text: "`kind`、`data` 和 `code`"
+      explain: "`code` 只属于 `fail`，在 `ok` 分支里不存在。"
+    - text: 只有 `kind`
+      explain: 收窄之后，这种情况特有的属性 `data` 也可以直接读取。
+- id: impossible-states
+  type: single
+  prompt: "为什么用可辨识联合表示请求状态，比 `{ loading: boolean; data?: T; error?: string }` 更好？"
+  options:
+    - text: 它只允许合法的组合，并且在每种状态下 TypeScript 都知道哪些属性一定存在
+      correct: true
+      explain: 可选属性的写法允许“加载中又有错误”这类不可能的状态，使用时还要处理每个属性可能是 `undefined`。
+    - text: 可辨识联合在运行时更快
+      explain: 类型在运行时被擦除，两种写法的运行性能没有差别。
+    - text: 可选属性在严格模式下不能使用
+      explain: 可选属性可以使用，问题在于它表达不了“几种情况互斥”。
+- id: tag-must-be-literal
+  type: single
+  prompt: "`type A = { kind: string; a: number }`、`type B = { kind: string; b: number }`。对 `x: A | B` 检查 `if (x.kind === 'a')` 之后，能读取 `x.a` 吗？"
+  options:
+    - text: 不能，判别属性必须是字面量类型，`string` 无法区分两种情况
+      correct: true
+      explain: "要写成 `kind: 'a'` 和 `kind: 'b'`，TypeScript 才能根据它收窄。"
+    - text: 能，TypeScript 会根据字符串的值推断
+      explain: TypeScript 只根据类型收窄；两边的 `kind` 都是 `string`，检查后仍然无法确定是哪一种。
+- id: default-fallback
+  type: single
+  prompt: 给联合类型新增一种情况后，下面哪种 `switch` 写法能让 TypeScript 指出“还没有处理新情况”？
+  options:
+    - text: "`default: return assertNever(x);`（参数类型为 `never`）"
+      correct: true
+      explain: 新情况会落入 `default`，它不是 `never`，于是调用处报错。
+    - text: "`default: return '未知';`"
+      explain: 兜底分支会悄悄吞掉新情况，编译器不会提醒。
+    - text: "`default: break;`"
+      explain: 同样会吞掉新情况；如果函数有返回类型，可能还会报“缺少返回语句”，但不会明确指向新增的情况。
