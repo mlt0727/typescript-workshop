@@ -4229,6 +4229,113 @@
         }
       ]
     },
+    "d03-css-layout": {
+      "verifiedAt": "2026-10-20T11:38:47.501Z",
+      "sourceHash": "82f5c0087dbbf3d9",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:box-model:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:box-model:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] content-box 实际宽度： 250 | [log] border-box 实际宽度： 200"
+        },
+        {
+          "target": "playground:flex:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:flex:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:grid:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:grid:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:navbar:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(网站名称和导航在同一行：名称靠左，导航靠右,网站名称和导航链接在垂直方向居中对齐,三个链接排成一行，间距 16px)"
+        },
+        {
+          "target": "exercise:navbar:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:navbar:alt:margin-auto-and-grid",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:navbar:wrong:no-header-flex",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(网站名称和导航在同一行：名称靠左，导航靠右,网站名称和导航链接在垂直方向居中对齐,三个链接排成一行，间距 16px)"
+        },
+        {
+          "target": "exercise:navbar:wrong:no-space-between",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(网站名称和导航在同一行：名称靠左，导航靠右)"
+        },
+        {
+          "target": "exercise:navbar:wrong:default-stretch",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(网站名称和导航链接在垂直方向居中对齐)"
+        },
+        {
+          "target": "exercise:navbar:wrong:margin-gap",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(三个链接排成一行，间距 16px)"
+        },
+        {
+          "target": "exercise:card-grid:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面宽 1024 像素时，一行放 4 张卡片,页面宽 800 像素时，一行放 3 张卡片,页面宽 600 像素时，一行放 2 张卡片,行间距和列间距都是 16px)"
+        },
+        {
+          "target": "exercise:card-grid:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:card-grid:alt:media-queries",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:card-grid:wrong:fixed-columns",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面宽 800 像素时，一行放 3 张卡片,页面宽 600 像素时，一行放 2 张卡片,页面宽 375 像素时，一行放 1 张卡片)"
+        },
+        {
+          "target": "exercise:card-grid:wrong:flex-wrap-grow",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面宽 1024 像素时，卡片一样宽，并铺满整行)"
+        },
+        {
+          "target": "exercise:card-grid:wrong:no-gap",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(行间距和列间距都是 16px)"
+        },
+        {
+          "target": "exercise:card-grid:wrong:align-start",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(行间距和列间距都是 16px,同一行的卡片一样高)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T11:34:50.146Z",
       "sourceHash": "5fb16b205d4ef535",

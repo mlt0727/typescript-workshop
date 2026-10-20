@@ -1,0 +1,47 @@
+- id: border-box
+  type: single
+  prompt: "`.box { box-sizing: border-box; width: 300px; padding: 20px; border: 2px solid; }` 的盒子实际占多宽？"
+  options:
+    - text: 300px
+      correct: true
+      explain: "`border-box` 让 `width` 包含 padding 和 border，内容区相应缩小为 256px。"
+    - text: 344px
+      explain: 这是默认的 `content-box`：300 + 20×2 + 2×2。
+    - text: 340px
+      explain: 漏算了边框；而且用了 `border-box`，padding 和边框都算在 300px 以内。
+- id: flex-axes
+  type: single
+  prompt: "一个 `display: flex` 的容器（默认 `flex-direction: row`），想让里面的项目在**垂直方向**居中，应该写哪个属性？"
+  options:
+    - text: "`align-items: center`"
+      correct: true
+      explain: 主轴是水平方向，垂直方向是交叉轴，交叉轴上的对齐由 `align-items` 控制。
+    - text: "`justify-content: center`"
+      explain: 它控制主轴（这里是水平方向）上的分布，会让项目水平居中。
+    - text: "`vertical-align: middle`"
+      explain: 这个属性作用于行内元素和表格单元格，对弹性项目无效。
+- id: auto-fill
+  type: single
+  prompt: "`grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))` 是什么意思？"
+  options:
+    - text: 每列至少 200px，能放几列就放几列，剩余空间平均分给各列
+      correct: true
+      explain: 容器变宽时列数增加，变窄时减少，不需要媒体查询。
+    - text: 固定 200px 宽的列，放满为止，右边留出空白
+      explain: "`1fr` 让列可以变宽，剩余空间会分给各列，不会留在右边。"
+    - text: 每列最多 200px
+      explain: "`minmax(200px, 1fr)` 中 200px 是最小值，最大值是 `1fr`。"
+- id: flex-or-grid
+  type: multiple
+  prompt: 下列哪些场景更适合用 Grid 而不是 Flexbox？
+  options:
+    - text: 卡片网格：多行多列，列要上下对齐
+      correct: true
+      explain: Grid 的列在所有行之间对齐，最后一行的卡片也和上面一样宽。
+    - text: 整个页面的框架：顶栏、侧栏、主区域
+      correct: true
+      explain: 同时控制行和列，正是 Grid 的用途。
+    - text: 导航栏：一排链接，最后一个按钮推到最右边
+      explain: "沿一条轴排列一组元素，用 Flexbox 加 `margin-left: auto` 更简单。"
+    - text: 按钮组：几个按钮排成一行，间距相同
+      explain: 一维排列，用 Flexbox 和 `gap` 即可。
