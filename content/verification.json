@@ -7338,6 +7338,98 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(在 Provider 之外使用 useCart 立即报错 ⟶ expect(…).toThrow('useCart 必须在 <CartProvider> 中使用'))"
         }
       ]
+    },
+    "g11-effects": {
+      "verifiedAt": "2026-10-20T14:37:16.109Z",
+      "sourceHash": "552ee35c22950942",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:setup-cleanup:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:setup-cleanup:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 开始监听 resize"
+        },
+        {
+          "target": "playground:fetch-effect:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:fetch-effect:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:effect-hooks:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(useDocumentTitle › 设置标题，标题变化时更新，卸载时恢复原来的标题 ⟶ expect(…).toBe('原来的标题'),useInterval › 每隔 delay 毫秒调用一次 ⟶ expect(…).toHaveBeenCalledTimes(1),useInterval › 总是调用最新的 callback，并且换 callback 不会重新计时 ⟶ expect(…).toHaveBeenCalledTimes(1),useInterval › delay 为 null 时暂停；改变 delay 按新的间隔重新开始 ⟶ expect(…).toHaveBeenCalledTimes(5),useInterval › 卸载之后不再调用 ⟶ expect(…).toHaveBeenCalledTimes(2))"
+        },
+        {
+          "target": "exercise:effect-hooks:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:effect-hooks:alt:latest-ref",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:effect-hooks:wrong:title-no-restore",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useDocumentTitle › 设置标题，标题变化时更新，卸载时恢复原来的标题 ⟶ expect(…).toBe('原来的标题'))"
+        },
+        {
+          "target": "exercise:effect-hooks:wrong:callback-in-deps",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useInterval › 总是调用最新的 callback，并且换 callback 不会重新计时 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+        },
+        {
+          "target": "exercise:effect-hooks:wrong:stale-callback",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useInterval › 总是调用最新的 callback，并且换 callback 不会重新计时 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+        },
+        {
+          "target": "exercise:effect-hooks:wrong:no-clear",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(useInterval › delay 为 null 时暂停；改变 delay 按新的间隔重新开始 ⟶ expect(…).toHaveBeenCalledTimes(5),useInterval › 卸载之后不再调用 ⟶ expect(…).toHaveBeenCalledTimes(2))"
+        },
+        {
+          "target": "exercise:city-search:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(输入停止 300 毫秒后才请求，连续输入只请求一次 ⟶ TestingLibraryElementError: Unable to find role=\"list\" and name \"建议\",慢的旧请求被中止，不会覆盖新的结果 ⟶ expect(…).toHaveBeenCalledTimes(1),没有结果和失败 ⟶ TestingLibraryElementError: Unable to find an element with the text: 没有匹配的城市. This could be because the text is broken up by multiple elements. In this case, yo,组件消失时取消正在进行的请求 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+        },
+        {
+          "target": "exercise:city-search:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:city-search:alt:helper-function",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:city-search:wrong:no-debounce",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入停止 300 毫秒后才请求，连续输入只请求一次 ⟶ expect(…).not.toHaveBeenCalled())"
+        },
+        {
+          "target": "exercise:city-search:wrong:no-abort",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(慢的旧请求被中止，不会覆盖新的结果 ⟶ expect(…).toBe(true),组件消失时取消正在进行的请求 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:city-search:wrong:no-clear-timer",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入停止 300 毫秒后才请求，连续输入只请求一次 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+        }
+      ]
     }
   }
 }

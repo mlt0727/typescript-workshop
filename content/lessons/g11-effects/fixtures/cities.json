@@ -1,0 +1,8 @@
+[
+  {"url": "/api/cities?q=%E4%B8%8A", "delayMs": 50, "body": ["上海", "上饶"]},
+  {"url": "/api/cities?q=%E4%B8%8A%E6%B5%B7", "delayMs": 50, "body": ["上海"]},
+  {"url": "/api/cities?q=%E5%B9%BF", "delayMs": 800, "body": ["广州", "广元"]},
+  {"url": "/api/cities?q=%E6%B7%B1", "delayMs": 50, "body": ["深圳"]},
+  {"url": "/api/cities?q=%E9%9B%AA", "delayMs": 50, "body": []},
+  {"url": "/api/cities?q=%E9%94%99", "delayMs": 50, "status": 500, "body": {"message": "出错了"}}
+]

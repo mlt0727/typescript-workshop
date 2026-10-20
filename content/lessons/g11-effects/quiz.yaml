@@ -1,0 +1,48 @@
+- id: effect-purpose
+  type: single
+  prompt: 下面哪件事最适合放在 Effect 里？
+  options:
+    - text: 组件显示期间监听窗口的 resize 事件，组件消失时停止监听
+      correct: true
+      explain: 这是与外部系统（浏览器）保持同步：只要组件在，就要监听。
+    - text: 用户点击“提交”之后发送请求
+      explain: 这是由用户的某个操作引起的，放在事件处理函数里。
+    - text: 根据 props 中的列表算出筛选后的结果
+      explain: 能在渲染时算出来的东西不需要 Effect（下一课）。
+- id: deps
+  type: single
+  prompt: "`useEffect(() => { document.title = count + ' 条消息'; }, [])` 有什么问题？"
+  options:
+    - text: Effect 用到了 count，却没有列进依赖，count 变化后标题不会更新
+      correct: true
+      explain: Effect 中用到的每一个响应式的值都要出现在依赖数组中，这里应该是 [count]。
+    - text: 依赖数组为空时 Effect 永远不会执行
+      explain: 空数组表示只在第一次渲染之后执行一次。
+    - text: 修改 document.title 必须放在事件处理函数中
+      explain: 修改标题正是 Effect 的典型用途，问题在依赖。
+- id: cleanup
+  type: multiple
+  prompt: 清理函数会在什么时候被调用？
+  options:
+    - text: 组件从页面上移除时
+      correct: true
+      explain: 撤销 Effect 做的事，例如移除监听器、清除计时器。
+    - text: 依赖变化、Effect 要重新执行之前
+      correct: true
+      explain: 先清理上一次的，再用新的值执行，这正好可以中止过时的请求。
+    - text: 每次点击按钮时
+      explain: 清理函数只和组件的挂载、卸载以及依赖变化有关。
+    - text: 开发模式下使用 StrictMode 时，组件第一次挂载后会被立即调用一次
+      correct: true
+      explain: React 会挂载、卸载、再挂载一次，帮你发现缺少清理的 Effect。生产环境中不会这样。
+- id: effect-event
+  type: single
+  prompt: Effect 需要调用最新的 `onTick` prop，但不希望 `onTick` 每次变化都让计时器重新开始。React 19.2 起推荐的做法是？
+  options:
+    - text: 用 useEffectEvent 包装 onTick，在 Effect 中调用包装后的函数，依赖中不写它
+      correct: true
+      explain: Effect Event 中读到的总是最新的 props，而它本身不是依赖。
+    - text: 把 onTick 从依赖数组中删掉，直接调用它
+      explain: 那样 Effect 用的永远是第一次渲染时的 onTick。
+    - text: 把 onTick 放进依赖数组
+      explain: 父组件每次渲染都传入新的函数，计时器就会不停地重新开始。

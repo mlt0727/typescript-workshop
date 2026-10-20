@@ -1,0 +1,5 @@
+[
+  { "url": "/api/users/1", "delayMs": 900, "body": { "id": 1, "name": "韩梅梅" } },
+  { "url": "/api/users/2", "delayMs": 200, "body": { "id": 2, "name": "李雷" } },
+  { "url": "/api/users/3", "delayMs": 400, "body": { "id": 3, "name": "王芳" } }
+]
