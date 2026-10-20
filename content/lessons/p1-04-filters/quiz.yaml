@@ -1,0 +1,33 @@
+- id: single-source
+  type: single
+  prompt: 筛选条件保存在地址的查询参数中。下面哪种做法最不容易出现“地址和页面不一致”？
+  options:
+    - text: 不另外保存筛选条件，每次渲染时都从 location.search 解析；改变条件时先改地址，再渲染
+      correct: true
+      explain: 只有一个来源，就不存在“两份数据不同步”的问题。后退、前进、外部修改地址，都只需要按地址重新渲染。
+    - text: 用一个全局变量保存筛选条件，改变时同时修改变量和地址
+      explain: 后退、前进时地址变了，变量却没有变；每一个改变地址的地方都要记得同步，漏一处就出错。
+    - text: 把筛选条件保存在 localStorage 中
+      explain: 那样刷新、分享链接、后退都无法得到地址对应的视图，而且和地址是两份数据。
+- id: push-or-replace
+  type: single
+  prompt: 搜索框绑定在查询参数 q 上。下面哪种组合是合适的？
+  options:
+    - text: 输入时 replaceState；点标签、清除筛选时 pushState
+      correct: true
+      explain: 输入是连续的过程，每个字都新增记录的话，后退一次只删一个字；明确的操作新增记录，后退才能回到之前的视图。
+    - text: 全部用 pushState
+      explain: 输入“周报”两个字就产生两条记录，后退的体验很差。
+    - text: 全部用 replaceState
+      explain: 点标签、清除筛选之后，后退无法回到之前的筛选条件。
+- id: tag-null
+  type: single
+  prompt: "筛选条件的类型是 `{ q: string; tag: string | null }`。为什么“没有标签”用 null，而不是空字符串？"
+  options:
+    - text: "“不按标签筛选”和“按一个空的标签筛选”是两回事；用 null 区分，?tag= 这样的地址也不会筛掉所有的任务"
+      correct: true
+      explain: 类型中把“没有”单独表示出来，使用时必须先判断，不会把空字符串误当成一个标签（a05）。
+    - text: null 占用的内存比空字符串少
+      explain: 这不是选择的理由；关键是语义上的区分。
+    - text: URLSearchParams 不能处理空字符串
+      explain: 可以处理，get 会返回空字符串；问题在于我们如何解释它。

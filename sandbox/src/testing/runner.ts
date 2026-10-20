@@ -1,3 +1,4 @@
+import { LIMITS } from '../../../src/shared/limits.ts';
 import type { TestResult } from '../../../src/shared/sandbox-protocol.ts';
 import { format } from '../inspect.ts';
 import { AssertionError, checkAssertionCount, expect, resetAssertionCounter } from './expect.ts';
@@ -170,7 +171,7 @@ export class TestCollector {
         }
       }
 
-      const r: TestResult = { name, status: failure === undefined ? 'pass' : 'fail', durationMs: performance.now() - started };
+      const r: TestResult = { name: clip(name, 1000), status: failure === undefined ? 'pass' : 'fail', durationMs: performance.now() - started };
       if (failure !== undefined) r.error = describeFailure(failure, hooks.locate);
       results.push(r);
       onResult?.(r);
@@ -179,14 +180,27 @@ export class TestCollector {
   }
 }
 
+/**
+ * 结果要通过协议的长度检查，否则主页面会把整条消息当作不合法的数据丢弃，测试就“一直没有完成”。
+ * waitFor 超时时会把整个页面的 DOM 附在错误消息后面，很容易超过上限。
+ */
+function clip(text: string, max: number = LIMITS.maxLogEntryChars): string {
+  return text.length <= max ? text : `${text.slice(0, max - 20)}\n…（内容过长，已截断）`;
+}
+
 function describeFailure(err: unknown, locate: RunHooks['locate']): NonNullable<TestResult['error']> {
   if (err instanceof AssertionError) {
-    return { message: err.message, expected: err.expected, actual: err.actual, location: locate(err) };
+    return {
+      message: clip(err.message),
+      expected: err.expected === undefined ? undefined : clip(err.expected),
+      actual: err.actual === undefined ? undefined : clip(err.actual),
+      location: locate(err),
+    };
   }
   if (err instanceof Error) {
-    return { message: `${err.name}: ${err.message}`, location: locate(err) };
+    return { message: clip(`${err.name}: ${err.message}`), location: locate(err) };
   }
-  return { message: `抛出了非 Error 值：${format(err)}` };
+  return { message: clip(`抛出了非 Error 值：${format(err)}`) };
 }
 
 class TimeoutError extends Error {
