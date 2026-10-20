@@ -322,6 +322,444 @@
         }
       ]
     },
+    "a04-primitives-strings": {
+      "verifiedAt": "2026-10-20T09:17:19.594Z",
+      "sourceHash": "69c52c2eec18c315",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:numbers:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:numbers:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 3.5 | [log] 3 -3 -4 | [log] -1 | [log] 0.30000000000000004 0.30 | [log] 3 -2 | [log] 9007199254740991"
+        },
+        {
+          "target": "playground:nan:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:nan:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] NaN number | [log] false | [log] true | [log] Infinity 0 42"
+        },
+        {
+          "target": "playground:strings:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:strings:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 10 TYPESCRIPT | [log] Type Script | [log] true true | [log] 007 ababab | [log]   TypeScript   | [log] 2 2"
+        },
+        {
+          "target": "playground:template:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:template:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 2 杯咖啡，共 36 元 | [log] 第一行\n第二行 | [log] 51 33 | [log] 4"
+        },
+        {
+          "target": "exercise:format-duration:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(秒数补零,整分钟,秒数接近 60 时不进位,超过一小时仍然只显示分钟)"
+        },
+        {
+          "target": "exercise:format-duration:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:format-duration:alt:manual-pad",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:format-duration:wrong:no-floor",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(秒数补零,秒数接近 60 时不进位,超过一小时仍然只显示分钟)"
+        },
+        {
+          "target": "exercise:format-duration:wrong:no-pad",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(秒数补零,整分钟,超过一小时仍然只显示分钟)"
+        },
+        {
+          "target": "exercise:format-duration:wrong:round",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(秒数接近 60 时不进位)"
+        },
+        {
+          "target": "exercise:format-duration:wrong:pad-number",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2339@duration.ts:4 Property 'padStart' does not exist on type 'number'.) rules=ok tests=fail(秒数补零,整分钟,秒数接近 60 时不进位,超过一小时仍然只显示分钟)"
+        },
+        {
+          "target": "exercise:format-yuan:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(formatYuan › 分总是两位,formatYuan › 零,formatYuan › 负数的符号在 ¥ 前面)"
+        },
+        {
+          "target": "exercise:format-yuan:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:format-yuan:alt:to-fixed",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:format-yuan:wrong:no-pad",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatYuan › 分总是两位,formatYuan › 不足 1 元,formatYuan › 零,formatYuan › 负数的符号在 ¥ 前面)"
+        },
+        {
+          "target": "exercise:format-yuan:wrong:sign-after-symbol",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatYuan › 负数的符号在 ¥ 前面)"
+        },
+        {
+          "target": "exercise:format-yuan:wrong:no-abs",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatYuan › 负数的符号在 ¥ 前面)"
+        }
+      ]
+    },
+    "a05-null-undefined": {
+      "verifiedAt": "2026-10-20T09:19:55.831Z",
+      "sourceHash": "e380cb0cc9639229",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:where-undefined:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:where-undefined:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] undefined | [log] 这个函数没有 return | [log] undefined | [log] undefined | [log] undefined object"
+        },
+        {
+          "target": "playground:strict-null:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:strict-null:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of null (reading 'length')）；输出：[error] Uncaught TypeError: Cannot read properties of null (reading 'length')\n    at main.ts:11:18"
+        },
+        {
+          "target": "playground:narrowing:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:narrowing:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 上海（2 个字） | [log] 未知城市"
+        },
+        {
+          "target": "playground:json-null:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:json-null:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] {\"name\":\"Ada\",\"phone\":null} | [log] undefined null"
+        },
+        {
+          "target": "exercise:safe-initial:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS18048@initial.ts:3 'first' is possibly 'undefined'.) rules=ok tests=fail(TypeError: Cannot read properties of undefined (reading 'toUpperCase'))"
+        },
+        {
+          "target": "exercise:safe-initial:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:safe-initial:alt:check-length",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:safe-initial:wrong:check-null",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18048@initial.ts:6 'first' is possibly 'undefined'.) rules=ok tests=fail(空字符串返回问号)"
+        },
+        {
+          "target": "exercise:safe-initial:wrong:non-null",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(non-null-assertion@3) tests=fail(空字符串返回问号)"
+        },
+        {
+          "target": "exercise:safe-initial:wrong:string-convert",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(空字符串返回问号)"
+        },
+        {
+          "target": "exercise:parse-age:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseAge › 没填时返回 null,parseAge › abc 返回 null,parseAge › 12岁 返回 null,parseAge › 3.5 返回 null,parseAge › -1 返回 null,parseAge › 151 返回 null,ageLabel › 无效或没填时显示提示)"
+        },
+        {
+          "target": "exercise:parse-age:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-age:alt:nested-checks",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-age:wrong:nan-for-failure",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseAge › 没填时返回 null,parseAge › abc 返回 null,parseAge › 12岁 返回 null,parseAge › 3.5 返回 null,parseAge › -1 返回 null,parseAge › 151 返回 null)"
+        },
+        {
+          "target": "exercise:parse-age:wrong:empty-is-zero",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseAge › 没填时返回 null,ageLabel › 无效或没填时显示提示)"
+        },
+        {
+          "target": "exercise:parse-age:wrong:label-no-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(ageLabel › 无效或没填时显示提示)"
+        },
+        {
+          "target": "exercise:parse-age:wrong:return-undefined",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@age.ts:5 Type 'undefined' is not assignable to type 'number | null'.) rules=ok tests=fail(parseAge › 没填时返回 null,parseAge › abc 返回 null,parseAge › 12岁 返回 null,parseAge › 3.5 返回 null,parseAge › -1 返回 null,parseAge › 151 返回 null,ageLabel › 无效或没填时显示提示)"
+        }
+      ]
+    },
+    "a06-operators-equality": {
+      "verifiedAt": "2026-10-20T09:22:37.992Z",
+      "sourceHash": "cc1c1df36674352a",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:operators:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:operators:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 1024 1 | [log] 6 | [log] true true | [log] true false"
+        },
+        {
+          "target": "playground:loose-equality:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:loose-equality:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] false | [log] true true true | [log] true false"
+        },
+        {
+          "target": "playground:reference-equality:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:reference-equality:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] false true | [log] false"
+        },
+        {
+          "target": "playground:conversions:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:conversions:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 42 NaN NaN | [log] 42 3.14 | [log] 26 0 | [log] true"
+        },
+        {
+          "target": "exercise:same-code:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(文字不同就是不同的商品)"
+        },
+        {
+          "target": "exercise:same-code:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:same-code:alt:template",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:same-code:wrong:strict-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(数字按十进制文字处理)"
+        },
+        {
+          "target": "exercise:same-code:wrong:to-number",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(同类型直接比较,文字不同就是不同的商品)"
+        },
+        {
+          "target": "exercise:compare-time:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(compareTime › 一位数小时与两位数小时比较,compareTime › 补零与不补零表示同一时间)"
+        },
+        {
+          "target": "exercise:compare-time:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:compare-time:alt:hhmm-number",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:compare-time:alt:pad-compare",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:compare-time:wrong:hours-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareTime › 小时相同时比较分钟)"
+        },
+        {
+          "target": "exercise:compare-time:wrong:fixed-hours",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareTime › 一位数小时与两位数小时比较,compareTime › 补零与不补零表示同一时间,compareTime › 一天的两端)"
+        },
+        {
+          "target": "exercise:compare-time:wrong:concat-strings",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareTime › 一位数小时与两位数小时比较,compareTime › 补零与不补零表示同一时间)"
+        }
+      ]
+    },
+    "a07-truthy-falsy": {
+      "verifiedAt": "2026-10-20T09:25:16.802Z",
+      "sourceHash": "c4f34367ea6c0610",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:falsy-values:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:falsy-values:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] false false false false false | [log] true true true true true | [log] true false"
+        },
+        {
+          "target": "playground:truthy-narrowing:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:truthy-narrowing:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 你好，Ada 你好，访客 你好，访客 | [log] 库存 5 件 库存未知 库存未知"
+        },
+        {
+          "target": "playground:and-or-values:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:and-or-values:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 狗  | [log] 42 猫 | [log] false"
+        },
+        {
+          "target": "playground:always-truthy:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:always-truthy:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 今天是周末"
+        },
+        {
+          "target": "exercise:is-blank:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(空字符串和只有空格)"
+        },
+        {
+          "target": "exercise:is-blank:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:is-blank:alt:explicit-checks",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:is-blank:wrong:trim-without-check",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18049@blank.ts:2 'text' is possibly 'null' or 'undefined'.) rules=ok tests=fail(没有值)"
+        },
+        {
+          "target": "exercise:is-blank:wrong:only-null",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18048@blank.ts:5 'text' is possibly 'undefined'.) rules=ok tests=fail(没有值)"
+        },
+        {
+          "target": "exercise:is-blank:wrong:string-zero",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(看起来像“假”的文字也是内容)"
+        },
+        {
+          "target": "exercise:profile-summary:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(profileSummary › 0 和 false 是有效的值,profileSummary › 姓名去掉首尾空格，只有空格算没填)"
+        },
+        {
+          "target": "exercise:profile-summary:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:profile-summary:alt:ternaries",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:profile-summary:wrong:age-truthy",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(profileSummary › 0 和 false 是有效的值)"
+        },
+        {
+          "target": "exercise:profile-summary:wrong:subscribed-truthy",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(profileSummary › 0 和 false 是有效的值,profileSummary › 姓名去掉首尾空格，只有空格算没填)"
+        },
+        {
+          "target": "exercise:profile-summary:wrong:name-no-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(profileSummary › 姓名去掉首尾空格，只有空格算没填)"
+        }
+      ]
+    },
     "a08-optional-chaining-nullish": {
       "verifiedAt": "2026-10-20T08:56:41.232Z",
       "sourceHash": "7d438c40c3026e6d",

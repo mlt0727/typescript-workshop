@@ -1,0 +1,53 @@
+- id: division
+  type: single
+  prompt: "`console.log(7 / 2, -7 % 3)` 输出什么？"
+  options:
+    - text: "`3.5 -1`"
+      correct: true
+      explain: "`/` 不会取整；`%` 的结果符号跟随被除数，和 Java/C++ 相同。"
+    - text: "`3 -1`"
+      explain: 这是 Java/C++ 整数除法的结果。JavaScript 只有浮点数，`7 / 2` 是 `3.5`。
+    - text: "`3.5 2`"
+      explain: "`-7 % 3` 得 `2` 是 Python 的行为；JavaScript 得 `-1`。"
+    - text: "`3 2`"
+      explain: 这是 Python 用 `//` 和 `%` 的结果。
+- id: check-nan
+  type: single
+  prompt: "`const n = Number(text);` 之后，怎样正确判断转换失败（`n` 是 `NaN`）？"
+  options:
+    - text: "`Number.isNaN(n)`"
+      correct: true
+      explain: 这是检查 `NaN` 的标准方法。
+    - text: "`n === NaN`"
+      explain: "`NaN` 不等于任何值，包括它自己，这个条件永远是 `false`，TypeScript 会报 TS2845。"
+    - text: "`typeof n !== 'number'`"
+      explain: "`typeof NaN` 是 `'number'`，这个条件永远是 `false`。"
+    - text: "`n === 0`"
+      explain: 转换失败得到的是 `NaN` 而不是 `0`；反过来，`Number('')` 得到 `0` 并不算失败，需要单独处理空字符串。
+- id: plus-concat
+  type: single
+  prompt: "`console.log('5' + 1, 1 + 2 + '3')` 输出什么？"
+  options:
+    - text: "`51 33`"
+      correct: true
+      explain: 有一边是字符串时 `+` 做拼接；`1 + 2 + '3'` 从左往右计算，先得 `3`，再拼接成 `'33'`。
+    - text: "`6 6`"
+      explain: "`+` 遇到字符串时不做加法。"
+    - text: "`51 123`"
+      explain: 运算从左往右进行，`1 + 2` 先算出 `3`，然后才遇到字符串。
+    - text: TypeScript 报错，不能把字符串和数字相加
+      explain: TypeScript 允许 `string + number`（结果是 `string`），但不允许 `'5' - 1` 这样的算术运算。
+- id: string-length
+  type: multiple
+  prompt: 关于 JavaScript 的字符串，下列哪些说法正确？
+  options:
+    - text: 字符串是不可变的，`trim()`、`toUpperCase()` 都返回新字符串
+      correct: true
+      explain: 和 Java、Python 一样，字符串方法不会修改原字符串。
+    - text: "`'你好'.length` 是 `2`"
+      correct: true
+      explain: 常用汉字各占 1 个 UTF-16 编码单元。
+    - text: "`'😀'.length` 是 `1`"
+      explain: "`length` 统计 UTF-16 编码单元，这个 emoji 占 2 个，所以是 `2`。"
+    - text: 单引号字符串和双引号字符串的类型不同，`'a'` 相当于 char
+      explain: JavaScript 没有 char 类型，单引号和双引号完全相同，`'a'` 是长度为 1 的字符串。

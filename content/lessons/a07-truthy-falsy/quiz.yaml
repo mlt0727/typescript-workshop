@@ -1,0 +1,77 @@
+- id: which-falsy
+  type: multiple
+  prompt: 下列哪些值是 falsy？
+  options:
+    - text: "`0`"
+      correct: true
+      explain: 数字零是 falsy。
+    - text: "`NaN`"
+      correct: true
+      explain: "`NaN` 是 falsy。"
+    - text: "`'0'`"
+      explain: 非空字符串都是 truthy，内容是什么都一样。
+    - text: "`[]`"
+      explain: 空数组是 truthy（和 Python 不同）。判断数组是否为空要用 `length === 0`。
+    - text: "`''`"
+      correct: true
+      explain: 空字符串是 falsy；但只有空格的 `' '` 是 truthy。
+- id: and-or-result
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    const count: number = 0;
+    const label: string = '新品';
+    console.log(count || 10, label && '有标签');
+    ```
+  options:
+    - text: "`10 有标签`"
+      correct: true
+      explain: "`count` 是 falsy，`||` 返回右边的 `10`；`label` 是 truthy，`&&` 返回右边的 `'有标签'`。"
+    - text: "`0 有标签`"
+      explain: "`||` 在左边是 falsy 时返回右边，`0` 是 falsy。"
+    - text: "`true true`"
+      explain: "`&&` 和 `||` 返回的是参与运算的值，不是布尔值。"
+    - text: "`10 新品`"
+      explain: "`label && '有标签'` 在 `label` 为 truthy 时返回右边的值。"
+- id: stock-bug
+  type: single
+  prompt: |
+    `count` 的类型是 `number | null`，`null` 表示数据还没加载。下面的写法对哪个输入给出了错误的结果？
+
+    ```ts
+    if (!count) {
+      return '加载中';
+    }
+    return `剩余 ${count} 件`;
+    ```
+  options:
+    - text: "`0`"
+      correct: true
+      explain: "`0` 是 falsy，库存为 0 被显示成了“加载中”。应该写 `if (count === null)`。"
+    - text: "`null`"
+      explain: "`null` 显示“加载中”正是想要的结果。"
+    - text: "`5`"
+      explain: "`5` 是 truthy，会正确显示“剩余 5 件”。"
+- id: short-circuit
+  type: single
+  prompt: |
+    下面的代码输出几行？
+
+    ```ts
+    function check(): boolean {
+      console.log('检查中');
+      return true;
+    }
+    const ready: boolean = true;
+    console.log(ready || check());
+    ```
+  options:
+    - text: 一行：`true`
+      correct: true
+      explain: "`ready` 是 truthy，`||` 的结果已经确定，`check()` 不会被调用。"
+    - text: 两行：`检查中` 和 `true`
+      explain: "`||` 会短路：左边为 truthy 时不计算右边。"
+    - text: 一行：`检查中`
+      explain: "`check()` 根本不会被调用；输出的是 `||` 的结果 `true`。"

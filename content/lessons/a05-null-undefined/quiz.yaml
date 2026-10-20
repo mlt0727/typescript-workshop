@@ -1,0 +1,59 @@
+- id: sources-of-undefined
+  type: multiple
+  prompt: 下列哪些表达式的值是 `undefined`？
+  options:
+    - text: "声明时没有赋值的 `let x: number | undefined;` 中的 `x`"
+      correct: true
+      explain: 声明了但没赋值的变量是 `undefined`。
+    - text: 没有 `return` 语句的函数的调用结果
+      correct: true
+      explain: 函数没有返回值时，调用结果是 `undefined`（TypeScript 中的返回类型显示为 `void`）。
+    - text: "`'abc'.at(10)`"
+      correct: true
+      explain: "`at` 超出范围时返回 `undefined`，不会抛出异常。"
+    - text: "`JSON.parse('null')`"
+      explain: 这是 JSON 里的 `null`，解析结果是 `null` 而不是 `undefined`。
+- id: strict-string
+  type: single
+  prompt: "在严格模式下，`const title: string = null;` 会怎样？"
+  options:
+    - text: TypeScript 报错：`null` 不能赋给 `string`
+      correct: true
+      explain: "`strictNullChecks` 下，`string` 不包含 `null`。可能为空时要写成 `string | null`。"
+    - text: 没有问题，任何类型都可以是 `null`
+      explain: 这是 Java 的规则，也是关闭严格模式时的 TypeScript 行为。严格模式下不允许。
+    - text: 运行时自动把 `null` 转换成空字符串
+      explain: TypeScript 不会在运行时做任何转换；这里是编译期报错（TS2322）。
+- id: narrow-null
+  type: single
+  prompt: |
+    第 3 行的 `name` 是什么类型？
+
+    ```ts
+    function show(name: string | null) {
+      if (name !== null) {
+        console.log(name);
+      }
+    }
+    ```
+  options:
+    - text: "`string`"
+      correct: true
+      explain: "`name !== null` 成立的分支里，TypeScript 把 `string | null` 收窄成了 `string`。"
+    - text: "`string | null`"
+      explain: TypeScript 会根据 `if` 条件收窄类型，分支里已经排除了 `null`。
+    - text: "`null`"
+      explain: 正好相反：条件是 `!== null`，分支里不可能是 `null`。
+- id: json-undefined
+  type: single
+  prompt: "`JSON.stringify({ a: null, b: undefined })` 的结果是什么？"
+  options:
+    - text: "`'{\"a\":null}'`"
+      correct: true
+      explain: JSON 没有 `undefined`，值为 `undefined` 的属性会被省略；`null` 会保留。
+    - text: "`'{\"a\":null,\"b\":undefined}'`"
+      explain: 这不是合法的 JSON。JSON 里没有 `undefined`。
+    - text: "`'{\"a\":null,\"b\":null}'`"
+      explain: "`undefined` 不会被转换成 `null`，而是整个属性被省略。"
+    - text: "`'{}'`"
+      explain: "`null` 是合法的 JSON 值，会被保留。"

@@ -10,10 +10,10 @@ stages:
       - { id: a01-where-ts-runs, title: TS、JS、浏览器与 Node.js 的关系, status: draft, prerequisites: [] }
       - { id: a02-compile-vs-runtime, title: 编译期与运行期：类型擦除的边界, status: draft, prerequisites: [a01-where-ts-runs] }
       - { id: a03-let-const-inference, title: let/const、类型注解与类型推断, status: draft, prerequisites: [a02-compile-vs-runtime] }
-      - { id: a04-primitives-strings, title: number、string、boolean 与模板字符串, status: planned, prerequisites: [a03-let-const-inference] }
-      - { id: a05-null-undefined, title: null 与 undefined, status: planned, prerequisites: [a04-primitives-strings] }
-      - { id: a06-operators-equality, title: 运算符、=== 与类型转换, status: planned, prerequisites: [a05-null-undefined] }
-      - { id: a07-truthy-falsy, title: truthy 与 falsy, status: planned, prerequisites: [a06-operators-equality] }
+      - { id: a04-primitives-strings, title: number、string、boolean 与模板字符串, status: draft, prerequisites: [a03-let-const-inference] }
+      - { id: a05-null-undefined, title: null 与 undefined, status: draft, prerequisites: [a04-primitives-strings] }
+      - { id: a06-operators-equality, title: 运算符、=== 与类型转换, status: draft, prerequisites: [a05-null-undefined] }
+      - { id: a07-truthy-falsy, title: truthy 与 falsy, status: draft, prerequisites: [a06-operators-equality] }
       - { id: a08-optional-chaining-nullish, title: ?.、?? 与 || 的区别, status: published, prerequisites: [a07-truthy-falsy] }
       - { id: a09-control-flow, title: 条件与循环的快速迁移, status: planned, prerequisites: [a07-truthy-falsy] }
       - { id: a10-arrays, title: 数组基础与越界访问, status: planned, prerequisites: [a09-control-flow] }

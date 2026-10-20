@@ -1,0 +1,61 @@
+- id: string-compare
+  type: single
+  prompt: "`console.log('10' < '9', 10 < 9)` 输出什么？"
+  options:
+    - text: "`true false`"
+      correct: true
+      explain: 字符串按字典序比较，第一个字符 `'1'` 小于 `'9'`；数字按数值比较。
+    - text: "`false false`"
+      explain: 字符串之间的 `<` 不按数值比较。
+    - text: TypeScript 报错，字符串不能用 `<` 比较
+      explain: 字符串之间可以比较（按字典序）；不允许的是字符串和数字之间的比较。
+- id: loose-equality
+  type: multiple
+  prompt: 下列哪些表达式的结果是 `true`？（假设 TypeScript 没有阻止它们运行）
+  options:
+    - text: "`'042' == 42`"
+      correct: true
+      explain: "`==` 把 `'042'` 转换成数字 `42` 再比较。"
+    - text: "`'' == 0`"
+      correct: true
+      explain: 空字符串转换成数字是 `0`。
+    - text: "`'042' === 42`"
+      explain: "`===` 不做转换，类型不同就是 `false`。"
+    - text: "`NaN == NaN`"
+      explain: "`NaN` 不等于任何值，包括它自己，用哪种相等都是 `false`。"
+- id: when-ts-reports
+  type: single
+  prompt: |
+    下面两个比较，TypeScript 会对哪个报错？
+
+    ```ts
+    const code = '1';
+    console.log(code === 1);          // A
+
+    function same(a: string | number, b: string | number) {
+      return a == b;                  // B
+    }
+    ```
+  options:
+    - text: 只有 A
+      correct: true
+      explain: A 中两边的类型 `'1'` 和 `1` 没有交集，TypeScript 报 TS2367。B 中两边类型有交集，TypeScript 允许，但 `==` 会做类型转换，`same('1', 1)` 返回 `true`。
+    - text: 只有 B
+      explain: TypeScript 不会因为用了 `==` 就报错；B 两边类型有交集，不报错。
+    - text: A 和 B 都报错
+      explain: B 不报错，这正是要坚持用 `===` 的原因之一：TypeScript 不会替你挡住所有宽松比较。
+    - text: 都不报错
+      explain: A 的两边类型没有交集，会报 TS2367。
+- id: parse-int
+  type: single
+  prompt: "`Number('12px')` 和 `Number.parseInt('12px', 10)` 分别得到什么？"
+  options:
+    - text: "`NaN` 和 `12`"
+      correct: true
+      explain: "`Number` 要求整段文字都是合法的数字写法；`parseInt` 从开头读取尽可能多的数字，遇到 `p` 就停止。"
+    - text: "`12` 和 `12`"
+      explain: "`Number` 不会忽略后面的非数字字符。"
+    - text: "`NaN` 和 `NaN`"
+      explain: "`parseInt` 会读取开头的 `12`。"
+    - text: "`12` 和 `NaN`"
+      explain: 正好反了。

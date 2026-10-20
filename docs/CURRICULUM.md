@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 3 / 规划总数 126**（草稿 3，规划中 120）
+**已发布 3 / 规划总数 126**（草稿 7，规划中 116）
 
 ## A. 起步与 JavaScript 共同语法（已发布 1 / 20）
 
@@ -14,10 +14,10 @@
 | `a01-where-ts-runs` TS、JS、浏览器与 Node.js 的关系 | 📝 草稿 | — |
 | `a02-compile-vs-runtime` 编译期与运行期：类型擦除的边界 | 📝 草稿 | `a01-where-ts-runs` |
 | `a03-let-const-inference` let/const、类型注解与类型推断 | 📝 草稿 | `a02-compile-vs-runtime` |
-| `a04-primitives-strings` number、string、boolean 与模板字符串 | ⬜ 规划中 | `a03-let-const-inference` |
-| `a05-null-undefined` null 与 undefined | ⬜ 规划中 | `a04-primitives-strings` |
-| `a06-operators-equality` 运算符、=== 与类型转换 | ⬜ 规划中 | `a05-null-undefined` |
-| `a07-truthy-falsy` truthy 与 falsy | ⬜ 规划中 | `a06-operators-equality` |
+| `a04-primitives-strings` number、string、boolean 与模板字符串 | 📝 草稿 | `a03-let-const-inference` |
+| `a05-null-undefined` null 与 undefined | 📝 草稿 | `a04-primitives-strings` |
+| `a06-operators-equality` 运算符、=== 与类型转换 | 📝 草稿 | `a05-null-undefined` |
+| `a07-truthy-falsy` truthy 与 falsy | 📝 草稿 | `a06-operators-equality` |
 | `a08-optional-chaining-nullish` ?.、?? 与 || 的区别 | ✅ 已发布 | `a07-truthy-falsy` |
 | `a09-control-flow` 条件与循环的快速迁移 | ⬜ 规划中 | `a07-truthy-falsy` |
 | `a10-arrays` 数组基础与越界访问 | ⬜ 规划中 | `a09-control-flow` |
