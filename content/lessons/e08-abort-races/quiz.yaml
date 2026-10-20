@@ -11,15 +11,15 @@
       explain: 与缓存无关，是到达顺序的问题。
 - id: abort-error
   type: single
-  prompt: 调用 `controller.abort()` 取消一个进行中的 `fetch` 后，会发生什么？
+  prompt: 调用 `controller.abort()`（不传参数）取消一个还在等待响应的 `fetch` 后，会发生什么？
   options:
     - text: fetch 以一个 name 为 'AbortError' 的 DOMException 拒绝
       correct: true
-      explain: 这是程序主动取消造成的，通常应该识别出来并静默忽略。
+      explain: 这是程序主动取消造成的，通常应该识别出来并静默忽略。如果调用的是 abort(原因)，则以这个原因拒绝。
     - text: fetch 兑现为 undefined
       explain: 被取消的 fetch 是被拒绝，不是兑现。
     - text: 什么都不会发生，请求照常完成
-      explain: 只要请求还没完成，传入了 signal 的 fetch 就会被中止。
+      explain: 只要请求还没完成（包括响应体还没读完），传入了 signal 的请求就会被中止。
 - id: reuse-controller
   type: single
   prompt: 能不能让每次请求都复用同一个 AbortController，在发新请求前调用一次 abort()？

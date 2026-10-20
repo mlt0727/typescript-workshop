@@ -69,7 +69,8 @@ async function search(q: string): Promise<void> {
 
 - `new AbortController()` 得到一个控制器，它的 `signal` 属性是一个 `AbortSignal`；
 - 把 `signal` 传给 `fetch(url, { signal })`；
-- 调用 `controller.abort()`，`fetch` 就会停止请求，并以一个 `name` 为 `'AbortError'` 的 `DOMException` 拒绝（如果请求已经完成，则不受影响）。
+- 调用 `controller.abort()`，请求就会停止：还在等待响应时，`fetch` 返回的 Promise 被拒绝；`fetch` 已经兑现（响应头到了）、响应体还在传输时，`response.json()` 这类读取方法被拒绝。只有响应体也读完了，取消才不再有影响；
+- 不传参数时，拒绝的原因是一个 `name` 为 `'AbortError'` 的 `DOMException`；`controller.abort(原因)` 则以你给出的原因拒绝。
 
 每次发出新请求之前，取消上一次的：
 
@@ -86,7 +87,7 @@ async function search(q: string): Promise<void> {
     const results: unknown = await response.json();
     console.log(`显示了 ${q} 的结果：`, results);
   } catch (err) {
-    if (err instanceof DOMException && err.name === 'AbortError') {
+    if (controller.signal.aborted) {
       console.log(`${q} 的请求被取消了`);
       return;
     }
@@ -97,11 +98,11 @@ async function search(q: string): Promise<void> {
 await Promise.all([search('t'), search('ty')]);
 ```
 - 第 4 行：发出 `ty` 的请求之前，取消了 `t` 的请求。`t` 的 `fetch` 立即以 `AbortError` 拒绝。
-- 第 12–15 行：取消是我们**主动**做的，不是真正的错误，所以识别出 `AbortError` 后安静地返回；其他错误照常抛出。
+- 第 12–15 行：取消是我们**主动**做的，不是真正的错误，所以安静地返回；其他错误照常抛出。判断时检查 `controller.signal.aborted`，比检查 `err.name === 'AbortError'` 更可靠：用 `abort(原因)` 取消时，拒绝的原因不一定是 `AbortError`。
 - `AbortController` 是一次性的：一旦 `abort()`，它的 `signal` 就永远处于已取消状态，所以每次请求都要新建一个。
 :::
 
-两种办法常常一起用：取消节省资源，编号检查兜底（有些异步操作不支持取消，或者在取消之前已经拿到了结果）。
+两种办法常常一起用：取消节省资源，编号检查兜底（有些异步操作不支持取消，或者在取消之前已经拿到了结果）。边输入边搜索时通常还会加上防抖（e01 的练习）：用户停顿一小段时间之后才发请求。防抖减少请求的数量，取消和编号保证显示的结果是对的，三者解决的是不同的问题。
 
 ## 超时与组合
 
@@ -147,7 +148,7 @@ try {
 
 - **以为禁用按钮就能避免竞态**：搜索框这类连续输入的场景，请求本来就会重叠。
 - **复用已经 abort 过的 AbortController**：它的 signal 永远是已取消的，新的请求会立即失败。每次新建。
-- **把 `AbortError` 当作错误显示给用户**：取消是程序主动做的，应该静默忽略。
+- **把取消当作错误显示给用户**：取消是程序主动做的，应该静默忽略。用 `signal.aborted` 判断是不是自己取消的。
 - **只取消、不检查**：有些操作在取消前已经完成，结果仍会回来。需要时配合请求编号。
 - **超时只用 `Promise.race`**：等待结束了，请求还在进行。用 `AbortSignal.timeout`。
 

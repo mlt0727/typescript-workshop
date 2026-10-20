@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 52 / 规划总数 126**（草稿 4，规划中 70）
+**已发布 52 / 规划总数 126**（草稿 7，规划中 67）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -70,9 +70,9 @@
 | `e06-runtime-validation` 运行时数据校验 | 📝 草稿 | `e05-fetch-json`、`b08-type-guards` |
 | `e07-loading-states` 加载、空与失败状态 | 📝 草稿 | `e06-runtime-validation`、`d06-dom-create-update` |
 | `e08-abort-races` AbortController、取消请求与竞态 | 📝 草稿 | `e07-loading-states` |
-| `e09-storage-serialization` 浏览器存储与序列化 | ⬜ 规划中 | `e06-runtime-validation` |
-| `e10-url-routing` URL、History 与基础路由 | ⬜ 规划中 | `d07-events` |
-| `e11-cors` CORS 的真实边界 | ⬜ 规划中 | `e05-fetch-json` |
+| `e09-storage-serialization` 浏览器存储与序列化 | 📝 草稿 | `e06-runtime-validation` |
+| `e10-url-routing` URL、History 与基础路由 | 📝 草稿 | `d07-events` |
+| `e11-cors` CORS 的真实边界 | 📝 草稿 | `e05-fetch-json` |
 | `e12-xss` 基础 XSS 防范 | ⬜ 规划中 | `d06-dom-create-update` |
 | `e13-env-secrets` 客户端环境变量与密钥边界 | ⬜ 规划中 | `f02-vite-project` |
 

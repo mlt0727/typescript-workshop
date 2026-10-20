@@ -96,6 +96,7 @@ export const fixturesSchema = z.array(
     headers: z.record(z.string(), z.string()).optional(),
     body: z.unknown().optional(),
     delayMs: z.number().int().optional(),
+    bodyDelayMs: z.number().int().optional(),
     networkError: z.boolean().optional(),
   }),
 );

@@ -16,9 +16,62 @@ function abortError(signal: AbortSignal): unknown {
   return signal.reason ?? new DOMException('This operation was aborted', 'AbortError');
 }
 
+const BODY_METHODS = ['arrayBuffer', 'blob', 'bytes', 'formData', 'json', 'text'] as const;
+
+/**
+ * 按 Fetch 规范，请求被中止后读取响应体以中止原因拒绝；但 Chromium 读取出错的 JS 流时
+ * 一律给出 TypeError: Failed to fetch。这里让读取方法在信号已中止时改为以中止原因拒绝。
+ */
+function withAbortReason(res: Response, signal: AbortSignal | undefined): Response {
+  if (!signal) return res;
+  for (const name of BODY_METHODS) {
+    const original: unknown = Reflect.get(res, name);
+    if (typeof original !== 'function') continue;
+    Object.defineProperty(res, name, {
+      configurable: true,
+      writable: true,
+      value: (...args: unknown[]) =>
+        Promise.resolve(Reflect.apply(original, res, args)).catch((err: unknown) => {
+          throw signal.aborted ? abortError(signal) : err;
+        }),
+    });
+  }
+  return res;
+}
+
+/** 过 ms 毫秒才传输完的响应体；期间请求被中止时，读取响应体以中止原因失败（与真实的 fetch 一致）。 */
+function delayedBody(text: string, ms: number, signal: AbortSignal | undefined): ReadableStream<Uint8Array> {
+  const bytes = new TextEncoder().encode(text);
+  let id: ReturnType<typeof setTimeout> | undefined;
+  let onAbort: (() => void) | undefined;
+  const detach = () => {
+    if (onAbort) signal?.removeEventListener('abort', onAbort);
+  };
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      if (signal) {
+        onAbort = () => {
+          clearTimeout(id);
+          controller.error(abortError(signal));
+        };
+        signal.addEventListener('abort', onAbort, { once: true });
+      }
+      id = setTimeout(() => {
+        detach();
+        controller.enqueue(bytes);
+        controller.close();
+      }, ms);
+    },
+    cancel() {
+      clearTimeout(id);
+      detach();
+    },
+  });
+}
+
 /**
  * 确定性的模拟 fetch：只根据课程提供的 fixtures 返回真实的 Response 对象。
- * 支持 AbortSignal、延迟（使用当前全局 setTimeout，可配合 vi.useFakeTimers）与网络失败。
+ * 支持 AbortSignal、延迟（使用当前全局 setTimeout，可配合 vi.useFakeTimers）、响应体延迟与网络失败。
  */
 export function createMockFetch(
   fixtures: readonly FetchFixture[],
@@ -69,7 +122,11 @@ export function createMockFetch(
         }
       }
       if (status === 204 || status === 205 || status === 304) body = null;
-      return new Response(body, { status, statusText: fixture.statusText ?? '', headers });
+      const init = { status, statusText: fixture.statusText ?? '', headers };
+      if (body !== null && fixture.bodyDelayMs) {
+        return withAbortReason(new Response(delayedBody(body, fixture.bodyDelayMs, signal), init), signal);
+      }
+      return new Response(body, init);
     } finally {
       track?.end();
     }

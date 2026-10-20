@@ -45,6 +45,8 @@ export const fetchFixtureSchema = z.object({
   /** JSON 值（会被序列化）或字符串 */
   body: z.unknown().optional(),
   delayMs: z.number().int().min(0).max(10_000).optional(),
+  /** 响应头到达之后，响应体再过多少毫秒才传输完（期间中止请求会让读取响应体失败） */
+  bodyDelayMs: z.number().int().min(0).max(10_000).optional(),
   /** 模拟网络失败（fetch 直接 reject） */
   networkError: z.boolean().optional(),
 });

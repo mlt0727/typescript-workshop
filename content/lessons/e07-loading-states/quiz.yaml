@@ -24,15 +24,15 @@
   type: multiple
   prompt: 哪些做法能让屏幕阅读器用户知道加载状态的变化？
   options:
-    - text: 把“正在加载…”“找到 2 本书”放在 `role="status"` 的元素中
+    - text: 把“正在加载…”“找到 2 本书”放在页面上一直存在的 `role="status"` 元素中，只改变它的文字
       correct: true
-      explain: 内容变化时，屏幕阅读器会在不打断用户的情况下读出来。
+      explain: 内容变化时，屏幕阅读器会在不打断用户的情况下读出来。这个元素要在内容变化之前就在页面上，每次新插入一个很可能不会被读出。
     - text: 错误信息放在 `role="alert"` 的元素中
       correct: true
       explain: 错误需要立即被注意到，alert 会被立即读出。
     - text: 加载期间给结果区域设置 `aria-busy="true"`，结束后设为 false
       correct: true
-      explain: 告诉辅助技术这块区域正在更新，等更新完再读取。
+      explain: 告诉辅助技术这块区域正在更新，等更新完再读取。状态提示要放在这块区域之外，否则“正在加载…”也会被推迟。
     - text: 只显示一个旋转的图标
       explain: 屏幕阅读器用户看不到图标，也不知道它代表加载中。
 - id: error-translation

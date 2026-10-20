@@ -24,6 +24,8 @@ content/lessons/<id>/
   fixtures/<name>.json 可选：模拟网络请求的响应（练习里的 fetch 都是模拟的）
 ```
 
+`fixtures/<name>.json` 是一个数组，每项描述一个模拟响应：`url`（相对地址以 `https://app.example` 为基准，可以用 `*` 通配）、`method`（默认 GET）、`status`、`statusText`、`headers`、`body`（JSON 值会被序列化并加上 `content-type: application/json`；字符串原样返回）、`delayMs`（多久之后响应头到达）、`bodyDelayMs`（响应头到达之后，响应体再过多久才传输完；期间中止请求，读取响应体会以中止原因失败）、`networkError`（`fetch` 以 `TypeError` 拒绝）。没有匹配的请求同样以网络错误失败，并在输出中提示。
+
 ### lesson.md 的 frontmatter
 
 ```yaml

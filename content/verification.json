@@ -5559,7 +5559,7 @@
       ]
     },
     "e05-fetch-json": {
-      "verifiedAt": "2026-10-20T12:11:34.564Z",
+      "verifiedAt": "2026-10-20T12:54:18.905Z",
       "sourceHash": "5a4194dc844e44f5",
       "ok": true,
       "checks": [
@@ -5773,8 +5773,8 @@
       ]
     },
     "e07-loading-states": {
-      "verifiedAt": "2026-10-20T12:19:46.236Z",
-      "sourceHash": "de40baa5cc46dbc3",
+      "verifiedAt": "2026-10-20T13:02:46.460Z",
+      "sourceHash": "2382c11047c1aeb4",
       "ok": true,
       "checks": [
         {
@@ -5790,7 +5790,7 @@
         {
           "target": "exercise:load-state-render:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2353@render.test.ts:15 Object literal may only specify known properties, and 'status' does not exist in type 'LoadState<Book[]>'.；TS2353@render.test.ts:21 Object literal may only specify known properties, and 'status' does not exist in type 'LoadState<Book[]>'.；TS2353@render.test.ts:28 Object lite) rules=ok tests=fail(idle,loading,error：显示原因，重试按钮调用 onRetry,success：没有数据,success：书名列表，特殊字符原样显示,每次渲染都替换原来的内容)"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2353@render.test.ts:18 Object literal may only specify known properties, and 'status' does not exist in type 'LoadState<Book[]>'.；TS2353@render.test.ts:26 Object literal may only specify known properties, and 'status' does not exist in type 'LoadState<Book[]>'.；TS2353@render.test.ts:34 Object lite) rules=ok tests=fail(idle,loading：状态提示“正在加载…”，结果区域保留上一次的内容并标记为忙,error：显示原因，重试按钮调用 onRetry,success：没有数据,success：书名列表，特殊字符原样显示)"
         },
         {
           "target": "exercise:load-state-render:solution:solution",
@@ -5808,6 +5808,11 @@
           "detail": "被拒绝（types）；types=fail(TS2578@render.test-d.ts:10 Unused '@ts-expect-error' directive.；TS2578@render.test-d.ts:12 Unused '@ts-expect-error' directive.；TS2578@render.test-d.ts:14 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
         },
         {
+          "target": "exercise:load-state-render:wrong:status-inside-results",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loading：状态提示“正在加载…”，结果区域保留上一次的内容并标记为忙,success：没有数据,success：书名列表，特殊字符原样显示,状态提示始终是页面上原有的那个元素，结果区域里不新建状态元素)"
+        },
+        {
           "target": "exercise:load-state-render:wrong:empty-as-list",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(success：没有数据)"
@@ -5820,12 +5825,12 @@
         {
           "target": "exercise:load-state-render:wrong:busy-never-reset",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(idle,error：显示原因，重试按钮调用 onRetry,每次渲染都替换原来的内容)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(idle,error：显示原因，重试按钮调用 onRetry,success：书名列表，特殊字符原样显示)"
         },
         {
           "target": "exercise:book-search:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面加载后是 idle 状态,加载中显示状态并禁用按钮，完成后显示结果,空结果,服务器出错,网络失败,数据格式不正确,重试使用上一次请求的主题)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(页面加载后是 idle 状态,加载中显示状态，完成后显示结果；状态提示是页面上原有的元素,加载期间按钮标记为不可用、保留焦点，再次提交被忽略,空结果,服务器出错（5xx）,其他非 2xx 状态码,网络失败,数据格式不正确：不是数组、不是 JSON、有不合格的项,重试使用上一次请求的主题)"
         },
         {
           "target": "exercise:book-search:solution:solution",
@@ -5840,12 +5845,22 @@
         {
           "target": "exercise:book-search:wrong:no-error-classification",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(服务器出错,网络失败,数据格式不正确,重试使用上一次请求的主题)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(服务器出错（5xx）,其他非 2xx 状态码,网络失败,数据格式不正确：不是数组、不是 JSON、有不合格的项,重试使用上一次请求的主题)"
         },
         {
-          "target": "exercise:book-search:wrong:button-never-disabled",
+          "target": "exercise:book-search:wrong:shallow-validation",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(加载中显示状态并禁用按钮，完成后显示结果)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(数据格式不正确：不是数组、不是 JSON、有不合格的项)"
+        },
+        {
+          "target": "exercise:book-search:wrong:uses-disabled",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(页面加载后是 idle 状态,加载期间按钮标记为不可用、保留焦点，再次提交被忽略)"
+        },
+        {
+          "target": "exercise:book-search:wrong:no-duplicate-guard",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(加载期间按钮标记为不可用、保留焦点，再次提交被忽略)"
         },
         {
           "target": "exercise:book-search:wrong:retry-current-select",
@@ -5855,8 +5870,8 @@
       ]
     },
     "e08-abort-races": {
-      "verifiedAt": "2026-10-20T12:22:38.543Z",
-      "sourceHash": "1f08bbdda6fe5783",
+      "verifiedAt": "2026-10-20T13:02:57.689Z",
+      "sourceHash": "fcb7474552d1a447",
       "ok": true,
       "checks": [
         {
@@ -5927,7 +5942,7 @@
         {
           "target": "exercise:timeout-fetch:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(getJsonWithTimeout › 超时：以 RequestTimeoutError 拒绝，并且很快结束,getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝,getJsonWithTimeout › HTTP 错误)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(getJsonWithTimeout › 超时：以 RequestTimeoutError 拒绝，并且很快结束,getJsonWithTimeout › 超时会真正中止请求，而不只是不再等待,getJsonWithTimeout › 响应头及时到达、响应体传输得太慢，同样算超时,getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 读取响应体期间调用方取消：同样以调用方的原因拒绝,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝,getJsonWithTimeout › HTTP 错误)"
         },
         {
           "target": "exercise:timeout-fetch:solution:solution",
@@ -5942,17 +5957,27 @@
         {
           "target": "exercise:timeout-fetch:wrong:ignore-caller-signal",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 响应头及时到达、响应体传输得太慢，同样算超时,getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 读取响应体期间调用方取消：同样以调用方的原因拒绝,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝)"
         },
         {
           "target": "exercise:timeout-fetch:wrong:everything-is-timeout",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 响应头及时到达、响应体传输得太慢，同样算超时,getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝)"
         },
         {
           "target": "exercise:timeout-fetch:wrong:race-without-abort",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 超时会真正中止请求，而不只是不再等待,getJsonWithTimeout › 响应头及时到达、响应体传输得太慢，同样算超时,getJsonWithTimeout › 调用方取消：以调用方的原因拒绝，不是超时,getJsonWithTimeout › 读取响应体期间调用方取消：同样以调用方的原因拒绝,getJsonWithTimeout › 调用方取消时没有给出原因：得到 AbortError,getJsonWithTimeout › 已经取消的信号：立即拒绝)"
+        },
+        {
+          "target": "exercise:timeout-fetch:wrong:json-outside-try",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 响应头及时到达、响应体传输得太慢，同样算超时)"
+        },
+        {
+          "target": "exercise:timeout-fetch:wrong:race-with-caller-signal",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(getJsonWithTimeout › 超时会真正中止请求，而不只是不再等待)"
         },
         {
           "target": "exercise:timeout-fetch:wrong:no-status-check",
