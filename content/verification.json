@@ -7540,6 +7540,123 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(数据格式不对、网络失败也算失败 ⟶ TestingLibraryElementError: Unable to find role=\"alert\")"
         }
       ]
+    },
+    "g12-effect-pitfalls": {
+      "verifiedAt": "2026-10-20T15:25:27.199Z",
+      "sourceHash": "982339a249cf2139",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:derived-state:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:derived-state:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Effect 版渲染：“”，5 项 | [log] 计算版渲染：“”，5 项 | [log] Effect 版渲染：“”，5 项"
+        },
+        {
+          "target": "playground:notify-parent:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:notify-parent:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Effect 版通知父组件：关"
+        },
+        {
+          "target": "playground:memo-rows:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:memo-rows:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 渲染第 1 行 | [log] 渲染第 2 行 | [log] 渲染第 3 行"
+        },
+        {
+          "target": "exercise:remove-effects:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(打开时显示第一个联系人和全名，只提交一次 ⟶ 打开页面时多渲染了一次：全名应该在渲染时计算,输入时全名同步变化，每输入一个字只提交一次 ⟶ 每输入一个字应该只渲染一次,切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ 切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）,每次提交都保存一次（去掉首尾空白），并显示“已保存” ⟶ 保存时应该只渲染一次,保存之后再修改，“已保存”消失；按回车也能保存 ⟶ expect(…).toHaveBeenLastCalledWith({ id: 'a', firstName: '三', lastName: '李' }))"
+        },
+        {
+          "target": "exercise:remove-effects:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:remove-effects:alt:adjust-during-render",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:remove-effects:wrong:derived-in-effect",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(打开时显示第一个联系人和全名，只提交一次 ⟶ 打开页面时多渲染了一次：全名应该在渲染时计算,输入时全名同步变化，每输入一个字只提交一次 ⟶ 每输入一个字应该只渲染一次,切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ 切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）)"
+        },
+        {
+          "target": "exercise:remove-effects:wrong:reset-in-effect",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入时全名同步变化，每输入一个字只提交一次 ⟶ 每输入一个字应该只渲染一次,切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ 切换联系人时应该只渲染一次（先显示旧的姓名、再在 Effect 中重置，会多一次）)"
+        },
+        {
+          "target": "exercise:remove-effects:wrong:save-in-effect",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每次提交都保存一次（去掉首尾空白），并显示“已保存” ⟶ 保存时应该只渲染一次,保存之后再修改，“已保存”消失；按回车也能保存 ⟶ expect(…).toHaveBeenLastCalledWith({ id: 'a', firstName: '三', lastName: '李' }))"
+        },
+        {
+          "target": "exercise:remove-effects:wrong:no-key",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(切换联系人：直接显示新联系人的姓名，没有多余的渲染；未保存的修改被丢弃 ⟶ expect(…).toHaveValue('韩'))"
+        },
+        {
+          "target": "exercise:memo-list:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(在“备注”中输入：不重新渲染任何一行，也不重新排序 ⟶ 备注与商品无关，不应该重新排序,收藏一件商品：只重新渲染这一行，不重新排序 ⟶ expect(…).toBe(1),筛选时，仍然显示的行不重新渲染 ⟶ expect(…).toBe(1))"
+        },
+        {
+          "target": "exercise:memo-list:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:memo-list:alt:memo-wrapper",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:memo-list:wrong:no-memo",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(在“备注”中输入：不重新渲染任何一行，也不重新排序 ⟶ 备注与商品无关，不应该重新渲染任何一行,收藏一件商品：只重新渲染这一行，不重新排序 ⟶ 只有“咖啡”这一行应该重新渲染（每次点击一次）,筛选时，仍然显示的行不重新渲染 ⟶ expect(…).toBe(1))"
+        },
+        {
+          "target": "exercise:memo-list:wrong:inline-handler",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(在“备注”中输入：不重新渲染任何一行，也不重新排序 ⟶ 备注与商品无关，不应该重新渲染任何一行,收藏一件商品：只重新渲染这一行，不重新排序 ⟶ 只有“咖啡”这一行应该重新渲染（每次点击一次）,筛选时，仍然显示的行不重新渲染 ⟶ expect(…).toBe(1))"
+        },
+        {
+          "target": "exercise:memo-list:wrong:callback-reads-state",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(收藏一件商品：只重新渲染这一行，不重新排序 ⟶ 只有“咖啡”这一行应该重新渲染（每次点击一次）)"
+        },
+        {
+          "target": "exercise:memo-list:wrong:sort-every-render",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(在“备注”中输入：不重新渲染任何一行，也不重新排序 ⟶ 备注与商品无关，不应该重新排序,收藏一件商品：只重新渲染这一行，不重新排序 ⟶ expect(…).toBe(1))"
+        },
+        {
+          "target": "exercise:memo-list:wrong:compare-product-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(收藏：星标和数量随之变化，再点一次取消 ⟶ expect(…).toHaveAttribute('aria-pressed', 'true'),收藏一件商品：只重新渲染这一行，不重新排序 ⟶ 只有“咖啡”这一行应该重新渲染（每次点击一次）)"
+        },
+        {
+          "target": "exercise:memo-list:wrong:missing-dependency",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按价格从低到高显示；筛选词去掉首尾空白 ⟶ expect(…).toEqual([ '绿茶', '奶茶' ]))"
+        }
+      ]
     }
   }
 }

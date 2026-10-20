@@ -1,0 +1,48 @@
+- id: derived
+  type: single
+  prompt: 组件要显示购物车的合计金额，合计由 props 中的 items 算出来。最好的写法是？
+  options:
+    - text: 在渲染时直接计算：const total = items.reduce(…)
+      correct: true
+      explain: 能从 props 和 state 算出来的值不要存进 state。只有计算确实很慢时，才用 useMemo 缓存。
+    - text: 用 useState 保存 total，在依赖 [items] 的 Effect 中更新它
+      explain: 每次 items 变化都会先用旧的合计渲染一次，Effect 执行之后再渲染一次；还多了一份需要保持一致的 state。
+    - text: 用 useRef 保存 total，在 Effect 中更新 ref.current
+      explain: 修改 ref 不会触发渲染，界面显示的是过时的合计；渲染时读取 ref 也违反了 ref 的使用规则（g09）。
+- id: reset
+  type: single
+  prompt: "`<ChatRoom roomId={roomId} />` 中有一个输入框保存草稿。切换房间时草稿应该清空。最合适的做法是？"
+  options:
+    - text: 父组件写 <ChatRoom key={roomId} roomId={roomId} />
+      correct: true
+      explain: key 变化时，React 创建一个新的 ChatRoom，它的所有 state 都回到初始值，不会先用旧的草稿渲染一次。
+    - text: 在 ChatRoom 中写依赖 [roomId] 的 Effect，调用 setDraft('')
+      explain: 能工作，但会先用上一个房间的草稿渲染一次，再在 Effect 中清空，多一次渲染。
+    - text: 把草稿存成全局变量，切换房间时清空它
+      explain: 全局变量不会触发渲染，而且页面上有多个 ChatRoom 时会互相影响。
+- id: memo-inline
+  type: single
+  prompt: "`const Row = memo(RowImpl);` 父组件中写 `<Row item={item} onSelect={() => select(item.id)} />`。父组件重新渲染、item 没有变化时，会怎样？"
+  options:
+    - text: Row 仍然会重新渲染，因为 onSelect 每次都是一个新的函数
+      correct: true
+      explain: memo 用 Object.is 逐个比较 props。内联的箭头函数每次渲染都是新的引用，只要有一个 prop 不同，memo 就不会跳过。
+    - text: Row 被跳过，因为 memo 会比较函数的源代码
+      explain: memo 只比较引用，不比较函数的内容。
+    - text: Row 被跳过，因为 item 没有变化
+      explain: 必须每一个 prop 都相同才会跳过，onSelect 每次都不同。
+- id: when-memo
+  type: multiple
+  prompt: 下面哪些说法是正确的？
+  options:
+    - text: 删掉所有的 memo、useMemo、useCallback 之后，组件的行为应该完全不变，只是可能变慢
+      correct: true
+      explain: 它们是性能优化，不是保证，代码的正确性不能依赖它们。
+    - text: 优化之前应该先测量，确认哪里真的慢
+      correct: true
+      explain: 大多数渲染都很快。React DevTools 的 Profiler 和 console.time 都能帮助找到真正的瓶颈。
+    - text: 启用 React Compiler 的项目中，编译器会在构建时自动加上相当于 memo、useMemo、useCallback 的缓存
+      correct: true
+      explain: React Compiler 1.0 于 2025 年发布，前提是代码遵守 React 的规则（渲染是纯的、不修改 props 和 state）。
+    - text: 给每个组件都加上 memo，应用就一定会变快
+      explain: props 每次都是新的引用时，memo 白白多了一次比较；代码也更难读。只有经常用相同的 props 重新渲染、并且渲染很慢的组件才值得。
