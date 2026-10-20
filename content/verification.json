@@ -5032,6 +5032,93 @@
         }
       ]
     },
+    "c12-modules-dts": {
+      "verifiedAt": "2026-10-20T23:29:45.921Z",
+      "sourceHash": "3fbb4405b5fe407b",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:ambient-module:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "exercise:declare-legacy:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2709@main.ts:4 Cannot use namespace 'ChartOptions' as a type.；TS2709@legacy-chart.test-d.ts:7 Cannot use namespace 'Chart' as a type.；TS2709@legacy-chart.test-d.ts:8 Cannot use namespace 'Chart' as a type.；TS2709@legacy-chart.test-d.ts:9 Cannot use namespace 'ChartOptions' as a type.；TS2344@legacy) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:declare-legacy:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:declare-legacy:alt:type-aliases",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:declare-legacy:wrong:named-export",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2349@legacy-chart.test-d.ts:6 This expression is not callable.；TS2349@legacy-chart.test-d.ts:8 This expression is not callable.；TS7006@legacy-chart.test-d.ts:14 Parameter 'point' implicitly has an 'any' type.；TS2344@legacy-chart.test-d.ts:15 Type 'Point' does not satisfy the constraint 'never'.；TS) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:declare-legacy:wrong:required-options",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2741@main.ts:4 Property 'animate' is missing in type '{ type: \"line\"; title: string; }' but required in type 'ChartOptions'.；TS2345@legacy-chart.test-d.ts:6 Argument of type '{ type: \"line\"; }' is not assignable to parameter of type 'ChartOptions'.) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:declare-legacy:wrong:loose-events",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@legacy-chart.test-d.ts:15 Type 'Point' does not satisfy the constraint '\"Expected: ..., Actual: never\"'.；TS2344@legacy-chart.test-d.ts:19 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: never\"'.；TS2344@legacy-chart.test-d.ts:20 Type 'number' does not satisfy the cons) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:declare-legacy:wrong:mutable-themes",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@legacy-chart.test-d.ts:11 Type 'readonly string[]' does not satisfy the constraint '\"Expected: never, Actual: string\"[]'.；TS2578@legacy-chart.test-d.ts:34 Unused '@ts-expect-error' directive.) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:declare-legacy:wrong:shorthand",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2709@main.ts:4 Cannot use namespace 'ChartOptions' as a type.；TS2709@legacy-chart.test-d.ts:7 Cannot use namespace 'Chart' as a type.；TS2709@legacy-chart.test-d.ts:8 Cannot use namespace 'Chart' as a type.；TS2709@legacy-chart.test-d.ts:9 Cannot use namespace 'ChartOptions' as a type.；TS2344@legacy) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:augment-events:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@cart.ts:4 Argument of type '\"cart:add\"' is not assignable to parameter of type 'never'.；TS2345@cart.ts:8 Argument of type '\"cart:clear\"' is not assignable to parameter of type 'never'.；TS2345@toast.ts:6 Argument of type '\"toast:show\"' is not assignable to parameter of type 'never'.；TS2345@mai) rules=ok tests=fail(cart › 数量不是正整数时抛出 RangeError，不发出事件 ⟶ 0,toast › connectCartToasts 把购物车的事件转换成提示，断开之后不再提示 ⟶ expect(…).toEqual([ '已加入购物车：pen × 2', '购物车已清空' ]))"
+        },
+        {
+          "target": "exercise:augment-events:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:augment-events:alt:extends-alias",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:augment-events:wrong:declare-global",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@cart.ts:12 Argument of type '\"cart:add\"' is not assignable to parameter of type 'never'.；TS2345@cart.ts:16 Argument of type '\"cart:clear\"' is not assignable to parameter of type 'never'.；TS2345@toast.ts:12 Argument of type '\"toast:show\"' is not assignable to parameter of type 'never'.；TS2345@) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:augment-events:wrong:local-interface",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@cart.ts:10 Argument of type '\"cart:add\"' is not assignable to parameter of type '\"toast:show\"'.；TS2345@cart.ts:14 Argument of type '\"cart:clear\"' is not assignable to parameter of type '\"toast:show\"'.；TS2345@toast.ts:17 Argument of type '\"cart:add\"' is not assignable to parameter of type '\"to) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:augment-events:wrong:no-validation",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(cart › 数量不是正整数时抛出 RangeError，不发出事件 ⟶ 0)"
+        },
+        {
+          "target": "exercise:augment-events:wrong:never-disconnects",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toast › connectCartToasts 把购物车的事件转换成提示，断开之后不再提示 ⟶ expect(…).toEqual([ '已加入购物车：pen × 2', '购物车已清空' ]))"
+        }
+      ]
+    },
     "d01-html-semantics": {
       "verifiedAt": "2026-10-20T17:25:01.990Z",
       "sourceHash": "35c36f09a41f3c03",

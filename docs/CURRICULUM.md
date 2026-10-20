@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 89 / 规划总数 126**（草稿 12，规划中 25）
+**已发布 89 / 规划总数 126**（草稿 13，规划中 24）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -93,7 +93,7 @@
 | `c09-boundary-modeling` 边界数据建模 | ✅ 已发布 | `c08-generic-api-design`、`e06-runtime-validation` |
 | `c10-avoid-any` 避免 any 与不必要的双重断言 | ✅ 已发布 | `c09-boundary-modeling` |
 | `c11-strict-options` strict、strictNullChecks 与 noUncheckedIndexedAccess | ✅ 已发布 | `c10-avoid-any` |
-| `c12-modules-dts` 模块与 .d.ts 基础 | ⬜ 规划中 | `c11-strict-options`、`f03-tsconfig` |
+| `c12-modules-dts` 模块与 .d.ts 基础 | 📝 草稿 | `c11-strict-options`、`f03-tsconfig` |
 
 ## D. HTML、CSS 与 DOM（已发布 10 / 10）
 

@@ -1,0 +1,44 @@
+- id: dts-purpose
+  type: single
+  prompt: 一个 .d.ts 文件中有什么？
+  options:
+    - text: 只有类型：函数的签名、变量和常量的类型、接口、类型别名，没有实现
+      correct: true
+      explain: 它描述“这些东西存在，类型是这样”，实现在别处（通常是编译好的 JavaScript）。
+    - text: 编译后的 JavaScript 加上类型注释
+      explain: .d.ts 中没有任何可以运行的代码。
+    - text: 只有 interface，不能有函数
+      explain: 可以声明函数、类、常量，只是没有函数体和值。
+- id: shorthand-module
+  type: single
+  prompt: 为了消除 TS7016，在 .d.ts 中写了一行 `declare module 'old-lib';`。从 old-lib 导入的函数是什么类型？
+  options:
+    - text: any
+      correct: true
+      explain: 简写的声明只说明“这个模块存在”，其中的一切都是 any，等于关掉了对它的检查（c10）。
+    - text: unknown
+      explain: 简写的模块声明给出的是 any，而不是 unknown。
+    - text: never，调用时报错
+      explain: 调用不会报错，这正是它危险的地方。
+- id: global-in-module
+  type: single
+  prompt: "在一个有 import 的 .ts 文件中写 `interface Window { appConfig: Config }`，然后在另一个文件中使用 `window.appConfig`，会怎样？"
+  options:
+    - text: 报错：这个接口只是这个模块中的局部接口，没有和全局的 Window 合并
+      correct: true
+      explain: 在模块中要写 declare global { interface Window { … } }，或者放进一个没有 import/export 的 .d.ts。
+    - text: 可以使用，接口总是会合并
+      explain: 只有同一个作用域中的同名接口才会合并，模块中的接口和全局的接口不在同一个作用域。
+    - text: 运行时 window 上会多出 appConfig 属性
+      explain: 声明只影响类型，运行时什么也不会发生；属性要由代码真正赋值。
+- id: augmentation
+  type: single
+  prompt: "`bus.ts` 导出了空的 `interface AppEvents {}`。在 `cart.ts` 中怎样把 `'cart:add'` 事件加进这个接口？"
+  options:
+    - text: "`declare module './bus' { interface AppEvents { 'cart:add': { sku: string } } }`"
+      correct: true
+      explain: 这是模块扩充：它和 bus.ts 中导出的 AppEvents 合并。
+    - text: "`declare global { interface AppEvents { 'cart:add': { sku: string } } }`"
+      explain: 这扩充的是全局作用域中的另一个 AppEvents，和 bus.ts 导出的那个无关。
+    - text: "在 cart.ts 中写 `export interface AppEvents { 'cart:add': { sku: string } }`"
+      explain: 这只是 cart.ts 自己的同名接口，不会和 bus.ts 中的合并。
