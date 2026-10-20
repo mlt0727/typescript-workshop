@@ -2853,6 +2853,118 @@
         }
       ]
     },
+    "b07-narrowing": {
+      "verifiedAt": "2026-10-20T10:23:40.415Z",
+      "sourceHash": "2c8dad0397907090",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:typeof:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:typeof:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 3 2 7 0"
+        },
+        {
+          "target": "playground:equality:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:equality:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] HIhi 不相等 你好，Ada 你好，访客"
+        },
+        {
+          "target": "playground:in-operator:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:in-operator:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 游泳 飞翔"
+        },
+        {
+          "target": "playground:instanceof:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:instanceof:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 1970-01-01T00:00:00.000Z 今天 2026-10-20"
+        },
+        {
+          "target": "playground:control-flow:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:control-flow:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of null (reading 'length')）；输出：[log] 文字 | [log] 42.0 | [log] [ 3, 4 ] | [error] Uncaught TypeError: Cannot read properties of null (reading 'length')\n    at main.ts:16:40"
+        },
+        {
+          "target": "exercise:describe-input:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS18047@describe.ts:5 'value' is possibly 'null'.；TS2339@describe.ts:5 Property 'length' does not exist on type 'Date | string[]'.) rules=ok tests=fail(布尔值,日期与列表,null)"
+        },
+        {
+          "target": "exercise:describe-input:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:describe-input:alt:typeof-switch",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:describe-input:wrong:object-includes-null",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18047@describe.ts:6 'value' is possibly 'null'.) rules=ok tests=fail(null)"
+        },
+        {
+          "target": "exercise:describe-input:wrong:truthy-null",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(字符串与数字,布尔值)"
+        },
+        {
+          "target": "exercise:normalize-date:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2769@dates.ts:4 No overload matches this call.) rules=ok tests=fail(toDate › 字符串,toDate › 空值与无效值,isSameDay › 同一天的不同时刻)"
+        },
+        {
+          "target": "exercise:normalize-date:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:normalize-date:alt:switch-typeof",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:normalize-date:wrong:same-instance",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toDate › Date 输入返回新的对象)"
+        },
+        {
+          "target": "exercise:normalize-date:wrong:no-validity-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toDate › 空值与无效值)"
+        },
+        {
+          "target": "exercise:normalize-date:wrong:object-check-only",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS18047@dates.ts:7 'input' is possibly 'null'.) rules=ok tests=fail(toDate › 空值与无效值,isSameDay › 任一输入无效时为 false)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

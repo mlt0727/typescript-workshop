@@ -1,0 +1,63 @@
+- id: typeof-object
+  type: single
+  prompt: "`value` 的类型是 `string[] | null | number`。在 `if (typeof value === 'object') { … }` 的分支里，`value` 是什么类型？"
+  options:
+    - text: "`string[] | null`"
+      correct: true
+      explain: "`typeof null` 也是 `'object'`，所以 `null` 仍然在类型里，使用前还要排除。"
+    - text: "`string[]`"
+      explain: 别忘了 `typeof null === 'object'`。
+    - text: "`object`"
+      explain: TypeScript 会保留联合中具体的成员，不会变成笼统的 `object`。
+- id: which-check
+  type: multiple
+  prompt: "`type Cat = { meow(): void }`、`type Dog = { bark(): void }`。参数 `pet: Cat | Dog`，下列哪些检查能把 `pet` 收窄成 `Cat`？"
+  options:
+    - text: "`if ('meow' in pet)`"
+      correct: true
+      explain: "`in` 按属性区分对象类型的联合。"
+    - text: "`if (pet instanceof Cat)`"
+      explain: "`Cat` 是类型别名，运行时不存在，不能用于 `instanceof`（会报错：它只是类型）。"
+    - text: "`if (typeof pet === 'Cat')`"
+      explain: "`typeof` 只会返回 `'object'`、`'string'` 等固定的几个值。"
+- id: early-return
+  type: single
+  prompt: |
+    第 5 行的 `name` 是什么类型？
+
+    ```ts
+    function show(name: string | undefined) {
+      if (name === undefined) {
+        return '匿名';
+      }
+      return name.toUpperCase();
+    }
+    ```
+  options:
+    - text: "`string`"
+      correct: true
+      explain: 第 2–4 行在 `undefined` 时已经返回，后面的代码只可能是 `string`。这是控制流分析。
+    - text: "`string | undefined`"
+      explain: 提前 `return` 会把对应的情况从后续代码中排除。
+    - text: "`undefined`"
+      explain: 正好相反。
+- id: callback-narrowing
+  type: single
+  prompt: |
+    为什么第 3 行报“`current` 可能是 null”？
+
+    ```ts
+    let current: string | null = 'Ada';
+    if (current !== null) {
+      setTimeout(() => console.log(current.length), 0);
+    }
+    current = null;
+    ```
+  options:
+    - text: 回调会在稍后执行，而 `current` 在检查之后又被赋值为 `null`，执行时检查已经不成立
+      correct: true
+      explain: TypeScript 只在变量之后不再被赋值时，才在回调中保留收窄。这里报的是一个真实的 bug：运行时确实会抛出 `TypeError`。
+    - text: TypeScript 从不在回调中保留收窄
+      explain: TypeScript 5.4 起，参数、`const` 和之后不再赋值的 `let` 在回调中都会保留收窄。
+    - text: "`setTimeout` 的回调不能访问外部变量"
+      explain: 回调可以访问外部变量（a14 的闭包），问题在于变量的值会变。
