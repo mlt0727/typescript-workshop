@@ -1,0 +1,56 @@
+- id: structural
+  type: single
+  prompt: |
+    下面哪一行会报错？
+
+    ```ts
+    interface Cat { name: string }
+    interface Dog { name: string }
+    const tom: Cat = { name: 'Tom' };
+    const d1: Dog = tom;                       // 第 4 行
+    const extra = { name: 'Spike', age: 3 };
+    const d2: Dog = extra;                     // 第 6 行
+    const d3: Dog = { name: 'Rex', age: 5 };   // 第 7 行
+    ```
+  options:
+    - text: 只有第 7 行
+      correct: true
+      explain: 第 4 行形状相同，可以赋值；第 6 行通过变量赋值，多余属性不检查；第 7 行直接写对象字面量，多余的 `age` 触发多余属性检查（TS2353）。
+    - text: 第 4 行和第 7 行
+      explain: TypeScript 只看形状，`Cat` 和 `Dog` 形状相同，可以互相赋值。
+    - text: 第 6 行和第 7 行
+      explain: 第 6 行经过变量中转，不做多余属性检查。属性更多的值可以赋给要求更少的类型。
+    - text: 都不报错
+      explain: 第 7 行是直接写出的对象字面量，会检查多余属性。
+- id: runtime-extra
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    interface Named { name: string }
+    function keys(x: Named): string[] {
+      return Object.keys(x);
+    }
+    const user = { name: 'Ada', role: 'admin' };
+    console.log(keys(user));
+    ```
+  options:
+    - text: "`[ 'name', 'role' ]`"
+      correct: true
+      explain: 类型只在编译期起作用，不会删除属性。运行时 `user` 仍然有 `role`。
+    - text: "`[ 'name' ]`"
+      explain: 参数类型 `Named` 不会过滤掉 `role`，类型在运行时不存在。
+    - text: TypeScript 报错：`role` 是多余属性
+      explain: "`user` 是变量，不是直接写在调用处的对象字面量，不做多余属性检查。"
+- id: why-excess-check
+  type: single
+  prompt: TypeScript 为什么只对直接写出的对象字面量做多余属性检查？
+  options:
+    - text: 直接写出的对象，多余的属性不会被任何代码用到，几乎一定是写错了（例如拼错可选属性名）
+      correct: true
+      explain: 对象字面量是在这里新创建的，没有别的地方持有它，多余的属性只会被丢弃；变量则可能在别处被当作更完整的类型使用。
+    - text: 因为变量的类型在运行时才知道
+      explain: 变量的类型在编译期就知道。不检查是有意的设计：结构化类型允许属性更多的值赋给要求更少的类型。
+    - text: 这是 TypeScript 的 bug，新版本会修复
+      explain: 这是有意的设计，Handbook 中专门有一节解释它。

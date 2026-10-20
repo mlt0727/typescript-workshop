@@ -1,0 +1,58 @@
+- id: only-type
+  type: multiple
+  prompt: 下列哪些**只能**用 `type` 写，不能用 `interface` 写？
+  options:
+    - text: "`string | number` 这样的联合类型"
+      correct: true
+      explain: "`interface` 只能描述对象形状，联合类型要用 `type ID = string | number;`。"
+    - text: "`[number, number]` 这样的元组"
+      correct: true
+      explain: 元组不是对象形状的声明，用 `type Pair = [number, number];`。
+    - text: 有 `name`、`age` 两个属性的对象
+      explain: 对象形状两种写法都可以。
+    - text: "带一个方法 `greet(): string` 的对象"
+      explain: 方法也是对象的属性，`interface` 和 `type` 都能描述。
+- id: merging
+  type: single
+  prompt: |
+    下面的代码会怎样？
+
+    ```ts
+    interface Options {
+      debug: boolean;
+    }
+    interface Options {
+      level: number;
+    }
+    const o: Options = { debug: true };
+    ```
+  options:
+    - text: 报错：缺少属性 `level`
+      correct: true
+      explain: 同名 `interface` 会合并成一个，同时要求 `debug` 和 `level`。
+    - text: 报错：重复声明了 `Options`
+      explain: 这是两个同名 `type` 的结果。`interface` 会合并而不是报错。
+    - text: 没有错误，后一个声明覆盖了前一个
+      explain: 同名 `interface` 不会覆盖，而是合并。
+- id: index-read
+  type: single
+  prompt: "在本平台中，`const prices: Record<string, number> = { pen: 15 };` 之后，`prices.ink` 的类型是什么？"
+  options:
+    - text: "`number | undefined`"
+      correct: true
+      explain: 开启 `noUncheckedIndexedAccess` 后，通过索引签名读取的结果包含 `undefined`，因为键可能不存在。
+    - text: "`number`"
+      explain: 这是关闭 `noUncheckedIndexedAccess` 时的结果。
+    - text: 报错：属性 `ink` 不存在
+      explain: 索引签名允许任意字符串键，读取不会报错，但结果可能是 `undefined`。
+- id: extends
+  type: single
+  prompt: "`interface Animal { name: string }`、`interface Dog extends Animal { breed: string }`。下列哪个值可以赋给 `Dog` 类型的变量？"
+  options:
+    - text: "`{ name: '旺财', breed: '柴犬' }`"
+      correct: true
+      explain: "`Dog` 包含 `Animal` 的全部属性再加上 `breed`。"
+    - text: "`{ breed: '柴犬' }`"
+      explain: 缺少从 `Animal` 继承来的 `name`。
+    - text: "`{ name: '旺财' }`"
+      explain: 缺少 `Dog` 自己的属性 `breed`。

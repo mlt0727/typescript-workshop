@@ -2231,6 +2231,205 @@
         }
       ]
     },
+    "b01-type-alias-interface": {
+      "verifiedAt": "2026-10-20T10:06:22.129Z",
+      "sourceHash": "2a18d4d01ffccd81",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:type-alias:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:type-alias:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Ada（1815）"
+        },
+        {
+          "target": "playground:interface:types",
+          "ok": true,
+          "detail": "诊断符合预期（3 个故意的错误）"
+        },
+        {
+          "target": "playground:interface:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { x: 1, y: 2, z: 3 }"
+        },
+        {
+          "target": "playground:methods:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:methods:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 点击 2"
+        },
+        {
+          "target": "playground:index-signature:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:index-signature:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] undefined | [log] 95 | [log] apple 3 | [log] banana 0 | [log] cherry 12"
+        },
+        {
+          "target": "exercise:shop-types:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2304@shop.ts:1 Cannot find name 'CartItem'.；TS2304@shop.ts:5 Cannot find name 'CartItem'.；TS2305@shop.test-d.ts:2 Module '\"./shop\"' has no exported member 'CartItem'.；TS2305@shop.test-d.ts:2 Module '\"./shop\"' has no exported member 'Product'.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shop-types:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shop-types:alt:type-aliases",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shop-types:wrong:not-exported",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2459@shop.test-d.ts:2 Module '\"./shop\"' declares 'CartItem' locally, but it is not exported.；TS2459@shop.test-d.ts:2 Module '\"./shop\"' declares 'Product' locally, but it is not exported.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shop-types:wrong:price-string",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@shop.test.ts:8 Type '{ id: string; name: string; price: number; }' is not assignable to type 'Product'.；TS2322@shop.test.ts:14 Type '{ id: string; name: string; price: number; }' is not assignable to type 'Product'.；TS2322@shop.test.ts:15 Type '{ id: string; name: string; price: number; }' is) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:report-card:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@students.test-d.ts:4 Type '{ id: number; name: string; scores: Record<string, number>; }' does not satisfy the constraint '\"Expected: ..., Actual: boolean\"'.；TS2339@students.test-d.ts:5 Property 'scores' does not exist on type 'Student'.) rules=ok tests=fail(bestSubject › 分数最高的科目,bestSubject › 并列时取先出现的,bestSubject › 0 分也是分数,subjectAverage › 只统计有这门科目的学生,subjectAverage › 0 分计入平均)"
+        },
+        {
+          "target": "exercise:report-card:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:report-card:alt:entries-reduce",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:report-card:wrong:truthy-score",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(subjectAverage › 0 分计入平均)"
+        },
+        {
+          "target": "exercise:report-card:wrong:tie-last",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(bestSubject › 并列时取先出现的)"
+        },
+        {
+          "target": "exercise:report-card:wrong:fixed-subjects",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2345@students.test.ts:11 Argument of type '{ id: number; name: string; scores: { 物理: number; 英语: number; }; }' is not assignable to parameter of type 'Student'.；TS2353@students.test.ts:15 Object literal may only specify known properties, and '语文' does not exist in type '{ 数学: number; 物理: number; }) rules=ok tests=fail(bestSubject › 并列时取先出现的,bestSubject › 没有科目,bestSubject › 0 分也是分数,subjectAverage › 只统计有这门科目的学生,subjectAverage › 没有人有这门科目)"
+        },
+        {
+          "target": "exercise:report-card:wrong:divide-all",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(subjectAverage › 只统计有这门科目的学生)"
+        }
+      ]
+    },
+    "b02-structural-typing": {
+      "verifiedAt": "2026-10-20T10:08:24.196Z",
+      "sourceHash": "cd3dc2980104dbf5",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:structural:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:structural:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 5 | [log] 10"
+        },
+        {
+          "target": "playground:excess:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:excess:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 宽 10，颜色 黑色 | [log] { x: 1, y: 2, z: 3 } { x: 1, y: 2, z: 3 }"
+        },
+        {
+          "target": "playground:extra-at-runtime:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:extra-at-runtime:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] {\"name\":\"Ada\",\"password\":\"hunter2\"} | [log] [ 'name', 'password' ]"
+        },
+        {
+          "target": "exercise:public-user:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(只包含公开字段,序列化后不包含内部字段,返回新对象，不修改原记录)"
+        },
+        {
+          "target": "exercise:public-user:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:public-user:alt:destructure",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:public-user:wrong:spread-copy",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(只包含公开字段,序列化后不包含内部字段)"
+        },
+        {
+          "target": "exercise:public-user:wrong:delete-field",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(只包含公开字段,返回新对象，不修改原记录)"
+        },
+        {
+          "target": "exercise:normalize-products:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(normalizeProducts › 字段改名，tags 缺失时为空数组,normalizeProducts › 跳过价格无效的商品,normalizeProducts › 重复的 id 只保留第一个,normalizeProducts › 被跳过的错误数据不占用 id)"
+        },
+        {
+          "target": "exercise:normalize-products:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:normalize-products:alt:filter-map",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:normalize-products:wrong:spread-raw",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(normalizeProducts › 字段改名，tags 缺失时为空数组,normalizeProducts › 结果只有四个属性)"
+        },
+        {
+          "target": "exercise:normalize-products:wrong:shared-tags",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(normalizeProducts › 复制 tags 数组)"
+        },
+        {
+          "target": "exercise:normalize-products:wrong:dedupe-before-validate",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(normalizeProducts › 被跳过的错误数据不占用 id)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",
