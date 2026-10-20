@@ -4871,6 +4871,98 @@
         }
       ]
     },
+    "d09-form-validation": {
+      "verifiedAt": "2026-10-20T12:02:54.270Z",
+      "sourceHash": "510d7f6275431c0e",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:formdata:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:formdata:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:custom-validity:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:custom-validity:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:parse-signup:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseSignup › 合法的输入：去掉空白、年龄转换成数字,parseSignup › 昵称,parseSignup › 邮箱,parseSignup › 年龄：空、不是整数、超出范围,parseSignup › 密码与确认密码,parseSignup › 收集所有字段的错误,parseSignup › 不是字符串的值当作空字符串)"
+        },
+        {
+          "target": "exercise:parse-signup:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-signup:alt:rule-table",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-signup:wrong:first-error-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseSignup › 收集所有字段的错误)"
+        },
+        {
+          "target": "exercise:parse-signup:wrong:number-before-format",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseSignup › 年龄：空、不是整数、超出范围,parseSignup › 收集所有字段的错误)"
+        },
+        {
+          "target": "exercise:parse-signup:wrong:string-conversion",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseSignup › 收集所有字段的错误,parseSignup › 不是字符串的值当作空字符串)"
+        },
+        {
+          "target": "exercise:parse-signup:wrong:loose-result-type",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@parse.test-d.ts:6 Type 'SignupData' does not satisfy the constraint '\"Expected: ..., Actual: undefined\"'.) rules=ok tests=fail(parseSignup › 合法的输入：去掉空白、年龄转换成数字)"
+        },
+        {
+          "target": "exercise:signup-errors:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(提交空表单：显示错误、标记无效、聚焦第一个错误、更新状态,改正部分字段后再提交：清除已改正的错误，焦点移到下一个错误,没有修改的字段变得合法时，再次提交会清除它过时的错误,在有错误的输入框里输入时，立即清除这个字段的错误,成功：清除错误、显示成功状态、重置表单)"
+        },
+        {
+          "target": "exercise:signup-errors:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:signup-errors:alt:map-of-elements",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:signup-errors:wrong:only-set-errors",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(没有修改的字段变得合法时，再次提交会清除它过时的错误)"
+        },
+        {
+          "target": "exercise:signup-errors:wrong:no-focus",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(提交空表单：显示错误、标记无效、聚焦第一个错误、更新状态,改正部分字段后再提交：清除已改正的错误，焦点移到下一个错误,成功：清除错误、显示成功状态、重置表单)"
+        },
+        {
+          "target": "exercise:signup-errors:wrong:never-remove-invalid",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(改正部分字段后再提交：清除已改正的错误，焦点移到下一个错误,没有修改的字段变得合法时，再次提交会清除它过时的错误,在有错误的输入框里输入时，立即清除这个字段的错误,成功：清除错误、显示成功状态、重置表单)"
+        }
+      ]
+    },
     "e01-event-loop": {
       "verifiedAt": "2026-10-20T11:45:19.956Z",
       "sourceHash": "883cb12fb24c3566",
