@@ -2538,8 +2538,8 @@
       ]
     },
     "b04-union-literal": {
-      "verifiedAt": "2026-10-20T10:12:40.133Z",
-      "sourceHash": "513a13cdb8caf1f0",
+      "verifiedAt": "2026-10-20T10:14:41.581Z",
+      "sourceHash": "5c4f16c07aebc74e",
       "ok": true,
       "checks": [
         {
@@ -2636,6 +2636,113 @@
           "target": "exercise:format-cell:wrong:nan-as-text",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatCell › 数字)"
+        }
+      ]
+    },
+    "b05-intersection-tuple": {
+      "verifiedAt": "2026-10-20T10:14:42.112Z",
+      "sourceHash": "2350aaf8cdc9f9d8",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:intersection:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:intersection:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Ada，创建于 2026-10-20"
+        },
+        {
+          "target": "playground:conflict:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:conflict:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] { id: 'x' } []"
+        },
+        {
+          "target": "playground:tuples:types",
+          "ok": true,
+          "detail": "诊断符合预期（3 个故意的错误）"
+        },
+        {
+          "target": "playground:tuples:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] ADA 37 | [log] 3 | [log] undefined | [log] 1 9"
+        },
+        {
+          "target": "playground:tuple-pitfalls:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:tuple-pitfalls:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 'a', 1, 2 ] 3 | [log] [ 'a', 1 ]"
+        },
+        {
+          "target": "exercise:with-meta:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2304@draft.ts:3 Cannot find name 'Saved'.；TS2724@draft.test-d.ts:2 '\"./draft\"' has no exported member named 'Saved'. Did you mean 'save'?；TS2344@draft.test-d.ts:4 Type '{ title: string; body: string; id: number; savedAt: string; }' does not satisfy the constraint 'never'.) rules=ok tests=fail(保存后带有 id 和时间,不修改草稿)"
+        },
+        {
+          "target": "exercise:with-meta:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-meta:alt:interface-extends",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-meta:wrong:union-instead",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@draft.test-d.ts:4 Type '{ title: string; body: string; id: number; savedAt: string; }' does not satisfy the constraint '{ id: \"Expected: number, Actual: never\"; savedAt: \"Expected: string, Actual: never\"; title: \"Expected: string, Actual: never\"; body: \"Expected: string, Actual: never\"; }'.；T) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-meta:wrong:mutate-draft",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(不修改草稿)"
+        },
+        {
+          "target": "exercise:parse-range:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@range.test-d.ts:4 Type '[number, number] | null' does not satisfy the constraint '{ [x: number]: \"Expected: never, Actual: number\"; 0: never; 1: never; }'.；TS2344@range.test-d.ts:5 Type '[number, number] | null' does not satisfy the constraint '\"Expected: ..., Actual: never\" | \"Expected: null) rules=ok tests=fail(parseRange › 起始页大于结束页时交换,parseRange › -5 无效,parseRange › 3- 无效,parseRange › 1-2-3 无效,parseRange › abc 无效,parseRange › 1.5-3 无效,parseRange ›  无效,parseRange › 3 无效,parseRange › a-b 无效,overlap › 部分重叠,overlap › 包含,overlap › 只有一页重叠)"
+        },
+        {
+          "target": "exercise:parse-range:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-range:alt:destructure-params",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-range:wrong:array-return",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@range.test-d.ts:4 Type '[number, number] | null' does not satisfy the constraint '\"Expected: ..., Actual: ...\" | \"Expected: null, Actual: ...\"'.；TS2344@range.test-d.ts:5 Type '[number, number] | null' does not satisfy the constraint '\"Expected: ..., Actual: ...\" | \"Expected: null, Actual: ...) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-range:wrong:empty-is-zero",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseRange › -5 无效,parseRange › 3- 无效)"
+        },
+        {
+          "target": "exercise:parse-range:wrong:no-swap",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseRange › 起始页大于结束页时交换)"
+        },
+        {
+          "target": "exercise:parse-range:wrong:strict-overlap",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(overlap › 只有一页重叠)"
         }
       ]
     },

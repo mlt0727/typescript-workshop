@@ -36,7 +36,7 @@ stages:
       - { id: b02-structural-typing, title: 结构化类型与多余属性检查, status: draft, prerequisites: [b01-type-alias-interface] }
       - { id: b03-optional-readonly, title: 可选属性与 readonly, status: draft, prerequisites: [b02-structural-typing] }
       - { id: b04-union-literal, title: 联合类型与字面量类型, status: draft, prerequisites: [b03-optional-readonly] }
-      - { id: b05-intersection-tuple, title: 交叉类型与元组, status: planned, prerequisites: [b04-union-literal] }
+      - { id: b05-intersection-tuple, title: 交叉类型与元组, status: draft, prerequisites: [b04-union-literal] }
       - { id: b06-any-unknown-never-void, title: any、unknown、never 与 void, status: planned, prerequisites: [b04-union-literal] }
       - { id: b07-narrowing, title: 类型收窄, status: planned, prerequisites: [b06-any-unknown-never-void] }
       - { id: b08-type-guards, title: 自定义类型守卫与断言函数, status: planned, prerequisites: [b07-narrowing] }

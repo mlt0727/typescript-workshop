@@ -1,0 +1,36 @@
+- id: intersection-props
+  type: single
+  prompt: "`type A = { x: number }`、`type B = { y: string }`。`A & B` 类型的值需要有哪些属性？"
+  options:
+    - text: "`x` 和 `y` 都要有"
+      correct: true
+      explain: 交叉类型要同时满足两边，对象类型的交叉就是两边属性的合集。
+    - text: "`x` 或 `y` 有一个即可"
+      explain: 这是联合类型 `A | B` 的含义。
+    - text: 两者共有的属性（这里没有）
+      explain: 交叉类型不是取“共有部分”，而是同时满足两边的要求。
+- id: never-intersection
+  type: single
+  prompt: "`type T = { id: string } & { id: number };` 中，`T['id']` 是什么类型？"
+  options:
+    - text: "`never`"
+      correct: true
+      explain: 一个值不可能既是 `string` 又是 `number`，所以 `id` 是 `never`，任何对象都赋不进 `T`。
+    - text: "`string | number`"
+      explain: 这是联合的结果。交叉要求同时满足两边。
+    - text: 声明时直接报错
+      explain: 交叉不会在声明时报错，而是得到 `never`，问题会在赋值时暴露出来。
+- id: tuple-access
+  type: multiple
+  prompt: "`const t: [string, number] = ['a', 1];` 之后，下列哪些说法正确？"
+  options:
+    - text: "`t[0]` 的类型是 `string`，不包含 `undefined`"
+      correct: true
+      explain: 元组长度固定，已知位置的类型是确定的。
+    - text: "`t[2]` 会被 TypeScript 报错"
+      correct: true
+      explain: 长度为 2 的元组没有下标 2（TS2493）。
+    - text: "`t.push(2)` 会被 TypeScript 报错"
+      explain: 普通元组允许 `push`（这是类型系统的一个漏洞）。要禁止，使用 `readonly [string, number]`。
+    - text: "`const u = ['a', 1];` 中 `u` 的类型也是 `[string, number]`"
+      explain: 数组字面量不会被推断成元组，`u` 的类型是 `(string | number)[]`。
