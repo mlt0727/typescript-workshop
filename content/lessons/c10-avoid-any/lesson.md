@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: any 是 TypeScript 的“关闭检查”开关：一个值的类型是 any，对它做什么都不报错，而且它会传染，any 赋给别的变量、取出的属性、调用的结果，统统还是 any。麻烦在于 any 常常不是你写的：JSON.parse、response.json()、Function 类型、没有类型声明的旧库、Array.isArray 的收窄，都会悄悄地把 any 带进来。双重断言 as unknown as 则是另一种“关掉检查”。这一课学会识别 any 从哪里来，在它进入的地方用 unknown 把它挡住，用验证代替断言，并知道少数确实需要断言的场合该怎样把它关进笼子里。
 objectives:
   - 识别 any 的常见来源（JSON.parse、response.json()、Function、无类型的库、Array.isArray），理解它的传染性
@@ -49,12 +49,12 @@ console.log(data.user.name.toUpperCase());
 | `JSON.parse(text)` | `const value: unknown = JSON.parse(text)`，再验证（e06） |
 | `await response.json()` | 同上：赋给 `unknown` |
 | `Function` 类型的值，调用结果是 `any` | 写出具体的函数类型，例如 `(x: number) => string` |
-| 没有类型声明的库 | 在一个小的包装模块里把结果赋给 `unknown` 并验证（编程挑战） |
+| 没有类型声明的库（`strict` 下导入它先报 TS7016；为了消除这个错误写一行 `declare module '库名';`，导入的一切就都成了 `any`） | 在一个小的包装模块里把结果赋给 `unknown` 并验证（编程挑战）；或者写出真正的类型声明（c12） |
 | `Array.isArray(x)` 把 `unknown` 收窄成 `any[]` | 赋给 `readonly unknown[]`（p1-05） |
 
 `catch (error)` 的 `error` 在 `strict` 下是 `unknown`（`useUnknownInCatchVariables`，TypeScript 4.4 起），不是 `any`：抛出的不一定是 `Error`，也可能是字符串或者任何值，读 `error.message` 之前要先检查 `error instanceof Error`。
 
-这个平台的规则检查会拦下**写出来的** `any`，但拦不住从库函数中流进来的 `any`。专门的工具是 typescript-eslint 的 `no-unsafe-*` 系列规则（`no-unsafe-member-access`、`no-unsafe-assignment` 等），它们会标出所有使用了 `any` 值的地方，F 阶段配置 ESLint 时会用到。
+这个平台的规则检查会拦下**写出来的** `any`，但拦不住从库函数中流进来的 `any`，也拦不住没有写类型的变量：`let data; data = JSON.parse(text);` 中的 `data` 同样是 `any`。专门的工具是 typescript-eslint 的 `no-unsafe-*` 系列规则（`no-unsafe-member-access`、`no-unsafe-assignment` 等），它们会标出所有使用了 `any` 值的地方，F 阶段配置 ESLint 时会用到。
 
 ## 双重断言与注释指令
 

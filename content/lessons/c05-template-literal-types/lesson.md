@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: '很多“字符串”其实是有结构的：路由 /users/:id 里藏着参数名，事件处理函数的属性名是 on 加上首字母大写的事件名，CSS 的长度是数字加单位，颜色是 # 开头的十六进制。模板字面量类型把 JavaScript 的模板字符串搬到了类型层面：它可以拼出新的字符串字面量类型，可以在映射类型中给键改名，配合 infer 还能从字符串中“解析”出一部分。这一课学会它的实际用途，例如让 buildPath(''/users/:id'', { id }) 少传参数时在编译期报错，同时知道它的边界：一旦字符串不是字面量，这些检查就都不起作用了。'
 objectives:
   - 写出模板字面量类型，理解它遇到联合类型时会生成所有的组合
@@ -30,7 +30,7 @@ type ButtonClass = `btn-${Size}-${Color}`; // 'btn-sm-red' | 'btn-sm-blue' | 'bt
 
 模板中也可以放 `string`、`number` 这样的宽类型，表示“这一部分可以是任何字符串、任何数字”：`` `#${string}` `` 是所有以 `#` 开头的字符串，`` `${number}px` `` 是 `'12px'`、`'0.5px'` 这样的字符串（`'apx'` 不行）。
 
-TypeScript 内置了四个字符串工具类型：`Uppercase`、`Lowercase`、`Capitalize`（首字母大写）、`Uncapitalize`。它们由编译器直接实现，只能作用在字符串字面量（或它们的联合）上。
+TypeScript 内置了四个字符串工具类型：`Uppercase`、`Lowercase`、`Capitalize`（首字母大写）、`Uncapitalize`。它们由编译器直接实现，参数必须是字符串类型：作用在字面量（或它们的联合）上得到具体的结果；作用在 `string` 或模板字面量类型上，得到的是一种“模式”，例如 `'ABC'` 可以赋值给 `Uppercase<string>`，`'abc'` 不行。
 
 ## 在映射类型中给键改名
 

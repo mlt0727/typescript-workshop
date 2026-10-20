@@ -115,6 +115,7 @@ describe('hasErrors', () => {
   test('有没有任何错误', () => {
     expect(hasErrors({})).toBe(false);
     expect(hasErrors({ age: '需要年满 18 岁' })).toBe(true);
+    expect(hasErrors({ nickname: '' })).toBe(true);
   });
 });
 ```

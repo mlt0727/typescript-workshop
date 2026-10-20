@@ -2,7 +2,7 @@
 kind: task
 title: 去掉 any
 ---
-`cart.ts` 中的两个函数都用了 `any`。去掉所有的 `any`（也不能用类型断言），改成 `unknown` 加检查，并按下面的规则处理不合法的输入：
+`cart.ts` 中的两个函数都用了 `any`。去掉所有的 `any`（也不能用类型断言），改成 `unknown` 加检查：`JSON.parse` 的结果要放进一个**明确写着 `unknown` 类型**的变量。（`let data; data = JSON.parse(json);` 这样不写类型的变量也是 `any`，判题的规则检查发现不了它，测试也可能通过，但这正是本课要避免的写法。）按下面的规则处理不合法的输入：
 
 1. **`sumPrices(json)`**：`json` 是购物车的 JSON 字符串，格式是 `{ "items": [{ "price": 单价, "quantity": 数量 }, …] }`。返回 `单价 × 数量` 的总和。下面这些情况返回 `null`：JSON 不合法；不是对象或者没有 `items` 数组；某一项不是对象；`price` 不是有限的非负数；`quantity` 不是正整数。空的 `items` 返回 `0`；
 2. **`errorMessage(error)`**：从 `catch` 到的任何值中取出错误信息：`Error` 的实例返回它的 `message`；字符串原样返回；带有字符串类型 `message` 属性的对象返回这个属性；其他情况返回 `'未知错误'`。

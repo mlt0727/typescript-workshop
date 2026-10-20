@@ -24,6 +24,7 @@ import type {
   ExpectedDiagnostic,
   Hint,
   Lesson,
+  Mutant,
   LessonBlock,
   QuizQuestion,
   SourceFile,
@@ -196,6 +197,8 @@ function buildExercise(lessonId: string, lessonDir: string, exId: string, lesson
   const hints: Hint[] = [];
   let explanationHtml = '';
   const variants: ExerciseVariant[] = [];
+  const mutants: Mutant[] = [];
+  const grading = meta.grading ?? 'implementation';
 
   for (const node of tree.children) {
     if (node.type !== 'containerDirective') {
@@ -232,16 +235,32 @@ function buildExercise(lessonId: string, lessonDir: string, exId: string, lesson
         }
         const files = filesIn(node.children, where);
         const fails = attrs.fails;
-        if (kind === 'wrong' && fails !== 'types' && fails !== 'tests' && fails !== 'rules') {
-          fail(where, `wrong 变体 ${name} 需要 fails=types|tests|rules`);
+        if (kind === 'wrong' && fails !== 'types' && fails !== 'tests' && fails !== 'rules' && fails !== 'mutants') {
+          fail(where, `wrong 变体 ${name} 需要 fails=types|tests|rules|mutants`);
+        }
+        const misses = attrs.misses ? attrs.misses.split(',').map((m) => m.trim()).filter(Boolean) : undefined;
+        if (kind === 'wrong' && fails === 'mutants' && (misses === undefined || misses.length === 0)) {
+          fail(where, `wrong 变体 ${name} 的 fails=mutants 需要 misses=漏掉的 mutant 名字（逗号分隔）`);
         }
         variants.push({
           name,
           kind,
           files: Object.fromEntries(files.map((f) => [f.path, f.content])),
           fails: kind === 'wrong' ? (fails as ExerciseVariant['fails']) : undefined,
+          misses: kind === 'wrong' ? misses : undefined,
           reason: attrs.reason ?? undefined,
         });
+        break;
+      }
+      case 'mutant': {
+        const name = attrs.name;
+        const hint = attrs.hint;
+        if (!name || !hint) {
+          fail(where, 'mutant 需要 name 与 hint（学生的测试没有发现它时显示的说明）');
+          break;
+        }
+        if (mutants.some((m) => m.name === name)) fail(where, `重复的 mutant ${name}`);
+        mutants.push({ name, hint, files: filesIn(node.children, where) });
         break;
       }
       default:
@@ -249,15 +268,35 @@ function buildExercise(lessonId: string, lessonDir: string, exId: string, lesson
     }
   }
 
+  const isTestFile = (path: string) => /\.test(-d)?\.tsx?$/.test(path);
   if (starter.length === 0) fail(where, '缺少 :::files{role=starter}');
   if (solution.length === 0) fail(where, '缺少 :::files{role=solution}');
-  if (tests.length === 0) fail(where, '缺少 :::files{role=tests}（至少一个 *.test.ts 或 *.test-d.ts）');
+  if (grading === 'tests') {
+    // 学生写测试：起始文件中要有测试文件；被测的实现在 support 中，mutant 替换其中的文件
+    if (!starter.some((f) => isTestFile(f.path))) fail(where, 'grading: tests 的起始文件中至少要有一个 *.test.ts 或 *.test-d.ts');
+    if (mutants.length < 2) fail(where, 'grading: tests 至少需要两个 :::mutant（故意写错的实现）');
+    const supportFiles = new Map(support.map((f) => [f.path, f.content]));
+    for (const m of mutants) {
+      if (m.files.length === 0) fail(where, `mutant ${m.name} 没有文件`);
+      for (const f of m.files) {
+        const original = supportFiles.get(f.path);
+        if (original === undefined) fail(where, `mutant ${m.name} 的 ${f.path} 不是 support 中的文件`);
+        else if (original === f.content) fail(where, `mutant ${m.name} 的 ${f.path} 与正确的实现完全相同`);
+      }
+    }
+  } else {
+    if (mutants.length > 0) fail(where, ':::mutant 只能用于 grading: tests 的练习');
+    if (tests.length === 0) fail(where, '缺少 :::files{role=tests}（至少一个 *.test.ts 或 *.test-d.ts）');
+  }
   const editable = new Set(starter.map((f) => f.path));
   for (const f of solution) if (!editable.has(f.path)) fail(where, `参考解中的 ${f.path} 不在起始文件中`);
   for (const v of variants) {
     for (const p of Object.keys(v.files)) if (!editable.has(p)) fail(where, `变体 ${v.name} 修改了非学生文件 ${p}`);
+    if (v.fails === 'mutants' && grading !== 'tests') fail(where, `变体 ${v.name}：fails=mutants 只能用于 grading: tests 的练习`);
+    for (const m of v.misses ?? []) if (!mutants.some((x) => x.name === m)) fail(where, `变体 ${v.name} 的 misses 中有不存在的 mutant ${m}`);
   }
-  const hasRuntimeTests = tests.some((t) => /\.test\.tsx?$/.test(t.path));
+  const runtimeTestPaths = [...tests, ...(grading === 'tests' ? starter : [])].map((t) => t.path);
+  const hasRuntimeTests = runtimeTestPaths.some((p) => /\.test\.tsx?$/.test(p));
   const runTests = meta.tests ?? hasRuntimeTests;
   if (runTests && !hasRuntimeTests) fail(where, 'tests: true 但没有 *.test.ts(x) 文件');
 
@@ -275,6 +314,8 @@ function buildExercise(lessonId: string, lessonDir: string, exId: string, lesson
   const exercise: Exercise = {
     id: exId,
     kind: meta.kind,
+    grading,
+    mutants,
     title: meta.title,
     promptHtml: renderNodes(promptNodes),
     mode,

@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: 前几课用泛型写了不少函数，但“能写出泛型”和“设计出好用的泛型 API”是两回事。常见的问题有：类型参数只出现一次，什么也没连起来；类型参数只出现在返回值里，调用方随便写一个类型就能骗过编译器；推断出来的类型太宽（'S' 变成了 string），或者被一个不该参与推断的参数带偏。这一课总结设计泛型 API 的几条规则，并介绍两个较新的工具：const 类型参数（TypeScript 5.0）让推断保留字面量，NoInfer（TypeScript 5.4）让某个参数不参与推断。
 objectives:
   - 判断一个类型参数是否有用：它应当把至少两个位置（参数与参数、参数与返回值）联系起来

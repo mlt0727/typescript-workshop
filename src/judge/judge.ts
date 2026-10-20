@@ -25,6 +25,24 @@ export interface JudgeSpec {
   timeoutMs: number;
   perTestTimeoutMs: number;
   fixtures?: FetchFixture[];
+  /** implementation（默认）：学生写实现；tests：学生写测试，还要检查它能否发现 mutants 中的错误实现 */
+  grading?: 'implementation' | 'tests';
+}
+
+export interface MutantInput {
+  name: string;
+  hint: string;
+  /** 替换 support 中同名文件的内容 */
+  files: Record<string, string>;
+}
+
+export interface MutantResult {
+  name: string;
+  hint: string;
+  caught: boolean;
+  /** 发现它的方式：类型测试报错，或者行为测试失败 */
+  by?: 'types' | 'tests';
+  detail?: string;
 }
 
 export interface JudgeFiles {
@@ -34,6 +52,8 @@ export interface JudgeFiles {
   support: Record<string, string>;
   /** 测试文件：*.test.ts(x) 会运行，*.test-d.ts 只做类型检查 */
   tests: Record<string, string>;
+  /** grading 为 tests 时：故意写错的实现 */
+  mutants?: MutantInput[];
 }
 
 export interface JudgeResult {
@@ -57,6 +77,8 @@ export interface JudgeResult {
     error?: SerializedError;
     logs: LogEntry[];
   };
+  /** grading 为 tests 时：学生的测试是否发现了每一个错误的实现（只有测试在正确的实现上全部通过时才检查） */
+  mutants?: MutantResult[];
   /** 编译器或沙箱本身出错（不是学生代码的问题） */
   internalError?: string;
 }
@@ -101,12 +123,66 @@ function sameDiag(d: DiagnosticInfo, e: ExpectedDiagnostic) {
   return d.code === e.code && d.file === e.file && d.line === e.line;
 }
 
+/** 练习中的 mutant（SourceFile 数组）转换成判题需要的形式 */
+export function mutantInputs(mutants: readonly { name: string; hint: string; files: readonly { path: string; content: string }[] }[]): MutantInput[] {
+  return mutants.map((m) => ({ name: m.name, hint: m.hint, files: Object.fromEntries(m.files.map((f) => [f.path, f.content])) }));
+}
+
+/** 学生写测试时，学生文件中的测试文件也参与运行 */
+function testFilesOf(spec: JudgeSpec, files: JudgeFiles): string[] {
+  const own = spec.grading === 'tests' ? Object.keys(files.student).filter((f) => isRuntimeTest(f) || isTypeTest(f)) : [];
+  return [...own, ...Object.keys(files.tests)];
+}
+
+async function compileFor(spec: JudgeSpec, projectId: string, all: Record<string, string>, studentFiles: string[], testFiles: string[]) {
+  return getCompiler().call('judge', {
+    projectId,
+    spec: { mode: spec.mode, overrides: spec.overrides, files: all, withTests: true },
+    studentFiles,
+    testFiles,
+    forbid: spec.forbid,
+    // React 模式的测试直接渲染组件，不运行入口；DOM 模式每个测试前运行入口
+    runEntries: spec.mode === 'dom' ? runEntries('dom', all, spec.entry) : [],
+    loopGuard: spec.mode !== 'ts',
+  });
+}
+
+function runTestsFor(spec: JudgeSpec, bundle: RunBundle, runtimeTests: string[], all: Record<string, string>) {
+  return runTests({
+    mode: spec.mode,
+    bundle,
+    testEntries: runtimeTests.map((t) => `file:${t}`),
+    page: spec.mode === 'ts' ? undefined : pageInput(all),
+    timeoutMs: spec.timeoutMs,
+    perTestTimeoutMs: spec.perTestTimeoutMs,
+    fixtures: spec.fixtures,
+  });
+}
+
+/** 用一个错误的实现替换 support，再检查学生的测试：类型测试报错或者行为测试失败，就算发现了它 */
+async function checkMutant(spec: JudgeSpec, files: JudgeFiles, mutant: MutantInput, studentFiles: string[], testFiles: string[]): Promise<MutantResult> {
+  const all = { ...files.support, ...mutant.files, ...files.student, ...files.tests };
+  const compiled = await compileFor(spec, `${spec.projectId}::mutant::${mutant.name}`, all, studentFiles, testFiles);
+  const typeError = compiled.diagnostics.find((d) => d.category === 'error' && d.file !== undefined && testFiles.includes(d.file));
+  if (typeError) {
+    return { name: mutant.name, hint: mutant.hint, caught: true, by: 'types', detail: `${typeError.file}:${typeError.line} ${typeError.message.split('\n')[0]}` };
+  }
+  const runtimeTests = testFiles.filter(isRuntimeTest);
+  if (!spec.runTests || runtimeTests.length === 0) return { name: mutant.name, hint: mutant.hint, caught: false };
+  const outcome = await runTestsFor(spec, compiled.bundle, runtimeTests, all);
+  if (outcome.error) return { name: mutant.name, hint: mutant.hint, caught: true, by: 'tests', detail: `${outcome.error.name}: ${outcome.error.message}` };
+  const failed = outcome.results.find((r) => r.status !== 'pass');
+  return failed
+    ? { name: mutant.name, hint: mutant.hint, caught: true, by: 'tests', detail: failed.name }
+    : { name: mutant.name, hint: mutant.hint, caught: false };
+}
+
 export async function judge(spec: JudgeSpec, files: JudgeFiles): Promise<JudgeResult> {
   const snapshot = { ...files.student };
   const snapshotHash = await hashFiles(snapshot);
   const all = { ...files.support, ...snapshot, ...files.tests };
   const studentFiles = Object.keys(snapshot);
-  const testFiles = Object.keys(files.tests);
+  const testFiles = testFilesOf(spec, files);
   const runtimeTests = testFiles.filter(isRuntimeTest);
 
   const result: JudgeResult = {
@@ -120,16 +196,7 @@ export async function judge(spec: JudgeSpec, files: JudgeFiles): Promise<JudgeRe
 
   let bundle: RunBundle;
   try {
-    const compiled = await getCompiler().call('judge', {
-      projectId: spec.projectId,
-      spec: { mode: spec.mode, overrides: spec.overrides, files: all, withTests: true },
-      studentFiles,
-      testFiles,
-      forbid: spec.forbid,
-      // React 模式的测试直接渲染组件，不运行入口；DOM 模式每个测试前运行入口
-      runEntries: spec.mode === 'dom' ? runEntries('dom', all, spec.entry) : [],
-      loopGuard: spec.mode !== 'ts',
-    });
+    const compiled = await compileFor(spec, spec.projectId, all, studentFiles, testFiles);
     bundle = compiled.bundle;
     const errors = compiled.diagnostics.filter((d) => d.category === 'error');
     const expected = spec.expectDiagnostics ?? [];
@@ -147,18 +214,10 @@ export async function judge(spec: JudgeSpec, files: JudgeFiles): Promise<JudgeRe
 
   if (spec.runTests) {
     if (runtimeTests.length === 0) {
-      result.internalError = '题目配置错误：要求行为测试，但没有 *.test.ts 文件';
+      result.internalError = spec.grading === 'tests' ? '题目要求行为测试，但你的文件中没有 *.test.ts' : '题目配置错误：要求行为测试，但没有 *.test.ts 文件';
       return result;
     }
-    const outcome = await runTests({
-      mode: spec.mode,
-      bundle,
-      testEntries: runtimeTests.map((t) => `file:${t}`),
-      page: spec.mode === 'ts' ? undefined : pageInput(all),
-      timeoutMs: spec.timeoutMs,
-      perTestTimeoutMs: spec.perTestTimeoutMs,
-      fixtures: spec.fixtures,
-    });
+    const outcome = await runTestsFor(spec, bundle, runtimeTests, all);
     result.tests.results = outcome.results;
     result.tests.error = outcome.error;
     result.tests.logs = outcome.logs;
@@ -169,5 +228,19 @@ export async function judge(spec: JudgeSpec, files: JudgeFiles): Promise<JudgeRe
   }
 
   result.passed = result.types.ok && result.rules.ok && result.tests.ok;
+
+  // 学生写测试：测试先要在正确的实现上全部通过，再检查它们能不能发现每一个错误的实现
+  if (spec.grading === 'tests' && result.passed) {
+    const mutants: MutantResult[] = [];
+    try {
+      for (const mutant of files.mutants ?? []) mutants.push(await checkMutant(spec, files, mutant, studentFiles, testFiles));
+    } catch (err) {
+      result.internalError = `检查错误实现时出错：${err instanceof Error ? err.message : String(err)}`;
+      result.passed = false;
+      return result;
+    }
+    result.mutants = mutants;
+    result.passed = mutants.every((m) => m.caught);
+  }
   return result;
 }

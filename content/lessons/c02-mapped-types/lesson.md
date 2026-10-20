@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: 一个表单有 email、age、agree 三个字段，于是还需要“每个字段的校验函数”“每个字段的错误信息”“每个字段是否被修改过”这几个类型。它们的键完全相同，只是每个键对应的值不同。把它们一个个手写出来，加一个字段就要改四处。映射类型（mapped type）用一个类型“遍历”另一个类型的键，按规则生成新的类型；它还能统一加上或去掉 readonly 和 ? 修饰符。TypeScript 内置的 Partial、Readonly、Record 都是用它写出来的。
 objectives:
   - '读懂并写出 { [K in keyof T]: … } 形式的映射类型，在值的位置使用 T[K]'
@@ -47,14 +47,17 @@ const validators: Validators<SignupForm> = {
 
 const values: SignupForm = { email: 'ada.example.com', age: 16, agree: true };
 const errors: Errors<SignupForm> = {};
-if (validators.email) errors.email = validators.email(values.email) ?? undefined;
-if (validators.age) errors.age = validators.age(values.age) ?? undefined;
+const emailError = validators.email?.(values.email) ?? null;
+if (emailError !== null) errors.email = emailError;
+const ageError = validators.age?.(values.age) ?? null;
+if (ageError !== null) errors.age = ageError;
 const touched: Touched<SignupForm> = { email: true, age: true, agree: false };
 console.log(errors, touched);
 ```
 - 第 8、9 行：校验函数的参数 `value` 没有写类型，TypeScript 从 `Validators<SignupForm>` 中知道 `email` 的是 `string`、`age` 的是 `number`，所以 `value.includes`、`value >= 18` 都能通过检查。把第 9 行改成 `value.includes('1')`，就会报错。
 - 第 3、4 行的 `?` 让每个属性都可以省略：不是每个字段都需要校验（`agree` 就没有），也不是每个字段都有错误。第 5 行没有 `?`，`Touched<SignupForm>` 必须三个字段都写上。
-- 在 `SignupForm` 中加一个字段 `name: string`，第 16 行马上报错（少了 `name`），而另外两个派生类型自动多出了 `name`。
+- 第 14–17 行：只有真的有错误时才给 `errors` 加上属性，所以 `errors` 中只有 `email` 和 `age`，没有值为 `undefined` 的属性（练习中会用到这一点）。
+- 在 `SignupForm` 中加一个字段 `name: string`，第 18 行马上报错（少了 `name`），而另外两个派生类型自动多出了 `name`。
 :::
 
 ## 修饰符：加上、去掉、保留
@@ -88,7 +91,7 @@ console.log(draft, saved);
 - 第 10 行：`Frozen` 把每个属性都变成只读，赋值报 TS2540。注意第 9 行把 `draft` 赋给 `saved` 是允许的：`readonly` 只限制“通过这个类型”修改，`draft` 本身仍然可以修改，运行时也没有任何冻结（要真正冻结需要 `Object.freeze`）。
 :::
 
-映射类型对数组和元组同样有效：同态映射一个元组类型，得到的还是元组，每个位置分别映射。例如 `{ [K in keyof T]: Promise<T[K]> }` 作用在 `[string, number]` 上，得到 `[Promise<string>, Promise<number>]`。`Promise.all` 的类型就是这样写的（c07）。
+映射类型对数组和元组同样有效：`T` 是类型参数、代入的是元组时，同态映射 `{ [K in keyof T]: … }` 得到的还是元组，每个位置分别映射。例如 `type Promised<T> = { [K in keyof T]: Promise<T[K]> }`，`Promised<[string, number]>` 就是 `[Promise<string>, Promise<number>]`。`Promise.all` 的类型就是这样写的（c07）。注意前提是“类型参数”：直接写 `{ [K in keyof [string, number]]: … }` 时，`keyof` 得到的是数组的全部键，`length`、`push` 这些也会被映射，结果不再是元组。
 
 ## 在泛型函数中使用映射类型
 

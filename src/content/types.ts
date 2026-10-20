@@ -100,9 +100,20 @@ export interface Hint {
   html: string;
 }
 
+/** “写测试”类练习中故意写错的实现：替换 support 中的文件，学生的测试应当发现它 */
+export interface Mutant {
+  name: string;
+  /** 学生的测试没有发现它时显示的说明（这个实现错在哪里） */
+  hint: string;
+  files: SourceFile[];
+}
+
 export interface Exercise {
   id: string;
   kind: 'task' | 'challenge';
+  /** implementation：学生写实现，用题目的测试检查；tests：学生写测试，用正确的实现和若干错误的实现检查 */
+  grading: 'implementation' | 'tests';
+  mutants: Mutant[];
   title: string;
   promptHtml: string;
   mode: RunMode;
@@ -175,7 +186,9 @@ export interface ExerciseVariant {
   kind: 'starter' | 'solution' | 'alt' | 'wrong';
   files: Record<string, string>;
   /** wrong：期望在哪一步失败 */
-  fails?: 'types' | 'tests' | 'rules';
+  fails?: 'types' | 'tests' | 'rules' | 'mutants';
+  /** fails 为 mutants 时：这组测试漏掉的错误实现（必须与实际漏掉的完全一致） */
+  misses?: string[];
   reason?: string;
 }
 

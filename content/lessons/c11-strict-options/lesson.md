@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 同样一段代码，换一个 tsconfig 可能从“没有错误”变成十几个错误。这些差别大多来自 strict 系列的编译选项。本课程的所有练习一直在严格的配置下运行，你已经在不知不觉中依赖它们：null 必须先检查，数组下标的结果可能是 undefined，catch 到的值是 unknown。这一课把这些选项摊开来讲：strict 包含哪些检查，TypeScript 6.0 起它为什么默认开启，哪些有用的选项不在 strict 里（noUncheckedIndexedAccess、exactOptionalPropertyTypes 等），以及在一个已有的项目中怎样一步步打开它们。
 objectives:
   - 说明 strict 包含的主要检查（noImplicitAny、strictNullChecks、strictFunctionTypes 等）各自防止什么问题
@@ -35,11 +35,11 @@ references:
 | `strictFunctionTypes` | 函数类型的参数按错误的方向赋值（c03 讲过逆变） | TS2322 |
 | `strictPropertyInitialization` | 类的字段声明了却没有在构造函数中赋值 | TS2564 |
 | `useUnknownInCatchVariables` | `catch (e)` 的 `e` 被当作 `any` | TS18046（在 `e` 上读属性） |
-| `strictBindCallApply`、`noImplicitThis`、`alwaysStrict` 等 | `call`/`apply` 的参数、`this` 的类型、严格模式 | |
+| `strictBindCallApply`、`noImplicitThis`、`strictBuiltinIteratorReturn` | `call`/`apply` 的参数、`this` 的类型、内置迭代器 `next()` 的返回值 | |
 
 **TypeScript 6.0 起，`strict` 默认就是 `true`**：不写这个选项，得到的也是严格的检查（以前的版本默认是 `false`）。仍然建议在 `tsconfig.json` 中显式写出 `"strict": true`：读配置的人一眼就能看到，项目也不依赖编译器版本的默认值。
 
-`strict` 的成员会随着 TypeScript 版本增加。升级 TypeScript 之后出现新的错误，往往是 `strict` 里多了一项检查（例如 5.6 加入的 `strictBuiltinIteratorReturn`）。这是有意的：严格的配置意味着“接受以后新增的检查”。
+`strict` 的成员会随着 TypeScript 版本变化。升级 TypeScript 之后出现新的错误，往往是 `strict` 里多了一项检查（例如 5.6 加入的 `strictBuiltinIteratorReturn`）。这是有意的：严格的配置意味着“接受以后新增的检查”。以前的成员 `alwaysStrict`（输出的 JavaScript 使用严格模式）在 6.0 中移出了 `strict`：6.0 起所有代码都按严格模式处理，`"alwaysStrict": false` 已被弃用。
 
 ## 关掉 strictNullChecks 会怎样
 

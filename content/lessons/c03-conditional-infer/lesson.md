@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: '有了 keyof 和映射类型，我们能按“键”生成类型；但很多时候需要按“情况”决定类型：如果是数组，取元素的类型；如果是 Promise，取它完成时的值；如果是函数，取返回值；如果表单字段是数字输入框，值就是 number。条件类型 T extends U ? X : Y 就是类型层面的 if，配合 infer，还能从一个类型的“内部”取出一部分。这一课学会读写条件类型和 infer，并知道它的一个重要限制：在泛型函数的实现中，TypeScript 不会根据条件类型去检查你返回的值。'
 objectives:
   - '读懂并写出 T extends U ? X : Y 形式的条件类型，以及多个条件串联的写法'

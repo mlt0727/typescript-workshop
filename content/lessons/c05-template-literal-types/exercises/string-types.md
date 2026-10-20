@@ -79,7 +79,8 @@ expectTypeOf<EventProp<'click'>>().toEqualTypeOf<'onClick'>();
 expectTypeOf<EventProp<'click' | 'keyDown'>>().toEqualTypeOf<'onClick' | 'onKeyDown'>();
 
 type Profile = { name: string; age: number; 0: boolean; save(): void };
-expectTypeOf<Setters<Pick<Profile, 'name' | 'age' | 0>>>().toEqualTypeOf<{
+type ProfileData = { name: string; age: number; 0: boolean };
+expectTypeOf<Setters<ProfileData>>().toEqualTypeOf<{
   setName: (value: string) => void;
   setAge: (value: number) => void;
 }>();
@@ -100,7 +101,7 @@ if (isCssLength(raw)) expectTypeOf(raw).toEqualTypeOf<CssLength>();
 :::
 
 :::hint{level=1}
-`EventProp` 是 `` `on${Capitalize<E>}` ``；`CssLength` 是 `` `${number}${'px' | 'rem' | '%'}` ``。`Setters` 是一个映射类型，用 `as` 给键改名：`[K in keyof T as `set${Capitalize<K & string>}`]`。
+`EventProp` 是 `` `on${Capitalize<E>}` ``；`CssLength` 是 `` `${number}${'px' | 'rem' | '%'}` ``。`Setters` 是一个映射类型，用 `as` 给键改名：`` [K in keyof T as `set${Capitalize<K & string>}`] ``。
 :::
 
 :::hint{level=2}
@@ -110,7 +111,7 @@ if (isCssLength(raw)) expectTypeOf(raw).toEqualTypeOf<CssLength>();
 :::explanation
 模板字面量类型让“有结构的字符串”有了类型：`CssLength` 只接受数字加单位，`'12em'` 在编译期就会报错。但它只管**写在代码里的字面量**。用户输入的字符串是 `string`，要在运行时用 `isCssLength` 检查，检查通过之后类型守卫才把它收窄成 `CssLength`。
 
-运行时的规则比类型更严格是可以的，反过来不行：类型守卫返回 `true` 时，这个值必须真的符合 `CssLength`。`${number}` 接受所有 JavaScript 能解析成数字的写法（例如 `'1e3px'`），而这里的正则只接受最常见的写法，所以守卫是“保守”的：它说是，就一定是。
+运行时的规则比类型更严格是可以的，反过来不行：类型守卫返回 `true` 时，这个值必须真的符合 `CssLength`。`${number}` 接受所有 JavaScript 能解析成数字的写法：`'1e3px'`、`'.5rem'`、`'1.px'`，甚至开头带空格的 `' 12px'` 在类型上都是合法的 `CssLength`。这里的正则只接受最常见的写法，所以守卫是“保守”的：它说是，就一定是。
 
 `Capitalize<K & string>` 中的 `& string` 不能省略：`keyof T` 可能包含数字键和 symbol 键，`Capitalize` 只接受字符串，直接写 `Capitalize<K>` 会报 TS2344。
 :::

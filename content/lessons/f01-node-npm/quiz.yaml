@@ -1,0 +1,49 @@
+- id: caret-range
+  type: multiple
+  prompt: "package.json 中写着 `\"vite\": \"^8.3.4\"`。下面哪些版本满足这个范围？"
+  options:
+    - text: "`8.3.4`"
+      correct: true
+      explain: ^ 的下限就是写出的版本本身。
+    - text: "`8.10.0`"
+      correct: true
+      explain: 主版本不是 0 时，^ 允许次版本和修订号变化；8.10.0 按数值比较大于 8.3.4，小于 9.0.0。
+    - text: "`9.0.0`"
+      explain: 主版本变了，可能有不兼容的修改，^8.3.4 的上限是 9.0.0（不含）。
+    - text: "`8.3.3`"
+      explain: 比下限 8.3.4 小。
+    - text: "`8.4.0-beta.1`"
+      explain: 预发布规则：范围中没有写出 8.4.0 的预发布版本，所以测试版不会被自动安装，即使它在数值上落在范围内。
+- id: zero-caret
+  type: single
+  prompt: "`^0.4.2` 允许安装哪些版本？"
+  options:
+    - text: "`>=0.4.2 <0.5.0`"
+      correct: true
+      explain: 主版本是 0 时，^ 不改变次版本，只允许修订号变化：0.x 期间任何修改都可能不兼容。
+    - text: "`>=0.4.2 <1.0.0`"
+      explain: 这是把 0.x 当成普通版本的误解。^ 不改变“最左边非零的那一位”，这里是次版本 4。
+    - text: 只有 `0.4.2`
+      explain: 这是 `^0.0.x` 的情况（例如 `^0.0.3` 只允许 0.0.3）。
+- id: save-prefix
+  type: single
+  prompt: 在项目中运行 `npm install --save-dev typescript@6.0.3` 之后，package.json 的 devDependencies 中写入的是什么？
+  options:
+    - text: "`\"typescript\": \"^6.0.3\"`"
+      correct: true
+      explain: 即使指定了版本，npm 默认也写入 ^ 范围；node_modules 中装的是 6.0.3，锁文件记录了它。需要写入精确版本时加 --save-exact（-E）。
+    - text: "`\"typescript\": \"6.0.3\"`"
+      explain: 只有加了 --save-exact 才会写入不带 ^ 的精确版本。
+    - text: "`\"typescript\": \"~6.0.3\"`"
+      explain: npm 默认的前缀是 ^。create-vite 模板中的 ~6.0.3 是模板作者手动写的。
+- id: npm-ci
+  type: single
+  prompt: 持续集成和部署时为什么用 `npm ci` 而不是 `npm install`？
+  options:
+    - text: npm ci 严格按照锁文件安装；锁文件与 package.json 不一致时直接报错，从不修改 package.json 和锁文件
+      correct: true
+      explain: 这样装到的版本和你在本机测试过的一模一样。npm install 则可能更新锁文件、装到别的版本。
+    - text: npm ci 不安装 devDependencies，所以更快
+      explain: npm ci 默认也安装 devDependencies（构建和测试需要它们）；它会先删除已有的 node_modules，再完整安装。
+    - text: npm install 不读取锁文件
+      explain: npm install 也会使用锁文件中仍然满足范围的版本；区别在于它会在需要时修改锁文件，而 npm ci 只会报错。

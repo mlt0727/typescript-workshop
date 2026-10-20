@@ -158,6 +158,20 @@ describe('withRetry', () => {
     await wrapped('a');
     expect(waits).toEqual([1, 2]);
   });
+
+  test('delay 完成之前不会重试', async () => {
+    const { fn, calls } = flaky(1);
+    let release = () => {};
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const result = withRetry(fn, { attempts: 2, delay: () => gate })('a');
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(calls).toHaveLength(1);
+    release();
+    await expect(result).resolves.toBe('结果 a');
+    expect(calls).toHaveLength(2);
+  });
 });
 
 describe('memoizeAsync', () => {
@@ -371,6 +385,46 @@ export function memoizeAsync<A extends unknown[], R>(fn: (...args: A) => Promise
     if (cached !== undefined) return cached;
     const promise = fn(...args);
     cache.set(key, promise);
+    promise.catch(() => {
+      if (cache.get(key) === promise) cache.delete(key);
+    });
+    return promise;
+  };
+}
+```
+:::
+
+:::variant{kind=wrong name=no-await-delay fails=tests reason="调用了 delay 却没有等待它完成，立刻就重试了"}
+```ts file=wrappers.ts
+export type RetryOptions = {
+  attempts: number;
+  shouldRetry?: (error: unknown) => boolean;
+  delay?: (attempt: number) => Promise<void>;
+};
+
+export function withRetry<A extends unknown[], R>(fn: (...args: A) => Promise<R>, options: RetryOptions): (...args: A) => Promise<R> {
+  return async (...args) => {
+    for (let attempt = 1; ; attempt++) {
+      try {
+        return await fn(...args);
+      } catch (error) {
+        const canRetry = attempt < options.attempts && (options.shouldRetry?.(error) ?? true);
+        if (!canRetry) throw error;
+        void options.delay?.(attempt);
+      }
+    }
+  };
+}
+
+export function memoizeAsync<A extends unknown[], R>(fn: (...args: A) => Promise<R>, keyOf: (...args: A) => string): (...args: A) => Promise<R> {
+  const cache = new Map<string, Promise<R>>();
+  return (...args) => {
+    const key = keyOf(...args);
+    const cached = cache.get(key);
+    if (cached !== undefined) return cached;
+    const promise = fn(...args);
+    cache.set(key, promise);
+    // 失败的结果不缓存；只删除自己（期间可能已经换成了新的 Promise）
     promise.catch(() => {
       if (cache.get(key) === promise) cache.delete(key);
     });

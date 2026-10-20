@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: 很多类型其实已经“写”在函数里了：一个 async 函数 loadUser 返回什么样的用户对象，它接收哪些参数，都由它的实现决定。再另外手写一个 User 类型，两者迟早不一致。ReturnType、Parameters、Awaited 能从函数的类型中取出返回值、参数列表和 Promise 完成时的值。这一课学会使用它们，知道它们遇到重载和泛型函数时的局限，并学会写“包装函数”（重试、缓存、日志）时最好的做法：用泛型的剩余参数让包装后的函数保留原来的参数和返回值类型。
 objectives:
   - 用 ReturnType、Parameters、Awaited（以及 ConstructorParameters、InstanceType）从已有的函数和类中取出类型
@@ -16,8 +16,8 @@ references:
   - title: TypeScript 4.5 Release Notes（The Awaited Type and Promise Improvements）
     url: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html
     checked: 2026-10-20
-  - title: TypeScript 4.0 Release Notes（Variadic Tuple Types）
-    url: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-0.html
+  - title: TypeScript 3.0 Release Notes（Generic rest parameters）
+    url: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-0.html
     checked: 2026-10-20
 ---
 
@@ -76,7 +76,7 @@ console.log(a, b);
 function withLog<F extends (...args: any[]) => any>(fn: F): (...args: Parameters<F>) => ReturnType<F> { … }
 ```
 
-它能用，但到处是 `any`，实现中调用 `fn(...args)` 时也得不到真正的检查。更好的写法是让 TypeScript 分别推断**参数元组** `A` 和**返回值** `R`（可变参数元组，TypeScript 4.0 起）：
+它能用，但到处是 `any`，实现中调用 `fn(...args)` 时也得不到真正的检查。更好的写法是让 TypeScript 分别推断**参数元组** `A` 和**返回值** `R`（“泛型剩余参数”：剩余参数的类型可以是一个元组类型参数，TypeScript 3.0 起）：
 
 :::playground{#wrapper}
 ```ts file=main.ts

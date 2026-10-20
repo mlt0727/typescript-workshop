@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 程序的“边界”是数据进出的地方：服务器返回的 JSON、表单、本地存储、URL。边界上的数据格式由别人决定，字段名是 created_at，日期是字符串，金额是以分为单位的整数，状态是 'PAID' 这样的大写字符串，可能缺字段，也可能多字段。程序内部则希望用自己的类型：createdAt 是 Date，金额不会和普通数字混用，用户 id 不会被当成订单 id 传错。这一课学会把“线上格式”和“领域模型”分成两种类型，在边界上一次性地解析和转换（而不只是检查），并用品牌类型区分那些结构相同、含义不同的值。
 objectives:
   - 区分边界上的数据格式（DTO）与程序内部的领域类型，在边界上把前者解析、转换成后者
@@ -99,7 +99,7 @@ function mistakes(someUser: UserId): void {
 - 用 `null` 明确表示“没有”，而不是有时缺字段、有时 `null`、有时空字符串：边界上把这几种都统一成 `null`；
 - 用 `Readonly` 表示解析出的数据不应该被修改；要修改就产生新的对象。
 
-日期要特别小心：`new Date('昨天')` 不会抛出异常，而是得到一个“无效日期”，`getTime()` 返回 `NaN`。只接受明确的格式（例如带时区的 ISO 8601），再检查 `Number.isNaN(date.getTime())`。
+日期要特别小心：`new Date('昨天')` 不会抛出异常，而是得到一个“无效日期”，`getTime()` 返回 `NaN`。只接受明确的格式（例如带时区的 ISO 8601），再检查 `Number.isNaN(date.getTime())`。这个检查只能排除 13 月、32 日这种不可能的日期：`2026-02-30` 在 V8（Chrome、Node.js）中会被顺延成 3 月 2 日，而不是无效日期。需要完全严格时，解析之后再比较年、月、日是否与字符串中的一致。
 
 ::exercise{#branded-ids}
 

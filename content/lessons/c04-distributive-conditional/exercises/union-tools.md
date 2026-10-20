@@ -2,7 +2,7 @@
 kind: task
 title: 自己写出联合类型的工具
 ---
-在 `union.ts` 中写出下面这些类型（这道题只做类型检查）。不要使用内置的 `Exclude`、`Extract`、`NonNullable`：
+在 `union.ts` 中写出下面这些类型（这道题只做类型检查）。不要使用内置的 `Exclude`、`Extract`、`NonNullable`（判题检查不了这一条，直接写 `Exclude<T, U>` 也能通过，但那样就失去了练习的意义）：
 
 1. **`MyExclude<T, U>`**：从联合 `T` 中去掉能赋值给 `U` 的成员；**`MyExtract<T, U>`**：只保留能赋值给 `U` 的成员；
 2. **`NonNullish<T>`**：从 `T` 中去掉 `null` 和 `undefined`；
@@ -105,7 +105,7 @@ console.log(missing);
 :::
 
 :::explanation
-标准库的 `Exclude<T, U>` 和 `Extract<T, U>` 就是这样一行定义，原理都是分布：联合的每个成员单独做一次判断，不需要的成员变成 `never`，而 `X | never` 就是 `X`，于是它们被“筛掉”了。`NonNullish` 同理；标准库现在把 `NonNullable<T>` 写成 `T & {}`，效果一样。
+标准库的 `Exclude<T, U>` 和 `Extract<T, U>` 就是这样一行定义，原理都是分布：联合的每个成员单独做一次判断，不需要的成员变成 `never`，而 `X | never` 就是 `X`，于是它们被“筛掉”了。`NonNullish` 同理；标准库现在把 `NonNullable<T>` 写成 `T & {}`，对具体的联合类型效果一样（`unknown` 这样的类型上两者不同，正文讲过）。
 
 `IsNever` 是分布最容易出错的地方。`never` 可以看作“没有成员的联合”，`T extends never ? true : false` 遇到它时一个成员都没有可算，结果是 `never`，既不是 `true` 也不是 `false`。包进元组之后，`[never]` 是一个具体的元组类型，判断照常进行。
 
@@ -114,7 +114,7 @@ console.log(missing);
 `HandlerMap` 把 c02 的映射类型和本课的 `Extract` 结合起来：键是所有的 `type`，每个处理函数的参数精确到这一种事件，所以 `main.ts` 中 `event.x`、`event.key` 都能通过检查；少写一种事件的处理函数会报错。
 :::
 
-:::variant{kind=alt name=without-conditionals}
+:::variant{kind=alt name=other-forms}
 ```ts file=union.ts
 export type MyExclude<T, U> = T extends U ? never : T;
 export type MyExtract<T, U> = T extends unknown ? (T extends U ? T : never) : never;

@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 程序里常有一份“权威”的数据：一张配置表、一组默认值、一个常量数组。如果对应的类型再手写一遍，两份迟早会不一致：加了一个设置项，忘了改类型。TypeScript 提供了三个类型运算符，从已有的值和类型中推导出新的类型：typeof 取变量的类型，keyof 取对象类型的所有键，T[K] 取某个键对应的值的类型。这一课学会用它们让类型跟着数据走，写出“返回值的类型随参数变化”的函数，并弄清 keyof 遇到索引签名、Object.keys 返回 string[] 这两个常见的意外。
 objectives:
   - 在类型位置用 typeof 得到变量的类型，用 keyof 得到对象类型的键组成的联合类型

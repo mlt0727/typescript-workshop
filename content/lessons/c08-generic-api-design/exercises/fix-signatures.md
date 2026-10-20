@@ -35,7 +35,8 @@ import { enumValues, log, logValue, parseJson, withDefault } from './api';
 const sizes = enumValues(['S', 'M', 'L']);
 const size = withDefault(sizes.values, 'M');
 logValue('size', size('XL'));
-logValue('parsed', parseJson('[1, 2]', Array.isArray));
+const isNumbers = (v: unknown): v is number[] => Array.isArray(v) && v.every((x) => typeof x === 'number');
+logValue('parsed', parseJson('[1, 2]', isNumbers));
 console.log(log);
 ```
 :::
@@ -72,7 +73,8 @@ import { enumValues, log, logValue, parseJson, withDefault } from './api';
 const sizes = enumValues(['S', 'M', 'L']);
 const size = withDefault(sizes.values, 'M');
 logValue('size', size('XL'));
-logValue('parsed', parseJson('[1, 2]', Array.isArray));
+const isNumbers = (v: unknown): v is number[] => Array.isArray(v) && v.every((x) => typeof x === 'number');
+logValue('parsed', parseJson('[1, 2]', isNumbers));
 console.log(log);
 ```
 :::

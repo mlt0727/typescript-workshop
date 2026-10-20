@@ -125,6 +125,7 @@ describe('restock', () => {
     expect(s1).toEqual({ apple: 3 });
     expect(empty).toEqual({});
     expect(restock(s1, 'apple', -1)).toEqual({ apple: 2 });
+    expect(restock({ apple: 1 }, 'apple', -1)).toEqual({ apple: 0 });
   });
 
   test('结果小于 0 时抛出 RangeError', () => {
@@ -140,6 +141,10 @@ describe('report', () => {
 
   test('数量相同时取字母顺序在前的', () => {
     expect(report({ pear: 4, apple: 4, fig: 4 }, 0).top).toBe('apple');
+  });
+
+  test('正好等于阈值的不算偏少', () => {
+    expect(report({ apple: 2, pear: 1, kiwi: 3 }, 2).low).toEqual(['pear']);
   });
 
   test('库存为空时没有 top 属性', () => {

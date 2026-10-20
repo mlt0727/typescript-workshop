@@ -75,14 +75,16 @@ export function createBus<E>(): Bus<E> {
   const listeners: Listeners<E> = {};
   return {
     on(type, handler) {
-      // 每次注册都放进一个新数组：正在进行的 emit 遍历的是旧数组，不受影响
-      listeners[type] = [...(listeners[type] ?? []), handler];
+      // 每次注册都包成一个新函数：同一个 handler 注册两次，数组中也是两个不同的项
+      const entry: typeof handler = (payload) => handler(payload);
+      // 换成一个新数组：正在进行的 emit 遍历的是旧数组，不受影响
+      listeners[type] = [...(listeners[type] ?? []), entry];
       let active = true;
       return () => {
         if (!active) return;
         active = false;
         const list = listeners[type] ?? [];
-        const index = list.indexOf(handler);
+        const index = list.indexOf(entry);
         if (index !== -1) listeners[type] = list.toSpliced(index, 1);
       };
     },
@@ -147,6 +149,19 @@ describe('createBus', () => {
     expect(calls).toEqual(['x']);
   });
 
+  test('同一个函数注册了两次：取消的是这一次注册，其余的顺序不变', () => {
+    const bus = createBus<Events>();
+    const calls: string[] = [];
+    const h = () => calls.push('h');
+    const g = () => calls.push('g');
+    bus.on('added', h);
+    bus.on('added', g);
+    const offSecondH = bus.on('added', h);
+    offSecondH();
+    bus.emit('added', { id: '1' });
+    expect(calls).toEqual(['h', 'g']);
+  });
+
   test('处理函数中新注册的函数从下一次 emit 开始生效', () => {
     const bus = createBus<Events>();
     const calls: string[] = [];
@@ -208,7 +223,7 @@ bus.on('removed', (p) => p.title);
 :::
 
 :::hint{level=2}
-“`emit` 开始时已注册的函数”：注册时不要往原来的数组里 `push`，而是换成一个新数组 `[...旧数组, handler]`，正在进行的 `emit` 遍历的仍是旧数组。取消时同样换成新数组（`toSpliced(index, 1)` 只移除一项）；用一个 `active` 变量让取消函数只生效一次。
+“`emit` 开始时已注册的函数”：注册时不要往原来的数组里 `push`，而是换成一个新数组 `[...旧数组, entry]`，正在进行的 `emit` 遍历的仍是旧数组。“只移除这一次注册”：同一个函数可能注册多次，所以每次注册都把它包成一个新函数 `const entry: typeof handler = (payload) => handler(payload)`，取消时删除的是 `entry`（`toSpliced(index, 1)` 只移除一项，同样得到新数组）；用一个 `active` 变量让取消函数只生效一次。
 :::
 
 :::explanation
@@ -218,8 +233,8 @@ bus.on('removed', (p) => p.title);
 
 行为上有两个细节值得注意：
 
-- **快照**：每次注册、取消都换成一个新数组，而不是修改原来的数组。`emit` 拿到的是开始时的数组，处理函数中注册的新函数不会在这一轮被调用（b10 的订阅器也是这个规则）；
-- **按注册移除**：用 `indexOf` 找到这一次注册的位置，只删一项。如果写成 `filter((h) => h !== handler)`，同一个函数注册两次时，取消一次会把两次都删掉。
+- **快照**：每次注册、取消都换成一个新数组，而不是修改原来的数组。`emit` 拿到的是开始时的数组，处理函数中注册的新函数不会在这一轮被调用（新注册的函数下一轮才生效，这一点与 b10 的订阅器相同）。也因为是快照，`emit` 过程中被取消的函数在这一轮仍会被调用，这与 b10 “取消立即生效”的规则不同：两种规则都常见，规格中要写清楚；
+- **按注册移除**：每次注册都把 `handler` 包成一个新函数 `entry`，同一个函数注册两次，数组中就是两个不同的项，取消时找到的正是这一次注册的那一项。如果按 `handler` 本身删除：`filter((h) => h !== handler)` 会把两次注册都删掉；`indexOf(handler)` 找到的是**第一次**注册，依次注册 h、g、h 之后取消第二个 h，剩下的顺序变成了 g、h。
 :::
 
 :::variant{kind=alt name=wrapped-handlers}
@@ -352,6 +367,44 @@ export function createBus<E>(): Bus<E> {
         count += 1;
       }
       return count;
+    },
+    listenerCount(type) {
+      return listeners[type]?.length ?? 0;
+    },
+  };
+}
+```
+:::
+
+:::variant{kind=wrong name=remove-first-match fails=tests reason="用 indexOf(handler) 删除：同一个函数注册了两次时，删掉的是第一次注册，不是这一次"}
+```ts file=bus.ts
+export type Handler<P> = (payload: P) => void;
+export type Listeners<E> = { [K in keyof E]?: Handler<E[K]>[] };
+
+export type Bus<E> = {
+  on<K extends keyof E>(type: K, handler: Handler<E[K]>): () => void;
+  emit<K extends keyof E>(type: K, payload: E[K]): number;
+  listenerCount(type: keyof E): number;
+};
+
+export function createBus<E>(): Bus<E> {
+  const listeners: Listeners<E> = {};
+  return {
+    on(type, handler) {
+      listeners[type] = [...(listeners[type] ?? []), handler];
+      let active = true;
+      return () => {
+        if (!active) return;
+        active = false;
+        const list = listeners[type] ?? [];
+        const index = list.indexOf(handler);
+        if (index !== -1) listeners[type] = list.toSpliced(index, 1);
+      };
+    },
+    emit(type, payload) {
+      const list = listeners[type] ?? [];
+      for (const handler of list) handler(payload);
+      return list.length;
     },
     listenerCount(type) {
       return listeners[type]?.length ?? 0;

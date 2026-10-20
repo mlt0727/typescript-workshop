@@ -199,7 +199,7 @@ console.log(wrongPlan, missing);
 :::explanation
 这道题把三课的内容连在了一起：
 
-- `as const satisfies Record<string, Field>`（b16）：`SIGNUP` 被检查过，同时保留了最精确的类型，`typeof SIGNUP` 中 `plan.options` 是 `readonly ['free', 'pro']`；
+- `as const satisfies Record<string, Field>`（b16）：`SIGNUP` 被检查过，同时保留了最精确的类型，`typeof SIGNUP` 中 `plan.options` 是 `readonly ['free', 'pro']`。`satisfies` 这一半是测试检查不了的：只写 `as const`、字段又都写对了的时候，类型完全一样；它的作用是在你写错字段时（例如 `kind: 'txt'`）当场报错，而不是在用到 `SIGNUP` 的地方报出一个难懂的错误；
 - 映射类型（c02）：`FormValues` 遍历每个字段；`SIGNUP` 的属性因为 `as const` 都是只读的，同态映射把 `readonly` 也保留了下来；
 - 条件类型与 `infer`（本课）：按 `kind` 决定值的类型，下拉框再从 `options` 中取出选项的联合。
 

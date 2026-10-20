@@ -28,6 +28,6 @@
       correct: true
       explain: keyof 作用在联合上只得到共有的键。要对每个成员分别去掉 id，写分布式的 Omit。
     - text: "`Omit<Circle, 'id'> | Omit<Rect, 'id'>`"
-      explain: 这是 DistributiveOmit 的结果；Omit 本身不是条件类型，不会分布。
+      explain: 这是 DistributiveOmit 的结果。Omit 内部用的是 Pick 和 keyof T，keyof 作用在整个联合上只得到共有的键，所以不会分布。
     - text: never
       explain: 两种图形共有 kind，结果不是空的。

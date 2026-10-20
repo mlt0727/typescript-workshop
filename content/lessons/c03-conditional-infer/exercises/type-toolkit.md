@@ -4,7 +4,7 @@ title: 几个取出类型的工具
 ---
 在 `types.ts` 中用条件类型和 `infer` 写出下面五个类型（这道题只做类型检查，类型测试中有正例，也有反例）：
 
-1. **`KindOf<T>`**：`T` 能赋值给 `string` 时是 `'text'`，能赋值给 `number` 时是 `'number'`，能赋值给 `boolean` 时是 `'boolean'`，否则是 `'other'`；
+1. **`KindOf<T>`**：`T` 能赋值给 `string` 时是 `'text'`，能赋值给 `number` 时是 `'number'`，能赋值给 `boolean` 时是 `'boolean'`，否则是 `'other'`（这里只考虑 `T` 不是联合类型的情况，联合类型留到下一课）；
 2. **`ElementOf<T>`**：数组或元组（包括只读的）的元素类型；不是数组时是 `never`；
 3. **`Unwrap<T>`**：`T` 是 Promise（或者任何 thenable，用 `PromiseLike`）时取出完成时的值，**只取一层**；否则原样返回 `T`；
 4. **`ResultOf<F>`**：函数的返回值类型；不是函数时是 `never`。不能使用 `any`；
@@ -103,7 +103,7 @@ expectTypeOf<DataOf<{ ok: false; error: string }>>().toEqualTypeOf<never>();
 - `readonly (infer E)[]` 同时匹配 `string[]` 和 `readonly [1, 'a']`，因为可变的数组能赋值给只读的数组，反过来不行。只写 `(infer E)[]` 的话，只读数组和 `as const` 的元组都匹配不上；
 - `PromiseLike` 只要求有一个 `then` 方法，`Promise` 当然满足。`Unwrap` 只取一层，所以 `Promise<Promise<number>>` 得到的是 `Promise<number>`；内置的 `Awaited` 会递归地取到底；
 - `(...args: never[]) => infer R`：函数类型的参数是“逆变”的。目标类型的参数是 `never`，任何函数的参数都能接收 `never`（`never` 能赋值给任何类型），所以所有函数都能匹配。写成 `unknown[]` 则相反，只有能接收任意参数的函数才匹配，`(a: string) => boolean` 会得到 `never`；
-- `DataOf` 作用在联合类型上：对 `{ ok: true; … }` 得到 `data` 的类型，对 `{ ok: false; … }` 得到 `never`，合起来 `never` 消失，只剩下 `data` 的类型。这种“对联合的每个成员分别计算”的行为就是下一课的分布式条件类型。
+- `DataOf` 作用在联合类型上：对 `{ ok: true; … }` 得到 `data` 的类型，对 `{ ok: false; … }` 得到 `never`，合起来 `never` 消失，只剩下 `data` 的类型。这种“对联合的每个成员分别计算”的行为就是下一课的分布式条件类型。它也解释了为什么题目说 `KindOf` 只考虑非联合的 `T`：参考解的 `KindOf<string | number>` 是 `'text' | 'number'`，而替代解先把判断结果包进 `IsOf` 再比较，得到的是 `'other'`，两种写法在联合类型上的结果不同。
 
 `main.ts` 展示了这些工具的用处：`Task` 完全从 `loadTasks` 的实现推导出来，函数返回的对象多了一个字段，`Task` 就自动多一个字段。
 :::

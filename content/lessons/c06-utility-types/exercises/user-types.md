@@ -92,6 +92,12 @@ describe('createUser', () => {
       createdAt: now,
     });
   });
+
+  test('传入的数据中多出的 id、createdAt 不会覆盖新的值', () => {
+    // 结构化类型：一个完整的 User 也可以当作 NewUser 传入
+    const later = new Date('2026-10-21T00:00:00Z');
+    expect(createUser(ada, 'u2', later)).toMatchObject({ id: 'u2', createdAt: later });
+  });
 });
 
 describe('applyPatch', () => {
@@ -157,7 +163,9 @@ applyPatch(user, { createdAt: new Date() });
 :::explanation
 工具类型让这三个类型都由 `User` 派生：给 `User` 加一个字段 `avatar`，`NewUser` 自动多出它；把 `email` 改名，`UserPatch` 中的 `email` 也跟着报错，不会漏改。
 
-两个运行时的细节和类型有关：
+三个运行时的细节和类型有关：
+
+- **展开的顺序**：`createUser` 写成 `{ ...input, id, createdAt: now }`，新的 `id` 和 `createdAt` 写在后面。同样因为结构化类型，一个完整的 `User` 也能当作 `NewUser` 传入；如果写成 `{ id, createdAt: now, ...input }`，输入中多出的旧 `id` 会覆盖新的；
 
 - **补丁中的 `undefined`**：`UserPatch` 的每个属性都是 `string | undefined`，显式的 `{ name: undefined }` 能通过检查。展开合并 `{ ...user, ...patch }` 时，TypeScript 认为 `name` 仍然是 `string`，运行时却是 `undefined`。逐个字段判断 `!== undefined` 才能避免（用 `??` 回退也可以，但要注意它和 `!== undefined` 的区别：`??` 也会跳过 `null`）；
 - **摘要中多余的字段**：`UserSummary` 只有两个属性，但 TypeScript 允许把一个完整的 `User` 当作 `UserSummary` 返回（结构化类型，多余的属性不报错，b02）。如果摘要要发给前端或写进日志，多余的 `email` 就泄露了出去。用解构构造新对象，才真正只有这两个字段。
@@ -174,7 +182,8 @@ export type UserPatch = Partial<Pick<User, Editable>>;
 export type UserSummary = Pick<User, 'id' | 'name'>;
 
 export function createUser(input: NewUser, id: string, now: Date): User {
-  return { id, createdAt: now, ...input };
+  const { name, email, bio } = input;
+  return bio === undefined ? { id, name, email, createdAt: now } : { id, name, email, bio, createdAt: now };
 }
 
 export function applyPatch(user: User, patch: UserPatch): User {

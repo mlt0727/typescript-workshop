@@ -132,7 +132,7 @@ console.log(explicit);
 - `{ ...contact, ...patch }` 会把补丁中的 `null` 复制进联系人；
 - `email: form.email || undefined` 显式地写出了 `undefined`。
 
-这个区别在运行时是真实存在的：`'email' in contact`、`Object.keys(contact)`、`JSON.stringify(contact)`（它会省略值为 `undefined` 的属性，但 `in` 和 `Object.keys` 不会），都能区分“没有”和“值是 `undefined`”。开启这个选项之后，类型和运行时的行为对上了。
+这个区别在运行时是真实存在的：`'email' in contact`、`Object.hasOwn(contact, 'email')`、`Object.keys(contact)` 都能区分“没有”和“值是 `undefined`”，展开 `{ ...base, ...contact }` 时值为 `undefined` 的属性也会覆盖原来的值。（`JSON.stringify` 反而区分不了：它会省略值为 `undefined` 的属性。）开启这个选项之后，类型和运行时的行为对上了。
 
 补丁中用 `null` 表示“删除”，`undefined`（没有给出）表示“不变”：三种意思各有各的写法，不会混在一起（c06 的问题就来自这两种意思被混用）。
 :::

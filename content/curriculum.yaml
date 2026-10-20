@@ -72,17 +72,17 @@ stages:
     title: 进阶类型与类型设计
     summary: 类型运算的工程用途；区分“类型体操”和日常收益。部分内容可选学。
     lessons:
-      - { id: c01-keyof-typeof-indexed, title: keyof、typeof 与索引访问类型, status: draft, prerequisites: [b16-assertions-as-const-satisfies] }
-      - { id: c02-mapped-types, title: 映射类型与修饰符, status: draft, prerequisites: [c01-keyof-typeof-indexed] }
-      - { id: c03-conditional-infer, title: 条件类型与 infer, status: draft, prerequisites: [c02-mapped-types] }
-      - { id: c04-distributive-conditional, title: 分布式条件类型, status: draft, prerequisites: [c03-conditional-infer] }
-      - { id: c05-template-literal-types, title: 模板字面量类型的实际用途, status: draft, prerequisites: [c03-conditional-infer] }
-      - { id: c06-utility-types, title: Partial、Required、Pick、Omit、Record、Readonly, status: draft, prerequisites: [c02-mapped-types] }
-      - { id: c07-function-utility-types, title: ReturnType、Parameters 与 Awaited, status: draft, prerequisites: [c06-utility-types, e03-async-await] }
-      - { id: c08-generic-api-design, title: 泛型 API 设计, status: draft, prerequisites: [c07-function-utility-types] }
-      - { id: c09-boundary-modeling, title: 边界数据建模, status: draft, prerequisites: [c08-generic-api-design, e06-runtime-validation] }
-      - { id: c10-avoid-any, title: 避免 any 与不必要的双重断言, status: draft, prerequisites: [c09-boundary-modeling] }
-      - { id: c11-strict-options, title: strict、strictNullChecks 与 noUncheckedIndexedAccess, status: draft, prerequisites: [c10-avoid-any] }
+      - { id: c01-keyof-typeof-indexed, title: keyof、typeof 与索引访问类型, status: published, prerequisites: [b16-assertions-as-const-satisfies] }
+      - { id: c02-mapped-types, title: 映射类型与修饰符, status: published, prerequisites: [c01-keyof-typeof-indexed] }
+      - { id: c03-conditional-infer, title: 条件类型与 infer, status: published, prerequisites: [c02-mapped-types] }
+      - { id: c04-distributive-conditional, title: 分布式条件类型, status: published, prerequisites: [c03-conditional-infer] }
+      - { id: c05-template-literal-types, title: 模板字面量类型的实际用途, status: published, prerequisites: [c03-conditional-infer] }
+      - { id: c06-utility-types, title: Partial、Required、Pick、Omit、Record、Readonly, status: published, prerequisites: [c02-mapped-types, c04-distributive-conditional] }
+      - { id: c07-function-utility-types, title: ReturnType、Parameters 与 Awaited, status: published, prerequisites: [c06-utility-types, e03-async-await] }
+      - { id: c08-generic-api-design, title: 泛型 API 设计, status: published, prerequisites: [c07-function-utility-types] }
+      - { id: c09-boundary-modeling, title: 边界数据建模, status: published, prerequisites: [c08-generic-api-design, e06-runtime-validation] }
+      - { id: c10-avoid-any, title: 避免 any 与不必要的双重断言, status: published, prerequisites: [c09-boundary-modeling] }
+      - { id: c11-strict-options, title: strict、strictNullChecks 与 noUncheckedIndexedAccess, status: published, prerequisites: [c10-avoid-any] }
       - { id: c12-modules-dts, title: 模块与 .d.ts 基础, status: planned, prerequisites: [c11-strict-options, f03-tsconfig] }
 
   - id: D
@@ -104,7 +104,7 @@ stages:
     title: 工程化、测试与调试
     summary: 在本机搭建真实项目：npm、Vite、tsconfig、调试、测试、Git、构建与 CI。
     lessons:
-      - { id: f01-node-npm, title: Node.js、npm、package.json 与锁文件, status: planned, prerequisites: [a19-modules] }
+      - { id: f01-node-npm, title: Node.js、npm、package.json 与锁文件, status: draft, prerequisites: [a19-modules] }
       - { id: f02-vite-project, title: 用 Vite 创建 TypeScript 项目, status: planned, prerequisites: [f01-node-npm, d06-dom-create-update] }
       - { id: f03-tsconfig, title: tsconfig、ESM 与模块解析, status: planned, prerequisites: [f02-vite-project] }
       - { id: f04-devtools, title: DevTools、断点、source map 与网络面板, status: planned, prerequisites: [f02-vite-project] }

@@ -139,6 +139,51 @@ test.describe('纯 TS 模式', () => {
     expect(r3.tests.results.map((t) => t.status)).toEqual(['pass', 'fail', 'fail', 'fail']);
   });
 
+  test('学生写测试：先在正确的实现上通过，再检查能否发现每个错误的实现（行为测试与类型测试）', async ({ page }) => {
+    await open(page);
+    const support = {
+      'slug.ts': [
+        'export function slugify(text: string): string {',
+        '  return text.trim().toLowerCase().replace(/\\s+/g, "-");',
+        '}',
+        'export function first<T>(items: readonly T[]): T | undefined {',
+        '  return items[0];',
+        '}',
+      ].join('\n'),
+    };
+    const mutants = [
+      { name: 'no-trim', hint: '没有去掉首尾空白', files: { 'slug.ts': support['slug.ts'].replace('text.trim()', 'text') } },
+      { name: 'upper', hint: '没有转换成小写', files: { 'slug.ts': support['slug.ts'].replace('.toLowerCase()', '') } },
+      { name: 'any-first', hint: 'first 的返回值类型丢失了', files: { 'slug.ts': support['slug.ts'].replace('T | undefined {', 'unknown {') } },
+    ];
+    const spec = { ...baseSpec('ts', 'main.ts'), grading: 'tests' as const };
+    const header = 'import { describe, expect, test } from "vitest";\nimport { slugify } from "./slug";\n';
+    const typeTest = 'import { expectTypeOf } from "vitest";\nimport { first } from "./slug";\nexpectTypeOf(first([1, 2])).toEqualTypeOf<number | undefined>();\n';
+    const judgeWith = (runtime: string, types = typeTest) =>
+      judge(page, { ...spec, projectId: `mutants-${Math.random()}` }, { student: { 'slug.test.ts': header + runtime, 'slug.test-d.ts': types }, support, tests: {}, mutants });
+
+    // 测试本身在正确的实现上失败：不检查错误的实现
+    const wrongTest = await judgeWith('test("错的期望", () => { expect(slugify("A B")).toBe("A-B"); });');
+    expect(wrongTest.tests.ok).toBe(false);
+    expect(wrongTest.mutants).toBeUndefined();
+    expect(wrongTest.passed).toBe(false);
+
+    // 漏掉了一个错误的实现
+    const weak = await judgeWith('test("小写", () => { expect(slugify("A B")).toBe("a-b"); });');
+    expect(weak.tests.ok).toBe(true);
+    expect(weak.mutants?.map((m) => [m.name, m.caught, m.by])).toEqual([
+      ['no-trim', false, undefined],
+      ['upper', true, 'tests'],
+      ['any-first', true, 'types'],
+    ]);
+    expect(weak.passed).toBe(false);
+
+    // 发现了全部的错误实现
+    const strong = await judgeWith('describe("slugify", () => { test("小写与空白", () => { expect(slugify("  A  B ")).toBe("a-b"); }); });');
+    expect(strong.mutants?.every((m) => m.caught)).toBe(true);
+    expect(strong.passed).toBe(true);
+  });
+
   test('测试中的死循环在超时后被终止并报告', async ({ page }) => {
     await open(page);
     const r = await judge(page, { ...baseSpec('ts', 'f.ts'), timeoutMs: 1500 }, {

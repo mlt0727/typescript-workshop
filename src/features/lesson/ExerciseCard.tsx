@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Exercise, Lesson } from '../../content/types.ts';
 import { hashFiles } from '../../judge/hash.ts';
-import { judge, type JudgeResult } from '../../judge/judge.ts';
+import { judge, mutantInputs, type JudgeResult } from '../../judge/judge.ts';
 import { progressStore, useProgress } from '../../storage/store.ts';
 import { Icon } from '../../ui/Icon.tsx';
 import { AskAiButton } from '../ai/AskAiButton.tsx';
@@ -84,8 +84,9 @@ export function ExerciseCard({ lesson, exercise }: { lesson: Lesson; exercise: E
           timeoutMs: exercise.timeoutMs,
           perTestTimeoutMs: exercise.perTestTimeoutMs,
           fixtures: exercise.fixtures,
+          grading: exercise.grading,
         },
-        { student: { ...student }, support, tests },
+        { student: { ...student }, support, tests, mutants: mutantInputs(exercise.mutants) },
       );
       setResult(r);
       progressStore.recordSubmission(lesson.id, lesson.version, exercise.id, r);
@@ -116,6 +117,7 @@ export function ExerciseCard({ lesson, exercise }: { lesson: Lesson; exercise: E
         <span className="block-kind">{kindLabel}</span>
         <h3 id={`${exercise.id}-title`}>{exercise.title}</h3>
         <span className="badge">{MODE_LABEL[exercise.mode]}</span>
+        {exercise.grading === 'tests' && <span className="badge badge-info">写测试</span>}
       </header>
       <ul className="status-chips" aria-label="练习状态">
         <li className={progress?.ranAt ? 'on' : ''}>
@@ -178,9 +180,11 @@ export function ExerciseCard({ lesson, exercise }: { lesson: Lesson; exercise: E
         >
           <Icon name="reset" /> 重置
         </button>
-        <button type="button" className="btn btn-ghost" onClick={() => setShowTests((s) => !s)} aria-pressed={showTests}>
-          {showTests ? '隐藏验收测试' : '查看验收测试'}
-        </button>
+        {exercise.tests.length > 0 && (
+          <button type="button" className="btn btn-ghost" onClick={() => setShowTests((s) => !s)} aria-pressed={showTests}>
+            {showTests ? '隐藏验收测试' : '查看验收测试'}
+          </button>
+        )}
         <AskAiButton lesson={lesson} blockId={exercise.id} files={student} diagnostics={project.diagnostics} logs={runner.state.logs} exercise={exercise} />
       </div>
       <div className="playground-body">
@@ -190,7 +194,7 @@ export function ExerciseCard({ lesson, exercise }: { lesson: Lesson; exercise: E
         </div>
         <OutputPanel mode={exercise.mode} state={runner.state} stale={runner.state.ranFiles !== undefined && runner.state.ranFiles !== EMPTY && JSON.stringify(runner.state.ranFiles) !== JSON.stringify(runFiles)} previewRef={runner.previewRef} onJump={(l, c, f) => jumpTo(f, l, c)} />
       </div>
-      {result && <ResultPanel result={result} stale={resultStale} onJump={jumpTo} />}
+      {result && <ResultPanel result={result} stale={resultStale} grading={exercise.grading} onJump={jumpTo} />}
 
       <div className="hints">
         {exercise.hints.map((h) =>

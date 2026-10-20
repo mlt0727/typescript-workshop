@@ -191,6 +191,22 @@ export function countBy<T>(items: readonly T[], key: keyof T): Map<T[keyof T], n
 ```
 :::
 
+:::variant{kind=wrong name=string-key fails=types reason="键写成 string：不存在的键不报错，返回值都是 unknown"}
+```ts file=collection.ts
+/** 返回每一项的 key 属性组成的新数组 */
+export function pluck(items: readonly Record<string, unknown>[], key: string): unknown[] {
+  return items.map((item) => item[key]);
+}
+
+/** 统计 key 属性的每一个值出现了几次 */
+export function countBy(items: readonly Record<string, unknown>[], key: string): Map<unknown, number> {
+  const counts = new Map<unknown, number>();
+  for (const item of items) counts.set(item[key], (counts.get(item[key]) ?? 0) + 1);
+  return counts;
+}
+```
+:::
+
 :::variant{kind=wrong name=count-from-one fails=tests reason="第一次出现时记成了 0 次"}
 ```ts file=collection.ts
 export function pluck<T, K extends keyof T>(items: readonly T[], key: K): T[K][] {

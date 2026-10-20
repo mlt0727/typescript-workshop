@@ -5,7 +5,7 @@
  */
 import { getCompiler } from '../compiler/client.ts';
 import type { Exercise, Lesson, PlaygroundBlock, VerifyData } from '../content/types.ts';
-import { judge, pageInput, runEntries, type JudgeResult } from '../judge/judge.ts';
+import { judge, mutantInputs, pageInput, runEntries, type JudgeResult } from '../judge/judge.ts';
 import { startRun } from '../runner/runner.ts';
 
 export interface CheckResult {
@@ -104,6 +104,7 @@ function summarize(r: JudgeResult): string {
     `rules=${r.rules.ok ? 'ok' : `fail(${r.rules.violations.map((v) => `${v.rule}@${v.line}`).join(',')})`}`,
     `tests=${r.tests.required ? (r.tests.ok ? 'ok' : `fail(${r.tests.error ? `${r.tests.error.name}: ${r.tests.error.message}` : r.tests.results.filter((t) => t.status !== 'pass').map(describeFailure).join(',')})`) : 'n/a'}`,
   ];
+  if (r.mutants) parts.push(`mutants=${r.mutants.map((m) => `${m.name}:${m.caught ? `caught(${m.by})` : 'missed'}`).join(',')}`);
   if (r.internalError) parts.push(`internal=${r.internalError}`);
   return parts.join(' ');
 }
@@ -125,8 +126,9 @@ async function verifyExercise(lesson: Lesson, ex: Exercise, variants: VerifyData
         timeoutMs: ex.timeoutMs,
         perTestTimeoutMs: ex.perTestTimeoutMs,
         fixtures: ex.fixtures,
+        grading: ex.grading,
       },
-      { student: v.files, support, tests },
+      { student: v.files, support, tests, mutants: mutantInputs(ex.mutants) },
     );
     let ok: boolean;
     let why: string;
@@ -140,9 +142,13 @@ async function verifyExercise(lesson: Lesson, ex: Exercise, variants: VerifyData
       ok = !r.passed;
       why = ok ? '起始代码未通过（符合预期）' : '起始代码竟然通过了验收';
     } else {
-      const stageFailed = v.fails === 'types' ? !r.types.ok : v.fails === 'rules' ? !r.rules.ok : !r.tests.ok;
+      // fails=mutants：这组测试在正确的实现上通过，但漏掉的错误实现必须正好是声明的那几个
+      const missed = (r.mutants ?? []).filter((m) => !m.caught).map((m) => m.name).toSorted();
+      const missesMatch = JSON.stringify(missed) === JSON.stringify([...(v.misses ?? [])].toSorted());
+      const stageFailed =
+        v.fails === 'types' ? !r.types.ok : v.fails === 'rules' ? !r.rules.ok : v.fails === 'mutants' ? r.tests.ok && r.mutants !== undefined && missesMatch : !r.tests.ok;
       // 声明“测试中失败”的错误解必须能通过类型与规则检查：否则它是因为一个无关的错误被拒绝的，测的不是它想测的东西
-      const incidental = v.fails === 'tests' && (!r.types.ok || !r.rules.ok);
+      const incidental = (v.fails === 'tests' || v.fails === 'mutants') && (!r.types.ok || !r.rules.ok);
       ok = !r.passed && stageFailed && !incidental;
       why = ok
         ? `被拒绝（${v.fails}）`
@@ -150,7 +156,9 @@ async function verifyExercise(lesson: Lesson, ex: Exercise, variants: VerifyData
           ? '错误解竟然通过了'
           : incidental
             ? '错误解声明在测试中失败，但类型或规则检查也没有通过（它应该只因为测试而失败）'
-            : `被拒绝，但不是在声明的 ${v.fails} 阶段`;
+            : v.fails === 'mutants'
+              ? `漏掉的错误实现与声明的不一致：声明 ${(v.misses ?? []).join(',')}，实际 ${missed.join(',') || '（全部发现了）'}`
+              : `被拒绝，但不是在声明的 ${v.fails} 阶段`;
     }
     out.push({ lessonId: lesson.id, target: `exercise:${ex.id}:${v.kind}:${v.name}`, ok, detail: `${why}；${summarize(r)}` });
   }

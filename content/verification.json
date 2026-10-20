@@ -4011,8 +4011,8 @@
       ]
     },
     "c01-keyof-typeof-indexed": {
-      "verifiedAt": "2026-10-20T19:32:00.681Z",
-      "sourceHash": "f538cfb688860773",
+      "verifiedAt": "2026-10-20T19:58:58.993Z",
+      "sourceHash": "c94d3b65688e89ce",
       "ok": true,
       "checks": [
         {
@@ -4054,6 +4054,11 @@
           "target": "exercise:pluck:wrong:key-without-generic",
           "ok": true,
           "detail": "被拒绝（types）；types=fail(TS2344@collection.test-d.ts:9 Type 'number[]' does not satisfy the constraint '(\"Expected: number, Actual: string\" | \"Expected: number, Actual: ...\")[]'.；TS2344@collection.test-d.ts:10 Type 'string[][]' does not satisfy the constraint '(\"Expected: ..., Actual: string\" | \"Expected: ..., Actual: numbe) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pluck:wrong:string-key",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@collection.test-d.ts:9 Type 'number[]' does not satisfy the constraint '\"Expected: number, Actual: unknown\"[]'.；TS2344@collection.test-d.ts:10 Type 'string[][]' does not satisfy the constraint '\"Expected: ..., Actual: unknown\"[]'.；TS2344@collection.test-d.ts:11 Type 'Map<string, number>' does) rules=ok tests=ok"
         },
         {
           "target": "exercise:pluck:wrong:count-from-one",
@@ -4103,8 +4108,8 @@
       ]
     },
     "c02-mapped-types": {
-      "verifiedAt": "2026-10-20T19:32:01.179Z",
-      "sourceHash": "3f358533c2c82c01",
+      "verifiedAt": "2026-10-20T19:58:59.474Z",
+      "sourceHash": "3e331f9035244218",
       "ok": true,
       "checks": [
         {
@@ -4165,7 +4170,7 @@
         {
           "target": "exercise:event-bus:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@bus.test-d.ts:6 Type '{ added?: Handler<{ id: string; title: string; }>[] | undefined; removed?: Handler<{ id: string; }>[] | undefined; cleared?: Handler<undefined>[] | undefined; }' does not satisfy the constraint '{ [x: string]: { [x: number]: \"Expected: never, Actual: function\" | undefine) rules=ok tests=fail(createBus › 按注册顺序调用这一种事件的处理函数，返回调用的个数 ⟶ expect(…).toBe(2),createBus › 取消函数只移除这一次注册，重复调用没有额外效果 ⟶ expect(…).toBe(1),createBus › 处理函数中新注册的函数从下一次 emit 开始生效 ⟶ expect(…).toBe(1),createBus › listenerCount：没有注册过的事件是 0 ⟶ expect(…).toBe(1))"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@bus.test-d.ts:6 Type '{ added?: Handler<{ id: string; title: string; }>[] | undefined; removed?: Handler<{ id: string; }>[] | undefined; cleared?: Handler<undefined>[] | undefined; }' does not satisfy the constraint '{ [x: string]: { [x: number]: \"Expected: never, Actual: function\" | undefine) rules=ok tests=fail(createBus › 按注册顺序调用这一种事件的处理函数，返回调用的个数 ⟶ expect(…).toBe(2),createBus › 取消函数只移除这一次注册，重复调用没有额外效果 ⟶ expect(…).toBe(1),createBus › 同一个函数注册了两次：取消的是这一次注册，其余的顺序不变 ⟶ expect(…).toEqual([ 'h', 'g' ]),createBus › 处理函数中新注册的函数从下一次 emit 开始生效 ⟶ expect(…).toBe(1),createBus › listenerCount：没有注册过的事件是 0 ⟶ expect(…).toBe(1))"
         },
         {
           "target": "exercise:event-bus:solution:solution",
@@ -4180,23 +4185,28 @@
         {
           "target": "exercise:event-bus:wrong:unknown-payload",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2344@bus.test-d.ts:6 Type '{ added?: Handler<{ id: string; title: string; }>[] | undefined; removed?: Handler<{ id: string; }>[] | undefined; cleared?: Handler<undefined>[] | undefined; }' does not satisfy the constraint '{ added?: \"Expected: undefined, Actual: never\" | \"Expected: ..., Actual: nev) rules=ok tests=fail(createBus › 按注册顺序调用这一种事件的处理函数，返回调用的个数 ⟶ expect(…).toEqual([ 'a1:t1', 'a2:t1' ]),createBus › 取消函数只移除这一次注册，重复调用没有额外效果 ⟶ expect(…).toBe(1),createBus › 处理函数中新注册的函数从下一次 emit 开始生效 ⟶ expect(…).toEqual([ 'first' ]),createBus › listenerCount：没有注册过的事件是 0 ⟶ expect(…).toBe(0))"
+          "detail": "被拒绝（types）；types=fail(TS2344@bus.test-d.ts:6 Type '{ added?: Handler<{ id: string; title: string; }>[] | undefined; removed?: Handler<{ id: string; }>[] | undefined; cleared?: Handler<undefined>[] | undefined; }' does not satisfy the constraint '{ added?: \"Expected: undefined, Actual: never\" | \"Expected: ..., Actual: nev) rules=ok tests=fail(createBus › 按注册顺序调用这一种事件的处理函数，返回调用的个数 ⟶ expect(…).toEqual([ 'a1:t1', 'a2:t1' ]),createBus › 取消函数只移除这一次注册，重复调用没有额外效果 ⟶ expect(…).toBe(1),createBus › 同一个函数注册了两次：取消的是这一次注册，其余的顺序不变 ⟶ expect(…).toEqual([ 'h', 'g' ]),createBus › 处理函数中新注册的函数从下一次 emit 开始生效 ⟶ expect(…).toEqual([ 'first' ]),createBus › listenerCount：没有注册过的事件是 0 ⟶ expect(…).toBe(0))"
         },
         {
           "target": "exercise:event-bus:wrong:filter-removes-all",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createBus › 取消函数只移除这一次注册，重复调用没有额外效果 ⟶ expect(…).toBe(1))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createBus › 取消函数只移除这一次注册，重复调用没有额外效果 ⟶ expect(…).toBe(1),createBus › 同一个函数注册了两次：取消的是这一次注册，其余的顺序不变 ⟶ expect(…).toEqual([ 'h', 'g' ]))"
         },
         {
           "target": "exercise:event-bus:wrong:live-array",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createBus › 处理函数中新注册的函数从下一次 emit 开始生效 ⟶ expect(…).toBe(1))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createBus › 同一个函数注册了两次：取消的是这一次注册，其余的顺序不变 ⟶ expect(…).toEqual([ 'h', 'g' ]),createBus › 处理函数中新注册的函数从下一次 emit 开始生效 ⟶ expect(…).toBe(1))"
+        },
+        {
+          "target": "exercise:event-bus:wrong:remove-first-match",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createBus › 同一个函数注册了两次：取消的是这一次注册，其余的顺序不变 ⟶ expect(…).toEqual([ 'h', 'g' ]))"
         }
       ]
     },
     "c03-conditional-infer": {
-      "verifiedAt": "2026-10-20T19:32:01.660Z",
-      "sourceHash": "cc4447d1a70823b8",
+      "verifiedAt": "2026-10-20T19:59:00.193Z",
+      "sourceHash": "d6fbae4eb6cd79cf",
       "ok": true,
       "checks": [
         {
@@ -4292,8 +4302,8 @@
       ]
     },
     "c04-distributive-conditional": {
-      "verifiedAt": "2026-10-20T19:32:02.292Z",
-      "sourceHash": "f0e03799934db753",
+      "verifiedAt": "2026-10-20T19:59:01.126Z",
+      "sourceHash": "7fddb18d8c0e99d8",
       "ok": true,
       "checks": [
         {
@@ -4327,7 +4337,7 @@
           "detail": "通过；types=ok rules=ok tests=n/a"
         },
         {
-          "target": "exercise:union-tools:alt:without-conditionals",
+          "target": "exercise:union-tools:alt:other-forms",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=n/a"
         },
@@ -4384,8 +4394,8 @@
       ]
     },
     "c05-template-literal-types": {
-      "verifiedAt": "2026-10-20T19:32:03.103Z",
-      "sourceHash": "d1be75f2d057db93",
+      "verifiedAt": "2026-10-20T19:59:01.935Z",
+      "sourceHash": "1052f6b29027f6a9",
       "ok": true,
       "checks": [
         {
@@ -4431,12 +4441,12 @@
         {
           "target": "exercise:string-types:wrong:keeps-functions",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2344@strings.test-d.ts:12 Type '0 | \"name\" | \"age\"' does not satisfy the constraint '\"Expected: literal number: 0, Actual: literal string: save\" | \"Expected: literal string: name, Actual: literal string: save\" | \"Expected: literal string: age, Actual: literal string: save\"'.) rules=ok tests=ok"
+          "detail": "被拒绝（types）；types=fail(TS2344@strings.test-d.ts:13 Type '0 | \"name\" | \"age\"' does not satisfy the constraint '\"Expected: literal number: 0, Actual: literal string: save\" | \"Expected: literal string: name, Actual: literal string: save\" | \"Expected: literal string: age, Actual: literal string: save\"'.) rules=ok tests=ok"
         },
         {
           "target": "exercise:string-types:wrong:setter-any-value",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2344@strings.test-d.ts:8 Type '{ setName: (value: string) => void; setAge: (value: number) => void; }' does not satisfy the constraint '{ setName: \"Expected: function, Actual: never\"; setAge: \"Expected: function, Actual: never\"; }'.) rules=ok tests=ok"
+          "detail": "被拒绝（types）；types=fail(TS2344@strings.test-d.ts:9 Type '{ setName: (value: string) => void; setAge: (value: number) => void; }' does not satisfy the constraint '{ setName: \"Expected: function, Actual: never\"; setAge: \"Expected: function, Actual: never\"; }'.) rules=ok tests=ok"
         },
         {
           "target": "exercise:typed-routes:starter:starter",
@@ -4476,8 +4486,8 @@
       ]
     },
     "c06-utility-types": {
-      "verifiedAt": "2026-10-20T19:32:03.868Z",
-      "sourceHash": "9dae4efe0ac6d61e",
+      "verifiedAt": "2026-10-20T19:59:02.754Z",
+      "sourceHash": "d3b81e1964ee6f29",
       "ok": true,
       "checks": [
         {
@@ -4493,7 +4503,7 @@
         {
           "target": "exercise:user-types:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@main.ts:3 Argument of type '{ name: string; email: string; }' is not assignable to parameter of type 'User'.；TS2322@main.ts:4 Type 'undefined' is not assignable to type 'string'.；TS2345@users.test.ts:9 Argument of type '{ name: string; email: string; }' is not assignable to parameter of type ) rules=ok tests=fail(createUser › 加上 id 与 createdAt ⟶ expect(…).toEqual({,applyPatch › 值为 undefined 的字段不修改 ⟶ expect(…).toBe('Ada'),summarize › 每一项只有 id 和 name ⟶ expect(…).toEqual([ { id: 'u1', name: 'Ada' }, { id: 'u2', name: 'Lin' } ]))"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@main.ts:3 Argument of type '{ name: string; email: string; }' is not assignable to parameter of type 'User'.；TS2322@main.ts:4 Type 'undefined' is not assignable to type 'string'.；TS2345@users.test.ts:9 Argument of type '{ name: string; email: string; }' is not assignable to parameter of type ) rules=ok tests=fail(createUser › 加上 id 与 createdAt ⟶ expect(…).toEqual({,createUser › 传入的数据中多出的 id、createdAt 不会覆盖新的值 ⟶ expect(…).toMatchObject({ id: 'u2', createdAt: 2026-10-21T00:00:00.000Z }),applyPatch › 值为 undefined 的字段不修改 ⟶ expect(…).toBe('Ada'),summarize › 每一项只有 id 和 name ⟶ expect(…).toEqual([ { id: 'u1', name: 'Ada' }, { id: 'u2', name: 'Lin' } ]))"
         },
         {
           "target": "exercise:user-types:solution:solution",
@@ -4563,8 +4573,8 @@
       ]
     },
     "c07-function-utility-types": {
-      "verifiedAt": "2026-10-20T19:32:05.182Z",
-      "sourceHash": "cb88a279738f8746",
+      "verifiedAt": "2026-10-20T19:59:04.117Z",
+      "sourceHash": "33baa1e8834acf80",
       "ok": true,
       "checks": [
         {
@@ -4625,7 +4635,7 @@
         {
           "target": "exercise:async-wrappers:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@main.ts:10 Argument of type '(id: string) => Promise<{ id: string; name: string; }>' is not assignable to parameter of type '(...args: unknown[]) => Promise<unknown>'.；TS2322@main.ts:10 Type 'unknown' is not assignable to type 'string'.；TS2345@wrappers.test.ts:18 Argument of type '(id: string) rules=ok tests=fail(withRetry › 失败后重试，直到成功 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败,withRetry › 达到次数上限时，以最后一次的错误拒绝 ⟶ expect(…).toThrow('第 3 次失败'),withRetry › shouldRetry 返回 false 时立即拒绝 ⟶ expect(…).toHaveLength(1),withRetry › 重试之前等待 delay，参数是已经失败的次数 ⟶ Error: 第 1 次失败,memoizeAsync › 并发的同样调用共用一个 Promise，只调用一次 ⟶ expect(…).toBe(Promise { <unknown> }),memoizeAsync › 不同的键分别调用 ⟶ expect(…).toEqual([ 'a', 'b' ]),memoizeAsync › 失败的结果不缓存，下一次重新调用 ⟶ expect(…).toEqual([ 'a', 'a' ]))"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@main.ts:10 Argument of type '(id: string) => Promise<{ id: string; name: string; }>' is not assignable to parameter of type '(...args: unknown[]) => Promise<unknown>'.；TS2322@main.ts:10 Type 'unknown' is not assignable to type 'string'.；TS2345@wrappers.test.ts:18 Argument of type '(id: string) rules=ok tests=fail(withRetry › 失败后重试，直到成功 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败,withRetry › 达到次数上限时，以最后一次的错误拒绝 ⟶ expect(…).toThrow('第 3 次失败'),withRetry › shouldRetry 返回 false 时立即拒绝 ⟶ expect(…).toHaveLength(1),withRetry › 重试之前等待 delay，参数是已经失败的次数 ⟶ Error: 第 1 次失败,withRetry › delay 完成之前不会重试 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败,memoizeAsync › 并发的同样调用共用一个 Promise，只调用一次 ⟶ expect(…).toBe(Promise { <unknown> }),memoizeAsync › 不同的键分别调用 ⟶ expect(…).toEqual([ 'a', 'b' ]),memoizeAsync › 失败的结果不缓存，下一次重新调用 ⟶ expect(…).toEqual([ 'a', 'a' ]))"
         },
         {
           "target": "exercise:async-wrappers:solution:solution",
@@ -4650,7 +4660,12 @@
         {
           "target": "exercise:async-wrappers:wrong:return-without-await",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRetry › 失败后重试，直到成功 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败,withRetry › 达到次数上限时，以最后一次的错误拒绝 ⟶ expect(…).toThrow('第 3 次失败'),withRetry › shouldRetry 返回 false 时立即拒绝 ⟶ expect(…).toHaveLength(1),withRetry › 重试之前等待 delay，参数是已经失败的次数 ⟶ Error: 第 1 次失败)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRetry › 失败后重试，直到成功 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败,withRetry › 达到次数上限时，以最后一次的错误拒绝 ⟶ expect(…).toThrow('第 3 次失败'),withRetry › shouldRetry 返回 false 时立即拒绝 ⟶ expect(…).toHaveLength(1),withRetry › 重试之前等待 delay，参数是已经失败的次数 ⟶ Error: 第 1 次失败,withRetry › delay 完成之前不会重试 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败)"
+        },
+        {
+          "target": "exercise:async-wrappers:wrong:no-await-delay",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRetry › delay 完成之前不会重试 ⟶ expect(…).toHaveLength(1))"
         },
         {
           "target": "exercise:async-wrappers:wrong:any-wrapper",
@@ -4660,8 +4675,8 @@
       ]
     },
     "c08-generic-api-design": {
-      "verifiedAt": "2026-10-20T19:32:06.111Z",
-      "sourceHash": "0862605e82171dcf",
+      "verifiedAt": "2026-10-20T19:59:05.086Z",
+      "sourceHash": "1a7a384ba34a441e",
       "ok": true,
       "checks": [
         {
@@ -4677,7 +4692,7 @@
         {
           "target": "exercise:fix-signatures:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2554@main.ts:6 Expected 1 arguments, but got 2.；TS2554@api.test.ts:17 Expected 1 arguments, but got 2.；TS2554@api.test.ts:18 Expected 1 arguments, but got 2.；TS2554@api.test.ts:19 Expected 1 arguments, but got 2.；TS2554@api.test-d.ts:4 Expected 1 arguments, but got 0.；TS2554@api.test-d.ts:7 Expect) rules=ok tests=fail(parseJson › 守卫通过时返回值，否则返回 null ⟶ expect(…).toBeNull())"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2554@main.ts:7 Expected 1 arguments, but got 2.；TS2554@api.test.ts:17 Expected 1 arguments, but got 2.；TS2554@api.test.ts:18 Expected 1 arguments, but got 2.；TS2554@api.test.ts:19 Expected 1 arguments, but got 2.；TS2554@api.test-d.ts:4 Expected 1 arguments, but got 0.；TS2554@api.test-d.ts:7 Expect) rules=ok tests=fail(parseJson › 守卫通过时返回值，否则返回 null ⟶ expect(…).toBeNull())"
         },
         {
           "target": "exercise:fix-signatures:solution:solution",
@@ -4692,7 +4707,7 @@
         {
           "target": "exercise:fix-signatures:wrong:return-only-generic",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2554@main.ts:6 Expected 1 arguments, but got 2.；TS2554@api.test.ts:17 Expected 1 arguments, but got 2.；TS2554@api.test.ts:18 Expected 1 arguments, but got 2.；TS2554@api.test.ts:19 Expected 1 arguments, but got 2.；TS2554@api.test-d.ts:7 Expected 1 arguments, but got 2.；TS2344@api.test-d.ts:7 Type ') rules=ok tests=fail(parseJson › 守卫通过时返回值，否则返回 null ⟶ expect(…).toBeNull())"
+          "detail": "被拒绝（types）；types=fail(TS2554@main.ts:7 Expected 1 arguments, but got 2.；TS2554@api.test.ts:17 Expected 1 arguments, but got 2.；TS2554@api.test.ts:18 Expected 1 arguments, but got 2.；TS2554@api.test.ts:19 Expected 1 arguments, but got 2.；TS2554@api.test-d.ts:7 Expected 1 arguments, but got 2.；TS2344@api.test-d.ts:7 Type ') rules=ok tests=fail(parseJson › 守卫通过时返回值，否则返回 null ⟶ expect(…).toBeNull())"
         },
         {
           "target": "exercise:fix-signatures:wrong:no-const",
@@ -4747,8 +4762,8 @@
       ]
     },
     "c09-boundary-modeling": {
-      "verifiedAt": "2026-10-20T19:32:07.001Z",
-      "sourceHash": "aaf9711bdcb2db90",
+      "verifiedAt": "2026-10-20T19:59:06.004Z",
+      "sourceHash": "9a1e12943d295d36",
       "ok": true,
       "checks": [
         {
@@ -4834,8 +4849,8 @@
       ]
     },
     "c10-avoid-any": {
-      "verifiedAt": "2026-10-20T19:32:07.786Z",
-      "sourceHash": "60a7b8e9893e946d",
+      "verifiedAt": "2026-10-20T19:59:06.816Z",
+      "sourceHash": "0a1ae841429a8b8c",
       "ok": true,
       "checks": [
         {
@@ -4921,8 +4936,8 @@
       ]
     },
     "c11-strict-options": {
-      "verifiedAt": "2026-10-20T19:32:08.581Z",
-      "sourceHash": "a5cdd20eb1d8dff6",
+      "verifiedAt": "2026-10-20T19:59:07.643Z",
+      "sourceHash": "a5898858c07bb390",
       "ok": true,
       "checks": [
         {
@@ -7388,6 +7403,108 @@
           "target": "exercise:markdown-lite:wrong:split-on-blank-line",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(段落与换行 › 多个空行、只有空白的行、开头结尾的空行，以及 \\r\\n ⟶ expect(…).toBe('<p>  a<br>b </p><p>c</p>'))"
+        }
+      ]
+    },
+    "f01-node-npm": {
+      "verifiedAt": "2026-10-20T19:57:35.323Z",
+      "sourceHash": "3b078fc9f966872d",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:ranges:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:ranges:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] ^1.2.3 → >=1.2.3 <2.0.0 | [log] ^0.2.3 → >=0.2.3 <0.3.0 | [log] ^0.0.3 → >=0.0.3 <0.0.4"
+        },
+        {
+          "target": "exercise:compare-versions:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseVersion › 三个数字 ⟶ expect(…).toEqual({ major: 1, minor: 2, patch: 3, prerelease: [] }),parseVersion › 预发布标签：纯数字的标识符是 number ⟶ expect(…).toEqual({ major: 1, minor: 0, patch: 0, prerelease: [ 'alpha', 1 ] }),parseVersion › 构建信息被丢弃 ⟶ expect(…).toEqual({ major: 1, minor: 0, patch: 0, prerelease: [ 'alpha', 1 ] }),compareVersions › 按数值比较，不是按字符串 ⟶ Error: 没有解析出 1.2.3,compareVersions › 构建信息不影响先后 ⟶ Error: 没有解析出 1.2.3+build.5,compareVersions › 预发布版本排在正式版本前面 ⟶ Error: 没有解析出 1.0.0-alpha,compareVersions › 预发布标识符：数字按数值，字符串按编码，数字比字符串小，多的更大 ⟶ Error: 没有解析出 1.0.0-2,compareVersions › 可以直接用来排序（语义化版本规范中的例子） ⟶ Error: 没有解析出 1.0.0-beta.11)"
+        },
+        {
+          "target": "exercise:compare-versions:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:compare-versions:alt:regex-and-loop",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:compare-versions:wrong:string-compare",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareVersions › 按数值比较，不是按字符串 ⟶ expect(…).toBe(-1))"
+        },
+        {
+          "target": "exercise:compare-versions:wrong:ignore-prerelease",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareVersions › 预发布版本排在正式版本前面 ⟶ expect(…).toBe(-1),compareVersions › 预发布标识符：数字按数值，字符串按编码，数字比字符串小，多的更大 ⟶ expect(…).toBe(-1),compareVersions › 可以直接用来排序（语义化版本规范中的例子） ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:compare-versions:wrong:numeric-ids-as-strings",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareVersions › 预发布标识符：数字按数值，字符串按编码，数字比字符串小，多的更大 ⟶ expect(…).toBe(-1),compareVersions › 可以直接用来排序（语义化版本规范中的例子） ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:compare-versions:wrong:leading-zeros",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseVersion › 格式不正确时返回 null ⟶ 01.2.3)"
+        },
+        {
+          "target": "exercise:compare-versions:wrong:locale-compare",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareVersions › 预发布标识符：数字按数值，字符串按编码，数字比字符串小，多的更大 ⟶ expect(…).toBe(-1))"
+        },
+        {
+          "target": "exercise:satisfies:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(单个条件 › 相等与比较 ⟶ 1.2.3 应该满足 1.2.3,单个条件 › ^：不改变最左边非零的那一位 ⟶ 1.2.3 应该满足 ^1.2.3,单个条件 › ~：只允许修订号变化 ⟶ 1.2.9 应该满足 ~1.2.3,单个条件 › * 与空的范围 ⟶ 9.9.9 应该满足 *,组合 › 空白分隔：同时满足 ⟶ 1.4.9 应该满足 >=1.2.0 <1.5.0,组合 › ||：满足任意一组 ⟶ 1.9.0 应该满足 ^1.0.0 || ^3.0.0,预发布版本 › 条件写出了同一个 主.次.修订 的预发布版本时 ⟶ 1.2.3-beta.2 应该满足 ^1.2.3-beta.1,预发布版本 › 规则按组检查：满足的那一组自己要写出预发布版本 ⟶ 1.2.3-beta.5 应该满足 >=1.0.0 || ^1.2.3-beta.1,无效的输入 › 无效的版本 ⟶ 1.2,无效的输入 › 无效的范围：整个范围都要检查 ⟶ ^1.2)"
+        },
+        {
+          "target": "exercise:satisfies:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:satisfies:alt:expand-to-comparators",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:satisfies:wrong:caret-ignores-zero",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(单个条件 › ^：不改变最左边非零的那一位 ⟶ 0.3.0 不应该满足 ^0.2.3,单个条件 › ~：只允许修订号变化 ⟶ 0.0.9 不应该满足 ^0.0.3,预发布版本 › 条件写出了同一个 主.次.修订 的预发布版本时 ⟶ 0.3.0 不应该满足 ^0.2.3-beta.1)"
+        },
+        {
+          "target": "exercise:satisfies:wrong:tilde-as-caret",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(单个条件 › ~：只允许修订号变化 ⟶ 1.3.0 不应该满足 ~1.2.3,预发布版本 › 条件写出了同一个 主.次.修订 的预发布版本时 ⟶ 1.3.0 不应该满足 ~1.2.3-beta.1)"
+        },
+        {
+          "target": "exercise:satisfies:wrong:no-prerelease-rule",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(预发布版本 › 普通的范围不包含预发布版本 ⟶ 1.2.3-beta.1 不应该满足 ^1.2.0,预发布版本 › 条件写出了同一个 主.次.修订 的预发布版本时 ⟶ 1.2.4-beta.1 不应该满足 ^1.2.3-beta.1,预发布版本 › 规则按组检查：满足的那一组自己要写出预发布版本 ⟶ 1.2.3-beta.5 不应该满足 >=1.2.3-beta.1 <1.2.3-beta.2 || >=1.0.0)"
+        },
+        {
+          "target": "exercise:satisfies:wrong:prerelease-rule-whole-range",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(预发布版本 › 规则按组检查：满足的那一组自己要写出预发布版本 ⟶ 1.2.3-beta.5 不应该满足 >=1.2.3-beta.1 <1.2.3-beta.2 || >=1.0.0)"
+        },
+        {
+          "target": "exercise:satisfies:wrong:lazy-parse",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(无效的输入 › 无效的范围：整个范围都要检查 ⟶ ^1.0.0 ||)"
+        },
+        {
+          "target": "exercise:satisfies:wrong:or-as-and",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(组合 › ||：满足任意一组 ⟶ 1.9.0 应该满足 ^1.0.0 || ^3.0.0,预发布版本 › 规则按组检查：满足的那一组自己要写出预发布版本 ⟶ 1.2.3-beta.5 应该满足 >=1.0.0 || ^1.2.3-beta.1)"
         }
       ]
     },

@@ -26,9 +26,13 @@ function Section(props: { ok: boolean; title: string; skipped?: boolean; childre
 export function ResultPanel(props: {
   result: JudgeResult;
   stale: boolean;
+  /** tests：学生写测试的练习 */
+  grading?: 'implementation' | 'tests';
   onJump(file: string, line: number, column: number): void;
 }) {
   const { result, stale, onJump } = props;
+  const writingTests = props.grading === 'tests';
+  const caught = result.mutants?.filter((m) => m.caught).length ?? 0;
   const [showLogs, setShowLogs] = useState(false);
   const failedTests = result.tests.results.filter((t) => t.status === 'fail');
   return (
@@ -98,7 +102,7 @@ export function ResultPanel(props: {
         )}
       </Section>
 
-      <Section ok={result.tests.ok} skipped={!result.tests.required} title="行为测试">
+      <Section ok={result.tests.ok} skipped={!result.tests.required} title={writingTests ? '你的测试（针对正确的实现）' : '行为测试'}>
         {result.tests.required && (
           <>
             {result.tests.error && (
@@ -164,6 +168,33 @@ export function ResultPanel(props: {
           </>
         )}
       </Section>
+
+      {writingTests && !result.mutants && !result.passed && !result.internalError && (
+        <div className="notice notice-info">
+          <Icon name="info" /> 你的测试要先在正确的实现上通过类型检查并全部通过，才会继续检查它们能否发现错误的实现。
+        </div>
+      )}
+      {result.mutants && (
+        <Section ok={caught === result.mutants.length} title={`发现错误的实现（${caught} / ${result.mutants.length}）`}>
+          <p>下面每一个都是故意写错的实现。用它替换正确的实现之后，你的测试中至少要有一个失败（或者类型测试报错），才算发现了它。</p>
+          <ul className="test-list">
+            {result.mutants.map((m) => (
+              <li key={m.name} className={`test test-${m.caught ? 'pass' : 'fail'}`}>
+                <Icon name={m.caught ? 'check' : 'cross'} />
+                <span className="sr-only">{m.caught ? '已发现' : '没有发现'}：</span>
+                <span className="test-name">
+                  {m.caught ? (m.by === 'types' ? '已发现（类型测试报错）' : '已发现（测试失败）') : '没有发现'}：{m.hint}
+                </span>
+                {m.caught && m.detail && (
+                  <div className="test-error">
+                    <pre>{m.detail}</pre>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
     </div>
   );
 }

@@ -13,7 +13,7 @@ title: 由动作表生成的待办 reducer
    - 没有任何变化时（找不到 `id`、没有已完成的项）返回**原来的** `state`；不能修改传入的对象；
 3. **`reduce(state, action)`**：用 `reducers` 中对应的函数处理一个动作。不能使用类型断言；
 4. **`actionsOfType(log, type)`**：从动作记录中挑出某一种动作，返回值的类型精确到这一种（例如 `type` 是 `'rename'` 时，元素的类型就是 `rename` 动作）；
-5. **`PayloadType`**：所有**携带数据**的动作名组成的联合（`clearDone` 不在其中）。要从 `ActionMap` 推导，不能手写。
+5. **`PayloadType`**：所有**携带数据**的动作名组成的联合（`clearDone` 不在其中）。要从 `ActionMap` 推导，不能手写（测试只能检查结果，手写的 `'add' | 'toggle' | 'rename'` 也能通过；推导的意义在于以后 `ActionMap` 变了，它会跟着变）。
 
 :::files{role=starter}
 ```ts file=todos.ts

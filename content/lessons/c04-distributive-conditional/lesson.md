@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: '上一课的 DataOf 作用在 { ok: true; … } | { ok: false; … } 这样的联合类型上，结果“自动”去掉了失败的那一半。这不是巧合，而是条件类型的一条特殊规则：当被检查的是一个裸的类型参数、而传入的是联合类型时，条件类型会对联合的每个成员分别计算，再把结果合起来。内置的 Exclude、Extract、NonNullable 都建立在这条规则上。这一课弄清分布在什么时候发生、怎样关掉它、为什么 never 会“消失”，并用它从事件或动作的联合中挑出需要的成员，写出不需要类型断言的分发函数。'
 objectives:
   - 说明分布式条件类型在什么条件下发生，并预测它作用在联合类型上的结果
@@ -84,7 +84,7 @@ type EventType = AppEvent['type']; // 'click' | 'key' | 'scroll'
 
 `AppEvent['type']` 在联合上取属性，得到每个成员的 `type` 组成的联合。结合映射类型，可以为每种事件生成对应的处理函数类型：`{ [K in AppEvent['type']]: (event: Extract<AppEvent, { type: K }>) => void }`。
 
-`NonNullable<T>` 去掉 `null` 和 `undefined`。现在的标准库把它定义成 `T & {}`（`{}` 表示“除了 `null`、`undefined` 以外的任何值”），效果和分布式的 `T extends null | undefined ? never : T` 一样。
+`NonNullable<T>` 去掉 `null` 和 `undefined`。现在的标准库把它定义成 `T & {}`（`{}` 表示“除了 `null`、`undefined` 以外的任何值”），对具体的联合类型，效果和分布式的 `T extends null | undefined ? never : T` 一样（`NonNullable<string | null>` 都是 `string`）；两者在少数情况下不同，例如 `NonNullable<unknown>` 是 `{}`，而分布式的版本得到 `unknown`。
 
 ## 分发函数：先有表，再有联合
 

@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 40
-review: ai-draft
+review: self-reviewed
 problem: 一个 User 类型往往会派生出好几个“兄弟”：创建时不需要 id 和 createdAt，修改时每个字段都可以省略，列表中只显示 id 和 name。TypeScript 内置的工具类型 Partial、Required、Readonly、Pick、Omit、Record 正是为这些场合准备的，它们都是 c02 那样的映射类型。这一课学会挑选合适的工具，同时认识它们的几个陷阱：Omit 不检查键名，Partial 的补丁可以把字段“改成” undefined 而类型却毫无察觉，Omit 作用在联合类型上会把各个成员搅在一起。
 objectives:
   - 用 Partial、Required、Readonly、Pick、Omit、Record 从一个类型派生出创建、修改、展示等场合需要的类型
@@ -91,14 +91,14 @@ type Shape = Circle | Square;
 type Draft = Omit<Shape, 'id'>; // { kind: 'circle' | 'square' }，radius 和 size 都没了
 ```
 
-`Omit<T, K>` 中的 `keyof T` 作用在联合上时，只得到所有成员**共有**的键（`id`、`kind`），于是 `Omit<Shape, 'id'>` 只剩下 `kind`，`{ kind: 'circle', radius: 1 }` 反而因为多了 `radius` 报错。`Omit` 本身不是条件类型，`keyof` 作用在整个联合上，所以不会对每个成员分别计算（c04 讲的分布只发生在条件类型中）。要对每个成员分别去掉 `id`，自己写一个分布式的版本：
+`Omit<T, K>` 的定义是 `Pick<T, Exclude<keyof T, K>>`：其中的 `keyof T` 作用在整个联合上，只得到所有成员**共有**的键（`id`、`kind`），于是 `Omit<Shape, 'id'>` 只剩下 `kind`，`{ kind: 'circle', radius: 1 }` 反而因为多了 `radius` 报错。要对每个成员分别去掉 `id`，用 c04 的分布式条件类型写一个版本：
 
 ```ts
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 type Draft = DistributiveOmit<Shape, 'id'>; // Omit<Circle, 'id'> | Omit<Square, 'id'>
 ```
 
-`Pick`、`Partial` 等同样不会分布，在可辨识联合上使用它们之前，先想一想需要的是“整体”还是“每个成员”。
+哪些工具类型会对联合的每个成员分别计算？`Partial`、`Required`、`Readonly` 的定义是 `{ [P in keyof T]: … }` 这种**同态映射类型**（遍历的正是 `keyof T`），当 `T` 是类型参数、代入的是联合时，TypeScript 会对每个成员分别映射：`Partial<Shape>` 等于 `Partial<Circle> | Partial<Square>`。`Pick` 和 `Omit` 遍历的是另外给出的键 `K`，不是同态映射，所以不会分布。在可辨识联合上使用工具类型之前，先想一想需要的是“整体”还是“每个成员”。
 
 ## 浅层的 Readonly
 

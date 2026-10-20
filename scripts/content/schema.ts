@@ -67,6 +67,8 @@ export const exerciseFrontmatterSchema = z.object({
   fixtures: z.string().optional(),
   expect: z.string().optional(),
   compiler: compilerSchema.optional(),
+  /** tests：学生写测试，用正确的实现和 :::mutant 中的错误实现检查 */
+  grading: z.enum(['implementation', 'tests']).optional(),
   /** 当“至少两个错误解”确实不适用时说明原因 */
   wrongNotApplicable: z.string().optional(),
 });

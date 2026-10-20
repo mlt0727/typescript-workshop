@@ -96,6 +96,8 @@ title: 安全地读取收货城市
 
 测试使用平台内置的 Vitest 兼容子集（`import { test, expect, describe, vi } from 'vitest'`，可用的 API 见 `sandbox/types/vitest.d.ts`），以及 `@testing-library/dom`、`@testing-library/react`、`@testing-library/user-event`。类型测试用 `expectTypeOf` 或 `// @ts-expect-error`。
 
+**学生写测试的练习**（F 阶段起使用）：frontmatter 写 `grading: tests`。起始文件和参考解是**测试文件**（`*.test.ts`、`*.test-d.ts`），被测的正确实现放在 `:::files{role=support}` 中（`role=tests` 可以省略）。再用至少两个 `:::mutant{name=... hint="..."}` 给出故意写错的实现：每个 mutant 中的文件替换 support 中的同名文件，`hint` 是学生没有发现它时显示的说明。判题时，学生的测试先要在正确的实现上通过类型检查和全部测试，然后对每个 mutant 重新编译和运行：类型测试报错或者至少一个测试失败，才算“发现”了它；全部发现才算通过。错误解（`kind=wrong`）在这里是“写错或写得不够的测试”：在正确的实现上就失败的测试写 `fails=tests`；在正确的实现上通过、但漏掉了某些 mutant 的测试写 `fails=mutants misses=名字1,名字2`，验证时要求实际漏掉的 mutant 与 `misses` 完全一致。
+
 DOM 模式的测试：每个测试开始前，平台会把页面恢复成 `index.html` 的初始状态并重新运行学生的入口文件。纯 HTML/CSS 的页面（`index.html` 里没有 module script，也没有 `main.ts`）不运行任何脚本，适合 HTML 语义与 CSS 布局的练习：学生文件就是 `index.html`/`style.css`，测试用角色查询（`getByRole`）检查结构，用 `toHaveStyle` 检查计算后的样式。测试页面运行在一个 1024×768 的隐藏 iframe 中；需要别的宽度（例如检查媒体查询）时，在测试里 `import { page } from 'vitest/browser'` 并 `await page.viewport(375, 667)`（与 Vitest 4 浏览器模式的 API 相同），每个测试开始前视口会恢复默认尺寸。布局可以用 `getBoundingClientRect()` 比较元素之间的相对位置（同一行、上下排列），不要断言具体的像素宽度。React 模式的测试：在测试里 `render(<组件 />)`，每个测试后自动 `cleanup()`。
 
 ### 测验 quiz.yaml

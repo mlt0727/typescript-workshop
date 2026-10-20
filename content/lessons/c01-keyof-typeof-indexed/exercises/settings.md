@@ -130,6 +130,8 @@ describe('changedKeys', () => {
   test('按 DEFAULTS 中的顺序返回修改过的项', () => {
     const changed = { ...DEFAULTS, language: 'en', theme: 'dark', fontSize: 16 };
     expect(changedKeys(changed)).toEqual(['theme', 'language']);
+    // 键的书写顺序和 DEFAULTS 不同时，结果仍按 DEFAULTS 的顺序
+    expect(changedKeys({ language: 'en', theme: 'dark', fontSize: 16, showHints: true })).toEqual(['theme', 'language']);
   });
 
   test('改回默认值之后不再算修改', () => {
@@ -173,7 +175,7 @@ if (isSettingKey(raw)) {
 :::explanation
 起始代码中有三处“类型和数据各说各话”：`Settings` 是手写的，漏了 `language`；`SettingKey` 是 `string`，什么名字都能传；`LABELS` 少了两项也没有人发现。从 `DEFAULTS` 推导之后，它们都有了唯一的来源：
 
-- `Record<SettingKey, string>` 要求**每一个**键都有标签，在 `DEFAULTS` 中加一项而忘了加标签，这里就会报错；
+- `Record<SettingKey, string>` 要求**每一个**键都有标签，在 `DEFAULTS` 中加一项而忘了加标签，这里就会报错。这条注解是测试检查不了的：不写注解时，四项都写全了，推断出的类型和 `Record<SettingKey, string>` 完全一样；区别只在“以后少写一项时有没有人提醒你”；
 - `setSetting` 的 `K` 把键和值“连”在一起：传 `'fontSize'` 时，`value` 的类型就是 `Settings['fontSize']`，也就是 `number`。
 
 `isSettingKey` 是一个类型守卫（b08）：返回 `true` 时，TypeScript 把参数收窄成 `SettingKey`。`Object.keys(DEFAULTS).filter(isSettingKey)` 利用了数组 `filter` 的一个重载：传入类型守卫时，结果数组的元素类型就是守卫的类型，于是得到 `SettingKey[]`，不需要 `as`。为什么 `Object.keys` 本身是 `string[]`，见本课正文。
