@@ -1,0 +1,47 @@
+- id: enum-runtime
+  type: single
+  prompt: "`enum Color { Red, Green }` 编译成 JavaScript 后会怎样？"
+  options:
+    - text: 生成一个运行时对象，包含 `Red → 0`、`Green → 1`，以及反向映射 `0 → 'Red'`、`1 → 'Green'`
+      correct: true
+      explain: 枚举是少数会生成运行时代码的 TypeScript 特性，数字枚举还有反向映射。
+    - text: 和 `type` 一样被完全擦除
+      explain: 这正是枚举和类型别名的区别：枚举在运行时存在。
+    - text: 变成 `const Color = ['Red', 'Green']`
+      explain: TypeScript 生成的是对象，并且数字枚举包含双向映射。
+- id: erasable
+  type: multiple
+  prompt: 在开启 `erasableSyntaxOnly` 的项目中，下列哪些写法会被拒绝？
+  options:
+    - text: "`enum Size { S, M, L }`"
+      correct: true
+      explain: 枚举需要生成运行时代码。
+    - text: "`constructor(private name: string) {}`"
+      correct: true
+      explain: 参数属性需要生成赋值代码（b12）。
+    - text: "`type Size = 'S' | 'M' | 'L';`"
+      explain: 类型别名只在编译期存在，可以直接擦除。
+    - text: "`const Size = { S: 's', M: 'm' } as const;`"
+      explain: 这是普通的 JavaScript 对象，`as const` 只影响类型，可以直接擦除。
+- id: derived-type
+  type: single
+  prompt: "`const Level = { Low: 'low', High: 'high' } as const;` 之后，`(typeof Level)[keyof typeof Level]` 是什么类型？"
+  options:
+    - text: "`'low' | 'high'`"
+      correct: true
+      explain: "`typeof Level` 是对象的类型，`keyof` 取出键，索引访问取出所有值的类型。"
+    - text: "`'Low' | 'High'`"
+      explain: 这是 `keyof typeof Level`，即键的联合。
+    - text: "`string`"
+      explain: "`as const` 让属性保持字面量类型，不会拓宽成 `string`。"
+- id: string-enum-vs-union
+  type: single
+  prompt: 字面量联合 `type Mode = 'light' | 'dark'` 相比字符串枚举 `enum Mode { Light = 'light', Dark = 'dark' }`，有什么好处？
+  options:
+    - text: 调用方可以直接传 `'light'`，不需要导入枚举；编译后不留下任何代码
+      correct: true
+      explain: 字符串枚举不接受普通字符串，必须写 `Mode.Light`；字面量联合在运行时什么都不生成。
+    - text: 字面量联合在运行时会检查传入的值
+      explain: 类型不会生成运行时检查。
+    - text: 两者没有任何区别
+      explain: 它们在可用写法、运行时代码和工具兼容性上都有区别。

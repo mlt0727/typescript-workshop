@@ -3903,6 +3903,88 @@
         }
       ]
     },
+    "b17-enums-and-alternatives": {
+      "verifiedAt": "2026-10-20T10:51:36.017Z",
+      "sourceHash": "b79531be2ab847c7",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:enum:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:enum:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 0 1 Up | [log] high | [log] [ '0', '1', 'Up', 'Down' ] [ 'Low', 'High' ]"
+        },
+        {
+          "target": "playground:as-const-object:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:as-const-object:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] active deleted 停用 [ 'active', 'disabled' ]"
+        },
+        {
+          "target": "exercise:migrate-enum:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS1294@priority.ts:1 This syntax is not allowed when 'erasableSyntaxOnly' is enabled.；TS2345@priority.test.ts:7 Argument of type '\"high\"' is not assignable to parameter of type 'Priority'.；TS2344@priority.test-d.ts:4 Type '\"low\" | \"medium\" | \"high\"' does not satisfy the constraint '\"Expected: litera) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:migrate-enum:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:migrate-enum:alt:literal-union-and-object",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:migrate-enum:wrong:keep-enum",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS1294@priority.ts:1 This syntax is not allowed when 'erasableSyntaxOnly' is enabled.；TS2366@priority.ts:7 Function lacks ending return statement and return type does not include 'undefined'.；TS2344@priority.test-d.ts:4 Type '\"low\" | \"medium\" | \"high\"' does not satisfy the constraint '\"Expected: lit) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:migrate-enum:wrong:no-as-const",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@priority.test-d.ts:4 Type '\"low\" | \"medium\" | \"high\"' does not satisfy the constraint '\"Expected: literal string: low, Actual: string\" | \"Expected: literal string: medium, Actual: string\" | \"Expected: literal string: high, Actual: string\"'.；TS2344@priority.test-d.ts:5 Type '\"high\"' does not s) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:http-status:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2305@http.test.ts:2 Module '\"./http\"' has no exported member 'category'.；TS2724@http.test.ts:2 '\"./http\"' has no exported member named 'isHttpStatus'. Did you mean 'HttpStatus'?；TS2305@http.test.ts:2 Module '\"./http\"' has no exported member 'statusName'.；TS2339@http.test.ts:17 Property 'ServerErro) rules=ok tests=fail(SyntaxError: The requested module './http.ts' does not provide an export named 'category')"
+        },
+        {
+          "target": "exercise:http-status:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:http-status:alt:entries-loop",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:http-status:wrong:use-enum",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS1294@http.ts:1 This syntax is not allowed when 'erasableSyntaxOnly' is enabled.；TS2554@http.test-d.ts:4 Expected 1 arguments, but got 0.) rules=fail(type-assertion@16) tests=fail(HttpStatus › 状态码表)"
+        },
+        {
+          "target": "exercise:http-status:wrong:number-type",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@http.test-d.ts:4 Type '200 | 201 | 400 | 404 | 500' does not satisfy the constraint '\"Expected: literal number: 200, Actual: number\" | \"Expected: literal number: 201, Actual: number\" | \"Expected: literal number: 400, Actual: number\" | \"Expected: literal number: 404, Actual: number\" | \"Expecte) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:http-status:wrong:missing-name",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(HttpStatus › isHttpStatus)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

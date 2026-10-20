@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 32 / 规划总数 126**（草稿 6，规划中 88）
+**已发布 32 / 规划总数 126**（草稿 7，规划中 87）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -54,7 +54,7 @@
 | `b14-generics` 泛型函数与泛型类型 | 📝 草稿 | `b10-function-types` |
 | `b15-generic-constraints` 泛型约束 | 📝 草稿 | `b14-generics` |
 | `b16-assertions-as-const-satisfies` 类型断言、as const 与 satisfies | 📝 草稿 | `b15-generic-constraints` |
-| `b17-enums-and-alternatives` 枚举与可擦除语法 | ⬜ 规划中 | `b16-assertions-as-const-satisfies` |
+| `b17-enums-and-alternatives` 枚举与可擦除语法 | 📝 草稿 | `b16-assertions-as-const-satisfies` |
 
 ## E. 浏览器机制、异步与数据（已发布 0 / 13）
 
