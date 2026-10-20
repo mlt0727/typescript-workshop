@@ -1,0 +1,44 @@
+- id: what-e2e-finds
+  type: single
+  prompt: 下面哪个问题最可能只有端到端测试才能发现？
+  options:
+    - text: 构建时 base 配置错了，部署后所有的脚本都 404
+      correct: true
+      explain: 单元测试和组件测试不经过构建，也不访问真实的网站；端到端测试打开构建后的网站，第一步就会失败。
+    - text: 一个格式化函数把 1230 显示成了 ¥12.3
+      explain: 这是函数的逻辑，单元测试就能发现，而且更快、更容易定位。
+    - text: 按钮没有可访问的名字
+      explain: 组件测试中用 getByRole 加 name 查找就能发现。
+- id: auto-wait
+  type: single
+  prompt: 点击“保存”之后，提示在请求完成时才变成“已保存”。在 Playwright 中怎样写？
+  options:
+    - text: "`await expect(page.getByRole('status')).toHaveText('已保存')`"
+      correct: true
+      explain: 网页优先的断言会反复检查，直到文字匹配或者超时（默认 5 秒）。
+    - text: "`await page.waitForTimeout(2000)`，然后检查文字"
+      explain: 固定的等待要么不够长（机器慢时失败），要么浪费时间。
+    - text: "`expect(await page.getByRole('status').textContent()).toBe('已保存')`"
+      explain: textContent() 只读取一次，断言不会重试，点击之后立刻读取时文字还是旧的。
+- id: locator-lazy
+  type: single
+  prompt: "`const button = page.getByRole('button', { name: '提交' })` 之后，页面重新渲染，按钮被换成了一个新的元素。再执行 `await button.click()` 会怎样？"
+  options:
+    - text: 点击新的按钮：定位器每次使用时都会重新查找
+      correct: true
+      explain: 定位器是“怎样找到元素”的描述，而不是元素本身。
+    - text: 报错，因为原来的元素已经不在页面中了
+      explain: 那是直接保存元素引用（例如旧的 ElementHandle）时的问题，定位器没有这个问题。
+    - text: 点击原来的元素，什么也不会发生
+      explain: 定位器不保存元素，每次都按描述重新查找。
+- id: webserver-ci
+  type: single
+  prompt: 在持续集成中运行 Playwright 时，webServer 最好启动什么？
+  options:
+    - text: 构建并预览生产版本（npm run build && npm run preview）
+      correct: true
+      explain: 这样构建、base、路由回退等只在生产版本中出现的问题也会被测试到。
+    - text: 开发服务器（npm run dev）
+      explain: 开发服务器不经过生产构建，构建配置的问题测不出来。
+    - text: 不需要启动，直接测试线上的网站
+      explain: 测试线上的网站意味着先部署、后测试，问题已经到了用户那里；也会受到线上数据变化的影响。

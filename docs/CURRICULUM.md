@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 89 / 规划总数 126**（草稿 8，规划中 29）
+**已发布 89 / 规划总数 126**（草稿 11，规划中 26）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -126,9 +126,9 @@
 | `f06-unit-tests` 用 Vitest 写单元测试 | 📝 草稿 | `f03-tsconfig` |
 | `f07-type-tests` 类型测试 | 📝 草稿 | `f06-unit-tests`、`b14-generics` |
 | `f08-dom-tests` DOM 与组件测试 | 📝 草稿 | `f06-unit-tests`、`d08-bubbling-delegation` |
-| `f09-e2e` 用 Playwright 做端到端测试 | ⬜ 规划中 | `f08-dom-tests` |
-| `f10-git` Git 基础工作流 | ⬜ 规划中 | `f01-node-npm` |
-| `f11-lint-format` 格式化与静态检查 | ⬜ 规划中 | `f03-tsconfig` |
+| `f09-e2e` 用 Playwright 做端到端测试 | 📝 草稿 | `f08-dom-tests` |
+| `f10-git` Git 基础工作流 | 📝 草稿 | `f01-node-npm` |
+| `f11-lint-format` 格式化与静态检查 | 📝 草稿 | `f03-tsconfig` |
 | `f12-build-ci` 生产构建与 CI | ⬜ 规划中 | `f11-lint-format`、`f10-git` |
 
 ## G. React + TypeScript（已发布 14 / 15）

@@ -1,0 +1,44 @@
+- id: status-columns
+  type: single
+  prompt: "`git status --short` 中有一行 `MM c.txt`。它表示什么？"
+  options:
+    - text: c.txt 的一些修改已经暂存，之后在工作区中又有新的修改没有暂存
+      correct: true
+      explain: 第一列是暂存区，第二列是工作区。此时提交只会包含已暂存的那部分修改。
+    - text: c.txt 被修改了两次，都已经提交
+      explain: 已经提交的修改不会出现在 status 中。
+    - text: c.txt 发生了合并冲突
+      explain: 冲突的状态码是 UU、AA 这样的组合。
+- id: reinclude
+  type: single
+  prompt: ".gitignore 中写了 `logs/` 和 `!logs/.gitkeep`，想保留空的 logs 文件夹。结果会怎样？"
+  options:
+    - text: logs/.gitkeep 仍然被忽略：文件夹被忽略后，里面的文件无法重新包含
+      correct: true
+      explain: 改成 logs/* 加 !logs/.gitkeep，忽略的是文件夹中的每一项，.gitkeep 才能被重新包含。
+    - text: 只有 .gitkeep 被跟踪，其他文件被忽略
+      explain: 这是 logs/* 的效果，不是 logs/ 的效果。
+    - text: 两条规则互相抵消，logs 中的所有文件都被跟踪
+      explain: 规则不会互相抵消；logs/ 让整个文件夹被忽略，Git 不会再进入它。
+- id: undo-pushed
+  type: single
+  prompt: 一个已经推送到 main、同事也已经拉取的提交引入了 bug。最安全的撤销方式是？
+  options:
+    - text: "`git revert 那个提交`，然后推送"
+      correct: true
+      explain: revert 新建一个“反向”的提交，历史只增加不改写，同事拉取之后不会出问题。
+    - text: "`git reset --hard 那个提交的前一个`，然后 `git push --force`"
+      explain: 这会改写已经推送的历史，强制推送还可能覆盖别人的提交，同事的仓库也会和远程不一致。
+    - text: "`git commit --amend`"
+      explain: amend 只能修改最后一次提交，而且同样会改写历史，只适合还没有推送的提交。
+- id: committed-secret
+  type: single
+  prompt: 你发现 `.env`（里面有 API 密钥）已经提交并推送到了 GitHub。最重要的一步是什么？
+  options:
+    - text: 立即作废这个密钥，换一个新的；再把 .env 从仓库中移除并加进 .gitignore
+      correct: true
+      explain: 推送之后，密钥可能已经被别人看到或者被自动扫描到了。从历史中删除文件不能让它“没有泄露过”，作废才是关键。
+    - text: 把 .env 加进 .gitignore 就够了
+      explain: .gitignore 只影响没有被跟踪的文件，已经提交的文件仍然在仓库和历史中。
+    - text: 用 git rm .env 删除它，然后提交
+      explain: 删除只影响之后的版本，之前的提交中仍然有这个文件，密钥依然可以被找到。

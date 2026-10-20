@@ -8117,6 +8117,287 @@
         }
       ]
     },
+    "f09-e2e": {
+      "verifiedAt": "2026-10-20T23:01:17.042Z",
+      "sourceHash": "eeb8a705caafa881",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:retry-assert:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:retry-assert:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 只检查一次： false | [log] 重试直到成功： true"
+        },
+        {
+          "target": "exercise:test-signup-flow:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=skips-validation:missed,forgets-email:missed,forgets-plan:missed,summary-plan:missed,focus-not-moved:missed"
+        },
+        {
+          "target": "exercise:test-signup-flow:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=skips-validation:caught(tests),forgets-email:caught(tests),forgets-plan:caught(tests),summary-plan:caught(tests),focus-not-moved:caught(tests)"
+        },
+        {
+          "target": "exercise:test-signup-flow:alt:helper-and-roundtrip",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=skips-validation:caught(tests),forgets-email:caught(tests),forgets-plan:caught(tests),summary-plan:caught(tests),focus-not-moved:caught(tests)"
+        },
+        {
+          "target": "exercise:test-signup-flow:wrong:straight-through",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=skips-validation:missed,forgets-email:missed,forgets-plan:missed,summary-plan:missed,focus-not-moved:missed"
+        },
+        {
+          "target": "exercise:test-signup-flow:wrong:sync-after-action",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(进入第 2 步 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\" and name \"第 2 步，共 3 步：选择套餐\")"
+        },
+        {
+          "target": "exercise:poll:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(poll › 每隔 interval 重试，直到成功 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：Error: 第 1 次失败,poll › 超时后以最后一次的错误拒绝；最后一次尝试正好在截止时间 ⟶ expect(…).toMatchObject({ message: '第 21 次失败' }),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
+        },
+        {
+          "target": "exercise:poll:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:poll:alt:promise-chain",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:poll:wrong:count-attempts",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
+        },
+        {
+          "target": "exercise:poll:wrong:no-final-attempt",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]))"
+        },
+        {
+          "target": "exercise:poll:wrong:overlapping",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 第一次就成功时立即完成，而且是立刻尝试的 ⟶ expect(…).toEqual([ 1792537273471 ]),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
+        },
+        {
+          "target": "exercise:poll:wrong:generic-timeout-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 超时后以最后一次的错误拒绝；最后一次尝试正好在截止时间 ⟶ expect(…).toMatchObject({ message: '第 21 次失败' }),poll › timeout 为 0：只尝试一次 ⟶ expect(…).toMatchObject({ message: '第 1 次失败' }),poll › 抛出的不是 Error 也原样传出 ⟶ expect(…).toBe('字符串'))"
+        },
+        {
+          "target": "exercise:poll:wrong:sleep-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 第一次就成功时立即完成，而且是立刻尝试的 ⟶ expect(…).toEqual([ 1792537273874 ]),poll › 每隔 interval 重试，直到成功 ⟶ TimeoutError: 测试 超过 3000 ms 仍未完成：可能有 Promise 永远不会 resolve，或忘记 await。,poll › 超时后以最后一次的错误拒绝；最后一次尝试正好在截止时间 ⟶ expect(…).toMatchObject({ message: '第 21 次失败' }),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
+        }
+      ]
+    },
+    "f10-git": {
+      "verifiedAt": "2026-10-20T23:08:41.879Z",
+      "sourceHash": "cccfa0e0b1d0c5bb",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:octal-escapes:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:octal-escapes:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 旧 | [log] \\346\\226\\260 \\346\\226\\207\\344\\273\\266"
+        },
+        {
+          "target": "exercise:parse-status:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(unquote › 八进制的 UTF-8 字节（Git 2.45 的实际输出） ⟶ expect(…).toBe('旧.txt'),unquote › 其他转义 ⟶ expect(…).toBe('a b.txt'),parseStatus › 暂存区与工作区的状态（Git 2.45 的实际输出） ⟶ expect(…).toEqual([,parseStatus › 改名、类型变化、新增后又在工作区删除 ⟶ expect(…).toEqual([,parseStatus › 带引号的改名（Git 2.45 的实际输出） ⟶ expect(…).toEqual([,parseStatus › 未跟踪、忽略、冲突 ⟶ expect(…).toEqual([,parseStatus › 没有任何修改时是空数组；未知的状态抛出错误 ⟶ expect(…).toThrow())"
+        },
+        {
+          "target": "exercise:parse-status:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-status:alt:regex-and-matchall",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-status:wrong:trim-each-line",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStatus › 暂存区与工作区的状态（Git 2.45 的实际输出） ⟶ expect(…).toEqual([,parseStatus › 改名、类型变化、新增后又在工作区删除 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:parse-status:wrong:swapped-columns",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStatus › 暂存区与工作区的状态（Git 2.45 的实际输出） ⟶ expect(…).toEqual([,parseStatus › 改名、类型变化、新增后又在工作区删除 ⟶ expect(…).toEqual([,parseStatus › 带引号的改名（Git 2.45 的实际输出） ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:parse-status:wrong:no-unquote",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(unquote › 八进制的 UTF-8 字节（Git 2.45 的实际输出） ⟶ expect(…).toBe('旧.txt'),unquote › 其他转义 ⟶ expect(…).toBe('a b.txt'),parseStatus › 带引号的改名（Git 2.45 的实际输出） ⟶ expect(…).toEqual([,parseStatus › 未跟踪、忽略、冲突 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:parse-status:wrong:decode-each-escape",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(unquote › 八进制的 UTF-8 字节（Git 2.45 的实际输出） ⟶ expect(…).toBe('旧.txt'),parseStatus › 带引号的改名（Git 2.45 的实际输出） ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:parse-status:wrong:split-arrow-anywhere",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStatus › 带引号的改名（Git 2.45 的实际输出） ⟶ Error: 无法解析改名：\"a b.txt\" -> \"c d.txt\")"
+        },
+        {
+          "target": "exercise:gitignore:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"*.log\" ⟶ SyntaxError: Invalid regular expression: /*.log/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"*.log\\n!important.log\" ⟶ SyntaxError: Invalid regular expression: /*.log/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"build/**\\n!build/keep.txt\" ⟶ SyntaxError: Invalid regular expression: /build/**/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"/dist\" ⟶ dist/a.js 应该被忽略,isIgnored：与真实的 Git 对照 › \"doc/*.txt\" ⟶ doc/a.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"**/temp\" ⟶ SyntaxError: Invalid regular expression: /**/temp/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"a/**/b.txt\" ⟶ SyntaxError: Invalid regular expression: /a/**/b.txt/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"node_modules\\n.env\\n.env.*\\n!.env.example\" ⟶ .env.example 应该被跟踪,isIgnored：与真实的 Git 对照 › \"file?.txt\" ⟶ file1.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"[ab]*.md\\n!b*.md\" ⟶ b1.md 应该被跟踪,isIgnored：与真实的 Git 对照 › \"data/[!x]*.csv\" ⟶ data/a.csv 应该被忽略,isIgnored：与真实的 Git 对照 › \"# 注释\\n\\n*.tmp   \\n  \" ⟶ SyntaxError: Invalid regular expression: /*.tmp   /: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"src/\\n!src/\" ⟶ src/a.ts 应该被跟踪,isIgnored：与真实的 Git 对照 › \"*.js\\n!lib/*.js\" ⟶ SyntaxError: Invalid regular expression: /*.js/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"dir/sub/\" ⟶ x/dir/sub/a 应该被跟踪,isIgnored：与真实的 Git 对照 › \"**/*.snap\" ⟶ SyntaxError: Invalid regular expression: /**/*.snap/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"cache/**/\" ⟶ SyntaxError: Invalid regular expression: /cache/**//: Nothing to repeat,文件夹 › 结尾的 / 只匹配文件夹 ⟶ expect(…).toBe(true),文件夹 › 结尾的 /** 匹配里面的内容，不匹配文件夹本身 ⟶ SyntaxError: Invalid regular expression: /build/**/: Nothing to repeat,parseGitignore › 跳过空行和注释，识别 !、结尾的 /、是否从根目录匹配 ⟶ SyntaxError: Invalid regular expression: /*.log/: Nothing to repeat)"
+        },
+        {
+          "target": "exercise:gitignore:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:gitignore:alt:per-segment",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:gitignore:wrong:first-match-wins",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"*.log\\n!important.log\" ⟶ important.log 应该被跟踪,isIgnored：与真实的 Git 对照 › \"build/**\\n!build/keep.txt\" ⟶ build/keep.txt 应该被跟踪,isIgnored：与真实的 Git 对照 › \"node_modules\\n.env\\n.env.*\\n!.env.example\" ⟶ .env.example 应该被跟踪,isIgnored：与真实的 Git 对照 › \"[ab]*.md\\n!b*.md\" ⟶ b1.md 应该被跟踪,isIgnored：与真实的 Git 对照 › \"src/\\n!src/\" ⟶ src/a.ts 应该被跟踪,isIgnored：与真实的 Git 对照 › \"*.js\\n!lib/*.js\" ⟶ lib/a.js 应该被跟踪)"
+        },
+        {
+          "target": "exercise:gitignore:wrong:reinclude-inside-ignored-dir",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"logs/\\n!logs/keep.txt\" ⟶ logs/keep.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"cache/**/\" ⟶ cache/a/b.txt 应该被忽略)"
+        },
+        {
+          "target": "exercise:gitignore:wrong:star-crosses-slash",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"doc/*.txt\" ⟶ doc/sub/a.txt 应该被跟踪,isIgnored：与真实的 Git 对照 › \"*.js\\n!lib/*.js\" ⟶ lib/sub/a.js 应该被忽略)"
+        },
+        {
+          "target": "exercise:gitignore:wrong:never-anchored",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"build/**\\n!build/keep.txt\" ⟶ build/a.js 应该被忽略,isIgnored：与真实的 Git 对照 › \"/dist\" ⟶ src/dist/a.js 应该被跟踪,isIgnored：与真实的 Git 对照 › \"doc/*.txt\" ⟶ doc/a.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"a/**/b.txt\" ⟶ a/b.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"data/[!x]*.csv\" ⟶ data/a.csv 应该被忽略,isIgnored：与真实的 Git 对照 › \"*.js\\n!lib/*.js\" ⟶ lib/a.js 应该被跟踪,isIgnored：与真实的 Git 对照 › \"dir/sub/\" ⟶ dir/sub/a 应该被忽略,isIgnored：与真实的 Git 对照 › \"cache/**/\" ⟶ cache/a/b.txt 应该被忽略,文件夹 › 结尾的 /** 匹配里面的内容，不匹配文件夹本身 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:gitignore:wrong:dir-only-matches-files",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"cache/**/\" ⟶ cache/b.txt 应该被跟踪,文件夹 › 结尾的 / 只匹配文件夹 ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:gitignore:wrong:keeps-trailing-spaces",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"# 注释\\n\\n*.tmp   \\n  \" ⟶ a.tmp 应该被忽略)"
+        }
+      ]
+    },
+    "f11-lint-format": {
+      "verifiedAt": "2026-10-20T23:16:07.525Z",
+      "sourceHash": "2c34519e4c723dfb",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:loose-equality:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:loose-equality:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 0 \"\" == true === false | [log] null undefined == true === false | [log] \"1\" 1 == true === false | [log] [] false == true === false | [log] \" \\n\" 0 == true === false"
+        },
+        {
+          "target": "exercise:lint-summary:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(summary：与 ESLint 的 stylish 输出一致 › 实际的输出 ⟶ expect(…).toEqual([,summary：与 ESLint 的 stylish 输出一致 › 单数与复数 ⟶ expect(…).toEqual([ '✖ 1 problem (0 errors, 1 warning)' ]),summary：与 ESLint 的 stylish 输出一致 › 多个文件的数量相加；没有问题时什么也不输出 ⟶ expect(…).toEqual([,formatMessage › 位置、类型、去掉句点的信息、规则 ⟶ expect(…).toBe(\"18:7  error  'unused' is never reassigned. Use 'const' instead  prefer-const\"),formatMessage › 句点前面是空格时保留；只有一个句点时保留 ⟶ expect(…).toBe('1:1  warning  Expected value after .  x'),formatMessage › 解析错误：fatal 总是 error，没有规则名 ⟶ expect(…).toBe(\"4:9  error  Parsing error: ';' expected\"),countByRule › 按次数从多到少，次数相同时按规则名 ⟶ expect(…).toEqual([,countByRule › 实际的输出 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:lint-summary:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:lint-summary:alt:destructure-and-filter",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:lint-summary:wrong:always-plural",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summary：与 ESLint 的 stylish 输出一致 › 实际的输出 ⟶ expect(…).toEqual([,summary：与 ESLint 的 stylish 输出一致 › 单数与复数 ⟶ expect(…).toEqual([ '✖ 1 problem (0 errors, 1 warning)' ]))"
+        },
+        {
+          "target": "exercise:lint-summary:wrong:fixable-line-always",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summary：与 ESLint 的 stylish 输出一致 › 单数与复数 ⟶ expect(…).toEqual([ '✖ 1 problem (0 errors, 1 warning)' ]))"
+        },
+        {
+          "target": "exercise:lint-summary:wrong:strip-every-period",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatMessage › 句点前面是空格时保留；只有一个句点时保留 ⟶ expect(…).toBe('1:1  warning  Expected value after .  x'))"
+        },
+        {
+          "target": "exercise:lint-summary:wrong:fatal-ignored",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatMessage › 解析错误：fatal 总是 error，没有规则名 ⟶ expect(…).toBe(\"4:9  error  Parsing error: ';' expected\"))"
+        },
+        {
+          "target": "exercise:lint-summary:wrong:count-only-sort",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(countByRule › 实际的输出 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:flat-config:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(matchGlob › * 与 ? 不跨越 /，** 匹配任意层 ⟶ expect(…).toBe(true),matchGlob › {a,b} ⟶ expect(…).toBe(true),computeConfig：规则的合并 › 没有 files 的配置适用于所有文件 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 2 ] }),computeConfig：规则的合并 › 只写严重程度时保留之前的选项；写了选项时替换 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 后面的配置覆盖前面的：src/** 写在 *.test.ts 之后 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 配置对象自己的 ignores 只让这个对象不适用 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 模式从根目录开始匹配；数字的严重程度；[1] 也只是严重程度 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 0 ] }),computeConfig：哪些文件被检查 › 全局忽略 ⟶ expect(…).toBeNull(),computeConfig：哪些文件被检查 › 不是 .js / .mjs / .cjs、也没有被 files 匹配的文件不检查 ⟶ expect(…).toBeNull(),computeConfig：哪些文件被检查 › .cjs、.mjs 默认就检查；files 中具体的模式让其他文件也被检查 ⟶ expect(…).toEqual({ curly: [ 2 ] }))"
+        },
+        {
+          "target": "exercise:flat-config:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:flat-config:alt:char-by-char",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:flat-config:wrong:severity-drops-options",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(computeConfig：规则的合并 › 只写严重程度时保留之前的选项；写了选项时替换 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 后面的配置覆盖前面的：src/** 写在 *.test.ts 之后 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 配置对象自己的 ignores 只让这个对象不适用 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 模式从根目录开始匹配；数字的严重程度；[1] 也只是严重程度 ⟶ expect(…).toEqual({ eqeqeq: [ 1, 'smart' ], 'no-console': [ 1 ], curly: [ 2 ] }))"
+        },
+        {
+          "target": "exercise:flat-config:wrong:first-wins",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(computeConfig：规则的合并 › 只写严重程度时保留之前的选项；写了选项时替换 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 后面的配置覆盖前面的：src/** 写在 *.test.ts 之后 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 配置对象自己的 ignores 只让这个对象不适用 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 模式从根目录开始匹配；数字的严重程度；[1] 也只是严重程度 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 0 ] }))"
+        },
+        {
+          "target": "exercise:flat-config:wrong:ignores-only-local",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(computeConfig：哪些文件被检查 › 全局忽略 ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:flat-config:wrong:star-crosses-slash",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchGlob › * 与 ? 不跨越 /，** 匹配任意层 ⟶ expect(…).toBe(false),computeConfig：规则的合并 › 模式从根目录开始匹配；数字的严重程度；[1] 也只是严重程度 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 2 ] }))"
+        },
+        {
+          "target": "exercise:flat-config:wrong:universal-patterns-lint",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(computeConfig：哪些文件被检查 › 不是 .js / .mjs / .cjs、也没有被 files 匹配的文件不检查 ⟶ expect(…).toBeNull(),computeConfig：哪些文件被检查 › .cjs、.mjs 默认就检查；files 中具体的模式让其他文件也被检查 ⟶ expect(…).toBeNull())"
+        }
+      ]
+    },
     "g01-jsx-components": {
       "verifiedAt": "2026-10-20T17:26:38.168Z",
       "sourceHash": "5d8c2030fa5446fd",

@@ -1,0 +1,44 @@
+- id: prettier-vs-eslint
+  type: single
+  prompt: 团队在代码审查中经常争论“对象最后一个属性后面要不要逗号”。应该交给哪个工具？
+  options:
+    - text: Prettier，它统一格式，团队不需要再讨论
+      correct: true
+      explain: 格式是 Prettier 的职责，它的选项很少，正是为了结束这类讨论。
+    - text: ESLint，加一条风格规则
+      explain: ESLint 从 8.53 起已经不再维护代码风格类的规则，格式交给格式化工具。
+    - text: TypeScript 的编译选项
+      explain: TypeScript 只检查类型，不管格式。
+- id: typed-lint
+  type: single
+  prompt: "`ids.forEach(async (id) => users.push(await fetchUser(id)))` 这样的写法，下面哪个工具能发现？"
+  options:
+    - text: 配置了类型信息的 typescript-eslint（no-misused-promises）
+      correct: true
+      explain: 它需要知道回调返回的是 Promise、而 forEach 期望的是 void，这要用到类型信息。
+    - text: TypeScript 编译器
+      explain: TypeScript 允许把返回 Promise 的函数传给返回值为 void 的参数，所以不会报错。
+    - text: Prettier
+      explain: Prettier 只管格式，不分析代码的含义。
+- id: severity-only
+  type: single
+  prompt: "flat config 中先有 `{ rules: { eqeqeq: ['error', 'smart'] } }`，后面又有 `{ files: ['**/*.test.ts'], rules: { eqeqeq: 'warn' } }`。测试文件中的 eqeqeq 是什么？"
+  options:
+    - text: "`[1, 'smart']`：降级为警告，选项 smart 保留"
+      correct: true
+      explain: 只写严重程度时，ESLint 保留之前配置的选项。
+    - text: "`[1]`：选项被清空"
+      explain: 只有写出了新的选项时，才会替换之前的选项。
+    - text: "`[2, 'smart']`：先写的配置优先"
+      explain: flat config 中后面的配置覆盖前面的。
+- id: global-ignores
+  type: single
+  prompt: 想让 ESLint 完全不检查 dist 中的文件，下面哪种写法正确？
+  options:
+    - text: "在数组中放一个只有 ignores 的对象：`{ ignores: ['dist/**'] }`"
+      correct: true
+      explain: 只有 ignores 的对象是全局忽略。
+    - text: "`{ files: ['**/*.js'], ignores: ['dist/**'], rules: { … } }`"
+      explain: 和 files、rules 写在一起的 ignores 只让这个对象不适用，dist 中的文件仍然会被其他配置检查。
+    - text: 在 .gitignore 中写上 dist
+      explain: flat config 不读取 .gitignore（除非专门用工具导入它的规则）。
