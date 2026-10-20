@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 25
-review: ai-draft
+review: self-reviewed
 problem: 刚接触 TypeScript 时最容易混淆的是：代码到底由谁执行？类型检查发生在什么时候？类型错误会不会阻止程序运行？弄清这几件事，后面看到报错和输出时才知道该从哪里找原因。
 objectives:
   - 说清 TypeScript 与 JavaScript 的关系：TypeScript 在 JavaScript 语法上增加了类型，真正运行的永远是 JavaScript
@@ -40,7 +40,7 @@ references:
 
 | | 检查类型 | 运行 |
 |---|---|---|
-| Java | `javac` 编译时检查；有类型错误就**不生成**字节码 | JVM 运行字节码，运行时仍保留类型信息 |
+| Java | `javac` 编译时检查；有类型错误就**不生成**字节码 | JVM 运行字节码，运行时仍保留类的信息（泛型参数除外） |
 | C++ | 编译时检查；有错误就**不生成**可执行文件 | 运行机器码 |
 | Python | 默认不检查；可选用 mypy 等工具 | 解释器运行源码 |
 | TypeScript | 编译器检查，但第 1、2 步是**独立的**：有类型错误时，大多数工具仍会产出 JavaScript | JavaScript 引擎运行**擦除了类型**的代码，运行时没有 TypeScript 类型 |
@@ -57,8 +57,8 @@ console.log(language, '首次公开发布于', firstRelease, '年');
 console.log('本平台规划了', plannedLessons, '节课');
 ```
 - 点击“运行”，看输出面板。多个参数之间，`console.log` 会用空格分隔。
-- 点击“查看 JS”：`: string`、`: number` 这些**类型注解**（type annotation）都被删掉了，其余代码原样保留。
-- 第 3 行没有写类型，但把鼠标停在 `plannedLessons` 上，TypeScript 已经**推断**出它是 `number`。类型推断会在第 3 课详细讲。
+- 点击“查看 JS”：`: string`、`: number` 这些**类型注解**（type annotation）都被删掉了，其余代码保持不变（编译器会重新生成代码格式，空行可能被去掉）。
+- 第 3 行没有写类型，但把鼠标停在 `plannedLessons` 上，TypeScript 已经**推断**出它是 `number`。类型推断会在 a03 详细讲。
 :::
 
 ## 类型检查与运行是两件事
@@ -104,7 +104,7 @@ document.title = '新标题';
 - 后面的 DOM 课会使用“网页（DOM）”模式，那里有真实的页面和 `document`。
 :::
 
-在自己电脑上，你可以：用 `node 文件名.ts` 直接运行 TypeScript 文件（Node.js 22.18 及以上默认支持，但只擦除类型、**不做类型检查**，并且不支持 `enum` 等需要额外生成代码的语法）；用 `npx tsc --noEmit` 做类型检查；做网页项目时用 Vite 这样的构建工具。工程化相关的内容在 F 阶段详细讲。
+在自己电脑上，你可以：用 `node 文件名.ts` 直接运行 TypeScript 文件（Node.js 22.18+ 或 23.6+ 默认支持，但只擦除类型、**不做类型检查**，并且不支持 `enum` 等需要额外生成代码的语法）；在项目里先 `npm install -D typescript`，再用 `npx tsc --noEmit 文件名.ts` 做类型检查（配好 `tsconfig.json` 后直接运行 `npx tsc --noEmit`）；做网页项目时用 Vite 这样的构建工具。工程化相关的内容在 F 阶段详细讲。
 
 ## 先认识函数的写法
 
@@ -130,8 +130,10 @@ console.log(toCelsius(212), describe(toCelsius(212)));
 console.log(toCelsius(50), describe(toCelsius(50)));
 ```
 - `(fahrenheit: number): number` 表示参数是 `number`、返回值也是 `number`。`if / else if / else` 与 Java、C++ 相同。
-- 试着调用 `toCelsius('100')`：TypeScript 会指出参数类型不对。函数的更多写法在第 13 课详细讲。
+- 试着调用 `toCelsius('100')`：TypeScript 会指出参数类型不对。函数的更多写法在 a13 详细讲。
 :::
+
+练习里的函数前面会加上 `export`（例如 `export function toCelsius…`）：它让测试文件可以导入这个函数来检查你的实现。模块的导入与导出在 a19 讲。
 
 ## 编程挑战
 

@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: 声明变量时要做两个决定：它以后会不会被重新赋值（let 还是 const），以及要不要自己写类型。选错了，要么错过 TypeScript 的保护，要么写出一堆多余的注解。
 objectives:
   - 正确选择 let 与 const，知道 const 只禁止重新赋值、不禁止修改对象内容
@@ -34,7 +34,7 @@ references:
 - `const`：声明后**不能重新赋值**。默认优先使用它。
 - `let`：之后需要重新赋值时使用（计数器、循环变量、逐步累加的结果）。
 
-注意 `const` 管的是“这个名字绑定到哪个值”，不是“值本身能不能改”。和 Java 的 `final` 一样：`const` 对象的属性仍然可以修改。
+注意 `const` 管的是“这个名字绑定到哪个值”，不是“值本身能不能改”。和 Java 的 `final` 一样：`const` 对象的属性仍然可以修改。C++ 用户注意：它相当于指针本身不可变的 `T* const`，而不是内容不可变的 `const T`。
 
 :::playground{#let-const expect="2588@main.ts:5" run=error}
 ```ts file=main.ts
@@ -99,7 +99,7 @@ console.log(count, title, greeting, enabled);
 
 类型注解的写法是在名字后面加 `: 类型`。以下情况需要（或应该）写：
 
-1. **函数参数**：TypeScript 不会根据调用处推断参数类型，参数不写类型会报“隐式 any”错误（TS7006）。
+1. **函数参数**：TypeScript 不会根据调用处推断参数类型，参数不写类型会报“隐式 any”错误（TS7006）。例外是有默认值的参数（a13）和作为回调传入的函数的参数（a13、a16），它们的类型可以推断出来。
 2. **没有初始值的变量**：例如 `let message: string;`，稍后才赋值。
 3. **你需要比推断结果更宽（或更窄）的类型**：例如一个变量可能存数字或字符串。
 4. **公开的函数返回值**：返回类型可以推断，但写出来能防止实现被意外改坏，也是给调用者的文档。

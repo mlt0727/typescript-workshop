@@ -94,6 +94,8 @@ expectTypeOf(readPort).toEqualTypeOf<(json: string) => number>();
 
 参考答案在运行时逐项检查：`typeof port === 'number'` 排除了字符串、`null`、布尔值和字段缺失（`undefined`）；`Number.isInteger` 排除小数；最后检查范围。只有全部通过才返回 `port`。
 
+这里的 `config` 和 `port` 其实都是 `any`（来自 `JSON.parse`），`typeof port === 'number'` 这个检查把 `port` 收窄成了 `number`。本平台的规则只禁止**显式写出** `any`；B 阶段会学习更安全的 `unknown`，它要求先检查才能使用。
+
 参考答案没有再写 `Config` 类型：对来自外部的数据，在检查之前声称它是什么类型都没有意义。E 阶段会学习更系统的运行时校验方法。
 :::
 

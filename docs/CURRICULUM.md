@@ -3,27 +3,27 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 3 / 规划总数 126**（草稿 10，规划中 113）
+**已发布 10 / 规划总数 126**（草稿 5，规划中 111）
 
-## A. 起步与 JavaScript 共同语法（已发布 1 / 20）
+## A. 起步与 JavaScript 共同语法（已发布 8 / 20）
 
 从第一天写 TypeScript，补齐 JS 特有的语法与运行语义。
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `a01-where-ts-runs` TS、JS、浏览器与 Node.js 的关系 | 📝 草稿 | — |
-| `a02-compile-vs-runtime` 编译期与运行期：类型擦除的边界 | 📝 草稿 | `a01-where-ts-runs` |
-| `a03-let-const-inference` let/const、类型注解与类型推断 | 📝 草稿 | `a02-compile-vs-runtime` |
-| `a04-primitives-strings` number、string、boolean 与模板字符串 | 📝 草稿 | `a03-let-const-inference` |
-| `a05-null-undefined` null 与 undefined | 📝 草稿 | `a04-primitives-strings` |
-| `a06-operators-equality` 运算符、=== 与类型转换 | 📝 草稿 | `a05-null-undefined` |
-| `a07-truthy-falsy` truthy 与 falsy | 📝 草稿 | `a06-operators-equality` |
+| `a01-where-ts-runs` TS、JS、浏览器与 Node.js 的关系 | ✅ 已发布 | — |
+| `a02-compile-vs-runtime` 编译期与运行期：类型擦除的边界 | ✅ 已发布 | `a01-where-ts-runs` |
+| `a03-let-const-inference` let/const、类型注解与类型推断 | ✅ 已发布 | `a02-compile-vs-runtime` |
+| `a04-primitives-strings` number、string、boolean 与模板字符串 | ✅ 已发布 | `a03-let-const-inference` |
+| `a05-null-undefined` null 与 undefined | ✅ 已发布 | `a04-primitives-strings` |
+| `a06-operators-equality` 运算符、=== 与类型转换 | ✅ 已发布 | `a05-null-undefined` |
+| `a07-truthy-falsy` truthy 与 falsy | ✅ 已发布 | `a06-operators-equality` |
 | `a08-optional-chaining-nullish` ?.、?? 与 || 的区别 | ✅ 已发布 | `a07-truthy-falsy` |
 | `a09-control-flow` 条件与循环的快速迁移 | 📝 草稿 | `a07-truthy-falsy` |
 | `a10-arrays` 数组基础与越界访问 | 📝 草稿 | `a09-control-flow` |
 | `a11-objects-references` 对象、引用与浅拷贝 | 📝 草稿 | `a10-arrays` |
-| `a12-destructuring-spread` 解构与展开 | ⬜ 规划中 | `a11-objects-references` |
-| `a13-functions` 普通函数、箭头函数与参数 | ⬜ 规划中 | `a12-destructuring-spread` |
+| `a12-destructuring-spread` 解构与展开 | 📝 草稿 | `a11-objects-references` |
+| `a13-functions` 普通函数、箭头函数与参数 | 📝 草稿 | `a12-destructuring-spread` |
 | `a14-scope-closures` 作用域与闭包 | ⬜ 规划中 | `a13-functions` |
 | `a15-this` this 的关键差异 | ⬜ 规划中 | `a14-scope-closures` |
 | `a16-array-methods` map、filter、reduce、find 的实际用法 | ⬜ 规划中 | `a13-functions` |

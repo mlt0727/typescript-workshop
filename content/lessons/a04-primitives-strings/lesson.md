@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 数字、字符串、布尔值你在 Python/Java 里早就用熟了，但 JavaScript 有几处不同：只有一种数字类型，除法不会取整，除以 0 不抛异常，字符串也没有 char。把这些差异提前弄清楚，可以少踩很多“结果差一点”的坑。
 objectives:
   - 知道 number 是唯一的数字类型（64 位浮点数），会用 Math.trunc / Math.floor 做整数除法
@@ -32,7 +32,7 @@ references:
 
 JavaScript 没有 `int`、`long`、`float` 之分，所有数字都是 64 位浮点数（IEEE 754 双精度，和 Java 的 `double`、Python 的 `float` 是同一种格式）。TypeScript 用 `number` 表示它们。
 
-这带来几个和 Java/C++ 不同的结果：
+这带来几个需要注意的结果：
 
 :::playground{#numbers}
 ```ts file=main.ts
@@ -95,7 +95,7 @@ console.log('你好'.length, '😀'.length);
 - `slice(开始, 结束)` 取子串，不包含结束位置；负数表示从末尾数，和 Python 的切片类似。
 - `padStart(长度, 填充)` 在前面补字符，常用于补零。
 - 第 8 行：`name` 本身没有变，`trim()` 返回的是新字符串。
-- 第 9 行：`length` 统计的是 UTF-16 编码单元的个数（和 Java 的 `length()` 一样，和 Python 的 `len` 不同）。常用汉字各占 1 个，emoji 等字符占 2 个。
+- 第 9 行：`length` 统计的是 UTF-16 编码单元的个数（和 Java 的 `length()` 一样，和 Python 的 `len` 不同）。常用汉字各占 1 个；基本平面以外的字符（多数 emoji、部分生僻字）占 2 个，由多个部分组合成的 emoji（例如带肤色的 👍🏽、国旗）还会更多。
 :::
 
 ## 模板字符串

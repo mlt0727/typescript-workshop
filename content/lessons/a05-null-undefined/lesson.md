@@ -2,8 +2,8 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
-problem: “值可能不存在”是最常见的 bug 来源之一：Java 的 NullPointerException、Python 的 'NoneType' object has no attribute。JavaScript 甚至有两种“没有值”：null 和 undefined。TypeScript 的严格模式会在编译期把这类问题全部指出来，前提是你知道它在说什么、该怎么处理。
+review: self-reviewed
+problem: “值可能不存在”是最常见的 bug 来源之一：Java 的 NullPointerException、Python 的 'NoneType' object has no attribute。JavaScript 甚至有两种“没有值”：null 和 undefined。TypeScript 的严格模式会在编译期把这类问题的大部分指出来，前提是你知道它在说什么、该怎么处理。
 objectives:
   - 区分 undefined 与 null，知道它们分别从哪里来
   - 理解严格模式下 string 不包含 null/undefined，可能缺失的值要写成 string | null 等联合类型

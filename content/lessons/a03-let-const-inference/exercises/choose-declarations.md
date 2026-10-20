@@ -4,7 +4,7 @@ title: 修好倒计时
 ---
 `countdown(from)` 应该返回从 `from` 倒数到 1 的文字，最后加上 `发射！`。例如 `countdown(3)` 返回 `'3 2 1 发射！'`，`countdown(0)` 返回 `'发射！'`。
 
-起始代码的逻辑是对的，但声明方式选错了，TypeScript 报了错。只修改声明关键字，让它通过类型检查和测试。本题不允许使用 `var`。（`for` 循环的写法与 Java/C++ 相同。）
+起始代码的逻辑是对的，问题出在声明关键字上，TypeScript 报了错。修好它，让它通过类型检查和测试。本题不允许使用 `var`。（`for` 循环的写法与 Java/C++ 相同。）
 
 :::files{role=starter}
 ```ts file=countdown.ts

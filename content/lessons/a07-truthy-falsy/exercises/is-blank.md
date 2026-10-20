@@ -2,7 +2,7 @@
 kind: task
 title: 判断输入是否为空
 ---
-实现 `isBlank(text)`：`text` 是 `null`、`undefined`、空字符串，或者只包含空格时，返回 `true`；否则返回 `false`。
+实现 `isBlank(text)`：`text` 是 `null`、`undefined`、空字符串，或者只包含空白字符（空格、制表符、换行）时，返回 `true`；否则返回 `false`。
 
 注意 `'0'` 和 `'false'` 都是用户真实输入的内容，不算空。
 
@@ -36,9 +36,10 @@ test('没有值', () => {
   expect(isBlank(undefined)).toBe(true);
 });
 
-test('空字符串和只有空格', () => {
+test('空字符串和只有空白字符', () => {
   expect(isBlank('')).toBe(true);
   expect(isBlank('   ')).toBe(true);
+  expect(isBlank(' \t\n ')).toBe(true);
 });
 
 test('有内容', () => {

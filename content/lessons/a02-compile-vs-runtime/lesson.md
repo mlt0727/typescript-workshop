@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: TypeScript 能在运行前发现很多错误，但不是全部。尤其是从网络、文件、用户输入进来的数据，TypeScript 根本看不到它们的真实内容。你需要知道类型检查的边界在哪里，以及在边界上如何用运行时检查保护自己。
 objectives:
   - 区分编译期错误（TypeScript 报告）与运行期错误（程序运行时抛出）
@@ -77,7 +77,7 @@ console.log(Array.isArray([1, 2]), Array.isArray({ a: 1 }));
 - `typeof` 在 TypeScript 里还有另一种用法（写在类型的位置，用来“取得某个变量的类型”），C 阶段会讲。这一课说的都是运行时的 `typeof`。
 :::
 
-TypeScript 会理解这些运行时检查：在 `if (typeof value === 'string')` 的分支里，它知道 `value` 一定是字符串，于是允许你使用字符串的方法。这叫**类型收窄**（narrowing），B 阶段会系统讲解，下面的小任务先体验一下。
+TypeScript 会理解这些运行时检查：在 `if (typeof value === 'string')` 的分支里（`===` 是严格相等，a06 会讲为什么不用 `==`），它知道 `value` 一定是字符串，于是允许你使用字符串的方法。这叫**类型收窄**（narrowing），B 阶段会系统讲解，下面的小任务先体验一下。
 
 ::exercise{#describe-value}
 

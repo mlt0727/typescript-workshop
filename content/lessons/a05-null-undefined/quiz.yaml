@@ -21,7 +21,7 @@
       correct: true
       explain: "`strictNullChecks` 下，`string` 不包含 `null`。可能为空时要写成 `string | null`。"
     - text: 没有问题，任何类型都可以是 `null`
-      explain: 这是 Java 的规则，也是关闭严格模式时的 TypeScript 行为。严格模式下不允许。
+      explain: 这接近 Java 引用类型的规则，也是关闭严格模式时的 TypeScript 行为。严格模式下不允许。
     - text: 运行时自动把 `null` 转换成空字符串
       explain: TypeScript 不会在运行时做任何转换；这里是编译期报错（TS2322）。
 - id: narrow-null

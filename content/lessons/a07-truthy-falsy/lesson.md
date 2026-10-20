@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: 在 Java 里，if 的条件必须是 boolean；在 JavaScript 里，任何值都可以放进 if，它会被当作“真”或“假”。`if (count)` 写起来很短，但当 count 是 0 时，它的意思就从“有没有值”悄悄变成了“是不是非零”。
 objectives:
   - 记住全部 falsy 值，知道其余的值都是 truthy（包括 '0'、[] 和 {}）
@@ -29,6 +29,8 @@ references:
 放进 `if` 条件、`!`、`&&`、`||` 的值会被转换成布尔值。转换成 `false` 的值叫 **falsy**，一共只有这些：
 
 `false`、`0`、`-0`、`0n`（bigint 的零）、`''`（空字符串）、`null`、`undefined`、`NaN`
+
+（浏览器里还有一个历史遗留的特例 `document.all`，现代代码不会用到。）
 
 **其余所有值**都是 **truthy**，包括字符串 `'0'`、`'false'`、只有空格的 `' '`，以及空数组 `[]` 和空对象 `{}`。
 

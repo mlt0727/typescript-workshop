@@ -96,7 +96,7 @@ expectTypeOf(couponPrice).toEqualTypeOf<(price: number, isMember: boolean) => nu
 :::
 
 :::explanation
-参数必须写类型注解：TypeScript 不会根据调用处推断参数类型，没有注解时参数是隐式的 `any`，在严格模式下报 TS7006。返回类型 `number` 可以由 TypeScript 推断出来，这里写出来是为了把“返回分为单位的整数”这个约定固定下来。
+参数必须写类型注解：TypeScript 不会根据调用处推断参数类型，没有注解时参数是隐式的 `any`，在严格模式下报 TS7006。返回类型 `number` 可以由 TypeScript 推断出来，这里写出来是为了固定“返回值是数字”这个约定，防止以后的修改意外返回别的类型。注意类型只能表达“是 `number`”，表达不了“是整数”，整数要靠 `Math.round` 来保证。
 
 `result` 会在两个 `if` 里被重新赋值，所以用 `let`；门槛、减免金额和折扣率不会变，用 `const` 并起一个有意义的名字，比直接在代码里写 `10000`、`1500` 更容易读，也更容易修改。
 

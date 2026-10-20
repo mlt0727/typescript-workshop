@@ -5,7 +5,7 @@
     - text: 读取一个已知对象类型上不存在的属性，例如 `user.age`
       correct: true
       explain: TypeScript 知道对象的形状，会报 TS2339。运行时这只会静默地得到 `undefined`。
-    - text: 调用 `toUpperCase()` 时传给它的对象来自 `JSON.parse`，且实际不是字符串
+    - text: 对 `JSON.parse` 得到的值调用 `toUpperCase()`，而这个值实际上不是字符串
       explain: "`JSON.parse` 返回 `any`，TypeScript 不知道真实内容，只能在运行时才暴露问题。"
     - text: 把字符串传给声明了 `number` 参数的函数
       correct: true

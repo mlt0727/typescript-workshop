@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
+import catalog from '../../src/generated/catalog.json' with { type: 'json' };
 import { A08, block, D07, G03, setEditor } from './helpers.ts';
+
+/** 随内容进度变化：取目录中最后一个仍在规划中的课时 */
+const PLANNED = catalog.stages.flatMap((s) => s.lessons).filter((l) => l.status === 'planned').at(-1);
 
 test.describe('路由与生产构建资源', () => {
   test('深层路由直接打开与刷新都可用；类型库与 Worker 正常加载', async ({ page }) => {
@@ -14,7 +18,8 @@ test.describe('路由与生产构建资源', () => {
   });
 
   test('规划中的课时显示为不可学习，不冒充已发布', async ({ page }) => {
-    await page.goto('/learn/a01-where-ts-runs');
+    expect(PLANNED).toBeDefined();
+    await page.goto(`/learn/${PLANNED?.id}`);
     await expect(page.getByText('这节课还在规划中')).toBeVisible();
     await page.goto('/');
     await expect(page.locator('.sidebar-counts')).toContainText('已发布');

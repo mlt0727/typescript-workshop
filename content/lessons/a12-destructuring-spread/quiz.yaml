@@ -1,0 +1,52 @@
+- id: default-null
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    function show({ a = 1, b = 2, c = 3 }: { a: number | null; b?: number; c?: number }) {
+      console.log(a, b, c);
+    }
+    show({ a: null, b: undefined });
+    ```
+  options:
+    - text: "`null 2 3`"
+      correct: true
+      explain: 解构默认值只在值为 `undefined` 时生效：`b` 是 `undefined`，`c` 没有提供（读取结果也是 `undefined`），都使用默认值；`a` 是 `null`，保留 `null`。
+    - text: "`1 2 3`"
+      explain: "`null` 不会触发默认值。需要对 `null` 也使用默认值时，用 `??`。"
+    - text: "`null undefined 3`"
+      explain: "`b` 的值是 `undefined`，默认值会生效。"
+- id: spread-order
+  type: single
+  prompt: "`const s = { ...{ size: 1, color: 'red' }, ...{ size: 2 } };` 之后，`s` 是什么？"
+  options:
+    - text: "`{ size: 2, color: 'red' }`"
+      correct: true
+      explain: 后面展开的同名属性覆盖前面的。
+    - text: "`{ size: 1, color: 'red' }`"
+      explain: 先展开的属性会被后面的同名属性覆盖。
+    - text: "`{ size: 2 }`"
+      explain: 展开是合并，`color` 会保留下来。
+- id: spread-undefined
+  type: single
+  prompt: "`const merged = { ...{ theme: 'light' }, ...{ theme: undefined } };` 之后，`merged.theme` 是什么？"
+  options:
+    - text: "`undefined`"
+      correct: true
+      explain: 对象展开会复制所有自身属性，包括值为 `undefined` 的属性，所以 `undefined` 覆盖了 `'light'`。
+    - text: "`'light'`"
+      explain: 展开不会跳过值为 `undefined` 的属性。需要跳过时，用解构默认值或 `??`。
+    - text: TypeScript 报错
+      explain: 这段代码类型检查可以通过。
+- id: array-destructuring-type
+  type: single
+  prompt: "在本平台中，`const list: number[] = [1, 2]; const [first] = list;` 之后，`first` 的类型是什么？"
+  options:
+    - text: "`number | undefined`"
+      correct: true
+      explain: 和 `list[0]` 一样，数组可能是空的，开启 `noUncheckedIndexedAccess` 后类型包含 `undefined`。
+    - text: "`number`"
+      explain: 这是关闭 `noUncheckedIndexedAccess` 时的结果。本平台开启了它。
+    - text: "`number[]`"
+      explain: "`[first]` 按位置取出第一个元素，不是数组。`[...rest]` 才会得到数组。"

@@ -2,8 +2,8 @@
   "tsVersion": "6.0.3",
   "lessons": {
     "a01-where-ts-runs": {
-      "verifiedAt": "2026-10-20T09:06:07.479Z",
-      "sourceHash": "7aa320ad02f1c6b1",
+      "verifiedAt": "2026-10-20T09:41:50.870Z",
+      "sourceHash": "96f2639660bdcf67",
       "ok": true,
       "checks": [
         {
@@ -79,7 +79,7 @@
         {
           "target": "exercise:body-temperature:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2304@temperature.ts:3 Cannot find name 'toFahrenheit'.；TS2304@temperature.ts:3 Cannot find name 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'toFahrenheit'.；TS2305@t) rules=ok tests=fail(SyntaxError: The requested module 'blob:null/4250170b-2d58-41cb-acdc-351e9c474456' does not provide an export named 'classify')"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2304@temperature.ts:3 Cannot find name 'toFahrenheit'.；TS2304@temperature.ts:3 Cannot find name 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'classify'.；TS2305@temperature.test.ts:2 Module '\"./temperature\"' has no exported member 'toFahrenheit'.；TS2305@t) rules=ok tests=fail(SyntaxError: The requested module 'blob:null/a23c260f-c6e3-4fec-aae8-a88b2fe961a5' does not provide an export named 'classify')"
         },
         {
           "target": "exercise:body-temperature:solution:solution",
@@ -109,8 +109,8 @@
       ]
     },
     "a02-compile-vs-runtime": {
-      "verifiedAt": "2026-10-20T09:06:26.517Z",
-      "sourceHash": "214130fb9f379b7e",
+      "verifiedAt": "2026-10-20T09:41:51.205Z",
+      "sourceHash": "9e215d2b49f6854c",
       "ok": true,
       "checks": [
         {
@@ -206,8 +206,8 @@
       ]
     },
     "a03-let-const-inference": {
-      "verifiedAt": "2026-10-20T09:13:30.352Z",
-      "sourceHash": "ca177172e47f42df",
+      "verifiedAt": "2026-10-20T09:41:51.627Z",
+      "sourceHash": "08c74ac95adc45b5",
       "ok": true,
       "checks": [
         {
@@ -323,8 +323,8 @@
       ]
     },
     "a04-primitives-strings": {
-      "verifiedAt": "2026-10-20T09:17:19.594Z",
-      "sourceHash": "69c52c2eec18c315",
+      "verifiedAt": "2026-10-20T09:41:52.062Z",
+      "sourceHash": "d4e98392db010a70",
       "ok": true,
       "checks": [
         {
@@ -435,8 +435,8 @@
       ]
     },
     "a05-null-undefined": {
-      "verifiedAt": "2026-10-20T09:19:55.831Z",
-      "sourceHash": "e380cb0cc9639229",
+      "verifiedAt": "2026-10-20T09:41:52.471Z",
+      "sourceHash": "f5b91e119d9913ae",
       "ok": true,
       "checks": [
         {
@@ -547,8 +547,8 @@
       ]
     },
     "a06-operators-equality": {
-      "verifiedAt": "2026-10-20T09:22:37.992Z",
-      "sourceHash": "cc1c1df36674352a",
+      "verifiedAt": "2026-10-20T09:41:52.858Z",
+      "sourceHash": "e4efaae6b72a7c46",
       "ok": true,
       "checks": [
         {
@@ -654,8 +654,8 @@
       ]
     },
     "a07-truthy-falsy": {
-      "verifiedAt": "2026-10-20T09:25:16.802Z",
-      "sourceHash": "c4f34367ea6c0610",
+      "verifiedAt": "2026-10-20T09:41:53.324Z",
+      "sourceHash": "ce981082c8a7ab3f",
       "ok": true,
       "checks": [
         {
@@ -701,7 +701,7 @@
         {
           "target": "exercise:is-blank:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(空字符串和只有空格)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(空字符串和只有空白字符)"
         },
         {
           "target": "exercise:is-blank:solution:solution",
@@ -1220,6 +1220,230 @@
           "target": "exercise:add-tag:wrong:no-duplicate-check",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTag › 已有的标签不重复添加，但仍然返回新的对象和数组)"
+        }
+      ]
+    },
+    "a12-destructuring-spread": {
+      "verifiedAt": "2026-10-20T09:36:27.191Z",
+      "sourceHash": "996a0212ab4babe8",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:object-destructuring:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:object-destructuring:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Ada 1815 | [log] Ada | [log] null guest | [log] 1815 { name: 'Ada', city: null, role: undefined }"
+        },
+        {
+          "target": "playground:array-destructuring:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:array-destructuring:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Ada Grace | [log] Linus | [log] Ada [ 'Grace', 'Linus' ] | [log] 2 1"
+        },
+        {
+          "target": "playground:parameter-destructuring:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:parameter-destructuring:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 张三同学，你好 | [log] 李四老师，你好 | [log] 王五同学，你好"
+        },
+        {
+          "target": "playground:spread:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:spread:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 1, 2, 3, 4 ] 3 | [log] { theme: 'light', fontSize: 18 } | [log] { fontSize: 14, theme: 'light' } | [log] { theme: undefined, fontSize: 14 }"
+        },
+        {
+          "target": "exercise:page-query:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(使用默认值,只提供一部分,size 为 0 是合法的值,显式传入 undefined 也使用默认值)"
+        },
+        {
+          "target": "exercise:page-query:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:page-query:alt:param-destructuring",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:page-query:alt:nullish",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:page-query:wrong:or-default",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(size 为 0 是合法的值)"
+        },
+        {
+          "target": "exercise:page-query:wrong:no-defaults",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(使用默认值,只提供一部分,size 为 0 是合法的值,显式传入 undefined 也使用默认值)"
+        },
+        {
+          "target": "exercise:merge-options:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(mergeOptions › 值为 undefined 时保留默认值)"
+        },
+        {
+          "target": "exercise:merge-options:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:merge-options:alt:nullish-each",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:merge-options:wrong:reversed-spread",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(mergeOptions › 提供的值覆盖默认值,mergeOptions › 0、false 和空字符串也是有效的覆盖,mergeOptions › 值为 undefined 时保留默认值)"
+        },
+        {
+          "target": "exercise:merge-options:wrong:or-each",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(mergeOptions › 0、false 和空字符串也是有效的覆盖,mergeOptions › 值为 undefined 时保留默认值)"
+        },
+        {
+          "target": "exercise:merge-options:wrong:mutate-defaults",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(mergeOptions › 值为 undefined 时保留默认值,mergeOptions › 返回新对象，不修改参数)"
+        }
+      ]
+    },
+    "a13-functions": {
+      "verifiedAt": "2026-10-20T09:38:37.516Z",
+      "sourceHash": "d0708538cf0b97b4",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:three-forms:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:three-forms:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 3 2 20 36"
+        },
+        {
+          "target": "playground:arrow-object:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:arrow-object:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] undefined { x: 1, y: 2 }"
+        },
+        {
+          "target": "playground:parameters:types",
+          "ok": true,
+          "detail": "诊断符合预期（3 个故意的错误）"
+        },
+        {
+          "target": "playground:parameters:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 你好，undefined | [log] hahaha | [log] hahaha | [log] 你好，Ada 早上好，Ada haha 0 6"
+        },
+        {
+          "target": "playground:hoisting:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:hoisting:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（ReferenceError: Cannot access 'triple' before initialization）；输出：[log] 8 | [error] Uncaught ReferenceError: Cannot access 'triple' before initialization\n    at main.ts:2:13"
+        },
+        {
+          "target": "playground:functions-as-values:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:functions-as-values:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 16 | [log] 81 | [log] [ 'ADA', 'GRACE' ]"
+        },
+        {
+          "target": "exercise:average:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2554@average.ts:9 Expected 1 arguments, but got 3.；TS2554@average.ts:9 Expected 1 arguments, but got 0.；TS2554@average.test.ts:5 Expected 1 arguments, but got 3.；TS2554@average.test.ts:6 Expected 1 arguments, but got 2.；TS2345@average.test.ts:10 Argument of type 'number' is not assignable to param) rules=ok tests=fail(TypeError: scores is not iterable)"
+        },
+        {
+          "target": "exercise:average:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:average:alt:divide-once",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:average:wrong:array-param",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2554@average.test.ts:5 Expected 1 arguments, but got 3.；TS2554@average.test.ts:6 Expected 1 arguments, but got 2.；TS2345@average.test.ts:10 Argument of type 'number' is not assignable to parameter of type 'number[]'.；TS2554@average.test.ts:14 Expected 1 arguments, but got 0.；TS2556@average.test.ts) rules=ok tests=fail(多个参数,一个参数,没有参数时返回 null,可以展开一个数组传入)"
+        },
+        {
+          "target": "exercise:average:wrong:nan-for-empty",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(没有参数时返回 null)"
+        },
+        {
+          "target": "exercise:make-labeler:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2554@labeler.test.ts:6 Expected 2 arguments, but got 1.；TS2554@labeler.test-d.ts:4 Expected 2 arguments, but got 1.；TS2554@labeler.test-d.ts:5 Expected 2 arguments, but got 1.) rules=ok tests=fail(makeLabeler › 不传选项时使用默认值,makeLabeler › 自定义分隔符,makeLabeler › 只把值转成大写,makeLabeler › 两个选项一起使用,makeLabeler › 传入空的选项对象)"
+        },
+        {
+          "target": "exercise:make-labeler:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:make-labeler:alt:options-object",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:make-labeler:wrong:required-options",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2554@labeler.test.ts:6 Expected 2 arguments, but got 1.；TS2554@labeler.test-d.ts:4 Expected 2 arguments, but got 1.；TS2554@labeler.test-d.ts:5 Expected 2 arguments, but got 1.) rules=ok tests=fail(makeLabeler › 不传选项时使用默认值)"
+        },
+        {
+          "target": "exercise:make-labeler:wrong:upper-prefix",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(makeLabeler › 只把值转成大写,makeLabeler › 两个选项一起使用)"
+        },
+        {
+          "target": "exercise:make-labeler:wrong:or-separator",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(makeLabeler › 自定义分隔符)"
+        },
+        {
+          "target": "exercise:make-labeler:wrong:returns-string",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2349@labeler.test.ts:7 This expression is not callable.；TS2349@labeler.test.ts:8 This expression is not callable.；TS2349@labeler.test.ts:12 This expression is not callable.；TS2349@labeler.test.ts:13 This expression is not callable.；TS2349@labeler.test.ts:17 This expression is not callable.；TS2349@) rules=ok tests=fail(makeLabeler › 不传选项时使用默认值,makeLabeler › 自定义分隔符,makeLabeler › 只把值转成大写,makeLabeler › 两个选项一起使用,makeLabeler › 传入空的选项对象)"
         }
       ]
     },

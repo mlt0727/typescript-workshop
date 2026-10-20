@@ -1,0 +1,72 @@
+- id: arrow-object
+  type: single
+  prompt: |
+    `f()` 返回什么？
+
+    ```ts
+    const f = () => { ok: true };
+    ```
+  options:
+    - text: "`undefined`"
+      correct: true
+      explain: "`=>` 后面的 `{` 被当成函数体，`ok:` 是一个语句标签，函数没有 `return`。要返回对象需要写成 `() => ({ ok: true })`。把鼠标停在 `f` 上可以看到类型是 `() => void`。"
+    - text: "`{ ok: true }`"
+      explain: 简洁写法中，花括号会被解析成函数体而不是对象字面量。
+    - text: "`true`"
+      explain: 函数体里没有 `return`，不会返回任何值。
+- id: argument-count
+  type: multiple
+  prompt: |
+    对于下面的函数，哪些调用会被 TypeScript 报错？
+
+    ```ts
+    function repeat(text: string, times = 2): string {
+      return text.repeat(times);
+    }
+    function sum(...numbers: number[]): number {
+      let total = 0;
+      for (const n of numbers) total += n;
+      return total;
+    }
+    ```
+  options:
+    - text: "`repeat()`"
+      correct: true
+      explain: "`text` 是必需参数，少传会报 TS2554。"
+    - text: "`repeat('a', 3, 4)`"
+      correct: true
+      explain: 多传参数也会报 TS2554。JavaScript 本身会忽略多余的参数，但 TypeScript 不允许。
+    - text: "`repeat('a')`"
+      explain: "`times` 有默认值，可以不传。"
+    - text: "`sum()`"
+      explain: 剩余参数可以接收 0 个参数，此时 `numbers` 是空数组。
+- id: hoisting
+  type: single
+  prompt: 下列哪种函数可以在定义它的代码**之前**调用（在同一作用域中）？
+  options:
+    - text: "`function double(n: number) { return n * 2; }`"
+      correct: true
+      explain: 函数声明会被提升，整个作用域里都可以调用。
+    - text: "`const double = (n: number) => n * 2;`"
+      explain: "`const` 变量在声明之前不能使用，会抛出 `ReferenceError`。"
+    - text: "`const double = function (n: number) { return n * 2; };`"
+      explain: 函数表达式赋给了 `const` 变量，和箭头函数一样，在声明之前不能使用。
+- id: contextual-type
+  type: single
+  prompt: |
+    第 4 行的参数 `n` 是什么类型？
+
+    ```ts
+    function applyTwice(fn: (n: number) => number, value: number): number {
+      return fn(fn(value));
+    }
+    applyTwice((n) => n + 1, 5);
+    ```
+  options:
+    - text: "`number`，由 `applyTwice` 的参数类型推断"
+      correct: true
+      explain: "这叫上下文类型：TypeScript 知道这个位置需要 `(n: number) => number`，所以不需要再写参数类型。"
+    - text: 隐式 `any`，会报 TS7006
+      explain: 独立声明的函数参数需要写类型；作为参数传入、类型已知的回调不需要。
+    - text: "`unknown`"
+      explain: TypeScript 能从 `applyTwice` 的声明中得到准确的类型。

@@ -7,7 +7,7 @@
       explain: 浏览器的 JavaScript 引擎只执行 JavaScript，TypeScript 需要先擦除类型。
     - text: 只要代码里有类型错误，程序就一定无法运行
       explain: 类型检查与运行是分开的。本平台和大多数工具在有类型错误时仍会产出并运行 JavaScript，所以你要主动处理报错。
-    - text: Node.js 22.18 及以上可以直接运行 `.ts` 文件，但不会做类型检查
+    - text: Node.js 22.18+ 或 23.6+ 可以直接运行 `.ts` 文件，但不会做类型检查
       correct: true
       explain: Node.js 只是把类型语法擦除掉再运行；需要类型检查时要另外运行 `tsc`。
     - text: 运行时可以读取变量的 TypeScript 类型，用来检查参数是否合法

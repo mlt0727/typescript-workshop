@@ -17,6 +17,22 @@ test.describe('课内学习闭环', () => {
     await expect(pg.locator('.stale-badge')).toHaveCount(0);
   });
 
+  test('查看 JS：显示擦除类型后的代码，并跟随编辑更新', async ({ page }) => {
+    await page.goto(A08);
+    const pg = block(page, 'forms');
+    await pg.scrollIntoViewIfNeeded();
+    await pg.getByRole('button', { name: '查看 JS' }).click();
+    const preview = pg.locator('.js-preview pre');
+    await expect(preview).toContainText("const ada = { name: 'Ada', tags: ['math'] };");
+    await expect(preview).not.toContainText('type User');
+    await expect(preview).not.toContainText('export {}');
+
+    await setEditor(pg, 'const total: number = 1 + 2;\nconsole.log(total);\n');
+    await expect(preview).toHaveText('const total = 1 + 2;\nconsole.log(total);');
+    await pg.getByRole('button', { name: '隐藏 JS' }).click();
+    await expect(pg.locator('.js-preview')).toHaveCount(0);
+  });
+
   test('判题：起始代码不通过；能运行但有类型错误的答案不通过；正确答案通过；修改后结果失效；刷新后恢复', async ({ page }) => {
     await page.goto(A08);
     const ex = block(page, 'get-city');

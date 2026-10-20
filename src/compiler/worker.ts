@@ -55,7 +55,11 @@ const handlers: Handlers = {
   async emitJs({ mode, file, content }) {
     const { options } = ts.convertCompilerOptionsFromJson({ ...rawTranspileOptions(mode), sourceMap: false }, '/');
     const out = ts.transpileModule(content, { fileName: `/${file}`, compilerOptions: options, reportDiagnostics: false });
-    return { code: out.outputText };
+    // moduleDetection: force 会给没有 import/export 的文件补一行 `export {};`，
+    // 那不是学习者写的代码，预览里去掉，免得误以为是 TypeScript 语法的一部分。
+    const hasModuleSyntax = ts.isExternalModule(ts.createSourceFile(`/${file}`, content, ts.ScriptTarget.Latest));
+    const code = hasModuleSyntax ? out.outputText : out.outputText.replace(/^export \{\};\r?\n?$/m, '');
+    return { code };
   },
   async judge({ projectId, spec, studentFiles, testFiles, forbid, runEntries, loopGuard }) {
     const p = await service.open(projectId, { ...spec, withTests: true });

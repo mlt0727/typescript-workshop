@@ -7,19 +7,19 @@ stages:
     title: 起步与 JavaScript 共同语法
     summary: 从第一天写 TypeScript，补齐 JS 特有的语法与运行语义。
     lessons:
-      - { id: a01-where-ts-runs, title: TS、JS、浏览器与 Node.js 的关系, status: draft, prerequisites: [] }
-      - { id: a02-compile-vs-runtime, title: 编译期与运行期：类型擦除的边界, status: draft, prerequisites: [a01-where-ts-runs] }
-      - { id: a03-let-const-inference, title: let/const、类型注解与类型推断, status: draft, prerequisites: [a02-compile-vs-runtime] }
-      - { id: a04-primitives-strings, title: number、string、boolean 与模板字符串, status: draft, prerequisites: [a03-let-const-inference] }
-      - { id: a05-null-undefined, title: null 与 undefined, status: draft, prerequisites: [a04-primitives-strings] }
-      - { id: a06-operators-equality, title: 运算符、=== 与类型转换, status: draft, prerequisites: [a05-null-undefined] }
-      - { id: a07-truthy-falsy, title: truthy 与 falsy, status: draft, prerequisites: [a06-operators-equality] }
+      - { id: a01-where-ts-runs, title: TS、JS、浏览器与 Node.js 的关系, status: published, prerequisites: [] }
+      - { id: a02-compile-vs-runtime, title: 编译期与运行期：类型擦除的边界, status: published, prerequisites: [a01-where-ts-runs] }
+      - { id: a03-let-const-inference, title: let/const、类型注解与类型推断, status: published, prerequisites: [a02-compile-vs-runtime] }
+      - { id: a04-primitives-strings, title: number、string、boolean 与模板字符串, status: published, prerequisites: [a03-let-const-inference] }
+      - { id: a05-null-undefined, title: null 与 undefined, status: published, prerequisites: [a04-primitives-strings] }
+      - { id: a06-operators-equality, title: 运算符、=== 与类型转换, status: published, prerequisites: [a05-null-undefined] }
+      - { id: a07-truthy-falsy, title: truthy 与 falsy, status: published, prerequisites: [a06-operators-equality] }
       - { id: a08-optional-chaining-nullish, title: ?.、?? 与 || 的区别, status: published, prerequisites: [a07-truthy-falsy] }
       - { id: a09-control-flow, title: 条件与循环的快速迁移, status: draft, prerequisites: [a07-truthy-falsy] }
       - { id: a10-arrays, title: 数组基础与越界访问, status: draft, prerequisites: [a09-control-flow] }
       - { id: a11-objects-references, title: 对象、引用与浅拷贝, status: draft, prerequisites: [a10-arrays] }
-      - { id: a12-destructuring-spread, title: 解构与展开, status: planned, prerequisites: [a11-objects-references] }
-      - { id: a13-functions, title: 普通函数、箭头函数与参数, status: planned, prerequisites: [a12-destructuring-spread] }
+      - { id: a12-destructuring-spread, title: 解构与展开, status: draft, prerequisites: [a11-objects-references] }
+      - { id: a13-functions, title: 普通函数、箭头函数与参数, status: draft, prerequisites: [a12-destructuring-spread] }
       - { id: a14-scope-closures, title: 作用域与闭包, status: planned, prerequisites: [a13-functions] }
       - { id: a15-this, title: this 的关键差异, status: planned, prerequisites: [a14-scope-closures] }
       - { id: a16-array-methods, title: map、filter、reduce、find 的实际用法, status: planned, prerequisites: [a13-functions] }
