@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 28 / 规划总数 126**（草稿 5，规划中 93）
+**已发布 28 / 规划总数 126**（草稿 6，规划中 92）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -49,7 +49,7 @@
 | `b09-discriminated-unions` 可辨识联合与穷尽检查 | 📝 草稿 | `b08-type-guards` |
 | `b10-function-types` 函数类型与回调 | 📝 草稿 | `b07-narrowing`、`a16-array-methods` |
 | `b11-overloads` 函数重载：何时用，何时不用 | 📝 草稿 | `b10-function-types` |
-| `b12-classes` 类、字段与访问控制 | ⬜ 规划中 | `b10-function-types`、`a15-this` |
+| `b12-classes` 类、字段与访问控制 | 📝 草稿 | `b10-function-types`、`a15-this` |
 | `b13-inheritance-implements` 继承、实现接口与抽象类 | ⬜ 规划中 | `b12-classes` |
 | `b14-generics` 泛型函数与泛型类型 | ⬜ 规划中 | `b10-function-types` |
 | `b15-generic-constraints` 泛型约束 | ⬜ 规划中 | `b14-generics` |

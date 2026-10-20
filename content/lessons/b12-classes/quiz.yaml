@@ -1,0 +1,53 @@
+- id: private-runtime
+  type: single
+  prompt: |
+    下面的代码输出什么？
+
+    ```ts
+    class Box {
+      private secret = 'a';
+      #hidden = 'b';
+    }
+    console.log(JSON.stringify(new Box()));
+    ```
+  options:
+    - text: "`{\"secret\":\"a\"}`"
+      correct: true
+      explain: TypeScript 的 `private` 只在编译期检查，运行时 `secret` 是普通属性；`#hidden` 是 JavaScript 的私有字段，序列化时看不到。
+    - text: "`{}`"
+      explain: "`private` 不会在运行时隐藏属性，只有 `#` 字段才是真正私有的。"
+    - text: "`{\"secret\":\"a\",\"hidden\":\"b\"}`"
+      explain: "`#hidden` 是真正的私有字段，不会出现在 `JSON.stringify` 的结果中。"
+- id: field-init
+  type: single
+  prompt: "在严格模式下，`class User { name: string; }` 为什么报错？"
+  options:
+    - text: "`name` 既没有初始值，也没有在构造函数中赋值（TS2564）"
+      correct: true
+      explain: "`strictPropertyInitialization` 要求每个字段都被初始化，否则它在运行时是 `undefined`，与类型不符。"
+    - text: 类必须有构造函数
+      explain: 没有构造函数是允许的；问题在于字段没有被初始化。
+    - text: 字段必须写 `public`
+      explain: 不写访问修饰符时默认就是 `public`。
+- id: parameter-property
+  type: single
+  prompt: "为什么本平台不允许 `constructor(private name: string) {}` 这样的参数属性？"
+  options:
+    - text: 它需要 TypeScript 生成额外的赋值代码，不是“擦掉类型就能运行”的语法，`erasableSyntaxOnly` 会拒绝它
+      correct: true
+      explain: Node.js 直接运行 `.ts` 时也不支持它。显式声明字段并在构造函数中赋值即可。
+    - text: TypeScript 已经删除了这个功能
+      explain: 这个功能仍然存在，只是在开启 `erasableSyntaxOnly` 时被禁止。
+    - text: 构造函数的参数不能有访问修饰符是 JavaScript 的规定
+      explain: 参数属性本来就是 TypeScript 特有的语法，JavaScript 没有它。
+- id: getter
+  type: single
+  prompt: "`class Circle { radius = 1; get area() { return Math.PI * this.radius ** 2; } }`。怎样读取面积？"
+  options:
+    - text: "`new Circle().area`"
+      correct: true
+      explain: getter 像属性一样读取，不加括号。
+    - text: "`new Circle().area()`"
+      explain: "`area` 是 getter，读取结果是数字，数字不能被调用。"
+    - text: "`Circle.area`"
+      explain: "`area` 是实例上的 getter，不是 `static` 成员。"

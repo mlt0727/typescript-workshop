@@ -43,7 +43,7 @@ stages:
       - { id: b09-discriminated-unions, title: 可辨识联合与穷尽检查, status: draft, prerequisites: [b08-type-guards] }
       - { id: b10-function-types, title: 函数类型与回调, status: draft, prerequisites: [b07-narrowing, a16-array-methods] }
       - { id: b11-overloads, title: 函数重载：何时用，何时不用, status: draft, prerequisites: [b10-function-types] }
-      - { id: b12-classes, title: 类、字段与访问控制, status: planned, prerequisites: [b10-function-types, a15-this] }
+      - { id: b12-classes, title: 类、字段与访问控制, status: draft, prerequisites: [b10-function-types, a15-this] }
       - { id: b13-inheritance-implements, title: 继承、实现接口与抽象类, status: planned, prerequisites: [b12-classes] }
       - { id: b14-generics, title: 泛型函数与泛型类型, status: planned, prerequisites: [b10-function-types] }
       - { id: b15-generic-constraints, title: 泛型约束, status: planned, prerequisites: [b14-generics] }

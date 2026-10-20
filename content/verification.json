@@ -3378,6 +3378,118 @@
         }
       ]
     },
+    "b12-classes": {
+      "verifiedAt": "2026-10-20T10:37:47.543Z",
+      "sourceHash": "cf328d0c2a842b78",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:class-basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:class-basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Counter { count: 1, label: '点击' } true | [log] Forgotten { name: undefined }"
+        },
+        {
+          "target": "playground:private:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:private:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 100 {\"owner\":\"Ada\"} [ 'owner' ] | [log] Ada"
+        },
+        {
+          "target": "playground:static-and-parameter-properties:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:static-and-parameter-properties:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] -273.15 100 | [log] User { id: 1 }"
+        },
+        {
+          "target": "playground:method-callback:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:method-callback:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: Cannot read properties of undefined (reading 'clicks')）；输出：[log] 1 | [error] Uncaught TypeError: Cannot read properties of undefined (reading 'clicks')\n    at handleWithMethod (main.ts:5:5)\n    at main.ts:19:1"
+        },
+        {
+          "target": "exercise:temperature-class:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS1294@temperature.ts:2 This syntax is not allowed when 'erasableSyntaxOnly' is enabled.；TS2339@temperature.test.ts:8 Property 'fahrenheit' does not exist on type 'Temperature'.；TS2339@temperature.test.ts:13 Property 'fahrenheit' does not exist on type 'Temperature'.；TS2339@temperature.test.ts:15 Pr) rules=ok tests=fail(Temperature › 读取与换算,Temperature › 通过华氏度赋值,Temperature › 低于绝对零度时抛出 RangeError，并保持原值,Temperature › 实例上没有可直接访问的属性)"
+        },
+        {
+          "target": "exercise:temperature-class:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:temperature-class:alt:module-function",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:temperature-class:wrong:ts-private",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Temperature › 实例上没有可直接访问的属性)"
+        },
+        {
+          "target": "exercise:temperature-class:wrong:parameter-property",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS1294@temperature.ts:4 This syntax is not allowed when 'erasableSyntaxOnly' is enabled.) rules=ok tests=fail(Temperature › 实例上没有可直接访问的属性)"
+        },
+        {
+          "target": "exercise:temperature-class:wrong:fahrenheit-unchecked",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Temperature › 低于绝对零度时抛出 RangeError，并保持原值)"
+        },
+        {
+          "target": "exercise:lru-cache:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2554@lru.test.ts:6 Expected 0 arguments, but got 1.；TS2554@lru.test.ts:7 Expected 0 arguments, but got 1.；TS2554@lru.test.ts:8 Expected 0 arguments, but got 1.；TS2554@lru.test.ts:9 Expected 0 arguments, but got 1.；TS2339@lru.test.ts:9 Property 'size' does not exist on type 'LruCache'.；TS2554@lru.t) rules=ok tests=fail(LruCache › 容量必须是正整数,LruCache › 超过容量时删除最久没用的,LruCache › get 会刷新使用顺序,LruCache › has 不算使用,LruCache › 更新已有的键也算使用，不增加条目数,LruCache › 值可以是空字符串,LruCache › keys 返回新数组,LruCache › 内部数据是私有的)"
+        },
+        {
+          "target": "exercise:lru-cache:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:lru-cache:alt:first-key-loop",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:lru-cache:wrong:get-not-refresh",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(LruCache › get 会刷新使用顺序)"
+        },
+        {
+          "target": "exercise:lru-cache:wrong:update-keeps-position",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(LruCache › 更新已有的键也算使用，不增加条目数)"
+        },
+        {
+          "target": "exercise:lru-cache:wrong:truthy-get",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(LruCache › 值可以是空字符串)"
+        },
+        {
+          "target": "exercise:lru-cache:wrong:public-map",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(LruCache › 内部数据是私有的)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",
