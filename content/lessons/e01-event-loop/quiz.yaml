@@ -1,0 +1,60 @@
+- id: order
+  type: single
+  prompt: |
+    下面的代码按什么顺序输出？
+
+    ```ts
+    setTimeout(() => console.log('A'), 0);
+    Promise.resolve().then(() => console.log('B'));
+    console.log('C');
+    ```
+  options:
+    - text: "`C B A`"
+      correct: true
+      explain: 同步代码先执行；当前任务结束后执行所有微任务（Promise 回调）；定时器回调是下一个任务。
+    - text: "`A B C`"
+      explain: 回调不会打断同步代码，`C` 一定最先输出。
+    - text: "`C A B`"
+      explain: 微任务在下一个任务之前执行，所以 Promise 回调先于定时器。
+- id: delay-minimum
+  type: single
+  prompt: "`setTimeout(fn, 100)` 之后，主线程又执行了一段耗时 500 毫秒的同步代码。`fn` 大约在什么时候执行？"
+  options:
+    - text: 大约 500 毫秒后，等同步代码结束才执行
+      correct: true
+      explain: 延迟是“至少”。定时器到点后回调进入队列，但必须等当前代码运行完。
+    - text: 100 毫秒时打断同步代码执行
+      explain: JavaScript 运行到完成，回调不会打断正在执行的同步代码。
+    - text: 600 毫秒后
+      explain: 计时从调用 `setTimeout` 时就开始了，100 毫秒早已到点，只是在排队。
+- id: microtask-drain
+  type: single
+  prompt: |
+    下面的代码按什么顺序输出？
+
+    ```ts
+    setTimeout(() => console.log('timer'), 0);
+    queueMicrotask(() => {
+      console.log('micro 1');
+      queueMicrotask(() => console.log('micro 2'));
+    });
+    ```
+  options:
+    - text: "`micro 1`、`micro 2`、`timer`"
+      correct: true
+      explain: 事件循环会把微任务队列清空，包括执行过程中新加入的微任务，然后才取下一个任务。
+    - text: "`micro 1`、`timer`、`micro 2`"
+      explain: 新加入的微任务也会在下一个任务之前执行。
+    - text: "`timer`、`micro 1`、`micro 2`"
+      explain: 定时器回调是任务，排在所有微任务之后。
+- id: blocking-ui
+  type: single
+  prompt: 在浏览器主线程上执行一段需要 3 秒的同步计算，用户会看到什么？
+  options:
+    - text: 这 3 秒内页面无法响应点击，也不会更新画面
+      correct: true
+      explain: 渲染和事件处理都要等当前任务结束。长时间的计算应该拆分或交给 Web Worker。
+    - text: 页面照常响应，因为浏览器会自动开新线程
+      explain: 页面的 JavaScript 和渲染共用主线程，浏览器不会自动把你的代码移到别的线程。
+    - text: 浏览器会自动把计算拆成小块
+      explain: 需要你自己拆分（例如用 setTimeout 分批）或使用 Worker。

@@ -4092,6 +4092,98 @@
         }
       ]
     },
+    "e01-event-loop": {
+      "verifiedAt": "2026-10-20T10:54:04.478Z",
+      "sourceHash": "ea6bfee6cbd847ec",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:order:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:order:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 1 同步 | [log] 2 同步 | [log] 3 Promise 回调 | [log] 4 微任务 | [log] 5 定时器回调"
+        },
+        {
+          "target": "playground:blocking:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:blocking:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 同步代码结束 | [log] 定时器在 300 毫秒后才执行"
+        },
+        {
+          "target": "playground:clear-timeout:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:clear-timeout:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 第 1 次 | [log] 第 2 次 | [log] 第 3 次"
+        },
+        {
+          "target": "exercise:reminder:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(到时间后调用一次,触发前取消,重复取消、触发后取消都返回 false)"
+        },
+        {
+          "target": "exercise:reminder:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:reminder:alt:nullable-timer",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:reminder:wrong:no-clear",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(触发前取消)"
+        },
+        {
+          "target": "exercise:reminder:wrong:always-true",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(重复取消、触发后取消都返回 false)"
+        },
+        {
+          "target": "exercise:debounce:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(debounce › 连续调用只执行最后一次,debounce › cancel,debounce › flush 立即执行等待中的调用)"
+        },
+        {
+          "target": "exercise:debounce:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:debounce:alt:class-backed",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:debounce:wrong:throttle-like",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(debounce › 连续调用只执行最后一次)"
+        },
+        {
+          "target": "exercise:debounce:wrong:no-clear",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(debounce › 连续调用只执行最后一次)"
+        },
+        {
+          "target": "exercise:debounce:wrong:flush-keeps-timer",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(debounce › flush 立即执行等待中的调用)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T08:56:49.878Z",
       "sourceHash": "0a98baee8e519cd3",
