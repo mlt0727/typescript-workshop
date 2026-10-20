@@ -134,6 +134,7 @@ export function columnsOf(board: Board): Readonly<Record<Status, readonly Task[]
 }
 ```
 ```ts file=parse.ts readonly
+export type TitleResult = { ok: true; title: string } | { ok: false; error: string };
 export type ParseResult = { ok: true; title: string; tags: readonly string[] } | { ok: false; error: string };
 
 const MAX_TITLE = 40;
@@ -143,25 +144,25 @@ const MAX_TAGS = 3;
 /** 按码点计算长度：emoji 这类基本平面以外的字符算一个（a04、a09） */
 const charCount = (text: string) => [...text].length;
 
-export function parseTaskInput(text: string): ParseResult {
-  const words = text.split(/\s+/).filter((word) => word !== '');
-  const tags: string[] = [];
-  const titleWords: string[] = [];
-  for (const word of words) {
-    if (!word.startsWith('#')) {
-      titleWords.push(word);
-      continue;
-    }
-    const tag = word.slice(1);
-    if (tag === '') return { ok: false, error: '标签不能为空' };
-    if (charCount(tag) > MAX_TAG) return { ok: false, error: `标签不能超过 ${MAX_TAG} 个字符` };
-    if (!tags.includes(tag)) tags.push(tag);
-  }
-  if (tags.length > MAX_TAGS) return { ok: false, error: `最多 ${MAX_TAGS} 个标签` };
-  const title = titleWords.join(' ');
+/** 标题的规则（添加任务和改名都用它）：任意空白分隔的词用一个空格连起来，不能为空，不超过 40 个字符 */
+export function parseTitle(text: string): TitleResult {
+  const title = text.split(/\s+/).filter((word) => word !== '').join(' ');
   if (title === '') return { ok: false, error: '标题不能为空' };
   if (charCount(title) > MAX_TITLE) return { ok: false, error: `标题不能超过 ${MAX_TITLE} 个字符` };
-  return { ok: true, title, tags };
+  return { ok: true, title };
+}
+
+/** 把“写周报 #工作 #紧急”这样的一行输入解析成标题和标签 */
+export function parseTaskInput(text: string): ParseResult {
+  const words = text.split(/\s+/).filter((word) => word !== '');
+  const rawTags = words.filter((word) => word.startsWith('#')).map((word) => word.slice(1));
+  // 先检查所有的标签，再检查标题；按规定的顺序报告第一个问题，与词在输入中的位置无关
+  if (rawTags.includes('')) return { ok: false, error: '标签不能为空' };
+  if (rawTags.some((tag) => charCount(tag) > MAX_TAG)) return { ok: false, error: `标签不能超过 ${MAX_TAG} 个字符` };
+  const tags = [...new Set(rawTags)];
+  if (tags.length > MAX_TAGS) return { ok: false, error: `最多 ${MAX_TAGS} 个标签` };
+  const title = parseTitle(words.filter((word) => !word.startsWith('#')).join(' '));
+  return title.ok ? { ok: true, title: title.title, tags } : title;
 }
 ```
 ```ts file=dom.ts readonly
@@ -340,12 +341,14 @@ test('修改输入框，或者成功添加之后，错误提示消失', async ()
   expect(screen.getByRole('alert')).toHaveTextContent('标签不能为空');
   await user.type(input(), '工作');
   expect(errorText()).not.toBeVisible();
+  expect(errorText(), '隐藏的同时要清空文字').toBeEmptyDOMElement();
   expect(input()).not.toHaveAttribute('aria-invalid');
   await user.type(input(), '{Enter}');
   expect(screen.getByRole('alert')).toHaveTextContent('标题不能为空');
   await user.clear(input());
   await user.type(input(), '好了{Enter}');
   expect(errorText()).not.toBeVisible();
+  expect(errorText(), '隐藏的同时要清空文字').toBeEmptyDOMElement();
   expect(input()).not.toHaveAttribute('aria-invalid');
 });
 
@@ -363,18 +366,19 @@ test('用户输入的 HTML 只作为文字显示', async () => {
 :::
 
 :::hint{level=2}
-写两个小函数 `showError(message)`、`clearError()`：前者设置文字、`hidden = false`、`setAttribute('aria-invalid', 'true')`，后者反过来（`removeAttribute`）。输入框的 `input` 事件调用 `clearError`。输入框本来就有焦点，提交之后再调用一次 `input.focus()`，确保它没有被移走。
+写两个小函数 `showError(message)`、`clearError()`：前者设置文字、`hidden = false`、`setAttribute('aria-invalid', 'true')`，后者反过来（`removeAttribute`）。输入框的 `input` 事件调用 `clearError`。点“添加”按钮提交时，焦点可能已经移到了按钮上（按回车提交时它还在输入框中），所以处理完之后调用 `input.focus()` 把焦点放回输入框。
 :::
 
 :::explanation
 这个表单的每一个细节都是为了让用户知道发生了什么：
 
 - **阻止默认提交**：表单默认会把数据发给 `action` 指定的地址并刷新页面，整个任务板的状态就没了；
-- **失败时**：文字说明 + `aria-invalid` + `aria-describedby`（d04、d09）。只把边框变红，读屏用户和色盲用户都无从得知；`role="alert"` 让错误一出现就被读出来。保留输入的文字，用户只需要改正，而不是重新输入；
+- **失败时**：文字说明 + `aria-invalid` + `aria-describedby`（d04、d09）。只把边框变红，读屏用户和色盲用户都无从得知。提交时焦点本来就在输入框中，`aria-describedby` 不会被重新读出，所以由 `role="alert"` 让错误一出现就被读出来。保留输入的文字，用户只需要改正，而不是重新输入；
+- **错误消失时要清空文字**，不只是隐藏：被 `aria-describedby` 直接引用的元素即使是隐藏的，它的文字仍然会计入输入框的描述（Accessible Name and Description Computation 1.2，第 2A 步），读屏软件会继续读出早已过时的“标题不能为空”；
 - **成功时**：清空输入框、焦点留在原处，连续添加几个任务时不用来回点击；`role="status"` 的区域一直在页面上，内容变化时读屏软件会礼貌地读出“已添加：…”（e07）；
 - **状态 → 渲染**：事件处理函数只做三件事：解析输入、用 `reduce` 计算新的状态、用 `renderBoard` 显示它。任务板上的内容永远来自 `board`，不会和它不一致。
 
-替代解把“更新状态并重新渲染”写成了一个 `dispatch(action)` 函数。下一个里程碑会有更多的动作（移动、改名、删除），它们都经过同一个 `dispatch`，渲染、播报（以后还有保存）都只写一次。
+也可以把“更新状态并重新渲染”写成一个 `dispatch(action)` 函数，下一个里程碑就会这样做：那时会有更多的动作（移动、改名、删除），它们都经过同一个 `dispatch`，渲染、播报（以后还有保存）都只写一次。
 :::
 
 :::variant{kind=alt name=dispatch}
@@ -534,6 +538,59 @@ form.addEventListener('submit', (event) => {
   announce.textContent = `已添加：${parsed.title}`;
 });
 
+```
+:::
+
+:::variant{kind=wrong name=hide-but-keep-text fails=tests reason="错误提示只是隐藏了，文字还在，仍然会作为输入框的描述被读出"}
+```ts file=main.ts
+import { reduce, type Board } from './board';
+import { parseTaskInput } from './parse';
+import { renderBoard } from './render';
+import { SAMPLE } from './sample';
+
+function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
+  const node = document.getElementById(id);
+  if (!(node instanceof type)) throw new Error(`页面缺少 #${id}`);
+  return node;
+}
+
+const form = byId('add-form', HTMLFormElement);
+const input = byId('new-task', HTMLInputElement);
+const errorText = byId('new-task-error', HTMLParagraphElement);
+const announce = byId('announce', HTMLParagraphElement);
+const boardRoot = byId('board', HTMLDivElement);
+
+let board: Board = SAMPLE;
+renderBoard(boardRoot, board);
+
+function showError(message: string): void {
+  errorText.textContent = message;
+  errorText.hidden = false;
+  input.setAttribute('aria-invalid', 'true');
+}
+
+function clearError(): void {
+  errorText.hidden = true;
+  input.removeAttribute('aria-invalid');
+}
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const parsed = parseTaskInput(input.value);
+  if (!parsed.ok) {
+    showError(parsed.error);
+    input.focus();
+    return;
+  }
+  board = reduce(board, { type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
+  renderBoard(boardRoot, board);
+  clearError();
+  input.value = '';
+  input.focus();
+  announce.textContent = `已添加：${parsed.title}`;
+});
+
+input.addEventListener('input', clearError);
 ```
 :::
 

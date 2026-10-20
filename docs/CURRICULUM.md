@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 73 / 规划总数 126**（草稿 5，规划中 48）
+**已发布 78 / 规划总数 126**（草稿 0，规划中 48）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -169,17 +169,17 @@
 | `h08-env-config` 环境变量与配置 | ⬜ 规划中 | `h07-persistence`、`e13-env-secrets` |
 | `h09-auth-boundaries` 认证话题的安全边界 | ⬜ 规划中 | `h08-env-config` |
 
-## I. 项目与部署（已发布 0 / 18）
+## I. 项目与部署（已发布 5 / 18）
 
 三个层层递进的项目，每个拆成独立里程碑；以及静态与服务端部署。
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `p1-01-plan-and-model` 项目 1·任务板：需求与数据模型 | 📝 草稿 | `d10-state-and-render` |
-| `p1-02-render-and-add` 项目 1·任务板：渲染与新增 | 📝 草稿 | `p1-01-plan-and-model` |
-| `p1-03-edit-delete` 项目 1·任务板：编辑与删除（事件委托） | 📝 草稿 | `p1-02-render-and-add` |
-| `p1-04-filters` 项目 1·任务板：过滤与 URL 状态 | 📝 草稿 | `p1-03-edit-delete`、`e10-url-routing` |
-| `p1-05-persistence` 项目 1·任务板：持久化与数据校验 | 📝 草稿 | `p1-04-filters`、`e09-storage-serialization` |
+| `p1-01-plan-and-model` 项目 1·任务板：需求与数据模型 | ✅ 已发布 | `d10-state-and-render` |
+| `p1-02-render-and-add` 项目 1·任务板：渲染与新增 | ✅ 已发布 | `p1-01-plan-and-model` |
+| `p1-03-edit-delete` 项目 1·任务板：编辑与删除（事件委托） | ✅ 已发布 | `p1-02-render-and-add` |
+| `p1-04-filters` 项目 1·任务板：过滤与 URL 状态 | ✅ 已发布 | `p1-03-edit-delete`、`e10-url-routing` |
+| `p1-05-persistence` 项目 1·任务板：持久化与数据校验 | ✅ 已发布 | `p1-04-filters`、`e09-storage-serialization` |
 | `p1-06-local-project` 项目 1·任务板：本地工程、测试与导出 | ⬜ 规划中 | `p1-05-persistence`、`f08-dom-tests` |
 | `i01-static-vs-server` 静态站点与服务端应用的区别 | ⬜ 规划中 | `f12-build-ci` |
 | `i02-deploy-static` 部署静态站点：构建、路由刷新与资源路径 | ⬜ 规划中 | `i01-static-vs-server` |

@@ -14,7 +14,7 @@ mode: ts
 | `step` | 按 `STATUSES` 的顺序移到左边（`-1`）或右边（`1`）相邻的列 |
 | `remove` | 删除这个任务 |
 
-动作没有带来任何变化时（找不到 id；新标题为空或者和原来的相同；已经在最左边还往左、已经在最右边还往右），返回**原来的** `board`。被修改的任务换成新对象，其他任务保持原来的对象。用 `never` 做穷尽检查。
+动作没有带来任何变化时（找不到 id；新标题为空或者和原来的相同；已经在最左边还往左、已经在最右边还往右），返回**原来的** `board`。被修改的任务换成新对象，其他任务保持原来的对象。在 `default` 中用 `never` 做穷尽检查（b09；测试检查不到这一点，写完对照参考解自查）。
 
 **`columnsOf(board)`** 把任务按状态分成 `todo`、`doing`、`done` 三列，每列按 `createdAt` 从小到大排序；`createdAt` 相同时，按 id 中的**数字**从小到大（`t2` 在 `t10` 之前）。
 
@@ -197,9 +197,12 @@ describe('reduce', () => {
     expect(moved.tasks[2]).toBe(before.tasks[2]);
   });
 
-  test('remove：删除；找不到时返回原来的 board', () => {
+  test('remove：删除，其他任务保持原来的对象；找不到时返回原来的 board', () => {
     const before = sample();
-    expect(reduce(before, { type: 'remove', id: 't2' }).tasks.map((t) => t.id)).toEqual(['t1', 't3']);
+    const after = reduce(before, { type: 'remove', id: 't2' });
+    expect(after.tasks.map((t) => t.id)).toEqual(['t1', 't3']);
+    expect(after.tasks[0]).toBe(before.tasks[0]);
+    expect(after.tasks[1]).toBe(before.tasks[2]);
     expect(reduce(before, { type: 'remove', id: 't9' })).toBe(before);
   });
 });
@@ -220,17 +223,22 @@ describe('columnsOf', () => {
 });
 ```
 ```ts file=board.test-d.ts
-import { columnsOf, reduce, type Board } from './board';
+import { columnsOf, reduce, type Board, type Task } from './board';
 
-const b: Board = { tasks: [], nextId: 1 };
+const t: Task = { id: 't1', title: '写周报', tags: [], status: 'todo', createdAt: 1 };
+const b: Board = { tasks: [t], nextId: 2 };
 // @ts-expect-error 只能向相邻的列移动一步
 reduce(b, { type: 'step', id: 't1', direction: 2 });
 // @ts-expect-error 状态只能是三列中的一个
-reduce(b, { type: 'add', title: 'x', tags: [], now: 1, status: 'archived' });
-// @ts-expect-error 列是只读的
-columnsOf(b).todo.push(b.tasks[0]);
+const archived: Task = { ...t, status: 'archived' };
 // @ts-expect-error 任务是只读的
-b.tasks[0].title = '改名';
+t.title = '改名';
+// @ts-expect-error 任务的标签是只读的
+t.tags.push('紧急');
+// @ts-expect-error 任务列表是只读的
+b.tasks.push(t);
+// @ts-expect-error 列是只读的
+columnsOf(b).todo.push(t);
 ```
 :::
 

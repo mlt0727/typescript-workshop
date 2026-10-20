@@ -72,7 +72,6 @@ form.addEventListener('submit', (event) => {
 input.addEventListener('input', clearError);
 
 // TODO：在 boardRoot 上用一个监听器处理“左移”“右移”“删除”（“改名”在编程挑战中完成）
-console.log(COLUMN_NAMES);
 ```
 :::
 
@@ -174,6 +173,7 @@ export function columnsOf(board: Board): Readonly<Record<Status, readonly Task[]
 }
 ```
 ```ts file=parse.ts readonly
+export type TitleResult = { ok: true; title: string } | { ok: false; error: string };
 export type ParseResult = { ok: true; title: string; tags: readonly string[] } | { ok: false; error: string };
 
 const MAX_TITLE = 40;
@@ -183,25 +183,25 @@ const MAX_TAGS = 3;
 /** 按码点计算长度：emoji 这类基本平面以外的字符算一个（a04、a09） */
 const charCount = (text: string) => [...text].length;
 
-export function parseTaskInput(text: string): ParseResult {
-  const words = text.split(/\s+/).filter((word) => word !== '');
-  const tags: string[] = [];
-  const titleWords: string[] = [];
-  for (const word of words) {
-    if (!word.startsWith('#')) {
-      titleWords.push(word);
-      continue;
-    }
-    const tag = word.slice(1);
-    if (tag === '') return { ok: false, error: '标签不能为空' };
-    if (charCount(tag) > MAX_TAG) return { ok: false, error: `标签不能超过 ${MAX_TAG} 个字符` };
-    if (!tags.includes(tag)) tags.push(tag);
-  }
-  if (tags.length > MAX_TAGS) return { ok: false, error: `最多 ${MAX_TAGS} 个标签` };
-  const title = titleWords.join(' ');
+/** 标题的规则（添加任务和改名都用它）：任意空白分隔的词用一个空格连起来，不能为空，不超过 40 个字符 */
+export function parseTitle(text: string): TitleResult {
+  const title = text.split(/\s+/).filter((word) => word !== '').join(' ');
   if (title === '') return { ok: false, error: '标题不能为空' };
   if (charCount(title) > MAX_TITLE) return { ok: false, error: `标题不能超过 ${MAX_TITLE} 个字符` };
-  return { ok: true, title, tags };
+  return { ok: true, title };
+}
+
+/** 把“写周报 #工作 #紧急”这样的一行输入解析成标题和标签 */
+export function parseTaskInput(text: string): ParseResult {
+  const words = text.split(/\s+/).filter((word) => word !== '');
+  const rawTags = words.filter((word) => word.startsWith('#')).map((word) => word.slice(1));
+  // 先检查所有的标签，再检查标题；按规定的顺序报告第一个问题，与词在输入中的位置无关
+  if (rawTags.includes('')) return { ok: false, error: '标签不能为空' };
+  if (rawTags.some((tag) => charCount(tag) > MAX_TAG)) return { ok: false, error: `标签不能超过 ${MAX_TAG} 个字符` };
+  const tags = [...new Set(rawTags)];
+  if (tags.length > MAX_TAGS) return { ok: false, error: `最多 ${MAX_TAGS} 个标签` };
+  const title = parseTitle(words.filter((word) => !word.startsWith('#')).join(' '));
+  return title.ok ? { ok: true, title: title.title, tags } : title;
 }
 ```
 ```ts file=dom.ts readonly
@@ -457,7 +457,7 @@ test('点任务的其他地方什么都不发生', async () => {
 :::
 
 :::explanation
-事件委托的好处在这道题中体现得很明显：任务板每次操作都会整个重新渲染，按钮都是新的。监听器放在不会被替换的 `boardRoot` 上，就不需要在每次渲染之后重新绑定；新添加的任务的按钮自然也有效（第五个测试）。如果只在页面打开时给已有的按钮绑定监听器，后来添加的任务就点不动了，这是一个错误解。
+事件委托的好处在这道题中体现得很明显：任务板每次操作都会整个重新渲染，按钮都是新的。监听器放在不会被替换的 `boardRoot` 上，就不需要在每次渲染之后重新绑定；新添加的任务的按钮自然也有效（第五个测试）。常见的错误写法是只在页面打开时给已有的按钮绑定监听器：重新渲染之后、后来添加的任务的按钮就都点不动了。
 
 `closest` 解决了“点到的是图标”的问题：`event.target` 是实际被点击的最内层元素，图标在按钮里面，所以要向上找。`aria-hidden` 的图标加上 `aria-label` 的完整名字，是图标按钮的常见写法（d04）。
 

@@ -8,17 +8,18 @@ title: 地址中的筛选条件
 
 1. **地址是唯一的来源**：渲染时从 `location.search` 解析筛选条件，用 `filterBoard` 得到要显示的任务；`#filter-summary` 中写“共 4 个任务”，筛选时写“显示 1 / 共 4 个任务”；
 2. 页面打开时、后退前进（`popstate`）时，按地址渲染，并把搜索框的内容改成地址中的 `q`；
-3. 在搜索框中输入：更新 `q`，用 **`replaceState`** 修改地址，然后渲染（焦点留在搜索框）；提交搜索的表单时什么都不做；
+3. 在搜索框中输入：更新 `q`，用 **`replaceState`** 修改地址，然后渲染（焦点留在搜索框，搜索框中的内容由用户控制，渲染时不要改它，否则地址中去掉了首尾空白的 `q` 会让用户打不出空格）；提交搜索的表单（在搜索框中按回车）时什么都不做；
 4. 点标签：按这个标签筛选，已经在按它筛选时取消；用 **`pushState`** 新增一条记录；焦点留在被点击的那个标签按钮上；
-5. “清除筛选”：去掉所有条件，用 `pushState`，清空搜索框，焦点回到搜索框；
-6. 修改地址时只改查询参数：`const url = new URL(location.href); url.search = toSearch(filters);`。
+5. “清除筛选”：去掉所有条件，用 `pushState`（没有在筛选时不新增记录），清空搜索框，焦点回到搜索框；
+6. 添加或改名的任务不符合当前的筛选条件时，它不会显示：在 `#announce` 的文字后面加上“（不符合当前的筛选条件，没有显示）”（例如“已添加：写代码（不符合当前的筛选条件，没有显示）”）；改名之后任务被隐藏时，“改名”按钮也不在了，焦点放到搜索框；
+7. 修改地址时只改查询参数：`const url = new URL(location.href); url.search = toSearch(filters);`。
 
 :::files{role=starter}
 ```ts file=main.ts
 import { reduce, type Action, type Board } from './board';
-import { parseTaskInput } from './parse';
+import { parseTaskInput, parseTitle } from './parse';
 import { filterBoard, isFiltering, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
-import { COLUMN_NAMES, renderBoard, type View } from './render';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
 import { SAMPLE } from './sample';
 
 function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
@@ -38,7 +39,7 @@ const clearButton = byId('clear-filters', HTMLButtonElement);
 const summary = byId('filter-summary', HTMLParagraphElement);
 
 let board: Board = SAMPLE;
-let view: View = { editingId: null, renameError: null };
+let view: View = NOT_EDITING;
 
 function render(): void {
   // TODO：按地址中的筛选条件渲染（filterBoard），并在 summary 中写出数量
@@ -66,7 +67,7 @@ function focusIn(selector: string): boolean {
 
 /** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
 function finishRename(id: string): void {
-  view = { editingId: null, renameError: null };
+  view = NOT_EDITING;
   render();
   focusIn(`${taskSelector(id)} [data-action="rename"]`);
 }
@@ -120,7 +121,7 @@ boardRoot.addEventListener('click', (event) => {
     announce.textContent = `已删除：${task.title}`;
     focusIn(`#column-${task.status}`);
   } else if (name === 'rename') {
-    view = { editingId: task.id, renameError: null };
+    view = { editingId: task.id, draft: task.title, renameError: null };
     render();
     const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
     if (field instanceof HTMLInputElement) {
@@ -139,26 +140,41 @@ boardRoot.addEventListener('submit', (event) => {
   const id = view.editingId;
   const field = renameForm.elements.namedItem('title');
   if (id === null || !(field instanceof HTMLInputElement)) return;
-  const title = field.value.trim();
-  if (title === '') {
-    view = { editingId: id, renameError: '标题不能为空' };
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
     render();
     const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
     if (again instanceof HTMLInputElement) again.focus();
     return;
   }
   const before = board;
-  board = reduce(board, { type: 'rename', id, title });
-  if (board !== before) announce.textContent = `已改名：${title}`;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  if (board !== before) announce.textContent = `已改名：${parsed.title}`;
   finishRename(id);
 });
 
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
 boardRoot.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || view.editingId === null) return;
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
   if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
 });
 
-// TODO：搜索框、“清除筛选”、标签按钮（data-action="tag"）、后退与前进
+// TODO：搜索框、“清除筛选”、标签按钮（data-action="tag"）、后退与前进；被筛选隐藏的任务在播报中说明
 ```
 :::
 
@@ -268,6 +284,7 @@ export function columnsOf(board: Board): Readonly<Record<Status, readonly Task[]
 }
 ```
 ```ts file=parse.ts readonly
+export type TitleResult = { ok: true; title: string } | { ok: false; error: string };
 export type ParseResult = { ok: true; title: string; tags: readonly string[] } | { ok: false; error: string };
 
 const MAX_TITLE = 40;
@@ -277,25 +294,25 @@ const MAX_TAGS = 3;
 /** 按码点计算长度：emoji 这类基本平面以外的字符算一个（a04、a09） */
 const charCount = (text: string) => [...text].length;
 
-export function parseTaskInput(text: string): ParseResult {
-  const words = text.split(/\s+/).filter((word) => word !== '');
-  const tags: string[] = [];
-  const titleWords: string[] = [];
-  for (const word of words) {
-    if (!word.startsWith('#')) {
-      titleWords.push(word);
-      continue;
-    }
-    const tag = word.slice(1);
-    if (tag === '') return { ok: false, error: '标签不能为空' };
-    if (charCount(tag) > MAX_TAG) return { ok: false, error: `标签不能超过 ${MAX_TAG} 个字符` };
-    if (!tags.includes(tag)) tags.push(tag);
-  }
-  if (tags.length > MAX_TAGS) return { ok: false, error: `最多 ${MAX_TAGS} 个标签` };
-  const title = titleWords.join(' ');
+/** 标题的规则（添加任务和改名都用它）：任意空白分隔的词用一个空格连起来，不能为空，不超过 40 个字符 */
+export function parseTitle(text: string): TitleResult {
+  const title = text.split(/\s+/).filter((word) => word !== '').join(' ');
   if (title === '') return { ok: false, error: '标题不能为空' };
   if (charCount(title) > MAX_TITLE) return { ok: false, error: `标题不能超过 ${MAX_TITLE} 个字符` };
-  return { ok: true, title, tags };
+  return { ok: true, title };
+}
+
+/** 把“写周报 #工作 #紧急”这样的一行输入解析成标题和标签 */
+export function parseTaskInput(text: string): ParseResult {
+  const words = text.split(/\s+/).filter((word) => word !== '');
+  const rawTags = words.filter((word) => word.startsWith('#')).map((word) => word.slice(1));
+  // 先检查所有的标签，再检查标题；按规定的顺序报告第一个问题，与词在输入中的位置无关
+  if (rawTags.includes('')) return { ok: false, error: '标签不能为空' };
+  if (rawTags.some((tag) => charCount(tag) > MAX_TAG)) return { ok: false, error: `标签不能超过 ${MAX_TAG} 个字符` };
+  const tags = [...new Set(rawTags)];
+  if (tags.length > MAX_TAGS) return { ok: false, error: `最多 ${MAX_TAGS} 个标签` };
+  const title = parseTitle(words.filter((word) => !word.startsWith('#')).join(' '));
+  return title.ok ? { ok: true, title: title.title, tags } : title;
 }
 ```
 ```ts file=dom.ts readonly
@@ -360,7 +377,10 @@ import { isFiltering, NO_FILTERS, type Filters } from './filters';
 
 export const COLUMN_NAMES = { todo: '待办', doing: '进行中', done: '已完成' } as const;
 
-export type View = Readonly<{ editingId: string | null; renameError: string | null }>;
+/** 界面状态：正在改名的任务、输入框中正在输入的内容、改名的错误 */
+export type View = Readonly<{ editingId: string | null; draft: string; renameError: string | null }>;
+
+export const NOT_EDITING: View = { editingId: null, draft: '', renameError: null };
 
 function actionButton(action: 'left' | 'right' | 'rename' | 'remove', label: string, icon: string, disabled = false): HTMLButtonElement {
   const button = el('button', { type: 'button', 'data-action': action, 'aria-label': label }, el('span', { 'aria-hidden': 'true' }, icon));
@@ -394,21 +414,21 @@ function actions(task: Task): HTMLDivElement {
   );
 }
 
-function renderEditing(task: Task, error: string | null, filters: Filters): HTMLLIElement {
+function renderEditing(task: Task, view: View, filters: Filters): HTMLLIElement {
   const field = el('input', { name: 'title', autocomplete: 'off' });
-  field.value = task.title;
+  field.value = view.draft;
   const form = el('form', { class: 'rename', novalidate: '' }, el('label', {}, '新的标题 ', field));
-  if (error !== null) {
+  if (view.renameError !== null) {
     field.setAttribute('aria-invalid', 'true');
     field.setAttribute('aria-describedby', `rename-error-${task.id}`);
-    form.append(el('p', { class: 'error', role: 'alert', id: `rename-error-${task.id}` }, error));
+    form.append(el('p', { class: 'error', role: 'alert', id: `rename-error-${task.id}` }, view.renameError));
   }
   form.append(el('button', { type: 'submit' }, '保存'), el('button', { type: 'button', 'data-action': 'cancel' }, '取消'));
   return el('li', { class: 'task editing', 'data-id': task.id }, form, ...tagList(task, filters));
 }
 
 function renderTask(task: Task, view: View, filters: Filters): HTMLLIElement {
-  if (task.id === view.editingId) return renderEditing(task, view.renameError, filters);
+  if (task.id === view.editingId) return renderEditing(task, view, filters);
   return el('li', { class: 'task', 'data-id': task.id }, el('span', { class: 'title' }, task.title), ...tagList(task, filters), actions(task));
 }
 
@@ -416,7 +436,7 @@ function renderTask(task: Task, view: View, filters: Filters): HTMLLIElement {
  * 渲染任务板。board 是已经筛选过的任务板；filters 用来标出正在筛选的标签，
  * 并在筛选时把空列的说明换成“没有符合条件的任务”。
  */
-export function renderBoard(root: HTMLElement, board: Board, view: View = { editingId: null, renameError: null }, filters: Filters = NO_FILTERS): void {
+export function renderBoard(root: HTMLElement, board: Board, view: View = NOT_EDITING, filters: Filters = NO_FILTERS): void {
   const columns = columnsOf(board);
   const emptyText = isFiltering(filters) ? '没有符合条件的任务' : '没有任务';
   root.replaceChildren(
@@ -451,10 +471,10 @@ export const SAMPLE: Board = {
 
 :::files{role=solution}
 ```ts file=main.ts
-import { reduce, type Action, type Board } from './board';
-import { parseTaskInput } from './parse';
-import { filterBoard, isFiltering, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
-import { COLUMN_NAMES, renderBoard, type View } from './render';
+import { reduce, type Action, type Board, type Task } from './board';
+import { parseTaskInput, parseTitle } from './parse';
+import { filterBoard, isFiltering, matchesFilters, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
 import { SAMPLE } from './sample';
 
 function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
@@ -474,7 +494,7 @@ const clearButton = byId('clear-filters', HTMLButtonElement);
 const summary = byId('filter-summary', HTMLParagraphElement);
 
 let board: Board = SAMPLE;
-let view: View = { editingId: null, renameError: null };
+let view: View = NOT_EDITING;
 
 /** 筛选条件只从地址中读取：地址是它唯一的来源 */
 const currentFilters = (): Filters => parseFilters(location.search);
@@ -493,6 +513,11 @@ function setFilters(filters: Filters, mode: 'push' | 'replace'): void {
   if (mode === 'push') history.pushState(null, '', url);
   else history.replaceState(null, '', url);
   render();
+}
+
+/** 任务不符合当前的筛选条件时，在播报中说明它没有显示 */
+function hiddenNote(task: Task): string {
+  return matchesFilters(task, currentFilters()) ? '' : '（不符合当前的筛选条件，没有显示）';
 }
 
 /** 计算新的状态；有变化时重新渲染 */
@@ -515,9 +540,10 @@ function focusIn(selector: string): boolean {
 
 /** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
 function finishRename(id: string): void {
-  view = { editingId: null, renameError: null };
+  view = NOT_EDITING;
   render();
-  focusIn(`${taskSelector(id)} [data-action="rename"]`);
+  // 改名之后不再符合筛选条件时，任务被隐藏了：焦点放到搜索框
+  if (!focusIn(`${taskSelector(id)} [data-action="rename"]`)) filterInput.focus();
 }
 
 render();
@@ -545,7 +571,8 @@ form.addEventListener('submit', (event) => {
   clearError();
   dispatch({ type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
   input.value = '';
-  announce.textContent = `已添加：${parsed.title}`;
+  const added = board.tasks.at(-1);
+  announce.textContent = `已添加：${parsed.title}${added === undefined ? '' : hiddenNote(added)}`;
 });
 
 input.addEventListener('input', clearError);
@@ -569,7 +596,7 @@ boardRoot.addEventListener('click', (event) => {
     announce.textContent = `已删除：${task.title}`;
     focusIn(`#column-${task.status}`);
   } else if (name === 'rename') {
-    view = { editingId: task.id, renameError: null };
+    view = { editingId: task.id, draft: task.title, renameError: null };
     render();
     const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
     if (field instanceof HTMLInputElement) {
@@ -594,22 +621,38 @@ boardRoot.addEventListener('submit', (event) => {
   const id = view.editingId;
   const field = renameForm.elements.namedItem('title');
   if (id === null || !(field instanceof HTMLInputElement)) return;
-  const title = field.value.trim();
-  if (title === '') {
-    view = { editingId: id, renameError: '标题不能为空' };
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
     render();
     const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
     if (again instanceof HTMLInputElement) again.focus();
     return;
   }
   const before = board;
-  board = reduce(board, { type: 'rename', id, title });
-  if (board !== before) announce.textContent = `已改名：${title}`;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  const renamed = board.tasks.find((t) => t.id === id);
+  if (board !== before && renamed !== undefined) announce.textContent = `已改名：${parsed.title}${hiddenNote(renamed)}`;
   finishRename(id);
 });
 
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
 boardRoot.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || view.editingId === null) return;
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
   if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
 });
 
@@ -618,7 +661,8 @@ filterInput.addEventListener('input', () => setFilters({ ...currentFilters(), q:
 filterForm.addEventListener('submit', (event) => event.preventDefault());
 clearButton.addEventListener('click', () => {
   filterInput.value = '';
-  setFilters(NO_FILTERS, 'push');
+  // 没有筛选时不新增一条相同的记录
+  if (isFiltering(currentFilters())) setFilters(NO_FILTERS, 'push');
   filterInput.focus();
 });
 window.addEventListener('popstate', () => {
@@ -633,6 +677,7 @@ window.addEventListener('popstate', () => {
 import { afterEach, expect, test, vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
+import { page } from 'vitest/browser';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -655,6 +700,15 @@ test('没有筛选时显示全部任务和总数', () => {
   expect(location.search).toBe('');
 });
 
+test('打开页面时按地址中的筛选条件显示', async () => {
+  history.replaceState(null, '', '?q=%E5%91%A8%E6%8A%A5&tag=%E5%B7%A5%E4%BD%9C');
+  await page.reload();
+  expect(visibleTitles()).toEqual(['写周报']);
+  expect(search()).toHaveValue('周报');
+  expect(tagButton('写周报', '工作')).toHaveAttribute('aria-pressed', 'true');
+  expect(summary()).toHaveTextContent('显示 1 / 共 4 个任务');
+});
+
 test('输入时按标题筛选（不区分大小写），用 replaceState 更新地址', async () => {
   const push = vi.spyOn(history, 'pushState');
   const replace = vi.spyOn(history, 'replaceState');
@@ -666,6 +720,19 @@ test('输入时按标题筛选（不区分大小写），用 replaceState 更新
   expect(push, '输入时不应该新增历史记录').not.toHaveBeenCalled();
   expect(replace).toHaveBeenCalled();
   expect(search()).toHaveFocus();
+});
+
+test('搜索框中可以输入空格；按回车不会提交表单', async () => {
+  const prevented: boolean[] = [];
+  document.addEventListener('submit', (event) => prevented.push(event.defaultPrevented));
+  const user = userEvent.setup();
+  await user.type(search(), 'read the');
+  expect(search(), '地址中的 q 去掉了首尾空白，但不能因此改掉搜索框中正在输入的内容').toHaveValue('read the');
+  expect(params()).toEqual({ q: 'read the' });
+  expect(visibleTitles()).toEqual(['Read the TS Handbook']);
+  await user.keyboard('{Enter}');
+  expect(prevented).toEqual([true]);
+  expect(visibleTitles()).toEqual(['Read the TS Handbook']);
 });
 
 test('点标签：只看带这个标签的任务，新增一条历史记录；再点一次取消', async () => {
@@ -694,14 +761,19 @@ test('文字和标签可以同时使用', async () => {
   expect(summary()).toHaveTextContent('显示 1 / 共 4 个任务');
 });
 
-test('清除筛选：显示全部，地址中没有筛选条件，焦点回到搜索框', async () => {
+test('清除筛选：显示全部，新增一条历史记录，焦点回到搜索框；没有筛选时不新增记录', async () => {
   const user = userEvent.setup();
   await user.type(search(), '牛奶');
   await user.click(tagButton('买牛奶', '家'));
+  const push = vi.spyOn(history, 'pushState');
   await user.click(screen.getByRole('button', { name: '清除筛选' }));
   expect(visibleTitles()).toHaveLength(4);
   expect(location.search).toBe('');
+  expect(push).toHaveBeenCalledTimes(1);
   expect(search()).toHaveValue('');
+  expect(search()).toHaveFocus();
+  await user.click(screen.getByRole('button', { name: '清除筛选' }));
+  expect(push, '没有筛选时不应该新增记录').toHaveBeenCalledTimes(1);
   expect(search()).toHaveFocus();
 });
 
@@ -732,6 +804,29 @@ test('筛选时添加的任务按条件决定是否显示；总数随之变化',
   expect(visibleTitles()).toContain('倒垃圾');
   expect(visibleTitles()).not.toContain('写代码');
   expect(summary()).toHaveTextContent('显示 3 / 共 6 个任务');
+  expect(document.getElementById('announce'), '新任务被筛选隐藏时要说明').toHaveTextContent('已添加：写代码（不符合当前的筛选条件，没有显示）');
+});
+
+test('改名之后不再符合筛选条件：播报中说明，焦点放到搜索框', async () => {
+  const user = userEvent.setup();
+  await user.type(search(), '周报');
+  await user.click(screen.getByRole('button', { name: '改名：写周报' }));
+  await user.keyboard('写月报{Enter}');
+  expect(visibleTitles()).toEqual([]);
+  expect(document.getElementById('announce')).toHaveTextContent('已改名：写月报（不符合当前的筛选条件，没有显示）');
+  expect(search()).toHaveFocus();
+});
+
+test('改名时在搜索框中输入，正在编辑的内容不会丢', async () => {
+  const user = userEvent.setup();
+  await user.click(screen.getByRole('button', { name: '改名：写周报' }));
+  await user.keyboard('写月报');
+  await user.type(search(), '写');
+  const field = screen.getByRole('textbox', { name: '新的标题' });
+  expect(field).toHaveValue('写月报');
+  await user.click(field);
+  await user.keyboard('{Enter}');
+  expect(visibleTitles()).toEqual(['写月报']);
 });
 ```
 :::
@@ -745,21 +840,23 @@ test('筛选时添加的任务按条件决定是否显示；总数随之变化',
 :::
 
 :::explanation
-这道题最重要的一点，是**不保存筛选条件**：`currentFilters()` 每次都从地址中读取。于是“地址是什么，页面就显示什么”在任何情况下都成立：输入、点标签、清除、后退、前进，甚至别的代码直接修改了地址再触发 `popstate`（最后两个测试），界面都对得上。如果用一个变量保存筛选条件，就要在每一个改变地址的地方都记得同步它，漏掉一处（比如 `popstate`），后退之后页面就和地址不一致了。
+这道题最重要的一点，是**不保存筛选条件**：`currentFilters()` 每次都从地址中读取。于是“地址是什么，页面就显示什么”在任何情况下都成立：打开页面、输入、点标签、清除、后退、前进，甚至别的代码直接修改了地址再触发 `popstate`（后退和外部修改地址的两个测试），界面都对得上。如果用一个变量保存筛选条件，就要在每一个改变地址的地方都记得同步它，漏掉一处（比如 `popstate`），后退之后页面就和地址不一致了。
 
 `pushState` 和 `replaceState` 的选择和 e10、g13 一样：输入是一个连续的过程，替换当前的记录；点标签、清除是一次明确的操作，新增记录，后退才能回到之前的视图。
 
-搜索框是一个例外的“界面状态”：它的内容在输入时由用户控制，只有地址从外部改变时（页面打开、`popstate`）才需要把它改成地址中的值。它不在被重新渲染的任务板中，所以输入时焦点不会丢失。
+搜索框是一个例外的“界面状态”：它的内容在输入时由用户控制，只有地址从外部改变时（页面打开、`popstate`）才需要把它改成地址中的值。常见的错误写法是在 `render()` 中每次都写 `filterInput.value = currentFilters().q`，看起来更符合“地址是唯一的来源”，但 `toSearch` 去掉了首尾空白：输入 `read ` 之后搜索框立刻变回 `read`，词与词之间的空格永远打不出来。搜索框不在被重新渲染的任务板中，所以输入时焦点也不会丢失。
+
+筛选还会让任务“消失”：添加的任务、改名之后的任务不符合条件时不会显示。看得见页面的用户会注意到计数变了，读屏用户则只能从播报中得知，所以播报要说明“没有显示”；改名后任务被隐藏，焦点无处可回，就放到造成隐藏的搜索框上，用户可以在那里修改条件。
 
 筛选时，`#filter-summary` 说明“显示几个、一共几个”，空列说明“没有符合条件的任务”：看不到页面的用户也知道还有任务被隐藏了，而不是以为任务被删了。
 :::
 
-:::variant{kind=alt name=call-history-method}
+:::variant{kind=alt name=address-object}
 ```ts file=main.ts
-import { reduce, type Action, type Board } from './board';
-import { parseTaskInput } from './parse';
-import { filterBoard, isFiltering, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
-import { COLUMN_NAMES, renderBoard, type View } from './render';
+import { reduce, type Action, type Board, type Task } from './board';
+import { parseTaskInput, parseTitle } from './parse';
+import { filterBoard, isFiltering, matchesFilters, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
 import { SAMPLE } from './sample';
 
 function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
@@ -779,10 +876,18 @@ const clearButton = byId('clear-filters', HTMLButtonElement);
 const summary = byId('filter-summary', HTMLParagraphElement);
 
 let board: Board = SAMPLE;
-let view: View = { editingId: null, renameError: null };
+let view: View = NOT_EDITING;
 
-/** 筛选条件只从地址中读取：地址是它唯一的来源 */
-const currentFilters = (): Filters => parseFilters(location.search);
+/** 地址：读取和写入筛选条件的唯一地方 */
+const address = {
+  read: (): Filters => parseFilters(location.search),
+  write(filters: Filters, replace: boolean): void {
+    const url = new URL(location.href);
+    url.search = toSearch(filters);
+    history[replace ? 'replaceState' : 'pushState'](null, '', url);
+  },
+};
+const currentFilters = address.read;
 
 function render(): void {
   const filters = currentFilters();
@@ -793,11 +898,15 @@ function render(): void {
 
 /** 改变筛选条件：先更新地址，再按地址渲染 */
 function setFilters(filters: Filters, mode: 'push' | 'replace'): void {
-  const target = new URL(location.href);
-  target.search = toSearch(filters);
-  const change = mode === 'push' ? history.pushState : history.replaceState;
-  change.call(history, null, '', target.href);
+  address.write(filters, mode === 'replace');
   render();
+}
+
+const toggleTag = (filters: Filters, tag: string): Filters => ({ ...filters, tag: filters.tag === tag ? null : tag });
+
+/** 任务不符合当前的筛选条件时，在播报中说明它没有显示 */
+function hiddenNote(task: Task): string {
+  return matchesFilters(task, currentFilters()) ? '' : '（不符合当前的筛选条件，没有显示）';
 }
 
 /** 计算新的状态；有变化时重新渲染 */
@@ -820,9 +929,10 @@ function focusIn(selector: string): boolean {
 
 /** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
 function finishRename(id: string): void {
-  view = { editingId: null, renameError: null };
+  view = NOT_EDITING;
   render();
-  focusIn(`${taskSelector(id)} [data-action="rename"]`);
+  // 改名之后不再符合筛选条件时，任务被隐藏了：焦点放到搜索框
+  if (!focusIn(`${taskSelector(id)} [data-action="rename"]`)) filterInput.focus();
 }
 
 render();
@@ -850,7 +960,8 @@ form.addEventListener('submit', (event) => {
   clearError();
   dispatch({ type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
   input.value = '';
-  announce.textContent = `已添加：${parsed.title}`;
+  const added = board.tasks.at(-1);
+  announce.textContent = `已添加：${parsed.title}${added === undefined ? '' : hiddenNote(added)}`;
 });
 
 input.addEventListener('input', clearError);
@@ -874,19 +985,13 @@ boardRoot.addEventListener('click', (event) => {
     announce.textContent = `已删除：${task.title}`;
     focusIn(`#column-${task.status}`);
   } else if (name === 'rename') {
-    view = { editingId: task.id, renameError: null };
+    view = { editingId: task.id, draft: task.title, renameError: null };
     render();
     const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
     if (field instanceof HTMLInputElement) {
       field.focus();
       field.select();
     }
-  } else if (name === 'tag') {
-    const tag = button.dataset['tag'];
-    if (tag === undefined) return;
-    const filters = currentFilters();
-    setFilters({ ...filters, tag: filters.tag === tag ? null : tag }, 'push');
-    focusIn(`${taskSelector(task.id)} [data-action="tag"][data-tag="${CSS.escape(tag)}"]`);
   } else if (name === 'cancel') {
     finishRename(task.id);
   }
@@ -899,47 +1004,76 @@ boardRoot.addEventListener('submit', (event) => {
   const id = view.editingId;
   const field = renameForm.elements.namedItem('title');
   if (id === null || !(field instanceof HTMLInputElement)) return;
-  const title = field.value.trim();
-  if (title === '') {
-    view = { editingId: id, renameError: '标题不能为空' };
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
     render();
     const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
     if (again instanceof HTMLInputElement) again.focus();
     return;
   }
   const before = board;
-  board = reduce(board, { type: 'rename', id, title });
-  if (board !== before) announce.textContent = `已改名：${title}`;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  const renamed = board.tasks.find((t) => t.id === id);
+  if (board !== before && renamed !== undefined) announce.textContent = `已改名：${parsed.title}${hiddenNote(renamed)}`;
   finishRename(id);
 });
 
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
 boardRoot.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || view.editingId === null) return;
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
   if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
 });
 
-filterInput.value = currentFilters().q;
-filterInput.addEventListener('input', () => setFilters({ ...currentFilters(), q: filterInput.value }, 'replace'));
+// 标签按钮：单独的一个委托监听器
+boardRoot.addEventListener('click', (event) => {
+  if (!(event.target instanceof Element)) return;
+  const button = event.target.closest('button[data-action="tag"]');
+  if (!(button instanceof HTMLButtonElement)) return;
+  const tag = button.getAttribute('data-tag');
+  const id = button.closest('li.task')?.getAttribute('data-id');
+  if (tag === null || id === null || id === undefined) return;
+  setFilters(toggleTag(address.read(), tag), 'push');
+  const again = boardRoot.querySelector(`li[data-id="${CSS.escape(id)}"] button[data-tag="${CSS.escape(tag)}"]`);
+  if (again instanceof HTMLButtonElement) again.focus();
+});
+
+function syncFromAddress(): void {
+  filterInput.value = address.read().q;
+  render();
+}
+syncFromAddress();
+window.addEventListener('popstate', syncFromAddress);
+filterInput.addEventListener('input', () => setFilters({ ...address.read(), q: filterInput.value }, 'replace'));
 filterForm.addEventListener('submit', (event) => event.preventDefault());
 clearButton.addEventListener('click', () => {
   filterInput.value = '';
-  setFilters(NO_FILTERS, 'push');
+  if (isFiltering(address.read())) setFilters(NO_FILTERS, 'push');
   filterInput.focus();
 });
-function syncFromAddress(): void {
-  filterInput.value = currentFilters().q;
-  render();
-}
-window.addEventListener('popstate', syncFromAddress);
 ```
 :::
 
 :::variant{kind=wrong name=push-while-typing fails=tests reason="输入时用了 pushState，每个字都新增一条历史记录"}
 ```ts file=main.ts
-import { reduce, type Action, type Board } from './board';
-import { parseTaskInput } from './parse';
-import { filterBoard, isFiltering, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
-import { COLUMN_NAMES, renderBoard, type View } from './render';
+import { reduce, type Action, type Board, type Task } from './board';
+import { parseTaskInput, parseTitle } from './parse';
+import { filterBoard, isFiltering, matchesFilters, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
 import { SAMPLE } from './sample';
 
 function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
@@ -959,7 +1093,7 @@ const clearButton = byId('clear-filters', HTMLButtonElement);
 const summary = byId('filter-summary', HTMLParagraphElement);
 
 let board: Board = SAMPLE;
-let view: View = { editingId: null, renameError: null };
+let view: View = NOT_EDITING;
 
 /** 筛选条件只从地址中读取：地址是它唯一的来源 */
 const currentFilters = (): Filters => parseFilters(location.search);
@@ -980,6 +1114,11 @@ function setFilters(filters: Filters, mode: 'push' | 'replace'): void {
   render();
 }
 
+/** 任务不符合当前的筛选条件时，在播报中说明它没有显示 */
+function hiddenNote(task: Task): string {
+  return matchesFilters(task, currentFilters()) ? '' : '（不符合当前的筛选条件，没有显示）';
+}
+
 /** 计算新的状态；有变化时重新渲染 */
 function dispatch(action: Action): void {
   const next = reduce(board, action);
@@ -1000,9 +1139,10 @@ function focusIn(selector: string): boolean {
 
 /** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
 function finishRename(id: string): void {
-  view = { editingId: null, renameError: null };
+  view = NOT_EDITING;
   render();
-  focusIn(`${taskSelector(id)} [data-action="rename"]`);
+  // 改名之后不再符合筛选条件时，任务被隐藏了：焦点放到搜索框
+  if (!focusIn(`${taskSelector(id)} [data-action="rename"]`)) filterInput.focus();
 }
 
 render();
@@ -1030,7 +1170,8 @@ form.addEventListener('submit', (event) => {
   clearError();
   dispatch({ type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
   input.value = '';
-  announce.textContent = `已添加：${parsed.title}`;
+  const added = board.tasks.at(-1);
+  announce.textContent = `已添加：${parsed.title}${added === undefined ? '' : hiddenNote(added)}`;
 });
 
 input.addEventListener('input', clearError);
@@ -1054,7 +1195,7 @@ boardRoot.addEventListener('click', (event) => {
     announce.textContent = `已删除：${task.title}`;
     focusIn(`#column-${task.status}`);
   } else if (name === 'rename') {
-    view = { editingId: task.id, renameError: null };
+    view = { editingId: task.id, draft: task.title, renameError: null };
     render();
     const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
     if (field instanceof HTMLInputElement) {
@@ -1079,22 +1220,38 @@ boardRoot.addEventListener('submit', (event) => {
   const id = view.editingId;
   const field = renameForm.elements.namedItem('title');
   if (id === null || !(field instanceof HTMLInputElement)) return;
-  const title = field.value.trim();
-  if (title === '') {
-    view = { editingId: id, renameError: '标题不能为空' };
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
     render();
     const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
     if (again instanceof HTMLInputElement) again.focus();
     return;
   }
   const before = board;
-  board = reduce(board, { type: 'rename', id, title });
-  if (board !== before) announce.textContent = `已改名：${title}`;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  const renamed = board.tasks.find((t) => t.id === id);
+  if (board !== before && renamed !== undefined) announce.textContent = `已改名：${parsed.title}${hiddenNote(renamed)}`;
   finishRename(id);
 });
 
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
 boardRoot.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || view.editingId === null) return;
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
   if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
 });
 
@@ -1103,7 +1260,8 @@ filterInput.addEventListener('input', () => setFilters({ ...currentFilters(), q:
 filterForm.addEventListener('submit', (event) => event.preventDefault());
 clearButton.addEventListener('click', () => {
   filterInput.value = '';
-  setFilters(NO_FILTERS, 'push');
+  // 没有筛选时不新增一条相同的记录
+  if (isFiltering(currentFilters())) setFilters(NO_FILTERS, 'push');
   filterInput.focus();
 });
 window.addEventListener('popstate', () => {
@@ -1115,10 +1273,10 @@ window.addEventListener('popstate', () => {
 
 :::variant{kind=wrong name=no-popstate fails=tests reason="没有处理 popstate，后退之后页面没有跟着地址变化"}
 ```ts file=main.ts
-import { reduce, type Action, type Board } from './board';
-import { parseTaskInput } from './parse';
-import { filterBoard, isFiltering, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
-import { COLUMN_NAMES, renderBoard, type View } from './render';
+import { reduce, type Action, type Board, type Task } from './board';
+import { parseTaskInput, parseTitle } from './parse';
+import { filterBoard, isFiltering, matchesFilters, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
 import { SAMPLE } from './sample';
 
 function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
@@ -1138,7 +1296,7 @@ const clearButton = byId('clear-filters', HTMLButtonElement);
 const summary = byId('filter-summary', HTMLParagraphElement);
 
 let board: Board = SAMPLE;
-let view: View = { editingId: null, renameError: null };
+let view: View = NOT_EDITING;
 
 /** 筛选条件只从地址中读取：地址是它唯一的来源 */
 const currentFilters = (): Filters => parseFilters(location.search);
@@ -1157,6 +1315,11 @@ function setFilters(filters: Filters, mode: 'push' | 'replace'): void {
   if (mode === 'push') history.pushState(null, '', url);
   else history.replaceState(null, '', url);
   render();
+}
+
+/** 任务不符合当前的筛选条件时，在播报中说明它没有显示 */
+function hiddenNote(task: Task): string {
+  return matchesFilters(task, currentFilters()) ? '' : '（不符合当前的筛选条件，没有显示）';
 }
 
 /** 计算新的状态；有变化时重新渲染 */
@@ -1179,9 +1342,10 @@ function focusIn(selector: string): boolean {
 
 /** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
 function finishRename(id: string): void {
-  view = { editingId: null, renameError: null };
+  view = NOT_EDITING;
   render();
-  focusIn(`${taskSelector(id)} [data-action="rename"]`);
+  // 改名之后不再符合筛选条件时，任务被隐藏了：焦点放到搜索框
+  if (!focusIn(`${taskSelector(id)} [data-action="rename"]`)) filterInput.focus();
 }
 
 render();
@@ -1209,7 +1373,8 @@ form.addEventListener('submit', (event) => {
   clearError();
   dispatch({ type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
   input.value = '';
-  announce.textContent = `已添加：${parsed.title}`;
+  const added = board.tasks.at(-1);
+  announce.textContent = `已添加：${parsed.title}${added === undefined ? '' : hiddenNote(added)}`;
 });
 
 input.addEventListener('input', clearError);
@@ -1233,7 +1398,7 @@ boardRoot.addEventListener('click', (event) => {
     announce.textContent = `已删除：${task.title}`;
     focusIn(`#column-${task.status}`);
   } else if (name === 'rename') {
-    view = { editingId: task.id, renameError: null };
+    view = { editingId: task.id, draft: task.title, renameError: null };
     render();
     const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
     if (field instanceof HTMLInputElement) {
@@ -1258,22 +1423,38 @@ boardRoot.addEventListener('submit', (event) => {
   const id = view.editingId;
   const field = renameForm.elements.namedItem('title');
   if (id === null || !(field instanceof HTMLInputElement)) return;
-  const title = field.value.trim();
-  if (title === '') {
-    view = { editingId: id, renameError: '标题不能为空' };
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
     render();
     const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
     if (again instanceof HTMLInputElement) again.focus();
     return;
   }
   const before = board;
-  board = reduce(board, { type: 'rename', id, title });
-  if (board !== before) announce.textContent = `已改名：${title}`;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  const renamed = board.tasks.find((t) => t.id === id);
+  if (board !== before && renamed !== undefined) announce.textContent = `已改名：${parsed.title}${hiddenNote(renamed)}`;
   finishRename(id);
 });
 
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
 boardRoot.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || view.editingId === null) return;
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
   if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
 });
 
@@ -1282,7 +1463,8 @@ filterInput.addEventListener('input', () => setFilters({ ...currentFilters(), q:
 filterForm.addEventListener('submit', (event) => event.preventDefault());
 clearButton.addEventListener('click', () => {
   filterInput.value = '';
-  setFilters(NO_FILTERS, 'push');
+  // 没有筛选时不新增一条相同的记录
+  if (isFiltering(currentFilters())) setFilters(NO_FILTERS, 'push');
   filterInput.focus();
 });
 ```
@@ -1290,10 +1472,10 @@ clearButton.addEventListener('click', () => {
 
 :::variant{kind=wrong name=stale-search-box fails=tests reason="popstate 时只重新渲染了任务，搜索框中还是旧的文字"}
 ```ts file=main.ts
-import { reduce, type Action, type Board } from './board';
-import { parseTaskInput } from './parse';
-import { filterBoard, isFiltering, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
-import { COLUMN_NAMES, renderBoard, type View } from './render';
+import { reduce, type Action, type Board, type Task } from './board';
+import { parseTaskInput, parseTitle } from './parse';
+import { filterBoard, isFiltering, matchesFilters, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
 import { SAMPLE } from './sample';
 
 function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
@@ -1313,7 +1495,7 @@ const clearButton = byId('clear-filters', HTMLButtonElement);
 const summary = byId('filter-summary', HTMLParagraphElement);
 
 let board: Board = SAMPLE;
-let view: View = { editingId: null, renameError: null };
+let view: View = NOT_EDITING;
 
 /** 筛选条件只从地址中读取：地址是它唯一的来源 */
 const currentFilters = (): Filters => parseFilters(location.search);
@@ -1332,6 +1514,11 @@ function setFilters(filters: Filters, mode: 'push' | 'replace'): void {
   if (mode === 'push') history.pushState(null, '', url);
   else history.replaceState(null, '', url);
   render();
+}
+
+/** 任务不符合当前的筛选条件时，在播报中说明它没有显示 */
+function hiddenNote(task: Task): string {
+  return matchesFilters(task, currentFilters()) ? '' : '（不符合当前的筛选条件，没有显示）';
 }
 
 /** 计算新的状态；有变化时重新渲染 */
@@ -1354,9 +1541,10 @@ function focusIn(selector: string): boolean {
 
 /** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
 function finishRename(id: string): void {
-  view = { editingId: null, renameError: null };
+  view = NOT_EDITING;
   render();
-  focusIn(`${taskSelector(id)} [data-action="rename"]`);
+  // 改名之后不再符合筛选条件时，任务被隐藏了：焦点放到搜索框
+  if (!focusIn(`${taskSelector(id)} [data-action="rename"]`)) filterInput.focus();
 }
 
 render();
@@ -1384,7 +1572,8 @@ form.addEventListener('submit', (event) => {
   clearError();
   dispatch({ type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
   input.value = '';
-  announce.textContent = `已添加：${parsed.title}`;
+  const added = board.tasks.at(-1);
+  announce.textContent = `已添加：${parsed.title}${added === undefined ? '' : hiddenNote(added)}`;
 });
 
 input.addEventListener('input', clearError);
@@ -1408,7 +1597,7 @@ boardRoot.addEventListener('click', (event) => {
     announce.textContent = `已删除：${task.title}`;
     focusIn(`#column-${task.status}`);
   } else if (name === 'rename') {
-    view = { editingId: task.id, renameError: null };
+    view = { editingId: task.id, draft: task.title, renameError: null };
     render();
     const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
     if (field instanceof HTMLInputElement) {
@@ -1433,22 +1622,38 @@ boardRoot.addEventListener('submit', (event) => {
   const id = view.editingId;
   const field = renameForm.elements.namedItem('title');
   if (id === null || !(field instanceof HTMLInputElement)) return;
-  const title = field.value.trim();
-  if (title === '') {
-    view = { editingId: id, renameError: '标题不能为空' };
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
     render();
     const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
     if (again instanceof HTMLInputElement) again.focus();
     return;
   }
   const before = board;
-  board = reduce(board, { type: 'rename', id, title });
-  if (board !== before) announce.textContent = `已改名：${title}`;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  const renamed = board.tasks.find((t) => t.id === id);
+  if (board !== before && renamed !== undefined) announce.textContent = `已改名：${parsed.title}${hiddenNote(renamed)}`;
   finishRename(id);
 });
 
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
 boardRoot.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || view.editingId === null) return;
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
   if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
 });
 
@@ -1457,7 +1662,8 @@ filterInput.addEventListener('input', () => setFilters({ ...currentFilters(), q:
 filterForm.addEventListener('submit', (event) => event.preventDefault());
 clearButton.addEventListener('click', () => {
   filterInput.value = '';
-  setFilters(NO_FILTERS, 'push');
+  // 没有筛选时不新增一条相同的记录
+  if (isFiltering(currentFilters())) setFilters(NO_FILTERS, 'push');
   filterInput.focus();
 });
 window.addEventListener('popstate', () => {
@@ -1468,10 +1674,10 @@ window.addEventListener('popstate', () => {
 
 :::variant{kind=wrong name=stored-filters fails=tests reason="另外保存了一份筛选条件，地址从外部改变时它没有跟着变"}
 ```ts file=main.ts
-import { reduce, type Action, type Board } from './board';
-import { parseTaskInput } from './parse';
-import { filterBoard, isFiltering, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
-import { COLUMN_NAMES, renderBoard, type View } from './render';
+import { reduce, type Action, type Board, type Task } from './board';
+import { parseTaskInput, parseTitle } from './parse';
+import { filterBoard, isFiltering, matchesFilters, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
 import { SAMPLE } from './sample';
 
 function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
@@ -1491,7 +1697,7 @@ const clearButton = byId('clear-filters', HTMLButtonElement);
 const summary = byId('filter-summary', HTMLParagraphElement);
 
 let board: Board = SAMPLE;
-let view: View = { editingId: null, renameError: null };
+let view: View = NOT_EDITING;
 
 /** 筛选条件只从地址中读取：地址是它唯一的来源 */
 let stored: Filters = parseFilters(location.search);
@@ -1514,6 +1720,11 @@ function setFilters(filters: Filters, mode: 'push' | 'replace'): void {
   render();
 }
 
+/** 任务不符合当前的筛选条件时，在播报中说明它没有显示 */
+function hiddenNote(task: Task): string {
+  return matchesFilters(task, currentFilters()) ? '' : '（不符合当前的筛选条件，没有显示）';
+}
+
 /** 计算新的状态；有变化时重新渲染 */
 function dispatch(action: Action): void {
   const next = reduce(board, action);
@@ -1534,9 +1745,10 @@ function focusIn(selector: string): boolean {
 
 /** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
 function finishRename(id: string): void {
-  view = { editingId: null, renameError: null };
+  view = NOT_EDITING;
   render();
-  focusIn(`${taskSelector(id)} [data-action="rename"]`);
+  // 改名之后不再符合筛选条件时，任务被隐藏了：焦点放到搜索框
+  if (!focusIn(`${taskSelector(id)} [data-action="rename"]`)) filterInput.focus();
 }
 
 render();
@@ -1564,7 +1776,8 @@ form.addEventListener('submit', (event) => {
   clearError();
   dispatch({ type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
   input.value = '';
-  announce.textContent = `已添加：${parsed.title}`;
+  const added = board.tasks.at(-1);
+  announce.textContent = `已添加：${parsed.title}${added === undefined ? '' : hiddenNote(added)}`;
 });
 
 input.addEventListener('input', clearError);
@@ -1588,7 +1801,7 @@ boardRoot.addEventListener('click', (event) => {
     announce.textContent = `已删除：${task.title}`;
     focusIn(`#column-${task.status}`);
   } else if (name === 'rename') {
-    view = { editingId: task.id, renameError: null };
+    view = { editingId: task.id, draft: task.title, renameError: null };
     render();
     const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
     if (field instanceof HTMLInputElement) {
@@ -1613,22 +1826,38 @@ boardRoot.addEventListener('submit', (event) => {
   const id = view.editingId;
   const field = renameForm.elements.namedItem('title');
   if (id === null || !(field instanceof HTMLInputElement)) return;
-  const title = field.value.trim();
-  if (title === '') {
-    view = { editingId: id, renameError: '标题不能为空' };
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
     render();
     const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
     if (again instanceof HTMLInputElement) again.focus();
     return;
   }
   const before = board;
-  board = reduce(board, { type: 'rename', id, title });
-  if (board !== before) announce.textContent = `已改名：${title}`;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  const renamed = board.tasks.find((t) => t.id === id);
+  if (board !== before && renamed !== undefined) announce.textContent = `已改名：${parsed.title}${hiddenNote(renamed)}`;
   finishRename(id);
 });
 
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
 boardRoot.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || view.editingId === null) return;
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
   if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
 });
 
@@ -1637,7 +1866,8 @@ filterInput.addEventListener('input', () => setFilters({ ...currentFilters(), q:
 filterForm.addEventListener('submit', (event) => event.preventDefault());
 clearButton.addEventListener('click', () => {
   filterInput.value = '';
-  setFilters(NO_FILTERS, 'push');
+  // 没有筛选时不新增一条相同的记录
+  if (isFiltering(currentFilters())) setFilters(NO_FILTERS, 'push');
   filterInput.focus();
 });
 window.addEventListener('popstate', () => {
@@ -1649,10 +1879,10 @@ window.addEventListener('popstate', () => {
 
 :::variant{kind=wrong name=summary-without-total fails=tests reason="筛选时只写了显示的个数，没有说明一共有几个"}
 ```ts file=main.ts
-import { reduce, type Action, type Board } from './board';
-import { parseTaskInput } from './parse';
-import { filterBoard, isFiltering, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
-import { COLUMN_NAMES, renderBoard, type View } from './render';
+import { reduce, type Action, type Board, type Task } from './board';
+import { parseTaskInput, parseTitle } from './parse';
+import { filterBoard, isFiltering, matchesFilters, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
 import { SAMPLE } from './sample';
 
 function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
@@ -1672,7 +1902,7 @@ const clearButton = byId('clear-filters', HTMLButtonElement);
 const summary = byId('filter-summary', HTMLParagraphElement);
 
 let board: Board = SAMPLE;
-let view: View = { editingId: null, renameError: null };
+let view: View = NOT_EDITING;
 
 /** 筛选条件只从地址中读取：地址是它唯一的来源 */
 const currentFilters = (): Filters => parseFilters(location.search);
@@ -1693,6 +1923,11 @@ function setFilters(filters: Filters, mode: 'push' | 'replace'): void {
   render();
 }
 
+/** 任务不符合当前的筛选条件时，在播报中说明它没有显示 */
+function hiddenNote(task: Task): string {
+  return matchesFilters(task, currentFilters()) ? '' : '（不符合当前的筛选条件，没有显示）';
+}
+
 /** 计算新的状态；有变化时重新渲染 */
 function dispatch(action: Action): void {
   const next = reduce(board, action);
@@ -1713,9 +1948,10 @@ function focusIn(selector: string): boolean {
 
 /** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
 function finishRename(id: string): void {
-  view = { editingId: null, renameError: null };
+  view = NOT_EDITING;
   render();
-  focusIn(`${taskSelector(id)} [data-action="rename"]`);
+  // 改名之后不再符合筛选条件时，任务被隐藏了：焦点放到搜索框
+  if (!focusIn(`${taskSelector(id)} [data-action="rename"]`)) filterInput.focus();
 }
 
 render();
@@ -1743,7 +1979,8 @@ form.addEventListener('submit', (event) => {
   clearError();
   dispatch({ type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
   input.value = '';
-  announce.textContent = `已添加：${parsed.title}`;
+  const added = board.tasks.at(-1);
+  announce.textContent = `已添加：${parsed.title}${added === undefined ? '' : hiddenNote(added)}`;
 });
 
 input.addEventListener('input', clearError);
@@ -1767,7 +2004,7 @@ boardRoot.addEventListener('click', (event) => {
     announce.textContent = `已删除：${task.title}`;
     focusIn(`#column-${task.status}`);
   } else if (name === 'rename') {
-    view = { editingId: task.id, renameError: null };
+    view = { editingId: task.id, draft: task.title, renameError: null };
     render();
     const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
     if (field instanceof HTMLInputElement) {
@@ -1792,22 +2029,38 @@ boardRoot.addEventListener('submit', (event) => {
   const id = view.editingId;
   const field = renameForm.elements.namedItem('title');
   if (id === null || !(field instanceof HTMLInputElement)) return;
-  const title = field.value.trim();
-  if (title === '') {
-    view = { editingId: id, renameError: '标题不能为空' };
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
     render();
     const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
     if (again instanceof HTMLInputElement) again.focus();
     return;
   }
   const before = board;
-  board = reduce(board, { type: 'rename', id, title });
-  if (board !== before) announce.textContent = `已改名：${title}`;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  const renamed = board.tasks.find((t) => t.id === id);
+  if (board !== before && renamed !== undefined) announce.textContent = `已改名：${parsed.title}${hiddenNote(renamed)}`;
   finishRename(id);
 });
 
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
 boardRoot.addEventListener('keydown', (event) => {
-  if (event.key !== 'Escape' || view.editingId === null) return;
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
   if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
 });
 
@@ -1816,7 +2069,415 @@ filterInput.addEventListener('input', () => setFilters({ ...currentFilters(), q:
 filterForm.addEventListener('submit', (event) => event.preventDefault());
 clearButton.addEventListener('click', () => {
   filterInput.value = '';
-  setFilters(NO_FILTERS, 'push');
+  // 没有筛选时不新增一条相同的记录
+  if (isFiltering(currentFilters())) setFilters(NO_FILTERS, 'push');
+  filterInput.focus();
+});
+window.addEventListener('popstate', () => {
+  filterInput.value = currentFilters().q;
+  render();
+});
+```
+:::
+
+:::variant{kind=wrong name=search-box-from-address fails=tests reason="每次渲染都用地址中的 q 覆盖搜索框，去掉了首尾空白，打不出空格"}
+```ts file=main.ts
+import { reduce, type Action, type Board, type Task } from './board';
+import { parseTaskInput, parseTitle } from './parse';
+import { filterBoard, isFiltering, matchesFilters, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
+import { SAMPLE } from './sample';
+
+function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
+  const node = document.getElementById(id);
+  if (!(node instanceof type)) throw new Error(`页面缺少 #${id}`);
+  return node;
+}
+
+const form = byId('add-form', HTMLFormElement);
+const input = byId('new-task', HTMLInputElement);
+const errorText = byId('new-task-error', HTMLParagraphElement);
+const announce = byId('announce', HTMLParagraphElement);
+const boardRoot = byId('board', HTMLDivElement);
+const filterForm = byId('filter-form', HTMLFormElement);
+const filterInput = byId('filter-q', HTMLInputElement);
+const clearButton = byId('clear-filters', HTMLButtonElement);
+const summary = byId('filter-summary', HTMLParagraphElement);
+
+let board: Board = SAMPLE;
+let view: View = NOT_EDITING;
+
+/** 筛选条件只从地址中读取：地址是它唯一的来源 */
+const currentFilters = (): Filters => parseFilters(location.search);
+
+function render(): void {
+  const filters = currentFilters();
+  const visible = filterBoard(board, filters);
+  renderBoard(boardRoot, visible, view, filters);
+  filterInput.value = filters.q;
+  summary.textContent = isFiltering(filters) ? `显示 ${visible.tasks.length} / 共 ${board.tasks.length} 个任务` : `共 ${board.tasks.length} 个任务`;
+}
+
+/** 改变筛选条件：先更新地址，再按地址渲染 */
+function setFilters(filters: Filters, mode: 'push' | 'replace'): void {
+  const url = new URL(location.href);
+  url.search = toSearch(filters);
+  if (mode === 'push') history.pushState(null, '', url);
+  else history.replaceState(null, '', url);
+  render();
+}
+
+/** 任务不符合当前的筛选条件时，在播报中说明它没有显示 */
+function hiddenNote(task: Task): string {
+  return matchesFilters(task, currentFilters()) ? '' : '（不符合当前的筛选条件，没有显示）';
+}
+
+/** 计算新的状态；有变化时重新渲染 */
+function dispatch(action: Action): void {
+  const next = reduce(board, action);
+  if (next === board) return;
+  board = next;
+  render();
+}
+
+const taskSelector = (id: string) => `li[data-id="${CSS.escape(id)}"]`;
+
+/** 聚焦任务板中符合 selector 的元素；找不到或者是禁用的按钮时返回 false */
+function focusIn(selector: string): boolean {
+  const target = boardRoot.querySelector(selector);
+  if (!(target instanceof HTMLElement) || (target instanceof HTMLButtonElement && target.disabled)) return false;
+  target.focus();
+  return true;
+}
+
+/** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
+function finishRename(id: string): void {
+  view = NOT_EDITING;
+  render();
+  // 改名之后不再符合筛选条件时，任务被隐藏了：焦点放到搜索框
+  if (!focusIn(`${taskSelector(id)} [data-action="rename"]`)) filterInput.focus();
+}
+
+render();
+
+function showError(message: string): void {
+  errorText.textContent = message;
+  errorText.hidden = false;
+  input.setAttribute('aria-invalid', 'true');
+}
+
+function clearError(): void {
+  errorText.textContent = '';
+  errorText.hidden = true;
+  input.removeAttribute('aria-invalid');
+}
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const parsed = parseTaskInput(input.value);
+  input.focus();
+  if (!parsed.ok) {
+    showError(parsed.error);
+    return;
+  }
+  clearError();
+  dispatch({ type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
+  input.value = '';
+  const added = board.tasks.at(-1);
+  announce.textContent = `已添加：${parsed.title}${added === undefined ? '' : hiddenNote(added)}`;
+});
+
+input.addEventListener('input', clearError);
+
+boardRoot.addEventListener('click', (event) => {
+  if (!(event.target instanceof Element)) return;
+  const button = event.target.closest('button[data-action]');
+  const item = button?.closest('li.task');
+  if (!(button instanceof HTMLButtonElement) || !(item instanceof HTMLElement)) return;
+  const task = board.tasks.find((t) => t.id === item.dataset['id']);
+  if (task === undefined) return;
+  const name = button.dataset['action'];
+  if (name === 'left' || name === 'right') {
+    dispatch({ type: 'step', id: task.id, direction: name === 'left' ? -1 : 1 });
+    const moved = board.tasks.find((t) => t.id === task.id);
+    if (moved !== undefined) announce.textContent = `已移到“${COLUMN_NAMES[moved.status]}”：${task.title}`;
+    const other = name === 'left' ? 'right' : 'left';
+    if (!focusIn(`${taskSelector(task.id)} [data-action="${name}"]`)) focusIn(`${taskSelector(task.id)} [data-action="${other}"]`);
+  } else if (name === 'remove') {
+    dispatch({ type: 'remove', id: task.id });
+    announce.textContent = `已删除：${task.title}`;
+    focusIn(`#column-${task.status}`);
+  } else if (name === 'rename') {
+    view = { editingId: task.id, draft: task.title, renameError: null };
+    render();
+    const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
+    if (field instanceof HTMLInputElement) {
+      field.focus();
+      field.select();
+    }
+  } else if (name === 'tag') {
+    const tag = button.dataset['tag'];
+    if (tag === undefined) return;
+    const filters = currentFilters();
+    setFilters({ ...filters, tag: filters.tag === tag ? null : tag }, 'push');
+    focusIn(`${taskSelector(task.id)} [data-action="tag"][data-tag="${CSS.escape(tag)}"]`);
+  } else if (name === 'cancel') {
+    finishRename(task.id);
+  }
+});
+
+boardRoot.addEventListener('submit', (event) => {
+  const renameForm = event.target;
+  if (!(renameForm instanceof HTMLFormElement) || !renameForm.classList.contains('rename')) return;
+  event.preventDefault();
+  const id = view.editingId;
+  const field = renameForm.elements.namedItem('title');
+  if (id === null || !(field instanceof HTMLInputElement)) return;
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
+    render();
+    const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
+    if (again instanceof HTMLInputElement) again.focus();
+    return;
+  }
+  const before = board;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  const renamed = board.tasks.find((t) => t.id === id);
+  if (board !== before && renamed !== undefined) announce.textContent = `已改名：${parsed.title}${hiddenNote(renamed)}`;
+  finishRename(id);
+});
+
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
+boardRoot.addEventListener('keydown', (event) => {
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
+  if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
+});
+
+filterInput.value = currentFilters().q;
+filterInput.addEventListener('input', () => setFilters({ ...currentFilters(), q: filterInput.value }, 'replace'));
+filterForm.addEventListener('submit', (event) => event.preventDefault());
+clearButton.addEventListener('click', () => {
+  filterInput.value = '';
+  // 没有筛选时不新增一条相同的记录
+  if (isFiltering(currentFilters())) setFilters(NO_FILTERS, 'push');
+  filterInput.focus();
+});
+window.addEventListener('popstate', () => {
+  filterInput.value = currentFilters().q;
+  render();
+});
+```
+:::
+
+:::variant{kind=wrong name=silent-when-hidden fails=tests reason="添加、改名的任务被筛选隐藏时没有说明"}
+```ts file=main.ts
+import { reduce, type Action, type Board, type Task } from './board';
+import { parseTaskInput, parseTitle } from './parse';
+import { filterBoard, isFiltering, matchesFilters, NO_FILTERS, parseFilters, toSearch, type Filters } from './filters';
+import { COLUMN_NAMES, NOT_EDITING, renderBoard, type View } from './render';
+import { SAMPLE } from './sample';
+
+function byId<T extends HTMLElement>(id: string, type: { new (): T; prototype: T }): T {
+  const node = document.getElementById(id);
+  if (!(node instanceof type)) throw new Error(`页面缺少 #${id}`);
+  return node;
+}
+
+const form = byId('add-form', HTMLFormElement);
+const input = byId('new-task', HTMLInputElement);
+const errorText = byId('new-task-error', HTMLParagraphElement);
+const announce = byId('announce', HTMLParagraphElement);
+const boardRoot = byId('board', HTMLDivElement);
+const filterForm = byId('filter-form', HTMLFormElement);
+const filterInput = byId('filter-q', HTMLInputElement);
+const clearButton = byId('clear-filters', HTMLButtonElement);
+const summary = byId('filter-summary', HTMLParagraphElement);
+
+let board: Board = SAMPLE;
+let view: View = NOT_EDITING;
+
+/** 筛选条件只从地址中读取：地址是它唯一的来源 */
+const currentFilters = (): Filters => parseFilters(location.search);
+
+function render(): void {
+  const filters = currentFilters();
+  const visible = filterBoard(board, filters);
+  renderBoard(boardRoot, visible, view, filters);
+  summary.textContent = isFiltering(filters) ? `显示 ${visible.tasks.length} / 共 ${board.tasks.length} 个任务` : `共 ${board.tasks.length} 个任务`;
+}
+
+/** 改变筛选条件：先更新地址，再按地址渲染 */
+function setFilters(filters: Filters, mode: 'push' | 'replace'): void {
+  const url = new URL(location.href);
+  url.search = toSearch(filters);
+  if (mode === 'push') history.pushState(null, '', url);
+  else history.replaceState(null, '', url);
+  render();
+}
+
+/** 任务不符合当前的筛选条件时，在播报中说明它没有显示 */
+function hiddenNote(task: Task): string {
+  return matchesFilters(task, NO_FILTERS) ? '' : '（不符合当前的筛选条件，没有显示）';
+}
+
+/** 计算新的状态；有变化时重新渲染 */
+function dispatch(action: Action): void {
+  const next = reduce(board, action);
+  if (next === board) return;
+  board = next;
+  render();
+}
+
+const taskSelector = (id: string) => `li[data-id="${CSS.escape(id)}"]`;
+
+/** 聚焦任务板中符合 selector 的元素；找不到或者是禁用的按钮时返回 false */
+function focusIn(selector: string): boolean {
+  const target = boardRoot.querySelector(selector);
+  if (!(target instanceof HTMLElement) || (target instanceof HTMLButtonElement && target.disabled)) return false;
+  target.focus();
+  return true;
+}
+
+/** 结束改名：回到普通的显示，焦点回到这个任务的“改名”按钮 */
+function finishRename(id: string): void {
+  view = NOT_EDITING;
+  render();
+  // 改名之后不再符合筛选条件时，任务被隐藏了：焦点放到搜索框
+  if (!focusIn(`${taskSelector(id)} [data-action="rename"]`)) filterInput.focus();
+}
+
+render();
+
+function showError(message: string): void {
+  errorText.textContent = message;
+  errorText.hidden = false;
+  input.setAttribute('aria-invalid', 'true');
+}
+
+function clearError(): void {
+  errorText.textContent = '';
+  errorText.hidden = true;
+  input.removeAttribute('aria-invalid');
+}
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const parsed = parseTaskInput(input.value);
+  input.focus();
+  if (!parsed.ok) {
+    showError(parsed.error);
+    return;
+  }
+  clearError();
+  dispatch({ type: 'add', title: parsed.title, tags: parsed.tags, now: Date.now() });
+  input.value = '';
+  const added = board.tasks.at(-1);
+  announce.textContent = `已添加：${parsed.title}${added === undefined ? '' : hiddenNote(added)}`;
+});
+
+input.addEventListener('input', clearError);
+
+boardRoot.addEventListener('click', (event) => {
+  if (!(event.target instanceof Element)) return;
+  const button = event.target.closest('button[data-action]');
+  const item = button?.closest('li.task');
+  if (!(button instanceof HTMLButtonElement) || !(item instanceof HTMLElement)) return;
+  const task = board.tasks.find((t) => t.id === item.dataset['id']);
+  if (task === undefined) return;
+  const name = button.dataset['action'];
+  if (name === 'left' || name === 'right') {
+    dispatch({ type: 'step', id: task.id, direction: name === 'left' ? -1 : 1 });
+    const moved = board.tasks.find((t) => t.id === task.id);
+    if (moved !== undefined) announce.textContent = `已移到“${COLUMN_NAMES[moved.status]}”：${task.title}`;
+    const other = name === 'left' ? 'right' : 'left';
+    if (!focusIn(`${taskSelector(task.id)} [data-action="${name}"]`)) focusIn(`${taskSelector(task.id)} [data-action="${other}"]`);
+  } else if (name === 'remove') {
+    dispatch({ type: 'remove', id: task.id });
+    announce.textContent = `已删除：${task.title}`;
+    focusIn(`#column-${task.status}`);
+  } else if (name === 'rename') {
+    view = { editingId: task.id, draft: task.title, renameError: null };
+    render();
+    const field = boardRoot.querySelector(`${taskSelector(task.id)} input[name="title"]`);
+    if (field instanceof HTMLInputElement) {
+      field.focus();
+      field.select();
+    }
+  } else if (name === 'tag') {
+    const tag = button.dataset['tag'];
+    if (tag === undefined) return;
+    const filters = currentFilters();
+    setFilters({ ...filters, tag: filters.tag === tag ? null : tag }, 'push');
+    focusIn(`${taskSelector(task.id)} [data-action="tag"][data-tag="${CSS.escape(tag)}"]`);
+  } else if (name === 'cancel') {
+    finishRename(task.id);
+  }
+});
+
+boardRoot.addEventListener('submit', (event) => {
+  const renameForm = event.target;
+  if (!(renameForm instanceof HTMLFormElement) || !renameForm.classList.contains('rename')) return;
+  event.preventDefault();
+  const id = view.editingId;
+  const field = renameForm.elements.namedItem('title');
+  if (id === null || !(field instanceof HTMLInputElement)) return;
+  // 和添加任务时用同一条标题规则
+  const parsed = parseTitle(field.value);
+  if (!parsed.ok) {
+    view = { editingId: id, draft: field.value, renameError: parsed.error };
+    render();
+    const again = boardRoot.querySelector(`${taskSelector(id)} input[name="title"]`);
+    if (again instanceof HTMLInputElement) again.focus();
+    return;
+  }
+  const before = board;
+  board = reduce(board, { type: 'rename', id, title: parsed.title });
+  const renamed = board.tasks.find((t) => t.id === id);
+  if (board !== before && renamed !== undefined) announce.textContent = `已改名：${parsed.title}${hiddenNote(renamed)}`;
+  finishRename(id);
+});
+
+// 记下正在输入的内容（只更新状态，不重新渲染：重新渲染会换掉输入框，光标的位置也会丢）
+boardRoot.addEventListener('input', (event) => {
+  if (view.editingId === null || !(event.target instanceof HTMLInputElement) || event.target.name !== 'title') return;
+  const field = event.target;
+  if (view.renameError !== null) {
+    // 用户开始修改时错误提示消失（和添加任务的表单一样）：页面上只有这几处和新的状态不一致，直接改掉
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+    field.form?.querySelector('p.error')?.remove();
+  }
+  view = { ...view, draft: field.value, renameError: null };
+});
+
+boardRoot.addEventListener('keydown', (event) => {
+  // 用输入法组字时按的 Esc 是给输入法的（取消组字），不是取消改名
+  if (event.key !== 'Escape' || event.isComposing || view.editingId === null) return;
+  if (event.target instanceof Element && event.target.closest('form.rename') !== null) finishRename(view.editingId);
+});
+
+filterInput.value = currentFilters().q;
+filterInput.addEventListener('input', () => setFilters({ ...currentFilters(), q: filterInput.value }, 'replace'));
+filterForm.addEventListener('submit', (event) => event.preventDefault());
+clearButton.addEventListener('click', () => {
+  filterInput.value = '';
+  // 没有筛选时不新增一条相同的记录
+  if (isFiltering(currentFilters())) setFilters(NO_FILTERS, 'push');
   filterInput.focus();
 });
 window.addEventListener('popstate', () => {

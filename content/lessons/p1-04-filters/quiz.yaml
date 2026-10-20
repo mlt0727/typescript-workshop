@@ -24,9 +24,9 @@
   type: single
   prompt: "筛选条件的类型是 `{ q: string; tag: string | null }`。为什么“没有标签”用 null，而不是空字符串？"
   options:
-    - text: "“不按标签筛选”和“按一个空的标签筛选”是两回事；用 null 区分，?tag= 这样的地址也不会筛掉所有的任务"
+    - text: "“没有标签”只用一种值表示：?tag= 在解析时就归一化成 null，之后的代码只需要判断 tag !== null"
       correct: true
-      explain: 类型中把“没有”单独表示出来，使用时必须先判断，不会把空字符串误当成一个标签（a05）。
+      explain: 如果空字符串和 null 都可能出现，就有了两种“没有”；某处只检查了 null，空字符串就会被当成一个标签，筛掉所有的任务。类型中把“没有”单独表示出来，使用时必须先判断（a05）。
     - text: null 占用的内存比空字符串少
       explain: 这不是选择的理由；关键是语义上的区分。
     - text: URLSearchParams 不能处理空字符串

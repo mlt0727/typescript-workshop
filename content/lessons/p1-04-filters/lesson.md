@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 任务多了就需要筛选：只看标题里有“周报”的，只看带“#家”标签的。筛选条件要保存在地址中：刷新页面、按后退、把链接发给自己的另一台设备，看到的都是同一个视图（e10）。这一个里程碑先写筛选的纯函数（从地址解析、生成查询字符串、判断任务是否符合），再把它接到页面上：搜索框、可以点击的标签、“清除筛选”，以及后退和前进。
 objectives:
   - 把筛选条件建模成一个类型，写出解析、生成查询参数与筛选任务的纯函数（e06、e10）
@@ -59,6 +59,7 @@ e10 把筛选条件放进了查询参数。这一次要特别注意的是：**�
   <body>
     <label for="q">筛选</label> <input id="q" type="search" />
     <button type="button" id="work">只看 #工作</button>
+    <button type="button" id="back">后退</button>
     <p id="where"></p>
     <script type="module" src="./main.ts"></script>
   </body>
@@ -73,6 +74,7 @@ function need<T extends Element>(selector: string, type: { new (): T; prototype:
 
 const input = need('#q', HTMLInputElement);
 const work = need('#work', HTMLButtonElement);
+const back = need('#back', HTMLButtonElement);
 const where = need('#where', HTMLParagraphElement);
 
 function setParam(name: string, value: string | null, mode: 'push' | 'replace'): void {
@@ -92,11 +94,12 @@ function show(): void {
 
 input.addEventListener('input', () => setParam('q', input.value, 'replace'));
 work.addEventListener('click', () => setParam('tag', '工作', 'push'));
+back.addEventListener('click', () => history.back());
 window.addEventListener('popstate', show);
 show();
 ```
 - 在输入框中输入几个字：地址随之变化，但每个字都是 `replaceState`，没有新增历史记录。
-- 点“只看 #工作”：`pushState` 新增了一条记录。打开控制台运行 `history.back()`，地址回到点击之前的样子，`popstate` 触发了 `show()`，输入框也跟着变了。
+- 点“只看 #工作”：`pushState` 新增了一条记录。再点“后退”（它调用 `history.back()`，和浏览器的后退按钮一样），地址回到点击之前的样子，`popstate` 触发了 `show()`，输入框也跟着变了。
 - 开头的 `need` 和前几个里程碑中的 `byId` 一样：找到元素并检查它的类型，返回值的类型就是检查过的类型，后面的函数中可以直接使用（如果在顶层用 `if … throw` 收窄，函数声明中是看不到这个收窄的，因为函数可能在检查之前就被调用）。
 - `new URL(location.href)` 加上 `url.searchParams` 修改参数，中文、空格、`&` 都会被正确编码；只改查询参数，不改路径（沙箱中不能修改路径，e10）。
 :::

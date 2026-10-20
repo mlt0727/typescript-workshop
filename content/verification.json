@@ -7903,8 +7903,8 @@
       ]
     },
     "p1-01-plan-and-model": {
-      "verifiedAt": "2026-10-20T17:29:07.259Z",
-      "sourceHash": "b227af8bbf995e7f",
+      "verifiedAt": "2026-10-20T18:21:38.286Z",
+      "sourceHash": "c8c207d111027106",
       "ok": true,
       "checks": [
         {
@@ -7920,7 +7920,7 @@
         {
           "target": "exercise:parse-input:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseTaskInput › # 开头的词是标签，其余的词组成标题 ⟶ expect(…).toEqual({ ok: true, title: '写周报', tags: [ '工作', '紧急' ] }),parseTaskInput › 任意空白分隔词语：首尾空白去掉，中间的空白变成一个空格 ⟶ expect(…).toEqual({ ok: true, title: '修 自行车', tags: [ '家' ] }),parseTaskInput › 重复的标签只保留第一次出现的 ⟶ expect(…).toEqual({ ok: true, title: '写周报', tags: [ '工作', '紧急' ] }),parseTaskInput › 标签的错误 ⟶ expect(…).toEqual({ ok: false, error: '标签不能为空' }),parseTaskInput › 标题的错误 ⟶ expect(…).toEqual({ ok: false, error: '标题不能为空' }),parseTaskInput › 长度按字符（码点）计算，一个 emoji 算一个字符 ⟶ expect(…).toEqual({ ok: false, error: '标题不能超过 40 个字符' }),parseTaskInput › 有多个问题时，先报告标签的问题 ⟶ expect(…).toEqual({ ok: false, error: '标签不能为空' }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseTitle › 任意空白分隔的词用一个空格连起来 ⟶ expect(…).toEqual({ ok: true, title: '修 自行车' }),parseTitle › 不能为空，不超过 40 个字符（按码点计算） ⟶ expect(…).toEqual({ ok: false, error: '标题不能为空' }),parseTaskInput › # 开头的词是标签，其余的词组成标题 ⟶ expect(…).toEqual({ ok: true, title: '写周报', tags: [ '工作', '紧急' ] }),parseTaskInput › 任意空白分隔词语：首尾空白去掉，中间的空白变成一个空格 ⟶ expect(…).toEqual({ ok: true, title: '修 自行车', tags: [ '家' ] }),parseTaskInput › 重复的标签只保留第一次出现的 ⟶ expect(…).toEqual({ ok: true, title: '写周报', tags: [ '工作', '紧急' ] }),parseTaskInput › 标签的错误 ⟶ expect(…).toEqual({ ok: false, error: '标签不能为空' }),parseTaskInput › 标题的错误 ⟶ expect(…).toEqual({ ok: false, error: '标题不能为空' }),parseTaskInput › 长度按字符（码点）计算，一个 emoji 算一个字符 ⟶ expect(…).toEqual({ ok: false, error: '标题不能超过 40 个字符' }),parseTaskInput › 有多个问题时，按规定的顺序报告第一个（与词在输入中的位置无关） ⟶ expect(…).toEqual({ ok: false, error: '标签不能为空' }))"
         },
         {
           "target": "exercise:parse-input:solution:solution",
@@ -7935,7 +7935,7 @@
         {
           "target": "exercise:parse-input:wrong:code-units",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTaskInput › 长度按字符（码点）计算，一个 emoji 算一个字符 ⟶ expect(…).toBe(true))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTitle › 不能为空，不超过 40 个字符（按码点计算） ⟶ expect(…).toBe(true),parseTaskInput › 长度按字符（码点）计算，一个 emoji 算一个字符 ⟶ expect(…).toBe(true))"
         },
         {
           "target": "exercise:parse-input:wrong:no-dedupe",
@@ -7945,17 +7945,22 @@
         {
           "target": "exercise:parse-input:wrong:split-on-space",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTaskInput › 任意空白分隔词语：首尾空白去掉，中间的空白变成一个空格 ⟶ expect(…).toEqual({ ok: true, title: '修 自行车', tags: [ '家' ] }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTitle › 任意空白分隔的词用一个空格连起来 ⟶ expect(…).toEqual({ ok: true, title: '修 自行车' }),parseTitle › 不能为空，不超过 40 个字符（按码点计算） ⟶ expect(…).toEqual({ ok: false, error: '标题不能为空' }),parseTaskInput › 任意空白分隔词语：首尾空白去掉，中间的空白变成一个空格 ⟶ expect(…).toEqual({ ok: true, title: '修 自行车', tags: [ '家' ] }))"
         },
         {
           "target": "exercise:parse-input:wrong:throw-errors",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTaskInput › 标签的错误 ⟶ Error: 标签不能为空,parseTaskInput › 标题的错误 ⟶ Error: 标题不能为空,parseTaskInput › 有多个问题时，先报告标签的问题 ⟶ Error: 标签不能为空)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTitle › 不能为空，不超过 40 个字符（按码点计算） ⟶ Error: 标题不能为空,parseTaskInput › 标签的错误 ⟶ Error: 标签不能为空,parseTaskInput › 标题的错误 ⟶ Error: 标题不能为空,parseTaskInput › 有多个问题时，按规定的顺序报告第一个（与词在输入中的位置无关） ⟶ Error: 标签不能为空)"
+        },
+        {
+          "target": "exercise:parse-input:wrong:report-in-word-order",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTaskInput › 有多个问题时，按规定的顺序报告第一个（与词在输入中的位置无关） ⟶ expect(…).toEqual({ ok: false, error: '标签不能为空' }))"
         },
         {
           "target": "exercise:board-reducer:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(reduce › 删除之后再添加，id 不会重复 ⟶ expect(…).toEqual([ 't1', 't2', 't4' ]),reduce › rename：去掉首尾空白；空标题、相同的标题、找不到 id 时返回原来的 board ⟶ expect(…).toEqual({ id: 't2', title: '进行中的任务', tags: [], status: 'doing', createdAt: 20 }),reduce › step：移到相邻的列；已经在最左、最右时返回原来的 board ⟶ expect(…).toBe('doing'),reduce › remove：删除；找不到时返回原来的 board ⟶ expect(…).toEqual([ 't1', 't3' ]),columnsOf › 按状态分成三列，每列按创建时间排序 ⟶ expect(…).toEqual([ 't3', 't2' ]),columnsOf › 创建时间相同时按 id 中的数字排序（t2 在 t10 之前） ⟶ expect(…).toEqual([ 't2', 't10', 't1' ]))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(reduce › 删除之后再添加，id 不会重复 ⟶ expect(…).toEqual([ 't1', 't2', 't4' ]),reduce › rename：去掉首尾空白；空标题、相同的标题、找不到 id 时返回原来的 board ⟶ expect(…).toEqual({ id: 't2', title: '进行中的任务', tags: [], status: 'doing', createdAt: 20 }),reduce › step：移到相邻的列；已经在最左、最右时返回原来的 board ⟶ expect(…).toBe('doing'),reduce › remove：删除，其他任务保持原来的对象；找不到时返回原来的 board ⟶ expect(…).toEqual([ 't1', 't3' ]),columnsOf › 按状态分成三列，每列按创建时间排序 ⟶ expect(…).toEqual([ 't3', 't2' ]),columnsOf › 创建时间相同时按 id 中的数字排序（t2 在 t10 之前） ⟶ expect(…).toEqual([ 't2', 't10', 't1' ]))"
         },
         {
           "target": "exercise:board-reducer:solution:solution",
@@ -7995,8 +8000,8 @@
       ]
     },
     "p1-02-render-and-add": {
-      "verifiedAt": "2026-10-20T17:29:11.271Z",
-      "sourceHash": "969d29e53acd6988",
+      "verifiedAt": "2026-10-20T18:21:42.686Z",
+      "sourceHash": "4c90715c2861ec0b",
       "ok": true,
       "checks": [
         {
@@ -8075,6 +8080,11 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改输入框，或者成功添加之后，错误提示消失 ⟶ expect(…).not.toBeVisible())"
         },
         {
+          "target": "exercise:add-task:wrong:hide-but-keep-text",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改输入框，或者成功添加之后，错误提示消失 ⟶ 隐藏的同时要清空文字)"
+        },
+        {
           "target": "exercise:add-task:wrong:clear-on-error",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入不合法：显示原因，标记输入框，保留输入的文字，不添加 ⟶ expect(…).toHaveValue('#工作'),修改输入框，或者成功添加之后，错误提示消失 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\")"
@@ -8092,8 +8102,8 @@
       ]
     },
     "p1-03-edit-delete": {
-      "verifiedAt": "2026-10-20T17:29:15.657Z",
-      "sourceHash": "fc6c57ebaa395f54",
+      "verifiedAt": "2026-10-20T18:21:51.862Z",
+      "sourceHash": "a3a11ce0ae4594d0",
       "ok": true,
       "checks": [
         {
@@ -8139,7 +8149,7 @@
         {
           "target": "exercise:rename-task:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点“改名”：任务变成表单，输入框显示原来的标题，获得焦点并选中全部文字 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",回车保存：去掉首尾空白，标签保留，焦点回到“改名”按钮，播报结果 ⟶ expect(…).toEqual([ '写周报（第 42 周）' ]),点“保存”按钮也能保存 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",Esc 或“取消”：不保存，焦点回到“改名”按钮 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"取消\",标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",同一时间只编辑一个任务；编辑时其他任务的按钮照常工作 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\")"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(点“改名”：任务变成表单，输入框显示原来的标题，获得焦点并选中全部文字 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",回车保存：去掉首尾空白，标签保留，焦点回到“改名”按钮，播报结果 ⟶ expect(…).toEqual([ '写周报（第 42 周）' ]),点“保存”按钮也能保存 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",Esc 或“取消”：不保存，焦点回到“改名”按钮 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"button\" and name \"取消\",标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",新标题和添加任务时的规则一样：空白合并成一个空格，不超过 40 个字符 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",编辑时因为别的操作重新渲染，表单和正在输入的内容都还在 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",同一时间只编辑一个任务；编辑时其他任务的按钮照常工作 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\")"
         },
         {
           "target": "exercise:rename-task:solution:solution",
@@ -8154,7 +8164,7 @@
         {
           "target": "exercise:rename-task:wrong:no-select",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点“改名”：任务变成表单，输入框显示原来的标题，获得焦点并选中全部文字 ⟶ expect(…).toEqual([ 0, 3 ]),回车保存：去掉首尾空白，标签保留，焦点回到“改名”按钮，播报结果 ⟶ expect(…).toEqual([ '写周报（第 42 周）' ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(点“改名”：任务变成表单，输入框显示原来的标题，获得焦点并选中全部文字 ⟶ expect(…).toEqual([ 0, 3 ]),回车保存：去掉首尾空白，标签保留，焦点回到“改名”按钮，播报结果 ⟶ expect(…).toEqual([ '写周报（第 42 周）' ]),新标题和添加任务时的规则一样：空白合并成一个空格，不超过 40 个字符 ⟶ expect(…).toHaveValue('字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字'))"
         },
         {
           "target": "exercise:rename-task:wrong:focus-lost",
@@ -8174,13 +8184,28 @@
         {
           "target": "exercise:rename-task:wrong:empty-exits",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\")"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",新标题和添加任务时的规则一样：空白合并成一个空格，不超过 40 个字符 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",编辑时因为别的操作重新渲染，表单和正在输入的内容都还在 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\")"
+        },
+        {
+          "target": "exercise:rename-task:wrong:only-check-empty",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(新标题和添加任务时的规则一样：空白合并成一个空格，不超过 40 个字符 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\")"
+        },
+        {
+          "target": "exercise:rename-task:wrong:input-from-title",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ 输入框中仍是用户输入的内容,新标题和添加任务时的规则一样：空白合并成一个空格，不超过 40 个字符 ⟶ expect(…).toHaveValue('字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字字'),编辑时因为别的操作重新渲染，表单和正在输入的内容都还在 ⟶ expect(…).toHaveValue('写月报'))"
+        },
+        {
+          "target": "exercise:rename-task:wrong:dom-swap",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题为空时不保存：显示原因，标记输入框，留在编辑状态 ⟶ 用户修改输入框时，错误提示消失,编辑时因为别的操作重新渲染，表单和正在输入的内容都还在 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\",同一时间只编辑一个任务；编辑时其他任务的按钮照常工作 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"textbox\" and name \"新的标题\")"
         }
       ]
     },
     "p1-04-filters": {
-      "verifiedAt": "2026-10-20T17:29:23.832Z",
-      "sourceHash": "1f2df3a0304046a5",
+      "verifiedAt": "2026-10-20T18:22:02.289Z",
+      "sourceHash": "6cbda18b79dd0ca0",
       "ok": true,
       "checks": [
         {
@@ -8236,7 +8261,7 @@
         {
           "target": "exercise:url-filters:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(没有筛选时显示全部任务和总数 ⟶ expect(…).toHaveTextContent(/^共 4 个任务$/),输入时按标题筛选（不区分大小写），用 replaceState 更新地址 ⟶ expect(…).toEqual([ 'Read the TS Handbook' ]),点标签：只看带这个标签的任务，新增一条历史记录；再点一次取消 ⟶ expect(…).toEqual([ '买牛奶', '修自行车' ]),文字和标签可以同时使用 ⟶ expect(…).toEqual([ 'Read the TS Handbook', '写周报' ]),清除筛选：显示全部，地址中没有筛选条件，焦点回到搜索框 ⟶ expect(…).toHaveValue(''),后退：按地址恢复筛选条件，搜索框也跟着改回去 ⟶ expect(…).toEqual({ q: 'read', tag: '学习' }),地址被外部改变（例如前进到另一个地址）时，界面跟着地址 ⟶ expect(…).toEqual([ '写周报' ]),筛选时添加的任务按条件决定是否显示；总数随之变化 ⟶ expect(…).not.toContain('写代码'))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(没有筛选时显示全部任务和总数 ⟶ expect(…).toHaveTextContent(/^共 4 个任务$/),打开页面时按地址中的筛选条件显示 ⟶ expect(…).toEqual([ '写周报' ]),输入时按标题筛选（不区分大小写），用 replaceState 更新地址 ⟶ expect(…).toEqual([ 'Read the TS Handbook' ]),搜索框中可以输入空格；按回车不会提交表单 ⟶ expect(…).toEqual({ q: 'read the' }),点标签：只看带这个标签的任务，新增一条历史记录；再点一次取消 ⟶ expect(…).toEqual([ '买牛奶', '修自行车' ]),文字和标签可以同时使用 ⟶ expect(…).toEqual([ 'Read the TS Handbook', '写周报' ]),清除筛选：显示全部，新增一条历史记录，焦点回到搜索框；没有筛选时不新增记录 ⟶ expect(…).toHaveBeenCalledTimes(1),后退：按地址恢复筛选条件，搜索框也跟着改回去 ⟶ expect(…).toEqual({ q: 'read', tag: '学习' }),地址被外部改变（例如前进到另一个地址）时，界面跟着地址 ⟶ expect(…).toEqual([ '写周报' ]),筛选时添加的任务按条件决定是否显示；总数随之变化 ⟶ expect(…).not.toContain('写代码'),改名之后不再符合筛选条件：播报中说明，焦点放到搜索框 ⟶ expect(…).toEqual([]),改名时在搜索框中输入，正在编辑的内容不会丢 ⟶ expect(…).toEqual([ '写月报' ]))"
         },
         {
           "target": "exercise:url-filters:solution:solution",
@@ -8244,7 +8269,7 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:url-filters:alt:call-history-method",
+          "target": "exercise:url-filters:alt:address-object",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
@@ -8271,13 +8296,23 @@
         {
           "target": "exercise:url-filters:wrong:summary-without-total",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入时按标题筛选（不区分大小写），用 replaceState 更新地址 ⟶ expect(…).toHaveTextContent('显示 1 / 共 4 个任务'),文字和标签可以同时使用 ⟶ expect(…).toHaveTextContent('显示 1 / 共 4 个任务'),筛选时添加的任务按条件决定是否显示；总数随之变化 ⟶ expect(…).toHaveTextContent('显示 3 / 共 6 个任务'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(打开页面时按地址中的筛选条件显示 ⟶ expect(…).toHaveTextContent('显示 1 / 共 4 个任务'),输入时按标题筛选（不区分大小写），用 replaceState 更新地址 ⟶ expect(…).toHaveTextContent('显示 1 / 共 4 个任务'),文字和标签可以同时使用 ⟶ expect(…).toHaveTextContent('显示 1 / 共 4 个任务'),筛选时添加的任务按条件决定是否显示；总数随之变化 ⟶ expect(…).toHaveTextContent('显示 3 / 共 6 个任务'))"
+        },
+        {
+          "target": "exercise:url-filters:wrong:search-box-from-address",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(搜索框中可以输入空格；按回车不会提交表单 ⟶ 地址中的 q 去掉了首尾空白，但不能因此改掉搜索框中正在输入的内容)"
+        },
+        {
+          "target": "exercise:url-filters:wrong:silent-when-hidden",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(筛选时添加的任务按条件决定是否显示；总数随之变化 ⟶ 新任务被筛选隐藏时要说明,改名之后不再符合筛选条件：播报中说明，焦点放到搜索框 ⟶ expect(…).toHaveTextContent('已改名：写月报（不符合当前的筛选条件，没有显示）'))"
         }
       ]
     },
     "p1-05-persistence": {
-      "verifiedAt": "2026-10-20T17:29:27.318Z",
-      "sourceHash": "3a140018b1a00491",
+      "verifiedAt": "2026-10-20T18:22:13.469Z",
+      "sourceHash": "e9865b474fced770",
       "ok": true,
       "checks": [
         {
@@ -8293,7 +8328,7 @@
         {
           "target": "exercise:storage-format:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(loadBoard › 不是 JSON、不是对象、不认识的版本 ⟶ SyntaxError: Unexpected token '不', \"不是 JSON\" is not valid JSON,loadBoard › 第 2 版中不合法的任务：报告是第几个 ⟶ {\"status\":\"archived\"},loadBoard › 编号重复、nextId 不正确 ⟶ expect(…).toEqual({ ok: false, error: '任务的编号重复：t2' }),loadBoard › 只保留认识的字段（例如不会把界面状态读进来） ⟶ expect(…).toEqual({,loadBoard › 第 1 版的数据：转换成第 2 版 ⟶ expect(…).toEqual({,loadBoard › 第 1 版中不合法的数据 ⟶ expect(…).toEqual({ ok: false, error: '第 2 个待办的数据不正确' }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(loadBoard › 不是 JSON、不是对象、不认识的版本 ⟶ SyntaxError: Unexpected token '不', \"不是 JSON\" is not valid JSON,loadBoard › 第 2 版中不合法的任务：报告是第几个 ⟶ {\"status\":\"archived\"},loadBoard › 长度按字符（码点）计算，和添加任务时一样 ⟶ expect(…).toEqual({ ok: false, error: '第 1 个任务的数据不正确' }),loadBoard › createdAt 必须是有限的数字（JSON 中的 1e999 解析出来是 Infinity） ⟶ expect(…).toEqual({ ok: false, error: '第 1 个任务的数据不正确' }),loadBoard › 编号重复、nextId 不正确 ⟶ expect(…).toEqual({ ok: false, error: '任务的编号重复：t2' }),loadBoard › 只保留认识的字段（例如不会把界面状态读进来） ⟶ expect(…).toEqual({,loadBoard › 第 1 版的数据：转换成第 2 版 ⟶ expect(…).toEqual({,loadBoard › 第 1 版中不合法的数据 ⟶ expect(…).toEqual({ ok: false, error: '第 2 个待办的数据不正确' }))"
         },
         {
           "target": "exercise:storage-format:solution:solution",
@@ -8308,7 +8343,7 @@
         {
           "target": "exercise:storage-format:wrong:trust-json",
           "ok": true,
-          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@17) tests=fail(loadBoard › 不是 JSON、不是对象、不认识的版本 ⟶ expect(…).toEqual({ ok: false, error: '数据的格式不正确' }),loadBoard › 第 2 版中不合法的任务：报告是第几个 ⟶ {\"status\":\"archived\"},loadBoard › 编号重复、nextId 不正确 ⟶ expect(…).toEqual({ ok: false, error: '任务的编号重复：t2' }),loadBoard › 只保留认识的字段（例如不会把界面状态读进来） ⟶ expect(…).toEqual({,loadBoard › 第 1 版的数据：转换成第 2 版 ⟶ expect(…).toEqual({,loadBoard › 第 1 版中不合法的数据 ⟶ expect(…).toEqual({ ok: false, error: '第 2 个待办的数据不正确' }))"
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@18) tests=fail(loadBoard › 不是 JSON、不是对象、不认识的版本 ⟶ expect(…).toEqual({ ok: false, error: '数据的格式不正确' }),loadBoard › 第 2 版中不合法的任务：报告是第几个 ⟶ {\"status\":\"archived\"},loadBoard › 长度按字符（码点）计算，和添加任务时一样 ⟶ expect(…).toEqual({ ok: false, error: '第 1 个任务的数据不正确' }),loadBoard › createdAt 必须是有限的数字（JSON 中的 1e999 解析出来是 Infinity） ⟶ expect(…).toEqual({ ok: false, error: '第 1 个任务的数据不正确' }),loadBoard › 编号重复、nextId 不正确 ⟶ expect(…).toEqual({ ok: false, error: '任务的编号重复：t2' }),loadBoard › 只保留认识的字段（例如不会把界面状态读进来） ⟶ expect(…).toEqual({,loadBoard › 第 1 版的数据：转换成第 2 版 ⟶ expect(…).toEqual({,loadBoard › 第 1 版中不合法的数据 ⟶ expect(…).toEqual({ ok: false, error: '第 2 个待办的数据不正确' }))"
         },
         {
           "target": "exercise:storage-format:wrong:keep-unknown-fields",
@@ -8331,9 +8366,14 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadBoard › 不是 JSON、不是对象、不认识的版本 ⟶ expect(…).toEqual({ ok: false, error: '不支持的版本：3' }))"
         },
         {
+          "target": "exercise:storage-format:wrong:code-unit-length",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(loadBoard › 第 2 版中不合法的任务：报告是第几个 ⟶ {\"title\":\"写  周报\"},loadBoard › 长度按字符（码点）计算，和添加任务时一样 ⟶ expect(…).toBe(true))"
+        },
+        {
           "target": "exercise:persist-board:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(添加之后按第 2 版的格式保存；刷新之后还在 ⟶ expect(…).toMatchObject({ version: 2, board: { nextId: 6 } }),移动、改名、删除都会保存 ⟶ expect(…).toEqual([ '写周报', '修好自行车' ]),旧版本的数据：转换之后显示，并用新的格式保存 ⟶ expect(…).toEqual([ '交房租' ]),保存的数据无法读取：从空的任务板开始，备份原来的数据，提示用户 ⟶ expect(…).toEqual([]),结构不对的数据同样说明原因 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",保存失败：提示用户，操作照常完成；下一次保存成功后提示消失 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",只保存任务板：改名中的状态、筛选条件都不保存 ⟶ expect(…).toEqual([ 'board', 'version' ]))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(添加之后按第 2 版的格式保存；刷新之后还在 ⟶ expect(…).toMatchObject({ version: 2, board: { nextId: 6 } }),移动、改名、删除都会保存 ⟶ expect(…).toEqual([ '写周报', '修好自行车' ]),旧版本的数据：先备份，转换之后显示，并用新的格式保存 ⟶ expect(…).toBe('{\"version\":1,\"todos\":[{\"id\":2,\"text\":\"交房租\",\"done\":false},{\"id\":5,\"text\":\"体检\",\"done\":true}]}'),保存的数据无法读取：从空的任务板开始，备份原来的数据，提示用户 ⟶ expect(…).toEqual([]),结构不对的数据同样说明原因 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",保存失败：提示用户，操作照常完成；下一次保存成功后提示消失 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",备份也失败时：说明原因，之后不再写入（以免覆盖原来的数据） ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",迁移旧版本的数据时备份失败：不覆盖旧的数据，说明原因 ⟶ expect(…).toEqual([ '交房租' ]),无法访问存储（用户阻止了网站存储数据）：照常启动，说明原因，不再尝试保存 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",由 emoji 组成的标题保存之后，刷新时仍能读取 ⟶ expect(…).toContain('😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀'),只保存任务板：改名中的状态、筛选条件都不保存 ⟶ expect(…).toEqual([ 'board', 'version' ]))"
         },
         {
           "target": "exercise:persist-board:solution:solution",
@@ -8341,24 +8381,24 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:persist-board:alt:load-first",
+          "target": "exercise:persist-board:alt:persistence-object",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
           "target": "exercise:persist-board:wrong:no-backup",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保存的数据无法读取：从空的任务板开始，备份原来的数据，提示用户 ⟶ expect(…).toBe('{\"version\":2,\"board\":坏掉了'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保存的数据无法读取：从空的任务板开始，备份原来的数据，提示用户 ⟶ expect(…).toBe('{\"version\":2,\"board\":坏掉了'),备份也失败时：说明原因，之后不再写入（以免覆盖原来的数据） ⟶ expect(…).toHaveTextContent('这次的修改不会被保存'))"
         },
         {
           "target": "exercise:persist-board:wrong:overwrite-on-failure",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保存的数据无法读取：从空的任务板开始，备份原来的数据，提示用户 ⟶ 在用户修改之前，不要覆盖原来的数据)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(保存的数据无法读取：从空的任务板开始，备份原来的数据，提示用户 ⟶ 在用户修改之前，不要覆盖原来的数据,备份也失败时：说明原因，之后不再写入（以免覆盖原来的数据） ⟶ QuotaExceededError: 存储空间已满)"
         },
         {
           "target": "exercise:persist-board:wrong:rename-not-saved",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(移动、改名、删除都会保存 ⟶ expect(…).toEqual([ '写周报', '修好自行车' ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(移动、改名、删除都会保存 ⟶ expect(…).toEqual([ '写周报', '修好自行车' ]),由 emoji 组成的标题保存之后，刷新时仍能读取 ⟶ expect(…).toContain('😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀'))"
         },
         {
           "target": "exercise:persist-board:wrong:quota-breaks-action",
@@ -8368,7 +8408,22 @@
         {
           "target": "exercise:persist-board:wrong:save-view-state",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(旧版本的数据：转换之后显示，并用新的格式保存 ⟶ expect(…).toMatchObject({ version: 2, board: { nextId: 6 } }),只保存任务板：改名中的状态、筛选条件都不保存 ⟶ expect(…).toEqual([ 'board', 'version' ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(旧版本的数据：先备份，转换之后显示，并用新的格式保存 ⟶ expect(…).toMatchObject({ version: 2, board: { nextId: 6 } }),只保存任务板：改名中的状态、筛选条件都不保存 ⟶ expect(…).toEqual([ 'board', 'version' ]))"
+        },
+        {
+          "target": "exercise:persist-board:wrong:save-after-backup-failed",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(备份也失败时：说明原因，之后不再写入（以免覆盖原来的数据） ⟶ 备份失败之后不应该再尝试写入,迁移旧版本的数据时备份失败：不覆盖旧的数据，说明原因 ⟶ 第 1 版的数据没有备份，不能被覆盖)"
+        },
+        {
+          "target": "exercise:persist-board:wrong:migrate-without-backup",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(旧版本的数据：先备份，转换之后显示，并用新的格式保存 ⟶ expect(…).toBe('{\"version\":1,\"todos\":[{\"id\":2,\"text\":\"交房租\",\"done\":false},{\"id\":5,\"text\":\"体检\",\"done\":true}]}'),迁移旧版本的数据时备份失败：不覆盖旧的数据，说明原因 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\")"
+        },
+        {
+          "target": "exercise:persist-board:wrong:crash-when-storage-blocked",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(无法访问存储（用户阻止了网站存储数据）：照常启动，说明原因，不再尝试保存 ⟶ SecurityError: The operation is insecure.)"
         }
       ]
     }

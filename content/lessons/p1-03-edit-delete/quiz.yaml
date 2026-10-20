@@ -19,15 +19,15 @@
     - text: "作为 Task 的一个属性 editing: boolean"
       explain: 这样它会被保存下来，下次打开时任务还停在编辑状态；而且多个任务可能同时为 true。
     - text: 不需要保存，直接在 DOM 中把 li 换成表单
-      explain: 下一次因为别的操作重新渲染时，表单会消失，正在输入的内容也丢了。
+      explain: 下一次因为别的操作重新渲染时，表单会消失。把 editingId（以及输入框中的内容 draft）放在界面状态中，重新渲染时表单和用户输入的内容都还在。
 - id: focus-after-delete
   type: single
   prompt: 用键盘删除一个任务之后，任务板重新渲染。焦点应该放在哪里？
   options:
     - text: 这个任务原来所在的那一列的标题上（标题带 tabindex="-1"），并用 role="status" 说明“已删除”
       correct: true
-      explain: 被删除的按钮已经不存在，焦点会回到页面开头；放到同一列的标题上，用户知道自己还在原来的位置。
+      explain: 被删除的按钮已经不存在，焦点丢了（activeElement 变成 body），读屏用户听不到任何反馈；放到同一列的标题上，用户知道自己还在原来的位置。
     - text: 不需要处理，浏览器会自动把焦点放到下一个按钮上
-      explain: 元素被替换之后，焦点会回到 document.body，键盘用户只能从头开始。
+      explain: 浏览器不会替你选择新的焦点：元素被删除之后，activeElement 是 document.body，读屏软件什么都不读。下一次按 Tab 时浏览器大致从原来的位置继续，但用户并不知道自己在哪里。
     - text: 页面最上方的输入框
       explain: 用户刚才在任务板中操作，跳到页面顶部会让他们失去位置。

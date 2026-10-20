@@ -22,15 +22,15 @@
       explain: 去掉空白不能防止 HTML 注入。
 - id: form-feedback
   type: multiple
-  prompt: 输入不合法时，下面哪些做法能让所有用户（包括使用屏幕阅读器的用户）知道哪里错了？
+  prompt: 输入不合法时，下面哪些做法能让所有用户（包括使用屏幕阅读器的用户）知道哪里错了、为什么错？
   options:
-    - text: 在输入框附近显示文字说明，并让输入框的 aria-describedby 指向它
+    - text: 在输入框附近用文字说明原因，并让输入框的 aria-describedby 指向它
       correct: true
-      explain: 输入框获得焦点时，读屏软件会读出这段说明（d09）。
-    - text: 给输入框加上 aria-invalid="true"
+      explain: 明眼用户能看到原因；输入框获得焦点时，读屏软件会读出这段说明（d09）。
+    - text: 把这段说明放在 role="alert" 的元素中
       correct: true
-      explain: 读屏软件会读出“无效”。改正之后要去掉它。
-    - text: 把输入框的边框变成红色
+      explain: 提交时焦点本来就在输入框中，描述不会被重新读出；alert 让说明一出现就被读出来。
+    - text: 只给输入框加上 aria-invalid="true"
+      explain: 读屏软件只会读出“无效”，说不出原因，明眼用户也看不到。它要和文字说明一起使用。
+    - text: 只把输入框的边框变成红色
       explain: 只靠颜色，读屏用户和色盲用户都无从得知。可以作为补充，但不能是唯一的提示。
-    - text: 清空输入框，让用户重新输入
-      explain: 用户输入的内容丢了，而且仍然不知道哪里错了。
