@@ -233,6 +233,45 @@ test.describe('DOM 模式', () => {
     expect(bad.tests.results.map((t) => t.status)).toEqual(['fail', 'pass']);
   });
 
+  test('测试中用 page.viewport() 改变视口：媒体查询生效，下一个测试恢复默认尺寸', async ({ page }) => {
+    await open(page);
+    const html = '<!doctype html><html lang="zh-CN"><head><link rel="stylesheet" href="./style.css" /></head><body><div class="row"><p id="a">A</p><p id="b">B</p></div></body></html>';
+    const css = '.row { display: flex; gap: 8px; } @media (max-width: 600px) { .row { flex-direction: column; } }';
+    const tests = {
+      'layout.test.ts': [
+        'import { expect, test } from "vitest";',
+        'import { page } from "vitest/browser";',
+        'function box(id: string) { const el = document.getElementById(id); if (!el) throw new Error(id); return el.getBoundingClientRect(); }',
+        'test("默认视口：一行", () => {',
+        '  expect(window.innerWidth).toBe(1024);',
+        '  expect(box("a").top).toBe(box("b").top);',
+        '  expect(box("b").left).toBeGreaterThan(box("a").right);',
+        '});',
+        'test("手机宽度：一列", async () => {',
+        '  await page.viewport(375, 667);',
+        '  expect(window.innerWidth).toBe(375);',
+        '  expect(document.querySelector(".row")).toHaveStyle({ flexDirection: "column" });',
+        '  expect(box("b").top).toBeGreaterThan(box("a").bottom);',
+        '});',
+        'test("下一个测试恢复默认尺寸", () => {',
+        '  expect(window.innerWidth).toBe(1024);',
+        '  expect(document.querySelector(".row")).toHaveStyle({ flexDirection: "row" });',
+        '});',
+        'test("尺寸超出范围时报错", async () => {',
+        '  await expect(page.viewport(10, 10)).rejects.toThrow(RangeError);',
+        '});',
+      ].join('\n'),
+    };
+    const r = await judge(page, baseSpec('dom', 'index.html'), { student: { 'index.html': html }, support: { 'style.css': css }, tests });
+    expect(r.tests.results.map((t) => [t.name, t.status, t.error?.message])).toEqual([
+      ['默认视口：一行', 'pass', undefined],
+      ['手机宽度：一列', 'pass', undefined],
+      ['下一个测试恢复默认尺寸', 'pass', undefined],
+      ['尺寸超出范围时报错', 'pass', undefined],
+    ]);
+    expect(r.passed).toBe(true);
+  });
+
   test('DOM 模式的同步死循环被循环保护中止，页面不会卡死', async ({ page }) => {
     await open(page);
     const started = Date.now();

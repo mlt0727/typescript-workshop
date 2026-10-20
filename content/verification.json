@@ -4011,7 +4011,7 @@
       ]
     },
     "d01-html-semantics": {
-      "verifiedAt": "2026-10-20T11:27:09.083Z",
+      "verifiedAt": "2026-10-20T11:34:38.968Z",
       "sourceHash": "88d9e47ce68663a4",
       "ok": true,
       "checks": [
@@ -4118,7 +4118,7 @@
       ]
     },
     "d02-html-forms": {
-      "verifiedAt": "2026-10-20T11:31:30.326Z",
+      "verifiedAt": "2026-10-20T11:34:44.658Z",
       "sourceHash": "10f6444d8395406d",
       "ok": true,
       "checks": [
@@ -4230,7 +4230,7 @@
       ]
     },
     "d07-events": {
-      "verifiedAt": "2026-10-20T08:56:46.792Z",
+      "verifiedAt": "2026-10-20T11:34:50.146Z",
       "sourceHash": "5fb16b205d4ef535",
       "ok": true,
       "checks": [
@@ -4785,7 +4785,7 @@
       ]
     },
     "g03-events-state": {
-      "verifiedAt": "2026-10-20T08:56:49.878Z",
+      "verifiedAt": "2026-10-20T11:34:53.316Z",
       "sourceHash": "0a98baee8e519cd3",
       "ok": true,
       "checks": [

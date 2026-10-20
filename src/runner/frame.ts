@@ -2,6 +2,7 @@ import {
   hostToSandboxSchema,
   PROTOCOL_VERSION,
   sandboxToHostSchema,
+  VIEWPORT_LIMITS,
   type HostToSandbox,
   type SandboxToHost,
 } from '../shared/sandbox-protocol.ts';
@@ -43,7 +44,17 @@ export class SandboxFrame {
     if (!options.container) {
       iframe.setAttribute('aria-hidden', 'true');
       iframe.tabIndex = -1;
-      Object.assign(iframe.style, { position: 'fixed', width: '1px', height: '1px', left: '-10px', top: '-10px', border: '0', opacity: '0', pointerEvents: 'none' });
+      // 隐藏的 iframe 放在屏幕外，但保持正常尺寸：布局、媒体查询与 page.viewport() 都依赖它
+      Object.assign(iframe.style, {
+        position: 'fixed',
+        width: `${VIEWPORT_LIMITS.defaultWidth}px`,
+        height: `${VIEWPORT_LIMITS.defaultHeight}px`,
+        left: '-20000px',
+        top: '0',
+        border: '0',
+        opacity: '0',
+        pointerEvents: 'none',
+      });
     }
     this.iframe = iframe;
     const sessionId = randomId(20);
@@ -89,6 +100,12 @@ export class SandboxFrame {
 
   get isDead() {
     return this.dead;
+  }
+
+  /** 调整隐藏 iframe 的尺寸（测试中的 page.viewport()） */
+  resize(width: number, height: number) {
+    this.iframe.style.width = `${width}px`;
+    this.iframe.style.height = `${height}px`;
   }
 
   send(cmd: HostToSandbox) {

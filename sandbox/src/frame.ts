@@ -11,6 +11,7 @@ import {
   hostToSandboxSchema,
   initMessageSchema,
   PROTOCOL_VERSION,
+  VIEWPORT_LIMITS,
   type HostToSandbox,
   type SandboxToHost,
   type TestResult,
@@ -28,6 +29,32 @@ import type { WorkerMessage } from './worker.ts';
 const deps = getDeps();
 deps['@testing-library/dom'] = TLDom;
 deps['@testing-library/user-event'] = UserEvent;
+
+// —— vitest/browser：测试中调整视口，与 Vitest 浏览器模式的 page.viewport(width, height) 相同 ——
+let testRunId: string | undefined;
+let viewportResolve: (() => void) | undefined;
+let currentViewport: { width: number; height: number } = { width: VIEWPORT_LIMITS.defaultWidth, height: VIEWPORT_LIMITS.defaultHeight };
+
+async function setViewport(width: number, height: number): Promise<void> {
+  const runId = testRunId;
+  if (runId === undefined) throw new Error('page.viewport() 只能在 DOM / React 模式的测试中使用');
+  const ok = (n: number) => Number.isInteger(n) && n >= VIEWPORT_LIMITS.min && n <= VIEWPORT_LIMITS.max;
+  if (!ok(width) || !ok(height)) {
+    throw new RangeError(`page.viewport() 的宽和高必须是 ${VIEWPORT_LIMITS.min}–${VIEWPORT_LIMITS.max} 之间的整数`);
+  }
+  if (viewportResolve) throw new Error('上一次 page.viewport() 还没有完成，请先 await 它');
+  await new Promise<void>((resolve) => {
+    viewportResolve = resolve;
+    send({ type: 'viewport', runId, width, height });
+  });
+  currentViewport = { width, height };
+  // 宿主调整 iframe 尺寸后，浏览器要到下一次布局才更新 innerWidth 与媒体查询
+  const deadline = performance.now() + 2000;
+  while ((window.innerWidth !== width || window.innerHeight !== height) && performance.now() < deadline) {
+    await new Promise<void>((resolve) => realTimers.setTimeout(resolve, 10));
+  }
+}
+deps['vitest/browser'] = { page: { viewport: setViewport } };
 
 let port: MessagePort | null = null;
 
@@ -226,6 +253,7 @@ async function testPage(cmd: Extract<HostToSandbox, { type: 'test' }>) {
   }, cmd.timeoutMs);
   try {
     const page = applyPage(cmd.page);
+    testRunId = cmd.runId;
     const studentEntries = cmd.bundle.entries.filter((e) => !cmd.testEntries.includes(e));
     const collector = new TestCollector();
     deps.vitest = collector.api();
@@ -239,6 +267,9 @@ async function testPage(cmd: Extract<HostToSandbox, { type: 'test' }>) {
       {
         locate,
         beforeEach: async () => {
+          if (currentViewport.width !== VIEWPORT_LIMITS.defaultWidth || currentViewport.height !== VIEWPORT_LIMITS.defaultHeight) {
+            await setViewport(VIEWPORT_LIMITS.defaultWidth, VIEWPORT_LIMITS.defaultHeight);
+          }
           page.reset();
           simulated.clear();
           if (mode === 'dom' && studentEntries.length > 0) {
@@ -274,6 +305,12 @@ async function handle(cmd: HostToSandbox) {
       return;
     case 'stop':
       if (stopWorker(cmd.runId)) send({ type: 'status', runId: cmd.runId, status: 'stopped' });
+      return;
+    case 'viewport-done':
+      if (cmd.runId === testRunId) {
+        viewportResolve?.();
+        viewportResolve = undefined;
+      }
       return;
     case 'run':
       if (cmd.mode === 'ts') runInWorker(cmd);

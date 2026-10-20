@@ -16,6 +16,9 @@ export const PROTOCOL_VERSION = 1;
 const runId = z.string().min(1).max(64);
 const shortText = z.string().max(LIMITS.maxLogEntryChars);
 
+/** 测试 iframe 的视口尺寸：默认值与 page.viewport() 允许的范围 */
+export const VIEWPORT_LIMITS = { min: 200, max: 2000, defaultWidth: 1024, defaultHeight: 768 } as const;
+
 export const runModuleSchema = z.object({
   id: z.string().max(300),
   path: z.string().max(260),
@@ -80,6 +83,8 @@ export const hostToSandboxSchema = z.discriminatedUnion('type', [
   }),
   z.object({ type: z.literal('stop'), runId }),
   z.object({ type: z.literal('ping'), nonce: z.string().max(64) }),
+  /** 回应测试中的 page.viewport()：宿主已经调整了 iframe 的尺寸 */
+  z.object({ type: z.literal('viewport-done'), runId }),
 ]);
 export type HostToSandbox = z.infer<typeof hostToSandboxSchema>;
 
@@ -126,6 +131,13 @@ export const sandboxToHostSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('ready'), sessionId: z.string().max(64), protocol: z.literal(PROTOCOL_VERSION) }),
   z.object({ type: z.literal('pong'), nonce: z.string().max(64) }),
   z.object({ type: z.literal('logs'), runId, entries: z.array(logEntrySchema).max(100) }),
+  /** 测试中调用了 page.viewport(width, height)：请宿主调整测试 iframe 的尺寸 */
+  z.object({
+    type: z.literal('viewport'),
+    runId,
+    width: z.number().int().min(VIEWPORT_LIMITS.min).max(VIEWPORT_LIMITS.max),
+    height: z.number().int().min(VIEWPORT_LIMITS.min).max(VIEWPORT_LIMITS.max),
+  }),
   z.object({
     type: z.literal('status'),
     runId,

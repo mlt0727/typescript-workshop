@@ -29,6 +29,7 @@ export const PROVIDED_DEPS = [
   'react-dom',
   'react-dom/client',
   'vitest',
+  'vitest/browser',
   '@testing-library/dom',
   '@testing-library/react',
   '@testing-library/user-event',

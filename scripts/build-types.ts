@@ -149,6 +149,7 @@ const extraLibs = new Set<string>();
 const testFiles = collectPackages(['expect-type'], extraLibs);
 testFiles.set('/node_modules/vitest/package.json', JSON.stringify({ name: 'vitest', types: 'index.d.ts' }));
 testFiles.set('/node_modules/vitest/index.d.ts', vitestTypes);
+testFiles.set('/node_modules/vitest/browser.d.ts', fs.readFileSync(path.join(root, 'sandbox', 'types', 'vitest-browser.d.ts'), 'utf8'));
 
 const domTestingFiles = collectPackages(['@testing-library/dom', '@testing-library/user-event'], extraLibs);
 const reactFiles = collectPackages(

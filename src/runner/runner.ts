@@ -204,6 +204,10 @@ export function runTests(opts: TestRunOptions): Promise<TestOutcome> {
       if (!('runId' in m) || m.runId !== runId) return;
       if (m.type === 'logs') onLogs(m.entries);
       else if (m.type === 'tests') finish({ results: m.results, error: m.error });
+      else if (m.type === 'viewport' && isPage) {
+        frame.resize(m.width, m.height);
+        frame.send({ type: 'viewport-done', runId });
+      }
     });
     const offDeath = frame.onDeath((reason) => finish({ results: [], error: { name: 'SandboxClosed', message: reason } }));
     frame.ready.then(

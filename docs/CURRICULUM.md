@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 39 / 规划总数 126**（草稿 4，规划中 83）
+**已发布 39 / 规划总数 126**（草稿 6，规划中 81）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -101,8 +101,8 @@
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `d01-html-semantics` HTML 语义结构 | ⬜ 规划中 | `a01-where-ts-runs` |
-| `d02-html-forms` 表单元素与标签 | ⬜ 规划中 | `d01-html-semantics` |
+| `d01-html-semantics` HTML 语义结构 | 📝 草稿 | `a01-where-ts-runs` |
+| `d02-html-forms` 表单元素与标签 | 📝 草稿 | `d01-html-semantics` |
 | `d03-css-layout` CSS 布局：Flexbox 与 Grid | ⬜ 规划中 | `d01-html-semantics` |
 | `d04-responsive-a11y` 响应式与可访问性基础 | ⬜ 规划中 | `d03-css-layout`、`d02-html-forms` |
 | `d05-dom-query` DOM 查询、null 检查与元素类型收窄 | ⬜ 规划中 | `d01-html-semantics`、`b07-narrowing` |
