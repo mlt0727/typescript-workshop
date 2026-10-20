@@ -3276,6 +3276,108 @@
         }
       ]
     },
+    "b11-overloads": {
+      "verifiedAt": "2026-10-20T10:35:14.465Z",
+      "sourceHash": "657c13854c2ca960",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:overloads:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:overloads:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 0 2026 10 20"
+        },
+        {
+          "target": "playground:return-depends:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:return-depends:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 43 2 | [log] [ '7' ]"
+        },
+        {
+          "target": "playground:prefer-union:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:prefer-union:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 2 3 | [log] 3"
+        },
+        {
+          "target": "exercise:first-item:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@first.test-d.ts:4 Type 'string' does not satisfy the constraint '\"Expected: string, Actual: number\" | \"Expected: string, Actual: undefined\"'.；TS2344@first.test-d.ts:5 Type 'number | undefined' does not satisfy the constraint '\"Expected: number, Actual: string\" | \"Expected: undefined, Actual: ) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:first-item:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:first-item:alt:separate-branches",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:first-item:wrong:no-overloads",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@first.test-d.ts:4 Type 'string' does not satisfy the constraint '\"Expected: string, Actual: number\" | \"Expected: string, Actual: undefined\"'.；TS2344@first.test-d.ts:5 Type 'number | undefined' does not satisfy the constraint '\"Expected: number, Actual: string\" | \"Expected: undefined, Actual: ) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:first-item:wrong:wrong-return",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@first.test-d.ts:4 Type 'string' does not satisfy the constraint '\"Expected: string, Actual: undefined\"'.) rules=ok tests=fail(字符串)"
+        },
+        {
+          "target": "exercise:first-item:wrong:empty-string-undefined",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(字符串)"
+        },
+        {
+          "target": "exercise:setting-overloads:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@settings.test-d.ts:5 Type '\"light\" | \"dark\"' does not satisfy the constraint '\"Expected: literal string: light, Actual: string\" | \"Expected: literal string: light, Actual: number\" | \"Expected: literal string: dark, Actual: string\" | \"Expected: literal string: dark, Actual: number\"'.；TS2344@se) rules=ok tests=fail(createSettings › 修改设置,createSettings › 非法的值抛出 RangeError，并保持原值,createSettings › 与 initial 互不影响)"
+        },
+        {
+          "target": "exercise:setting-overloads:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:setting-overloads:alt:switch-based",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:setting-overloads:wrong:union-return",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@settings.test-d.ts:5 Type '\"light\" | \"dark\"' does not satisfy the constraint '\"Expected: literal string: light, Actual: string\" | \"Expected: literal string: light, Actual: number\" | \"Expected: literal string: dark, Actual: string\" | \"Expected: literal string: dark, Actual: number\"'.；TS2344@se) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:setting-overloads:wrong:loose-set",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2578@settings.test-d.ts:9 Unused '@ts-expect-error' directive.；TS2578@settings.test-d.ts:11 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:setting-overloads:wrong:no-copy",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSettings › 与 initial 互不影响)"
+        },
+        {
+          "target": "exercise:setting-overloads:wrong:no-range-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSettings › 非法的值抛出 RangeError，并保持原值)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

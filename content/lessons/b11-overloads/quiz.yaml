@@ -1,0 +1,53 @@
+- id: implementation-hidden
+  type: single
+  prompt: |
+    下面哪个调用会报错？
+
+    ```ts
+    function pad(text: string): string;
+    function pad(text: string, width: number, fill: string): string;
+    function pad(text: string, width = 10, fill = ' '): string {
+      return text.padStart(width, fill);
+    }
+    ```
+  options:
+    - text: "`pad('a', 5)`"
+      correct: true
+      explain: 实现签名虽然允许两个参数，但调用方看不到它；重载签名只接受 1 个或 3 个参数（TS2575）。
+    - text: "`pad('a')`"
+      explain: 符合第一个重载签名。
+    - text: "`pad('a', 5, '0')`"
+      explain: 符合第二个重载签名。
+- id: union-argument
+  type: single
+  prompt: "`function f(x: string): number;`、`function f(x: number): string;` 之后，用 `string | number` 类型的值调用 `f` 会怎样？"
+  options:
+    - text: 报错：没有匹配的重载（TS2769）
+      correct: true
+      explain: 重载逐个匹配，联合类型既不完全符合第一个，也不完全符合第二个。需要再加一个接受联合类型的签名。
+    - text: 返回 `number | string`
+      explain: TypeScript 不会自动合并重载的结果。
+    - text: 使用实现签名
+      explain: 实现签名对调用方不可见。
+- id: prefer-union
+  type: single
+  prompt: "`len(s: string): number` 和 `len(arr: unknown[]): number` 两个重载，更好的写法是什么？"
+  options:
+    - text: "一个签名 `len(x: string | unknown[]): number`"
+      correct: true
+      explain: 返回类型不随参数变化时，联合类型参数更简单，也能接受联合类型的参数。这是 Handbook 的建议。
+    - text: 保持两个重载
+      explain: 两个重载让 `len(someStringOrArray)` 这种调用无法通过检查，没有带来任何好处。
+    - text: "改成 `len(x: any): number`"
+      explain: "`any` 关闭了检查，`len(42)` 也能通过。"
+- id: overload-runtime
+  type: single
+  prompt: TypeScript 的函数重载编译成 JavaScript 之后是什么样子？
+  options:
+    - text: 只剩下带函数体的那一个实现，重载签名全部被删除
+      correct: true
+      explain: 重载只存在于类型层面，运行时是同一个函数，由实现内部自己判断。
+    - text: 每个重载签名生成一个函数，运行时根据参数类型自动选择
+      explain: 这是 Java 的方法重载。JavaScript 没有按类型分派的机制。
+    - text: 生成一个分派函数，自动检查参数类型
+      explain: TypeScript 不生成运行时检查代码。
