@@ -155,8 +155,8 @@ stages:
     title: 项目与部署
     summary: 三个层层递进的项目，每个拆成独立里程碑；以及静态与服务端部署。
     lessons:
-      - { id: p1-01-plan-and-model, title: 项目 1·任务板：需求与数据模型, status: planned, prerequisites: [d10-state-and-render] }
-      - { id: p1-02-render-and-add, title: 项目 1·任务板：渲染与新增, status: planned, prerequisites: [p1-01-plan-and-model] }
+      - { id: p1-01-plan-and-model, title: 项目 1·任务板：需求与数据模型, status: draft, prerequisites: [d10-state-and-render] }
+      - { id: p1-02-render-and-add, title: 项目 1·任务板：渲染与新增, status: draft, prerequisites: [p1-01-plan-and-model] }
       - { id: p1-03-edit-delete, title: 项目 1·任务板：编辑与删除（事件委托）, status: planned, prerequisites: [p1-02-render-and-add] }
       - { id: p1-04-filters, title: 项目 1·任务板：过滤与 URL 状态, status: planned, prerequisites: [p1-03-edit-delete, e10-url-routing] }
       - { id: p1-05-persistence, title: 项目 1·任务板：持久化与数据校验, status: planned, prerequisites: [p1-04-filters, e09-storage-serialization] }

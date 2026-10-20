@@ -1,0 +1,36 @@
+- id: region-name
+  type: single
+  prompt: 每一列写成 `<section aria-labelledby="column-todo">`，并让 `<h2 id="column-todo">` 作为它的标题。这样做的主要好处是？
+  options:
+    - text: section 有了名字，成为一个“区域”，读屏软件可以在各列之间跳转，并读出“待办 2”这样的名字
+      correct: true
+      explain: 没有名字的 section 不会被当成区域；aria-labelledby 让标题同时成为区域的名字。
+    - text: 页面加载得更快
+      explain: 和性能无关，这是可访问性上的改进。
+    - text: 让 CSS 能选中这一列
+      explain: 用类名就能选中；aria-labelledby 是给辅助技术用的。
+- id: text-not-html
+  type: single
+  prompt: 任务的标题是用户输入的。下面哪种写法是安全的？
+  options:
+    - text: "`span.textContent = task.title`，或者 `span.append(task.title)`"
+      correct: true
+      explain: 两者都把字符串作为文字节点加入页面，标题中的 HTML 只会被显示出来（e12）。
+    - text: "``li.innerHTML = `<span>${task.title}</span>` ``"
+      explain: 标题中的 `<img src=x onerror=…>` 会被解析成元素并执行脚本。
+    - text: 先用 trim() 去掉首尾空白，再赋给 innerHTML
+      explain: 去掉空白不能防止 HTML 注入。
+- id: form-feedback
+  type: multiple
+  prompt: 输入不合法时，下面哪些做法能让所有用户（包括使用屏幕阅读器的用户）知道哪里错了？
+  options:
+    - text: 在输入框附近显示文字说明，并让输入框的 aria-describedby 指向它
+      correct: true
+      explain: 输入框获得焦点时，读屏软件会读出这段说明（d09）。
+    - text: 给输入框加上 aria-invalid="true"
+      correct: true
+      explain: 读屏软件会读出“无效”。改正之后要去掉它。
+    - text: 把输入框的边框变成红色
+      explain: 只靠颜色，读屏用户和色盲用户都无从得知。可以作为补充，但不能是唯一的提示。
+    - text: 清空输入框，让用户重新输入
+      explain: 用户输入的内容丢了，而且仍然不知道哪里错了。

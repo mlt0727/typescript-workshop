@@ -1,0 +1,33 @@
+- id: status-union
+  type: single
+  prompt: "任务有三种状态。为什么用 `'todo' | 'doing' | 'done'`，而不是 `done: boolean` 加 `doing: boolean`？"
+  options:
+    - text: 两个布尔值能组合出“既在进行中又已完成”这种不存在的状态；联合类型只允许三种合法的值，加一列时编译器还会指出没有处理的地方
+      correct: true
+      explain: 让不合法的状态无法表示（b09、e07），再配合 never 的穷尽检查。
+    - text: 布尔值在 TypeScript 中比字符串占用更多内存
+      explain: 这不是选择的理由；问题在于两个布尔值的组合中有不合法的状态。
+    - text: 联合类型在运行时会被检查，布尔值不会
+      explain: 类型在运行时都会被擦除（a02），联合类型的好处在编译时。
+- id: next-id
+  type: single
+  prompt: "新任务的 id 写成 `` `t${board.tasks.length + 1}` `` 会有什么问题？"
+  options:
+    - text: 删除一个任务之后再添加，新任务的 id 可能和已有的任务重复
+      correct: true
+      explain: 例如有 t1、t2、t3，删掉 t1 之后长度是 2，新任务又是 t3。用一个只增不减的 nextId。
+    - text: 没有问题，数组长度总是唯一的
+      explain: 长度会随删除而变小，不能作为唯一的编号。
+    - text: 只会在任务超过 10 个时出错
+      explain: 和个数无关，只要先删除再添加就可能重复。
+- id: inject-now
+  type: single
+  prompt: "`add` 动作中为什么由调用方传入 `now`，而不是在 `reduce` 中调用 `Date.now()`？"
+  options:
+    - text: 时间是外部输入；作为参数传入，reduce 就是纯函数，同样的输入总是得到同样的结果，测试可以用固定的值
+      correct: true
+      explain: 和不在渲染中修改外部的东西是同一个道理：把外部世界挡在纯函数之外，测试和推理都更简单。
+    - text: Date.now() 在 TypeScript 中不能使用
+      explain: 可以使用，问题在于它让函数的结果每次都不一样，难以测试。
+    - text: 这样性能更好
+      explain: 和性能无关，是为了可预测、可测试。

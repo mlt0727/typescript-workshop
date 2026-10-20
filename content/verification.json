@@ -7891,6 +7891,195 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(数据格式不对也是加载失败 ⟶ TestingLibraryElementError: Unable to find role=\"alert\")"
         }
       ]
+    },
+    "p1-01-plan-and-model": {
+      "verifiedAt": "2026-10-20T16:15:16.153Z",
+      "sourceHash": "b227af8bbf995e7f",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:board-model:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:board-model:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 't1 写周报', 't2 修自行车' ] | [log] 删除不存在的任务，返回原来的对象： true | [log] [ 't2', 't3' ]"
+        },
+        {
+          "target": "exercise:parse-input:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseTaskInput › # 开头的词是标签，其余的词组成标题 ⟶ expect(…).toEqual({ ok: true, title: '写周报', tags: [ '工作', '紧急' ] }),parseTaskInput › 任意空白分隔词语：首尾空白去掉，中间的空白变成一个空格 ⟶ expect(…).toEqual({ ok: true, title: '修 自行车', tags: [ '家' ] }),parseTaskInput › 重复的标签只保留第一次出现的 ⟶ expect(…).toEqual({ ok: true, title: '写周报', tags: [ '工作', '紧急' ] }),parseTaskInput › 标签的错误 ⟶ expect(…).toEqual({ ok: false, error: '标签不能为空' }),parseTaskInput › 标题的错误 ⟶ expect(…).toEqual({ ok: false, error: '标题不能为空' }),parseTaskInput › 长度按字符（码点）计算，一个 emoji 算一个字符 ⟶ expect(…).toEqual({ ok: false, error: '标题不能超过 40 个字符' }),parseTaskInput › 有多个问题时，先报告标签的问题 ⟶ expect(…).toEqual({ ok: false, error: '标签不能为空' }))"
+        },
+        {
+          "target": "exercise:parse-input:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-input:alt:filter-and-set",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-input:wrong:code-units",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTaskInput › 长度按字符（码点）计算，一个 emoji 算一个字符 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:parse-input:wrong:no-dedupe",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTaskInput › 重复的标签只保留第一次出现的 ⟶ expect(…).toEqual({ ok: true, title: '写周报', tags: [ '工作', '紧急' ] }))"
+        },
+        {
+          "target": "exercise:parse-input:wrong:split-on-space",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTaskInput › 任意空白分隔词语：首尾空白去掉，中间的空白变成一个空格 ⟶ expect(…).toEqual({ ok: true, title: '修 自行车', tags: [ '家' ] }))"
+        },
+        {
+          "target": "exercise:parse-input:wrong:throw-errors",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTaskInput › 标签的错误 ⟶ Error: 标签不能为空,parseTaskInput › 标题的错误 ⟶ Error: 标题不能为空,parseTaskInput › 有多个问题时，先报告标签的问题 ⟶ Error: 标签不能为空)"
+        },
+        {
+          "target": "exercise:board-reducer:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(reduce › 删除之后再添加，id 不会重复 ⟶ expect(…).toEqual([ 't1', 't2', 't4' ]),reduce › rename：去掉首尾空白；空标题、相同的标题、找不到 id 时返回原来的 board ⟶ expect(…).toEqual({ id: 't2', title: '进行中的任务', tags: [], status: 'doing', createdAt: 20 }),reduce › step：移到相邻的列；已经在最左、最右时返回原来的 board ⟶ expect(…).toBe('doing'),reduce › remove：删除；找不到时返回原来的 board ⟶ expect(…).toEqual([ 't1', 't3' ]),columnsOf › 按状态分成三列，每列按创建时间排序 ⟶ expect(…).toEqual([ 't3', 't2' ]),columnsOf › 创建时间相同时按 id 中的数字排序（t2 在 t10 之前） ⟶ expect(…).toEqual([ 't2', 't10', 't1' ]))"
+        },
+        {
+          "target": "exercise:board-reducer:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:board-reducer:alt:map-and-flag",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:board-reducer:wrong:id-from-length",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(reduce › 删除之后再添加，id 不会重复 ⟶ expect(…).toEqual([ 't1', 't2', 't4' ]))"
+        },
+        {
+          "target": "exercise:board-reducer:wrong:step-wraps",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(reduce › step：移到相邻的列；已经在最左、最右时返回原来的 board ⟶ expect(…).toBe({)"
+        },
+        {
+          "target": "exercise:board-reducer:wrong:always-new-board",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(reduce › rename：去掉首尾空白；空标题、相同的标题、找不到 id 时返回原来的 board ⟶ expect(…).toBe({,reduce › step：移到相邻的列；已经在最左、最右时返回原来的 board ⟶ expect(…).toBe({)"
+        },
+        {
+          "target": "exercise:board-reducer:wrong:lexical-id-sort",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(columnsOf › 创建时间相同时按 id 中的数字排序（t2 在 t10 之前） ⟶ expect(…).toEqual([ 't2', 't10', 't1' ]))"
+        },
+        {
+          "target": "exercise:board-reducer:wrong:mutate-task",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2540@board.ts:32 Cannot assign to 'title' because it is a read-only property.) rules=ok tests=fail(reduce › rename：去掉首尾空白；空标题、相同的标题、找不到 id 时返回原来的 board ⟶ TypeError: Cannot assign to read only property 'title' of object '#<Object>')"
+        }
+      ]
+    },
+    "p1-02-render-and-add": {
+      "verifiedAt": "2026-10-20T16:19:24.047Z",
+      "sourceHash": "969d29e53acd6988",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:el-helper:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:el-helper:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] null | [log] 待办 2"
+        },
+        {
+          "target": "exercise:render-board:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(三列是三个有名字的区域：列名加上任务数 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\",每列的任务按 columnsOf 的顺序排列，带着 data-id ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"待办 2\",有标签时显示一个“标签”列表，没有标签时不显示 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"待办 2\",没有任务的列显示“没有任务”，不显示空的列表 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"已完成 0\",标题和标签按文字显示，不会被当成 HTML ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"待办 1\",反复渲染时替换原来的内容 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\")"
+        },
+        {
+          "target": "exercise:render-board:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:render-board:alt:plain-dom",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:render-board:wrong:inner-html",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(标题和标签按文字显示，不会被当成 HTML ⟶ expect(…).toBe('<img src=x onerror=alert(1)>'))"
+        },
+        {
+          "target": "exercise:render-board:wrong:append-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(三列是三个有名字的区域：列名加上任务数 ⟶ expect(…).toEqual([ 'todo', 'doing', 'done' ]),每列的任务按 columnsOf 的顺序排列，带着 data-id ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"待办 2\",有标签时显示一个“标签”列表，没有标签时不显示 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"待办 2\",没有任务的列显示“没有任务”，不显示空的列表 ⟶ TestingLibraryElementError: Found multiple elements with the role \"region\" and name \"已完成 0\",标题和标签按文字显示，不会被当成 HTML ⟶ TestingLibraryElementError: Found multiple elements with the role \"region\" and name \"待办 1\",反复渲染时替换原来的内容 ⟶ expect(…).toHaveLength(3))"
+        },
+        {
+          "target": "exercise:render-board:wrong:empty-list",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(没有任务的列显示“没有任务”，不显示空的列表 ⟶ TestingLibraryElementError: Unable to find an element with the text: 没有任务. This could be because the text is broken up by multiple elements. In this case, you c)"
+        },
+        {
+          "target": "exercise:render-board:wrong:unsorted",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(每列的任务按 columnsOf 的顺序排列，带着 data-id ⟶ expect(…).toEqual([ 't3', 't1' ]),有标签时显示一个“标签”列表，没有标签时不显示 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"list\" and name \"标签\")"
+        },
+        {
+          "target": "exercise:render-board:wrong:unlabelled-section",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(三列是三个有名字的区域：列名加上任务数 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\",每列的任务按 columnsOf 的顺序排列，带着 data-id ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"待办 2\",有标签时显示一个“标签”列表，没有标签时不显示 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"待办 2\",没有任务的列显示“没有任务”，不显示空的列表 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"已完成 0\",标题和标签按文字显示，不会被当成 HTML ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name \"待办 1\",反复渲染时替换原来的内容 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\")"
+        },
+        {
+          "target": "exercise:add-task:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(按回车添加：进入“待办”，清空输入框，焦点留在输入框，播报结果 ⟶ expect(…).toEqual([ true ]),点“添加”按钮也能添加；连续添加的任务 id 不重复 ⟶ expect(…).toEqual([ 't1', 't3', 't4' ]),输入不合法：显示原因，标记输入框，保留输入的文字，不添加 ⟶ expect(…).toEqual([ true ]),修改输入框，或者成功添加之后，错误提示消失 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\",用户输入的 HTML 只作为文字显示 ⟶ expect(…).toEqual([ '写周报', '<b>粗体</b> 任务' ]))"
+        },
+        {
+          "target": "exercise:add-task:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:add-task:alt:dispatch",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:add-task:wrong:no-prevent-default",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按回车添加：进入“待办”，清空输入框，焦点留在输入框，播报结果 ⟶ expect(…).toEqual([ true ]),输入不合法：显示原因，标记输入框，保留输入的文字，不添加 ⟶ expect(…).toEqual([ true ]))"
+        },
+        {
+          "target": "exercise:add-task:wrong:error-stays",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改输入框，或者成功添加之后，错误提示消失 ⟶ expect(…).not.toBeVisible())"
+        },
+        {
+          "target": "exercise:add-task:wrong:clear-on-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(输入不合法：显示原因，标记输入框，保留输入的文字，不添加 ⟶ expect(…).toHaveValue('#工作'),修改输入框，或者成功添加之后，错误提示消失 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"alert\")"
+        },
+        {
+          "target": "exercise:add-task:wrong:blur-after-add",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按回车添加：进入“待办”，清空输入框，焦点留在输入框，播报结果 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:add-task:wrong:forgot-render",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按回车添加：进入“待办”，清空输入框，焦点留在输入框，播报结果 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"region\" and name `/^待办 2$/`,点“添加”按钮也能添加；连续添加的任务 id 不重复 ⟶ expect(…).toEqual([ 't1', 't3', 't4' ]),用户输入的 HTML 只作为文字显示 ⟶ expect(…).toEqual([ '写周报', '<b>粗体</b> 任务' ]))"
+        }
+      ]
     }
   }
 }
