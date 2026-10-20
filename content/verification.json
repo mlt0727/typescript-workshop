@@ -3169,6 +3169,113 @@
         }
       ]
     },
+    "b10-function-types": {
+      "verifiedAt": "2026-10-20T10:31:31.803Z",
+      "sourceHash": "8cfc2cd6af6860be",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:function-types:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:function-types:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ '¥1.50', '¥20.00' ] [ '26%', '100%' ]"
+        },
+        {
+          "target": "playground:parameter-count:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:parameter-count:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 10 | [log] 20"
+        },
+        {
+          "target": "playground:parameter-types:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:parameter-types:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: value.toUpperCase is not a function）；输出：[error] Uncaught TypeError: value.toUpperCase is not a function\n    at Object.onlyStrings [as handle] (main.ts:3:58)\n    at main.ts:19:3"
+        },
+        {
+          "target": "playground:optional-callback-param:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:optional-callback-param:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 1 0 | [log] 2 1 | [log] 1 0 | [log] 2 1 | [log] 1 | [log] 2"
+        },
+        {
+          "target": "exercise:price-steps:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS7006@steps.ts:1 Parameter 'steps' implicitly has an 'any' type.；TS2305@steps.test.ts:2 Module '\"./steps\"' has no exported member 'Step'.；TS7006@steps.test.ts:4 Parameter 'p' implicitly has an 'any' type.；TS7006@steps.test.ts:5 Parameter 'p' implicitly has an 'any' type.；TS7006@steps.test.ts:6 Para) rules=ok tests=fail(按顺序应用,同一步骤可以出现多次)"
+        },
+        {
+          "target": "exercise:price-steps:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:price-steps:alt:reduce",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:price-steps:wrong:void-step",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@steps.test-d.ts:4 Type '(price: number) => number' does not satisfy the constraint '\"Expected: function, Actual: function\"'.；TS2578@steps.test-d.ts:7 Unused '@ts-expect-error' directive.) rules=ok tests=fail(按顺序应用,同一步骤可以出现多次)"
+        },
+        {
+          "target": "exercise:price-steps:wrong:reverse-order",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按顺序应用)"
+        },
+        {
+          "target": "exercise:price-steps:wrong:always-from-original",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(按顺序应用,同一步骤可以出现多次)"
+        },
+        {
+          "target": "exercise:emitter:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(createEmitter › once 只调用一次，也可以提前取消,createEmitter › 监听函数在调用时取消自己，不会影响下一个,createEmitter › 调用期间新注册的监听函数从下一轮开始生效)"
+        },
+        {
+          "target": "exercise:emitter:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:emitter:alt:map-of-ids",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:emitter:wrong:remove-by-function",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createEmitter › 同一个函数注册两次是两次独立的注册,createEmitter › 被前面的监听函数取消的，本轮不再调用)"
+        },
+        {
+          "target": "exercise:emitter:wrong:iterate-live-array",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createEmitter › 监听函数在调用时取消自己，不会影响下一个,createEmitter › 调用期间新注册的监听函数从下一轮开始生效)"
+        },
+        {
+          "target": "exercise:emitter:wrong:snapshot-without-active",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createEmitter › 被前面的监听函数取消的，本轮不再调用)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",
