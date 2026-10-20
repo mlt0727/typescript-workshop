@@ -1,0 +1,44 @@
+- id: equal-vs-extend
+  type: single
+  prompt: 一次重构让 `getUser()` 的返回值类型从 `User` 变成了 `any`。下面哪个类型测试会失败？
+  options:
+    - text: "`expectTypeOf(getUser()).toEqualTypeOf<User>()`"
+      correct: true
+      explain: toEqualTypeOf 要求类型完全相等，any 不等于 User。
+    - text: "`expectTypeOf(getUser()).toExtend<User>()`"
+      explain: any 可以赋值给任何类型，toExtend 会通过。
+    - text: "`assertType<User>(getUser())`"
+      explain: assertType 只检查能否赋值，同样拦不住 any。
+- id: expect-error-unused
+  type: single
+  prompt: 类型测试中有 `// @ts-expect-error 不存在的键` 和下一行 `pick(user, ['email'])`。某次修改之后，这条注释报了 TS2578。这说明什么？
+  options:
+    - text: "`pick(user, ['email'])` 现在能通过编译了：键的类型变宽了，测试正确地发现了问题"
+      correct: true
+      explain: TS2578 是“未使用的 @ts-expect-error”，在类型测试中它就是断言失败。
+    - text: 注释的写法不对，要改成 @ts-ignore
+      explain: "@ts-ignore 在没有错误时不报告，换成它测试就什么也测不出来了。"
+    - text: TypeScript 的版本太旧
+      explain: "@ts-expect-error 从 TypeScript 3.9 起就有了；TS2578 说明下一行没有错误。"
+- id: expect-error-trap
+  type: single
+  prompt: "`// @ts-expect-error` 下一行是 `pick(usr, ['email'])`（usr 拼错了）。这个测试的问题是什么？"
+  options:
+    - text: 报错的原因是“找不到 usr”，即使 pick 接受了不存在的键，测试也照样通过
+      correct: true
+      explain: 任何错误都能满足 @ts-expect-error。被检查的行要短，只包含要测试的那一个错误。
+    - text: 没有问题，测试会因为 email 不存在而通过
+      explain: 它通过是因为 usr 拼错了，与 email 无关，所以它什么也没有检查。
+    - text: TypeScript 会提示 @ts-expect-error 期望的是另一个错误
+      explain: "@ts-expect-error 不检查是哪一种错误，只要有错误就满足。"
+- id: generic-parameter
+  type: single
+  prompt: "`function pick<T extends object, K extends keyof T>(obj: T, keys: readonly K[]): Pick<T, K>`，`expectTypeOf(pick).parameter(1)` 得到的类型是什么？"
+  options:
+    - text: "`readonly never[]`：类型参数被换成了约束，K 成了 keyof object，也就是 never"
+      correct: true
+      explain: 检查泛型函数在某次调用中的类型，应该检查那次调用的结果，例如 expectTypeOf(pick(user, ['id']))。
+    - text: "`readonly (keyof T)[]`"
+      explain: 在函数外面没有 T，类型参数会被换成它的约束 object。
+    - text: "`readonly string[]`"
+      explain: K 的约束是 keyof T，代入 object 之后是 never，而不是 string。

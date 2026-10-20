@@ -109,9 +109,9 @@ stages:
       - { id: f03-tsconfig, title: tsconfig、ESM 与模块解析, status: draft, prerequisites: [f02-vite-project] }
       - { id: f04-devtools, title: DevTools、断点、source map 与网络面板, status: draft, prerequisites: [f02-vite-project] }
       - { id: f05-debugging-practice, title: 实际排错练习, status: draft, prerequisites: [f04-devtools] }
-      - { id: f06-unit-tests, title: 用 Vitest 写单元测试, status: planned, prerequisites: [f03-tsconfig] }
-      - { id: f07-type-tests, title: 类型测试, status: planned, prerequisites: [f06-unit-tests, b14-generics] }
-      - { id: f08-dom-tests, title: DOM 与组件测试, status: planned, prerequisites: [f06-unit-tests, d08-bubbling-delegation] }
+      - { id: f06-unit-tests, title: 用 Vitest 写单元测试, status: draft, prerequisites: [f03-tsconfig] }
+      - { id: f07-type-tests, title: 类型测试, status: draft, prerequisites: [f06-unit-tests, b14-generics] }
+      - { id: f08-dom-tests, title: DOM 与组件测试, status: draft, prerequisites: [f06-unit-tests, d08-bubbling-delegation] }
       - { id: f09-e2e, title: 用 Playwright 做端到端测试, status: planned, prerequisites: [f08-dom-tests] }
       - { id: f10-git, title: Git 基础工作流, status: planned, prerequisites: [f01-node-npm] }
       - { id: f11-lint-format, title: 格式化与静态检查, status: planned, prerequisites: [f03-tsconfig] }

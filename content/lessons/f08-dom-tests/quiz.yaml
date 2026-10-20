@@ -1,0 +1,44 @@
+- id: query-priority
+  type: single
+  prompt: 页面上有一个只显示垃圾桶图标的按钮（`aria-label="删除草稿"`）。测试中怎样找它最好？
+  options:
+    - text: "`screen.getByRole('button', { name: '删除草稿' })`"
+      correct: true
+      explain: 角色加可访问的名字最接近用户和读屏软件的视角；如果按钮忘了写 aria-label，这个查找会失败，正好发现了可访问性的问题。
+    - text: "`container.querySelector('.icon-trash')`"
+      explain: class 是实现细节，改样式时测试就会失效，也检查不了按钮有没有名字。
+    - text: "`screen.getByTestId('delete-draft')`"
+      explain: data-testid 是最后的手段，用户看不到它，按它查找测不出可访问性的问题。
+- id: absent-element
+  type: single
+  prompt: 要检查“提交之前页面上没有错误提示（role=alert）”，应该怎样写？
+  options:
+    - text: "`expect(screen.queryByRole('alert')).toBeNull()`"
+      correct: true
+      explain: queryBy 找不到时返回 null，适合检查元素不存在。
+    - text: "`expect(screen.getByRole('alert')).not.toBeInTheDocument()`"
+      explain: getBy 找不到时直接抛出错误，断言根本没有机会执行。
+    - text: "`expect(await screen.findByRole('alert')).toBeNull()`"
+      explain: findBy 会等待元素出现，找不到时在超时后拒绝，同样不能用来检查不存在。
+- id: async-content
+  type: single
+  prompt: 点击“加载”后，列表在请求完成时才出现。点击之后怎样取得列表？
+  options:
+    - text: "`await screen.findByRole('list')`"
+      correct: true
+      explain: findBy 会反复查找，直到元素出现（默认最多等待 1000 毫秒）。
+    - text: "`screen.getByRole('list')`"
+      explain: 点击之后请求还没有完成，这时列表还不存在，getBy 会立即失败。
+    - text: 在点击之后写 `setTimeout`，在回调中再查找
+      explain: 测试函数不会等待这个回调，失败也不会被报告；用 findBy 或 waitFor。
+- id: implementation-detail
+  type: single
+  prompt: 把一个 React 组件中的 useState 换成了 useReducer，界面和行为都没有变。好的组件测试应该怎样？
+  options:
+    - text: 全部仍然通过，因为它们检查的是用户能看到的结果
+      correct: true
+      explain: 测试行为而不是实现，重构时测试才是“安全网”而不是负担。
+    - text: 检查 state 的测试需要更新
+      explain: 组件测试不应该读取内部的 state；如果有这样的测试，说明它测试了实现细节。
+    - text: 需要换成 Playwright 测试
+      explain: 和工具无关，关键是测试的是什么。

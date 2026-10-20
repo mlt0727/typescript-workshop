@@ -7891,6 +7891,232 @@
         }
       ]
     },
+    "f06-unit-tests": {
+      "verifiedAt": "2026-10-20T22:41:03.636Z",
+      "sourceHash": "b70ef32c3812ec41",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:object-is:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:object-is:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 同一个对象： true 内容相同的两个对象： false | [log] NaN： true false | [log] 0 与 -0： false true"
+        },
+        {
+          "target": "playground:mini-mutation:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:mini-mutation:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 正确的实现 全部通过 | [log] 丢掉最后一组 全部通过"
+        },
+        {
+          "target": "exercise:test-chunk:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=drops-last:missed,short-chunks:caught(tests),returns-empty:missed,accepts-fractions:missed,empty-gives-one-group:missed,mutates-input:missed"
+        },
+        {
+          "target": "exercise:test-chunk:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=drops-last:caught(tests),short-chunks:caught(tests),returns-empty:caught(tests),accepts-fractions:caught(tests),empty-gives-one-group:caught(tests),mutates-input:caught(tests)"
+        },
+        {
+          "target": "exercise:test-chunk:alt:table-and-loop",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=drops-last:caught(tests),short-chunks:caught(tests),returns-empty:caught(tests),accepts-fractions:caught(tests),empty-gives-one-group:caught(tests),mutates-input:caught(tests)"
+        },
+        {
+          "target": "exercise:test-chunk:wrong:no-fractions-no-empty",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=drops-last:caught(tests),short-chunks:caught(tests),returns-empty:caught(tests),accepts-fractions:missed,empty-gives-one-group:missed,mutates-input:missed"
+        },
+        {
+          "target": "exercise:test-chunk:wrong:throw-without-function",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(chunk › size 无效时抛出 RangeError ⟶ RangeError: size 必须是正整数：0)"
+        },
+        {
+          "target": "exercise:test-chunk:wrong:tobe-arrays",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(chunk › 按 size 个一组分开 ⟶ expect(…).toBe([ [ 1, 2 ], [ 3, 4 ] ]))"
+        },
+        {
+          "target": "exercise:test-debounce:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-reset:missed,first-args:missed,leading:missed,late:caught(tests),cancel-noop:missed,flush-twice:missed,stale-pending:missed"
+        },
+        {
+          "target": "exercise:test-debounce:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-reset:caught(tests),first-args:caught(tests),leading:caught(tests),late:caught(tests),cancel-noop:caught(tests),flush-twice:caught(tests),stale-pending:caught(tests)"
+        },
+        {
+          "target": "exercise:test-debounce:alt:shared-setup",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-reset:caught(tests),first-args:caught(tests),leading:caught(tests),late:caught(tests),cancel-noop:caught(tests),flush-twice:caught(tests),stale-pending:caught(tests)"
+        },
+        {
+          "target": "exercise:test-debounce:wrong:only-final-count",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-reset:missed,first-args:missed,leading:caught(tests),late:caught(tests),cancel-noop:caught(tests),flush-twice:caught(tests),stale-pending:caught(tests)"
+        },
+        {
+          "target": "exercise:test-debounce:wrong:expects-immediate",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(debounce › 调用之后立刻执行 ⟶ expect(…).toHaveBeenCalledWith('a'))"
+        }
+      ]
+    },
+    "f07-type-tests": {
+      "verifiedAt": "2026-10-20T22:47:09.318Z",
+      "sourceHash": "e6142d6994839d4b",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:expect-error:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:expect-error:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:test-pick-types:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=n/a mutants=returns-any:missed,returns-partial:caught(types),returns-whole:missed,loose-keys:missed,any-input:missed,required-optional:missed"
+        },
+        {
+          "target": "exercise:test-pick-types:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=n/a mutants=returns-any:caught(types),returns-partial:caught(types),returns-whole:caught(types),loose-keys:caught(types),any-input:caught(types),required-optional:caught(types)"
+        },
+        {
+          "target": "exercise:test-pick-types:alt:describe-blocks",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=n/a mutants=returns-any:caught(types),returns-partial:caught(types),returns-whole:caught(types),loose-keys:caught(types),any-input:caught(types),required-optional:caught(types)"
+        },
+        {
+          "target": "exercise:test-pick-types:wrong:uses-toextend",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=n/a mutants=returns-any:missed,returns-partial:caught(types),returns-whole:missed,loose-keys:caught(types),any-input:caught(types),required-optional:missed"
+        },
+        {
+          "target": "exercise:test-pick-types:wrong:ts-ignore",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=n/a mutants=returns-any:caught(types),returns-partial:caught(types),returns-whole:caught(types),loose-keys:missed,any-input:missed,required-optional:caught(types)"
+        },
+        {
+          "target": "exercise:test-pick-types:wrong:wrong-expectation",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@pick.test-d.ts:6 Type '{ id: string; }' does not satisfy the constraint '{ id: \"Expected: string, Actual: number\"; }'.；TS2344@pick.test-d.ts:6 Type '{ id: string; }' does not satisfy the constraint '{ id: \"Expected: string, Actual: number\"; }'.) rules=ok tests=n/a"
+        },
+        {
+          "target": "exercise:test-href:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-encoding:missed,first-only:missed,optional-params:missed,record-params:missed,always-params:missed,greedy-name:missed,returns-any:missed"
+        },
+        {
+          "target": "exercise:test-href:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-encoding:caught(tests),first-only:caught(tests),optional-params:caught(types),record-params:caught(types),always-params:caught(types),greedy-name:caught(types),returns-any:caught(types)"
+        },
+        {
+          "target": "exercise:test-href:alt:table-and-describe",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-encoding:caught(tests),first-only:caught(tests),optional-params:caught(types),record-params:caught(types),always-params:caught(types),greedy-name:caught(types),returns-any:caught(types)"
+        },
+        {
+          "target": "exercise:test-href:wrong:runtime-only",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-encoding:caught(tests),first-only:caught(tests),optional-params:missed,record-params:missed,always-params:caught(types),greedy-name:caught(types),returns-any:missed"
+        },
+        {
+          "target": "exercise:test-href:wrong:types-only",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-encoding:missed,first-only:missed,optional-params:caught(types),record-params:caught(types),always-params:caught(types),greedy-name:caught(types),returns-any:caught(types)"
+        },
+        {
+          "target": "exercise:test-href:wrong:unencoded-expectation",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(href › 参数值被编码 ⟶ expect(…).toBe('/search/a b/c?'))"
+        }
+      ]
+    },
+    "f08-dom-tests": {
+      "verifiedAt": "2026-10-20T22:53:37.176Z",
+      "sourceHash": "381f521649a38a62",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:greeting:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:greeting:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:test-char-counter:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=off-by-one:missed,allows-over-limit:missed,allows-blank:missed,not-cleared:missed,no-aria-invalid:missed,label-not-linked:caught(tests),focus-lost:missed"
+        },
+        {
+          "target": "exercise:test-char-counter:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=off-by-one:caught(tests),allows-over-limit:caught(tests),allows-blank:caught(tests),not-cleared:caught(tests),no-aria-invalid:caught(tests),label-not-linked:caught(tests),focus-lost:caught(tests)"
+        },
+        {
+          "target": "exercise:test-char-counter:alt:label-and-keyboard",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=off-by-one:caught(tests),allows-over-limit:caught(tests),allows-blank:caught(tests),not-cleared:caught(tests),no-aria-invalid:caught(tests),label-not-linked:caught(tests),focus-lost:caught(tests)"
+        },
+        {
+          "target": "exercise:test-char-counter:wrong:happy-path-only",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=off-by-one:caught(tests),allows-over-limit:missed,allows-blank:missed,not-cleared:missed,no-aria-invalid:missed,label-not-linked:caught(tests),focus-lost:missed"
+        },
+        {
+          "target": "exercise:test-char-counter:wrong:getby-for-absence",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(一开始没有“已发表” ⟶ TestingLibraryElementError: Unable to find an element with the text: 已发表. This could be because the text is broken up by multiple elements. In this case, you ca)"
+        },
+        {
+          "target": "exercise:test-tag-input:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=case-sensitive:missed,no-trim:missed,backspace-always:missed,removes-last:missed,unnamed-remove:missed,no-max:missed,keeps-draft:missed"
+        },
+        {
+          "target": "exercise:test-tag-input:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=case-sensitive:caught(tests),no-trim:caught(tests),backspace-always:caught(tests),removes-last:caught(tests),unnamed-remove:caught(tests),no-max:caught(tests),keeps-draft:caught(tests)"
+        },
+        {
+          "target": "exercise:test-tag-input:alt:setup-helper",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=case-sensitive:caught(tests),no-trim:caught(tests),backspace-always:caught(tests),removes-last:caught(tests),unnamed-remove:caught(tests),no-max:caught(tests),keeps-draft:caught(tests)"
+        },
+        {
+          "target": "exercise:test-tag-input:wrong:visible-paths-only",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=case-sensitive:missed,no-trim:missed,backspace-always:missed,removes-last:caught(tests),unnamed-remove:caught(tests),no-max:caught(tests),keeps-draft:missed"
+        },
+        {
+          "target": "exercise:test-tag-input:wrong:wrong-backspace-expectation",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Backspace 删除最后一个标签 ⟶ expect(…).toHaveLength(1))"
+        }
+      ]
+    },
     "g01-jsx-components": {
       "verifiedAt": "2026-10-20T17:26:38.168Z",
       "sourceHash": "5d8c2030fa5446fd",

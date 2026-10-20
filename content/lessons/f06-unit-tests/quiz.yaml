@@ -1,0 +1,44 @@
+- id: tobe-object
+  type: single
+  prompt: "`expect(parse('{\"a\":1}')).toBe({ a: 1 })` 失败了，而 parse 返回的确实是 `{ a: 1 }`。原因是什么？"
+  options:
+    - text: toBe 用 Object.is 比较，两个内容相同的对象不是同一个对象
+      correct: true
+      explain: 比较对象和数组的内容用 toEqual 或 toStrictEqual。Vitest 的失败信息也会提示改用 toStrictEqual。
+    - text: toBe 不能用于对象
+      explain: 可以用，只是比较的是“是不是同一个对象”，适合检查函数是否返回了传入的那个对象。
+    - text: JSON.parse 返回的对象有隐藏的属性
+      explain: 没有。问题在于比较的方式。
+- id: tothrow-function
+  type: single
+  prompt: 要检查 `chunk([1], 0)` 抛出 RangeError，下面哪种写法正确？
+  options:
+    - text: "`expect(() => chunk([1], 0)).toThrow(RangeError)`"
+      correct: true
+      explain: toThrow 需要一个函数，由它来调用并捕获异常。
+    - text: "`expect(chunk([1], 0)).toThrow(RangeError)`"
+      explain: chunk 在 expect 之前就被调用并抛出了异常，测试直接失败，toThrow 根本没有机会执行。
+    - text: "`expect(chunk).toThrow(RangeError)`"
+      explain: 这样 chunk 会在没有参数的情况下被调用，测试的不是你想测的输入。
+- id: fake-timers
+  type: single
+  prompt: 被测的函数在 300 毫秒之后保存草稿。为什么测试中用 vi.useFakeTimers() 和 vi.advanceTimersByTime(300)，而不是真的等待 300 毫秒？
+  options:
+    - text: 测试瞬间完成，而且可以精确地检查 299 毫秒时还没有保存、300 毫秒时已经保存
+      correct: true
+      explain: 真实的等待既慢又不精确：机器繁忙时计时器可能晚几毫秒触发，测试就会时好时坏。
+    - text: Vitest 不允许测试中使用 setTimeout
+      explain: 允许，只是真实的等待会让测试变慢、变得不稳定。
+    - text: 假计时器会自动检查保存的内容是否正确
+      explain: 假计时器只控制时间，检查结果仍然要自己写 expect。
+- id: enough-tests
+  type: single
+  prompt: 一组测试在正确的实现上全部通过。怎样判断这组测试是否足够？
+  options:
+    - text: 故意把实现改错（例如去掉一个边界检查），看有没有测试失败；没有失败，就说明缺少对应的测试
+      correct: true
+      explain: 这就是变异测试的思路，这一课的练习就是这样判题的。
+    - text: 测试的数量超过被测函数的行数
+      explain: 数量不能说明问题，十个只测正常值的测试也发现不了边界上的错误。
+    - text: 所有测试都通过就说明足够了
+      explain: 通过只说明代码满足了你写下的检查，没写的检查永远不会失败。
