@@ -3490,6 +3490,113 @@
         }
       ]
     },
+    "b13-inheritance-implements": {
+      "verifiedAt": "2026-10-20T10:41:18.194Z",
+      "sourceHash": "751ea0c76e42ad5a",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:extends:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:extends:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor）；输出：[log] 旺财 发出声音：汪汪 true | [error] Uncaught ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor\n    at new Cat (main.ts:24:5)\n    at main.ts:28:1"
+        },
+        {
+          "target": "playground:override:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:override:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 启动 OK"
+        },
+        {
+          "target": "playground:implements:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:implements:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 4 ¥5"
+        },
+        {
+          "target": "playground:abstract:types",
+          "ok": true,
+          "detail": "诊断符合预期（2 个故意的错误）"
+        },
+        {
+          "target": "playground:abstract:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] # 本周销售\n- 钢笔 12 支\n- 墨水 5 瓶 | [log] Report {} [class EmptyReport extends Report]"
+        },
+        {
+          "target": "exercise:shape-classes:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2515@shapes.ts:15 Non-abstract class 'Circle' does not implement inherited abstract member area from class 'Shape'.；TS2515@shapes.ts:17 Non-abstract class 'Rect' does not implement inherited abstract member area from class 'Shape'.；TS2345@shapes.test.ts:5 Argument of type 'number' is not assignabl) rules=ok tests=fail(圆,矩形)"
+        },
+        {
+          "target": "exercise:shape-classes:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shape-classes:alt:getter-fields",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:shape-classes:wrong:this-before-super",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS17009@shapes.ts:18 'super' must be called before accessing 'this' in the constructor of a derived class.；TS17009@shapes.ts:30 'super' must be called before accessing 'this' in the constructor of a derived class.；TS17009@shapes.ts:31 'super' must be called before accessing 'this' in the constructor) rules=ok tests=fail(圆,矩形)"
+        },
+        {
+          "target": "exercise:shape-classes:wrong:wrong-name",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(圆,矩形)"
+        },
+        {
+          "target": "exercise:notifier:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2420@notify.ts:10 Class 'EmailChannel' incorrectly implements interface 'Channel'.；TS2420@notify.ts:12 Class 'SmsChannel' incorrectly implements interface 'Channel'.；TS2339@notify.test.ts:7 Property 'name' does not exist on type 'EmailChannel'.；TS2339@notify.test.ts:8 Property 'send' does not exis) rules=ok tests=fail(EmailChannel › 有效的邮箱,EmailChannel › 无效或缺失的邮箱,EmailChannel › sent 返回副本,SmsChannel › 有效的手机号和长度,SmsChannel › 手机号必须是 11 位数字,SmsChannel › 短信不能超过 70 个字符,Notifier › 依次尝试每个渠道，返回成功的名称,Notifier › 任何形状相符的对象都可以作为渠道,Notifier › 抛出异常的渠道当作失败，不影响后面的渠道,Notifier › 构造后修改传入的数组不影响 Notifier)"
+        },
+        {
+          "target": "exercise:notifier:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:notifier:alt:functional-notify",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:notifier:wrong:stop-at-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Notifier › 依次尝试每个渠道，返回成功的名称)"
+        },
+        {
+          "target": "exercise:notifier:wrong:no-try",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Notifier › 抛出异常的渠道当作失败，不影响后面的渠道)"
+        },
+        {
+          "target": "exercise:notifier:wrong:untyped-params",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS7006@notify.ts:13 Parameter 'contact' implicitly has an 'any' type.；TS7006@notify.ts:13 Parameter 'message' implicitly has an 'any' type.；TS7006@notify.ts:26 Parameter 'contact' implicitly has an 'any' type.；TS7006@notify.ts:26 Parameter 'message' implicitly has an 'any' type.) rules=ok tests=fail(SmsChannel › 手机号必须是 11 位数字)"
+        },
+        {
+          "target": "exercise:notifier:wrong:leak-outbox",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(EmailChannel › sent 返回副本)"
+        }
+      ]
+    },
     "d07-events": {
       "verifiedAt": "2026-10-20T08:56:46.792Z",
       "sourceHash": "5fb16b205d4ef535",

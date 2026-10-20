@@ -1,0 +1,55 @@
+- id: super-first
+  type: single
+  prompt: |
+    下面的构造函数有什么问题？
+
+    ```ts
+    class Admin extends User {
+      level: number;
+      constructor(name: string, level: number) {
+        this.level = level;
+        super(name);
+      }
+    }
+    ```
+  options:
+    - text: 在调用 `super(…)` 之前使用了 `this`，TypeScript 报错，运行时也会抛出 `ReferenceError`
+      correct: true
+      explain: 派生类的构造函数必须先调用 `super(…)` 初始化父类部分，之后才能访问 `this`。
+    - text: 子类不能声明新的字段
+      explain: 子类可以有自己的字段。问题在于调用顺序。
+    - text: 没有问题
+      explain: "`this.level = level` 出现在 `super(name)` 之前，会报 TS17009。"
+- id: override-typo
+  type: single
+  prompt: 开启 `noImplicitOverride` 后，在子类中写 `override rendr() { … }`（父类的方法叫 `render`）会怎样？
+  options:
+    - text: 报错：父类中没有 `rendr` 可以覆盖（TS4117，并提示是不是想写 `render`）
+      correct: true
+      explain: 这正是 `override` 的价值：拼错的方法名会被立刻发现，而不是悄悄成为一个新方法。
+    - text: 没有错误，`rendr` 成为一个新方法
+      explain: 不写 `override` 时才会这样。写了 `override` 却找不到父类方法，TypeScript 会报错。
+    - text: TypeScript 自动把它当作 `render` 的覆盖
+      explain: TypeScript 不会猜测你的意图。
+- id: implements-params
+  type: single
+  prompt: "`interface Parser { parse(text: string): number }`。`class P implements Parser { parse(text) { return Number(text); } }` 中 `text` 是什么类型？"
+  options:
+    - text: 隐式的 `any`，在严格模式下报 TS7006
+      correct: true
+      explain: "`implements` 只检查类是否满足接口，不会给方法参数提供类型，参数要自己写注解。"
+    - text: "`string`，从接口推断"
+      explain: 这是很多人的直觉，但 TypeScript 不会根据 `implements` 推断方法参数。
+    - text: "`unknown`"
+      explain: 没有注解的参数是隐式 `any`，不是 `unknown`。
+- id: structural-implements
+  type: single
+  prompt: 一个类没有写 `implements Channel`，但它的形状完全符合 `Channel` 接口。它的实例可以传给需要 `Channel` 的函数吗？
+  options:
+    - text: 可以，TypeScript 按形状判断兼容性，`implements` 只是在类声明处提前做检查
+      correct: true
+      explain: 这是结构化类型（b02）。写 `implements` 的好处是错误会在类的定义处报告，而不是在使用处。
+    - text: 不可以，必须写 `implements`
+      explain: 这是 Java 等名义类型语言的规则。
+    - text: 可以，但运行时会抛出异常
+      explain: 类型在运行时不存在，`implements` 也不会生成任何运行时代码。
