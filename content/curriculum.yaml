@@ -122,7 +122,7 @@ stages:
     summary: 组件、props、state、表单、Hook、Effect、路由与测试，全部在真实预览中练习。
     lessons:
       - { id: g01-jsx-components, title: JSX/TSX 与组件, status: draft, prerequisites: [d10-state-and-render, a19-modules] }
-      - { id: g02-props, title: Props 与类型, status: planned, prerequisites: [g01-jsx-components] }
+      - { id: g02-props, title: Props 与类型, status: draft, prerequisites: [g01-jsx-components] }
       - { id: g03-events-state, title: 事件与 state, status: published, prerequisites: [g02-props] }
       - { id: g04-immutable-updates, title: 不可变更新, status: planned, prerequisites: [g03-events-state, a12-destructuring-spread] }
       - { id: g05-lists-keys, title: 列表渲染与 key, status: planned, prerequisites: [g04-immutable-updates] }

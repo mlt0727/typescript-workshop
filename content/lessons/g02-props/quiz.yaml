@@ -1,0 +1,44 @@
+- id: props-object
+  type: single
+  prompt: "写下 `<UserCard name=\"韩梅梅\" online />` 时，`UserCard` 函数收到的参数是什么？"
+  options:
+    - text: "一个对象 { name: '韩梅梅', online: true }"
+      correct: true
+      explain: React 把标签上的所有属性收集成一个 props 对象传给组件。只写属性名等于传入 true。
+    - text: 两个参数：'韩梅梅' 和 true
+      explain: 组件只有一个参数，就是 props 对象。
+    - text: "一个对象 { name: '韩梅梅', online: undefined }"
+      explain: 只写属性名、不写值，表示 true。
+- id: default-values
+  type: single
+  prompt: "`function Badge({ size = 16 }: { size?: number })` 中，下面哪种写法会让 `size` 等于 16？"
+  options:
+    - text: "`<Badge />` 或者 `<Badge size={undefined} />`"
+      correct: true
+      explain: 解构的默认值只在值为 undefined 时生效。
+    - text: "`<Badge size={0} />`"
+      explain: 0 不是 undefined，size 就是 0。
+    - text: "`<Badge size={null} />`"
+      explain: size 的类型是 number | undefined，TypeScript 不允许传 null；即使在 JavaScript 中传了，null 也不会触发默认值。
+- id: children-type
+  type: single
+  prompt: 一个容器组件希望使用者能在标签之间放文字、元素或多个元素。`children` 的类型最好写成什么？
+  options:
+    - text: "`ReactNode`"
+      correct: true
+      explain: ReactNode 包括 JSX 元素、字符串、数字、null、undefined、布尔值以及它们组成的数组。
+    - text: "`React.JSX.Element`"
+      explain: 它只表示一个 JSX 元素，传一段文字或多个元素都会报错。
+    - text: "`string`"
+      explain: 这样就不能在里面放元素了。
+- id: rest-order
+  type: single
+  prompt: "`<button className=\"btn\" {...rest} />` 中，使用者传了 `className=\"wide\"`（它在 rest 里）。最终按钮的 class 是什么？"
+  options:
+    - text: "`wide`"
+      correct: true
+      explain: 后写的属性覆盖先写的，{...rest} 中的 className 覆盖了 "btn"。要合并，就把 className 解构出来自己拼接，并写在展开之后。
+    - text: "`btn wide`"
+      explain: JSX 不会自动合并 class，同名属性只是后者覆盖前者。
+    - text: "`btn`"
+      explain: 先写的 "btn" 被后面展开的 className 覆盖了。

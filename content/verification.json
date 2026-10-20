@@ -6456,6 +6456,108 @@
         }
       ]
     },
+    "g02-props": {
+      "verifiedAt": "2026-10-20T13:24:17.543Z",
+      "sourceHash": "b9a8eed9e98d5b35",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:props-basics:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:props-basics:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "playground:children-and-callbacks:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:children-and-callbacks:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出："
+        },
+        {
+          "target": "exercise:user-card:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2322@UserCard.test.tsx:7 Type '{ name: string; }' is not assignable to type 'IntrinsicAttributes'.；TS2322@UserCard.test.tsx:17 Type '{ name: string; role: string; online: true; onMessage: () => void; }' is not assignable to type 'IntrinsicAttributes'.；TS2322@UserCard.test.tsx:27 Type '{ name: stri) rules=ok tests=fail(只传 name 时使用默认值，没有发消息按钮,传入所有的 props,点击“发消息”时用名字调用 onMessage)"
+        },
+        {
+          "target": "exercise:user-card:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:user-card:alt:props-object",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:user-card:wrong:no-defaults",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(只传 name 时使用默认值，没有发消息按钮)"
+        },
+        {
+          "target": "exercise:user-card:wrong:all-required",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2739@UserCard.test.tsx:7 Type '{ name: string; }' is missing the following properties from type 'UserCardProps': role, online, onMessage；TS2739@UserCard.test.tsx:27 Type '{ name: string; onMessage: Mock<Procedure>; }' is missing the following properties from type 'UserCardProps': role, online；TS27) rules=ok tests=fail(只传 name 时使用默认值，没有发消息按钮)"
+        },
+        {
+          "target": "exercise:user-card:wrong:pass-handler-directly",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2322@UserCard.tsx:15 Type '(name: string) => void' is not assignable to type 'MouseEventHandler<HTMLButtonElement>'.) rules=ok tests=fail(点击“发消息”时用名字调用 onMessage)"
+        },
+        {
+          "target": "exercise:user-card:wrong:always-button",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(只传 name 时使用默认值，没有发消息按钮)"
+        },
+        {
+          "target": "exercise:button-and-card:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2322@ui.test.tsx:16 Type '{ children: string; variant: string; className: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps'.；TS2322@ui.test.tsx:27 Type '{ children: string; onClick: Mock<Procedure>; \"aria-label\": string; title: string; }' is not assignable to type 'Intrinsic) rules=ok tests=fail(Button › 默认是 type=\"button\" 的 primary 按钮,Button › variant 和使用者的 className 合并在一起,Button › 其余的属性都传给了原生按钮,Button › 可以改成 submit 按钮,Card › 标题、内容和底部,Card › 没有 footer 时不渲染底部；children 可以是文字)"
+        },
+        {
+          "target": "exercise:button-and-card:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:button-and-card:alt:interface-extends",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:button-and-card:wrong:no-rest",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Button › 其余的属性都传给了原生按钮)"
+        },
+        {
+          "target": "exercise:button-and-card:wrong:rest-last",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Button › variant 和使用者的 className 合并在一起)"
+        },
+        {
+          "target": "exercise:button-and-card:wrong:fixed-type",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Button › 可以改成 submit 按钮)"
+        },
+        {
+          "target": "exercise:button-and-card:wrong:loose-variant",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2578@ui.test-d.tsx:3 Unused '@ts-expect-error' directive.) rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:button-and-card:wrong:empty-footer",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Card › 没有 footer 时不渲染底部；children 可以是文字)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",
