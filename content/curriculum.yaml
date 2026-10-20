@@ -1,0 +1,175 @@
+# 课程图谱（唯一来源）。status: planned | draft | published
+# planned：只在图谱中出现，不可进入；draft：有内容但未通过发布验收，不计入已发布；published：通过全部发布验收。
+# 每个 draft/published 课时必须有 content/lessons/<id>/lesson.md。
+version: 1
+stages:
+  - id: A
+    title: 起步与 JavaScript 共同语法
+    summary: 从第一天写 TypeScript，补齐 JS 特有的语法与运行语义。
+    lessons:
+      - { id: a01-where-ts-runs, title: TS、JS、浏览器与 Node.js 的关系, status: planned, prerequisites: [] }
+      - { id: a02-compile-vs-runtime, title: 编译期与运行期：类型擦除的边界, status: planned, prerequisites: [a01-where-ts-runs] }
+      - { id: a03-let-const-inference, title: let/const、类型注解与类型推断, status: planned, prerequisites: [a02-compile-vs-runtime] }
+      - { id: a04-primitives-strings, title: number、string、boolean 与模板字符串, status: planned, prerequisites: [a03-let-const-inference] }
+      - { id: a05-null-undefined, title: null 与 undefined, status: planned, prerequisites: [a04-primitives-strings] }
+      - { id: a06-operators-equality, title: 运算符、=== 与类型转换, status: planned, prerequisites: [a05-null-undefined] }
+      - { id: a07-truthy-falsy, title: truthy 与 falsy, status: planned, prerequisites: [a06-operators-equality] }
+      - { id: a08-optional-chaining-nullish, title: ?.、?? 与 || 的区别, status: planned, prerequisites: [a07-truthy-falsy] }
+      - { id: a09-control-flow, title: 条件与循环的快速迁移, status: planned, prerequisites: [a07-truthy-falsy] }
+      - { id: a10-arrays, title: 数组基础与越界访问, status: planned, prerequisites: [a09-control-flow] }
+      - { id: a11-objects-references, title: 对象、引用与浅拷贝, status: planned, prerequisites: [a10-arrays] }
+      - { id: a12-destructuring-spread, title: 解构与展开, status: planned, prerequisites: [a11-objects-references] }
+      - { id: a13-functions, title: 普通函数、箭头函数与参数, status: planned, prerequisites: [a12-destructuring-spread] }
+      - { id: a14-scope-closures, title: 作用域与闭包, status: planned, prerequisites: [a13-functions] }
+      - { id: a15-this, title: this 的关键差异, status: planned, prerequisites: [a14-scope-closures] }
+      - { id: a16-array-methods, title: map、filter、reduce、find 的实际用法, status: planned, prerequisites: [a13-functions] }
+      - { id: a17-sort-and-mutation, title: sort 与变异行为的常见误区, status: planned, prerequisites: [a16-array-methods] }
+      - { id: a18-map-set, title: Map 与 Set, status: planned, prerequisites: [a11-objects-references] }
+      - { id: a19-modules, title: ESM 导入与导出, status: planned, prerequisites: [a13-functions] }
+      - { id: a20-errors, title: 错误处理：throw、try/catch 与 unknown, status: planned, prerequisites: [a13-functions] }
+
+  - id: B
+    title: 日常 TypeScript
+    summary: 用类型描述数据、函数与模块，理解结构化类型与类型收窄。
+    lessons:
+      - { id: b01-type-alias-interface, title: type 与 interface：描述对象形状, status: planned, prerequisites: [a11-objects-references] }
+      - { id: b02-structural-typing, title: 结构化类型与多余属性检查, status: planned, prerequisites: [b01-type-alias-interface] }
+      - { id: b03-optional-readonly, title: 可选属性与 readonly, status: planned, prerequisites: [b02-structural-typing] }
+      - { id: b04-union-literal, title: 联合类型与字面量类型, status: planned, prerequisites: [b03-optional-readonly] }
+      - { id: b05-intersection-tuple, title: 交叉类型与元组, status: planned, prerequisites: [b04-union-literal] }
+      - { id: b06-any-unknown-never-void, title: any、unknown、never 与 void, status: planned, prerequisites: [b04-union-literal] }
+      - { id: b07-narrowing, title: 类型收窄, status: planned, prerequisites: [b06-any-unknown-never-void] }
+      - { id: b08-type-guards, title: 自定义类型守卫与断言函数, status: planned, prerequisites: [b07-narrowing] }
+      - { id: b09-discriminated-unions, title: 可辨识联合与穷尽检查, status: planned, prerequisites: [b08-type-guards] }
+      - { id: b10-function-types, title: 函数类型与回调, status: planned, prerequisites: [b07-narrowing, a16-array-methods] }
+      - { id: b11-overloads, title: 函数重载：何时用，何时不用, status: planned, prerequisites: [b10-function-types] }
+      - { id: b12-classes, title: 类、字段与访问控制, status: planned, prerequisites: [b10-function-types, a15-this] }
+      - { id: b13-inheritance-implements, title: 继承、实现接口与抽象类, status: planned, prerequisites: [b12-classes] }
+      - { id: b14-generics, title: 泛型函数与泛型类型, status: planned, prerequisites: [b10-function-types] }
+      - { id: b15-generic-constraints, title: 泛型约束, status: planned, prerequisites: [b14-generics] }
+      - { id: b16-assertions-as-const-satisfies, title: 类型断言、as const 与 satisfies, status: planned, prerequisites: [b15-generic-constraints] }
+      - { id: b17-enums-and-alternatives, title: 枚举与可擦除语法, status: planned, prerequisites: [b16-assertions-as-const-satisfies] }
+
+  - id: E
+    title: 浏览器机制、异步与数据
+    summary: 事件循环、Promise、fetch、运行时校验、取消与竞态、存储、URL 与安全边界。
+    lessons:
+      - { id: e01-event-loop, title: 事件循环的必要知识, status: planned, prerequisites: [a13-functions] }
+      - { id: e02-promises, title: Promise 基础, status: planned, prerequisites: [e01-event-loop, b14-generics] }
+      - { id: e03-async-await, title: async/await 与错误传播, status: planned, prerequisites: [e02-promises, a20-errors] }
+      - { id: e04-promise-combinators, title: Promise.all、allSettled、race 与 any, status: planned, prerequisites: [e03-async-await] }
+      - { id: e05-fetch-json, title: fetch、HTTP 状态与 JSON, status: planned, prerequisites: [e04-promise-combinators] }
+      - { id: e06-runtime-validation, title: 运行时数据校验, status: planned, prerequisites: [e05-fetch-json, b08-type-guards] }
+      - { id: e07-loading-states, title: 加载、空与失败状态, status: planned, prerequisites: [e06-runtime-validation, d06-dom-create-update] }
+      - { id: e08-abort-races, title: AbortController、取消请求与竞态, status: planned, prerequisites: [e07-loading-states] }
+      - { id: e09-storage-serialization, title: 浏览器存储与序列化, status: planned, prerequisites: [e06-runtime-validation] }
+      - { id: e10-url-routing, title: URL、History 与基础路由, status: planned, prerequisites: [d07-events] }
+      - { id: e11-cors, title: CORS 的真实边界, status: planned, prerequisites: [e05-fetch-json] }
+      - { id: e12-xss, title: 基础 XSS 防范, status: planned, prerequisites: [d06-dom-create-update] }
+      - { id: e13-env-secrets, title: 客户端环境变量与密钥边界, status: planned, prerequisites: [f02-vite-project] }
+
+  - id: C
+    title: 进阶类型与类型设计
+    summary: 类型运算的工程用途；区分“类型体操”和日常收益。部分内容可选学。
+    lessons:
+      - { id: c01-keyof-typeof-indexed, title: keyof、typeof 与索引访问类型, status: planned, prerequisites: [b16-assertions-as-const-satisfies] }
+      - { id: c02-mapped-types, title: 映射类型与修饰符, status: planned, prerequisites: [c01-keyof-typeof-indexed] }
+      - { id: c03-conditional-infer, title: 条件类型与 infer, status: planned, prerequisites: [c02-mapped-types] }
+      - { id: c04-distributive-conditional, title: 分布式条件类型, status: planned, prerequisites: [c03-conditional-infer] }
+      - { id: c05-template-literal-types, title: 模板字面量类型的实际用途, status: planned, prerequisites: [c03-conditional-infer] }
+      - { id: c06-utility-types, title: Partial、Required、Pick、Omit、Record、Readonly, status: planned, prerequisites: [c02-mapped-types] }
+      - { id: c07-function-utility-types, title: ReturnType、Parameters 与 Awaited, status: planned, prerequisites: [c06-utility-types, e03-async-await] }
+      - { id: c08-generic-api-design, title: 泛型 API 设计, status: planned, prerequisites: [c07-function-utility-types] }
+      - { id: c09-boundary-modeling, title: 边界数据建模, status: planned, prerequisites: [c08-generic-api-design, e06-runtime-validation] }
+      - { id: c10-avoid-any, title: 避免 any 与不必要的双重断言, status: planned, prerequisites: [c09-boundary-modeling] }
+      - { id: c11-strict-options, title: strict、strictNullChecks 与 noUncheckedIndexedAccess, status: planned, prerequisites: [c10-avoid-any] }
+      - { id: c12-modules-dts, title: 模块与 .d.ts 基础, status: planned, prerequisites: [c11-strict-options, f03-tsconfig] }
+
+  - id: D
+    title: HTML、CSS 与 DOM
+    summary: 足以完成项目的 HTML/CSS，以及类型安全的 DOM 操作、事件与表单。
+    lessons:
+      - { id: d01-html-semantics, title: HTML 语义结构, status: planned, prerequisites: [a01-where-ts-runs] }
+      - { id: d02-html-forms, title: 表单元素与标签, status: planned, prerequisites: [d01-html-semantics] }
+      - { id: d03-css-layout, title: CSS 布局：Flexbox 与 Grid, status: planned, prerequisites: [d01-html-semantics] }
+      - { id: d04-responsive-a11y, title: 响应式与可访问性基础, status: planned, prerequisites: [d03-css-layout, d02-html-forms] }
+      - { id: d05-dom-query, title: DOM 查询、null 检查与元素类型收窄, status: planned, prerequisites: [d01-html-semantics, b07-narrowing] }
+      - { id: d06-dom-create-update, title: 创建与更新节点, status: planned, prerequisites: [d05-dom-query] }
+      - { id: d07-events, title: 事件监听、target 与 currentTarget, status: planned, prerequisites: [d06-dom-create-update, b10-function-types] }
+      - { id: d08-bubbling-delegation, title: 冒泡、委托、preventDefault 与清理监听器, status: planned, prerequisites: [d07-events] }
+      - { id: d09-form-validation, title: 类型安全的表单输入与验证, status: planned, prerequisites: [d08-bubbling-delegation, d02-html-forms] }
+      - { id: d10-state-and-render, title: 状态与渲染：从数据到界面, status: planned, prerequisites: [d09-form-validation, b09-discriminated-unions] }
+
+  - id: F
+    title: 工程化、测试与调试
+    summary: 在本机搭建真实项目：npm、Vite、tsconfig、调试、测试、Git、构建与 CI。
+    lessons:
+      - { id: f01-node-npm, title: Node.js、npm、package.json 与锁文件, status: planned, prerequisites: [a19-modules] }
+      - { id: f02-vite-project, title: 用 Vite 创建 TypeScript 项目, status: planned, prerequisites: [f01-node-npm, d06-dom-create-update] }
+      - { id: f03-tsconfig, title: tsconfig、ESM 与模块解析, status: planned, prerequisites: [f02-vite-project] }
+      - { id: f04-devtools, title: DevTools、断点、source map 与网络面板, status: planned, prerequisites: [f02-vite-project] }
+      - { id: f05-debugging-practice, title: 实际排错练习, status: planned, prerequisites: [f04-devtools] }
+      - { id: f06-unit-tests, title: 用 Vitest 写单元测试, status: planned, prerequisites: [f03-tsconfig] }
+      - { id: f07-type-tests, title: 类型测试, status: planned, prerequisites: [f06-unit-tests, b14-generics] }
+      - { id: f08-dom-tests, title: DOM 与组件测试, status: planned, prerequisites: [f06-unit-tests, d08-bubbling-delegation] }
+      - { id: f09-e2e, title: 用 Playwright 做端到端测试, status: planned, prerequisites: [f08-dom-tests] }
+      - { id: f10-git, title: Git 基础工作流, status: planned, prerequisites: [f01-node-npm] }
+      - { id: f11-lint-format, title: 格式化与静态检查, status: planned, prerequisites: [f03-tsconfig] }
+      - { id: f12-build-ci, title: 生产构建与 CI, status: planned, prerequisites: [f11-lint-format, f10-git] }
+
+  - id: G
+    title: React + TypeScript
+    summary: 组件、props、state、表单、Hook、Effect、路由与测试，全部在真实预览中练习。
+    lessons:
+      - { id: g01-jsx-components, title: JSX/TSX 与组件, status: planned, prerequisites: [d10-state-and-render, a19-modules] }
+      - { id: g02-props, title: Props 与类型, status: planned, prerequisites: [g01-jsx-components] }
+      - { id: g03-events-state, title: 事件与 state, status: planned, prerequisites: [g02-props] }
+      - { id: g04-immutable-updates, title: 不可变更新, status: planned, prerequisites: [g03-events-state, a12-destructuring-spread] }
+      - { id: g05-lists-keys, title: 列表渲染与 key, status: planned, prerequisites: [g04-immutable-updates] }
+      - { id: g06-controlled-forms, title: 受控表单, status: planned, prerequisites: [g05-lists-keys] }
+      - { id: g07-lifting-state, title: 状态提升与组合, status: planned, prerequisites: [g06-controlled-forms] }
+      - { id: g08-custom-hooks, title: 自定义 Hook, status: planned, prerequisites: [g07-lifting-state] }
+      - { id: g09-refs, title: ref 的合理用途, status: planned, prerequisites: [g08-custom-hooks] }
+      - { id: g10-context, title: Context 的合理用途, status: planned, prerequisites: [g08-custom-hooks] }
+      - { id: g11-effects, title: Effect：适用场景、依赖与清理, status: planned, prerequisites: [g09-refs] }
+      - { id: g12-effect-pitfalls, title: 避免滥用 Effect 与性能 Hook, status: planned, prerequisites: [g11-effects] }
+      - { id: g13-routing, title: 用 React Router 组织页面, status: planned, prerequisites: [g07-lifting-state, e10-url-routing] }
+      - { id: g14-async-data, title: 异步数据与错误状态, status: planned, prerequisites: [g11-effects, e08-abort-races] }
+      - { id: g15-a11y-component-tests, title: 可访问性与组件测试, status: planned, prerequisites: [g14-async-data, f08-dom-tests] }
+
+  - id: H
+    title: Next.js 与基础全栈实验
+    summary: 本地运行的真实 Next.js 实验：路由、服务端/客户端边界、数据读写、校验、持久化与部署边界。
+    lessons:
+      - { id: h01-next-overview, title: 从 SPA 到服务端渲染：Next.js 解决什么问题, status: planned, prerequisites: [g13-routing, f12-build-ci] }
+      - { id: h02-app-router-layouts, title: App Router：路由与布局, status: planned, prerequisites: [h01-next-overview] }
+      - { id: h03-server-client-components, title: 服务端组件与客户端组件的边界, status: planned, prerequisites: [h02-app-router-layouts] }
+      - { id: h04-data-reading, title: 在服务端读取数据, status: planned, prerequisites: [h03-server-client-components] }
+      - { id: h05-mutations-validation, title: 数据写入与输入校验, status: planned, prerequisites: [h04-data-reading, e06-runtime-validation] }
+      - { id: h06-server-errors, title: 服务端错误处理, status: planned, prerequisites: [h05-mutations-validation] }
+      - { id: h07-persistence, title: 持久化：内存、本地文件与数据库, status: planned, prerequisites: [h06-server-errors] }
+      - { id: h08-env-config, title: 环境变量与配置, status: planned, prerequisites: [h07-persistence, e13-env-secrets] }
+      - { id: h09-auth-boundaries, title: 认证话题的安全边界, status: planned, prerequisites: [h08-env-config] }
+
+  - id: I
+    title: 项目与部署
+    summary: 三个层层递进的项目，每个拆成独立里程碑；以及静态与服务端部署。
+    lessons:
+      - { id: p1-01-plan-and-model, title: 项目 1·任务板：需求与数据模型, status: planned, prerequisites: [d10-state-and-render] }
+      - { id: p1-02-render-and-add, title: 项目 1·任务板：渲染与新增, status: planned, prerequisites: [p1-01-plan-and-model] }
+      - { id: p1-03-edit-delete, title: 项目 1·任务板：编辑与删除（事件委托）, status: planned, prerequisites: [p1-02-render-and-add] }
+      - { id: p1-04-filters, title: 项目 1·任务板：过滤与 URL 状态, status: planned, prerequisites: [p1-03-edit-delete, e10-url-routing] }
+      - { id: p1-05-persistence, title: 项目 1·任务板：持久化与数据校验, status: planned, prerequisites: [p1-04-filters, e09-storage-serialization] }
+      - { id: p1-06-local-project, title: 项目 1·任务板：本地工程、测试与导出, status: planned, prerequisites: [p1-05-persistence, f08-dom-tests] }
+      - { id: i01-static-vs-server, title: 静态站点与服务端应用的区别, status: planned, prerequisites: [f12-build-ci] }
+      - { id: i02-deploy-static, title: 部署静态站点：构建、路由刷新与资源路径, status: planned, prerequisites: [i01-static-vs-server] }
+      - { id: p2-01-plan-and-types, title: 项目 2·项目面板：需求与类型模型, status: planned, prerequisites: [g08-custom-hooks] }
+      - { id: p2-02-routes-lists, title: 项目 2·项目面板：路由与列表, status: planned, prerequisites: [p2-01-plan-and-types, g13-routing] }
+      - { id: p2-03-forms, title: 项目 2·项目面板：表单与校验, status: planned, prerequisites: [p2-02-routes-lists] }
+      - { id: p2-04-data-state, title: 项目 2·项目面板：数据状态与错误处理, status: planned, prerequisites: [p2-03-forms, g14-async-data] }
+      - { id: p2-05-tests, title: 项目 2·项目面板：组件测试与端到端测试, status: planned, prerequisites: [p2-04-data-state, g15-a11y-component-tests] }
+      - { id: p2-06-deploy, title: 项目 2·项目面板：静态部署与验证, status: planned, prerequisites: [p2-05-tests, i02-deploy-static] }
+      - { id: p3-01-plan, title: 项目 3·全栈扩展：需求与数据边界, status: planned, prerequisites: [h07-persistence, p2-06-deploy] }
+      - { id: p3-02-api-validation, title: 项目 3·全栈扩展：服务端读写与校验, status: planned, prerequisites: [p3-01-plan] }
+      - { id: p3-03-persistence, title: 项目 3·全栈扩展：持久化与测试, status: planned, prerequisites: [p3-02-api-validation] }
+      - { id: i03-deploy-server, title: 部署服务端应用：环境变量、日志与回滚, status: planned, prerequisites: [p3-03-persistence, h08-env-config] }

@@ -1,0 +1,10 @@
+node_modules
+dist
+public/sandbox
+public/tsw-types
+src/generated
+content
+coverage
+playwright-report
+test-results
+labs/**/node_modules

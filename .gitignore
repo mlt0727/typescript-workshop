@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.vercel/
+coverage/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+# 构建生成物
+public/sandbox/
+public/tsw-types/
+src/generated/
+# 本地数据与机密（不要提交）
+.env
+.env.*
+!.env.example
+.data/
+.secrets/
+.debug/
+.claude/settings.local.json

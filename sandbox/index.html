@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <!--
+      学生代码运行页。由 iframe sandbox="allow-scripts allow-forms"（无 allow-same-origin）加载，来源为不透明的 null。
+      CSP：只允许本站脚本与 blob: 模块；禁止任何网络连接、表单跳转与 <base>。
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; worker-src blob:; connect-src 'none'; form-action 'none'; base-uri 'none'"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <title>预览</title>
+    <style data-tsw-keep>
+      html { color-scheme: light; }
+      body { margin: 8px; font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <script src="./frame.js" defer data-tsw-keep></script>
+  </head>
+  <body></body>
+</html>
