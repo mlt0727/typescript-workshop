@@ -4443,6 +4443,128 @@
         }
       ]
     },
+    "e04-promise-combinators": {
+      "verifiedAt": "2026-10-20T11:15:57.057Z",
+      "sourceHash": "ec8134fca7803084",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:all:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:all:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Ada 42 | [log]   B 结束 | [log] Promise.all 被拒绝： B 失败 | [log]   C 结束 | [log]   A 结束 | [log] 全部结束"
+        },
+        {
+          "target": "playground:all-settled:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:all-settled:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 成功： A | [log] 失败： B 失败 | [log] 成功： C | [log] A"
+        },
+        {
+          "target": "playground:race:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:race:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 快的 | [log] 超时： 超过 50 毫秒"
+        },
+        {
+          "target": "playground:any:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:any:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] any： 镜像 2 | [log] race： 镜像 1 不可用 | [log] any： 2 个来源都失败了"
+        },
+        {
+          "target": "exercise:check-links:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(checkAll › 分别列出可用和不可用的链接，顺序与输入一致,checkAll › 全部不可用时也不会被拒绝)"
+        },
+        {
+          "target": "exercise:check-links:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:check-links:alt:map-to-outcome",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:check-links:wrong:all-with-catch",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkAll › 分别列出可用和不可用的链接，顺序与输入一致)"
+        },
+        {
+          "target": "exercise:check-links:wrong:serial",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkAll › 所有检查同时开始)"
+        },
+        {
+          "target": "exercise:check-links:wrong:string-reason",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkAll › 分别列出可用和不可用的链接，顺序与输入一致,checkAll › 全部不可用时也不会被拒绝)"
+        },
+        {
+          "target": "exercise:check-links:wrong:missing-await",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS7053@links.ts:8 Element implicitly has an 'any' type because expression of type 'number' can't be used to index type 'Promise<PromiseSettledResult<void>[]>'.) rules=ok tests=fail(checkAll › 分别列出可用和不可用的链接，顺序与输入一致,checkAll › 全部不可用时也不会被拒绝)"
+        },
+        {
+          "target": "exercise:with-timeout:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(withTimeout › 超时后以 TimeoutError 拒绝)"
+        },
+        {
+          "target": "exercise:with-timeout:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-timeout:alt:async-finally",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-timeout:wrong:no-clear",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 及时完成时得到原来的值，并清除计时器,withTimeout › 已经兑现的 Promise 也能使用)"
+        },
+        {
+          "target": "exercise:with-timeout:wrong:return-without-await",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 超时后以 TimeoutError 拒绝)"
+        },
+        {
+          "target": "exercise:with-timeout:wrong:plain-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 超时后以 TimeoutError 拒绝)"
+        },
+        {
+          "target": "exercise:with-timeout:wrong:any-instead-of-race",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withTimeout › 超时后以 TimeoutError 拒绝,withTimeout › 原来的 Promise 先被拒绝时，采用它的原因，并清除计时器)"
+        },
+        {
+          "target": "exercise:with-timeout:wrong:unknown-result",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2344@timeout.test-d.ts:5 Type 'Promise<number[]>' does not satisfy the constraint '{ [toStringTag]: string; then: \"Expected: function, Actual: function\"; catch: <TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null | undefined) => Promise<...>; finally: \"Expected:) rules=ok tests=ok"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T08:56:49.878Z",
       "sourceHash": "0a98baee8e519cd3",

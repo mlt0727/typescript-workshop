@@ -1,0 +1,49 @@
+- id: all-rejects
+  type: single
+  prompt: "`Promise.all([a, b, c])` 中，`b` 在 10 毫秒时被拒绝，`a` 和 `c` 还要 1 秒才能完成。会发生什么？"
+  options:
+    - text: "`Promise.all` 在 10 毫秒时以 `b` 的原因被拒绝；`a` 和 `c` 继续运行，但它们的结果不会被使用"
+      correct: true
+      explain: 组合方法不会取消其他操作。需要真正停止请求时，要用 `AbortController`（e08）。
+    - text: "`Promise.all` 等 `a` 和 `c` 完成后，在 1 秒时被拒绝"
+      explain: "`Promise.all` 一遇到拒绝就立刻被拒绝，不再等待。"
+    - text: "`Promise.all` 在 10 毫秒时被拒绝，同时 `a` 和 `c` 被取消"
+      explain: Promise 没有“取消”这个操作，`a` 和 `c` 仍在运行。
+- id: pick-combinator
+  type: single
+  prompt: 从三个镜像下载同一个文件，用最快**成功**的那个；只有全部失败时才报错。应该用哪个方法？
+  options:
+    - text: "`Promise.any`"
+      correct: true
+      explain: 它忽略被拒绝的，采用第一个兑现的结果；全部被拒绝时以 `AggregateError` 拒绝。
+    - text: "`Promise.race`"
+      explain: 如果最先完成的镜像失败了，`race` 就直接被拒绝，不会再等其他镜像。
+    - text: "`Promise.all`"
+      explain: "`all` 要等全部成功，任何一个失败都会让它被拒绝。"
+    - text: "`Promise.allSettled`"
+      explain: 它会等所有镜像都完成，而不是采用最快的那个。
+- id: settled-value
+  type: single
+  prompt: "`const results = await Promise.allSettled([load()]);` 之后，为什么 `results[0].value` 报错？"
+  options:
+    - text: 结果可能是失败的，失败的结果没有 `value`，要先检查 `status === 'fulfilled'`
+      correct: true
+      explain: "每个结果是可辨识联合：`{ status: 'fulfilled', value }` 或 `{ status: 'rejected', reason }`。检查 `status` 后 TypeScript 才会收窄（b09）。"
+    - text: 要写成 `results[0].result`
+      explain: 成功结果的属性名就是 `value`。
+    - text: "`allSettled` 的结果需要再 `await` 一次"
+      explain: "`await` 之后得到的已经是结果数组。"
+- id: true-statements
+  type: multiple
+  prompt: 下列哪些说法正确？
+  options:
+    - text: "`Promise.allSettled` 从不被拒绝"
+      correct: true
+      explain: 无论成败，它都等所有操作完成，然后兑现为结果数组。
+    - text: "`Promise.race` 的结果一定是兑现"
+      explain: 第一个完成的如果是拒绝，`race` 就被拒绝。用它实现超时正是利用了这一点。
+    - text: "`Promise.any` 全部被拒绝时，以 `AggregateError` 拒绝"
+      correct: true
+      explain: 它的 `errors` 数组包含每一个拒绝原因。
+    - text: "`Promise.all` 的结果数组按完成的先后排列"
+      explain: 结果按传入的顺序排列，与完成的先后无关。

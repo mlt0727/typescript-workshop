@@ -57,7 +57,7 @@ stages:
       - { id: e01-event-loop, title: 事件循环的必要知识, status: draft, prerequisites: [a13-functions] }
       - { id: e02-promises, title: Promise 基础, status: draft, prerequisites: [e01-event-loop, b14-generics] }
       - { id: e03-async-await, title: async/await 与错误传播, status: draft, prerequisites: [e02-promises, a20-errors] }
-      - { id: e04-promise-combinators, title: Promise.all、allSettled、race 与 any, status: planned, prerequisites: [e03-async-await] }
+      - { id: e04-promise-combinators, title: Promise.all、allSettled、race 与 any, status: draft, prerequisites: [e03-async-await] }
       - { id: e05-fetch-json, title: fetch、HTTP 状态与 JSON, status: planned, prerequisites: [e04-promise-combinators] }
       - { id: e06-runtime-validation, title: 运行时数据校验, status: planned, prerequisites: [e05-fetch-json, b08-type-guards] }
       - { id: e07-loading-states, title: 加载、空与失败状态, status: planned, prerequisites: [e06-runtime-validation, d06-dom-create-update] }
