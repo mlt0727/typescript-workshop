@@ -6145,6 +6145,88 @@
         }
       ]
     },
+    "e11-cors": {
+      "verifiedAt": "2026-10-20T12:48:30.471Z",
+      "sourceHash": "f0bc802254372837",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:origins:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:origins:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 同源 https://app.example.com/api/user | [log] 跨源 https://api.example.com/user | [log] 跨源 http://app.example.com/api/user | [log] 跨源 https://app.example.com:8443/api/user"
+        },
+        {
+          "target": "exercise:needs-preflight:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(needsPreflight › 简单的 GET 和表单 POST 不需要预检,needsPreflight › 自定义请求头需要预检，请求头名字不区分大小写,needsPreflight › Content-Type 只看 MIME 类型)"
+        },
+        {
+          "target": "exercise:needs-preflight:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:needs-preflight:alt:some-headers",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:needs-preflight:wrong:case-sensitive-names",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(needsPreflight › 简单的 GET 和表单 POST 不需要预检,needsPreflight › 自定义请求头需要预检，请求头名字不区分大小写,needsPreflight › Content-Type 只看 MIME 类型)"
+        },
+        {
+          "target": "exercise:needs-preflight:wrong:whole-content-type",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(needsPreflight › Content-Type 只看 MIME 类型)"
+        },
+        {
+          "target": "exercise:needs-preflight:wrong:ignore-content-type",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(needsPreflight › Content-Type 只看 MIME 类型)"
+        },
+        {
+          "target": "exercise:cors-headers:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(实际请求 › 没有 Origin：不是跨源请求，只返回 Vary,实际请求 › 允许的来源：返回这个来源和 Allow-Credentials,实际请求 › 不允许的来源：照常处理，但不返回 CORS 头；来源必须完全相同,预检请求 › 通过：204 和完整的响应头,预检请求 › 请求头列表：去掉空白、不区分大小写，也可以不存在,预检请求 › 来源、方法、请求头有一项不允许：403,公开数据与凭据 › 不需要凭据的公开数据：任何来源都得到 *,公开数据与凭据 › 允许凭据时，* 不放行任何来源，只放行列出的来源)"
+        },
+        {
+          "target": "exercise:cors-headers:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:cors-headers:alt:lookup-first",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:cors-headers:wrong:reflect-any-origin",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(公开数据与凭据 › 允许凭据时，* 不放行任何来源，只放行列出的来源)"
+        },
+        {
+          "target": "exercise:cors-headers:wrong:prefix-match",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(实际请求 › 不允许的来源：照常处理，但不返回 CORS 头；来源必须完全相同)"
+        },
+        {
+          "target": "exercise:cors-headers:wrong:no-preflight",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(预检请求 › 通过：204 和完整的响应头,预检请求 › 请求头列表：去掉空白、不区分大小写，也可以不存在,预检请求 › 来源、方法、请求头有一项不允许：403,公开数据与凭据 › 不需要凭据的公开数据：任何来源都得到 *)"
+        },
+        {
+          "target": "exercise:cors-headers:wrong:raw-header-list",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(预检请求 › 通过：204 和完整的响应头,预检请求 › 请求头列表：去掉空白、不区分大小写，也可以不存在)"
+        }
+      ]
+    },
     "g03-events-state": {
       "verifiedAt": "2026-10-20T11:45:28.823Z",
       "sourceHash": "0a98baee8e519cd3",

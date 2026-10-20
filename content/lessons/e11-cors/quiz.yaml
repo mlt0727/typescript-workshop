@@ -1,0 +1,53 @@
+- id: same-origin
+  type: single
+  prompt: 页面的地址是 `https://app.example.com/home`。下面哪个地址与它同源？
+  options:
+    - text: "`https://app.example.com:443/api`"
+      correct: true
+      explain: 443 是 https 的默认端口，写不写都一样，`new URL(...).origin` 得到的也是 `https://app.example.com`。
+    - text: "`https://api.example.com/`"
+      explain: 子域名不同，就是不同的域名，跨源。
+    - text: "`http://app.example.com/api`"
+      explain: 协议不同（http 与 https），跨源。
+    - text: "`https://app.example.com:8443/api`"
+      explain: 端口不同，跨源。
+- id: what-cors-protects
+  type: multiple
+  prompt: 关于 CORS，哪些说法正确？
+  options:
+    - text: 检查由浏览器执行，规则由被请求的服务器在响应头中声明
+      correct: true
+      explain: 浏览器根据服务器返回的 Access-Control-Allow-* 响应头，决定是否把响应交给页面的脚本。
+    - text: 被 CORS 拦下时，请求可能已经到达服务器并被处理了
+      correct: true
+      explain: 简单请求不需要预检，浏览器直接发送，只在读取响应时检查。所以有副作用的接口仍然要自己做鉴权和 CSRF 防护。
+    - text: 它能阻止 curl 或者别的服务器调用你的接口
+      explain: CORS 只约束浏览器中的脚本。curl 和服务器端代码根本不经过它，接口的安全要靠鉴权。
+    - text: 在前端的请求中加上 `Access-Control-Allow-Origin` 头就能解决跨源问题
+      explain: 这是响应头，必须由服务器返回。在请求中加上它没有任何作用，反而让请求变成了需要预检的请求。
+    - text: "改用 `fetch(url, { mode: 'no-cors' })` 就能绕过 CORS 读取响应"
+      explain: no-cors 得到的是不透明的响应：状态码是 0，响应体和响应头都读不到。它只适合不需要读取内容的场合。
+- id: which-preflight
+  type: single
+  prompt: 下面哪个跨源请求会先发送预检请求？
+  options:
+    - text: "`fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body })`"
+      correct: true
+      explain: application/json 不是简单请求允许的 Content-Type，所以浏览器先用 OPTIONS 询问服务器。
+    - text: "`fetch(url)`"
+      explain: 不带额外请求头的 GET 是简单请求，不需要预检。
+    - text: "`fetch(url, { headers: { Accept: 'application/json' } })`"
+      explain: Accept 是安全的请求头，这仍然是简单请求。
+    - text: 提交一个 `method="post"` 的普通 HTML 表单
+      explain: 表单使用 application/x-www-form-urlencoded 编码，是简单请求。这类请求在 CORS 出现之前就能跨源发送。
+- id: credentials-wildcard
+  type: single
+  prompt: '前端用 `fetch(url, { credentials: ''include'' })` 跨源请求，服务器返回了 `Access-Control-Allow-Origin: *` 和 `Access-Control-Allow-Credentials: true`。结果是？'
+  options:
+    - text: 浏览器不让脚本读取响应，fetch 以 TypeError 拒绝
+      correct: true
+      explain: 带凭据的请求，Access-Control-Allow-Origin 必须写出具体的来源，不能是 *。
+    - text: 脚本正常读取响应
+      explain: 浏览器规定 * 不能与凭据一起使用，否则任何网站都能带着用户的 cookie 读取数据。
+    - text: 浏览器自动去掉 cookie 重新发送请求
+      explain: 浏览器不会这样做，请求直接失败。
