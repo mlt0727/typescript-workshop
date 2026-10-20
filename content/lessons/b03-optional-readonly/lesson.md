@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 真实数据里总有“可能没填”的字段，也总有“创建后不该再改”的字段，比如订单号。TypeScript 用可选属性 ? 和 readonly 修饰符把这两件事写进类型里。但它们都有边界：可选属性的值要先检查才能用；readonly 只是编译期的约定，而且只管一层。
 objectives:
   - 用可选属性 ? 描述可能缺失的字段，使用前检查 undefined
@@ -49,7 +49,7 @@ console.log('nickname' in ada, 'nickname' in bob);
 ```
 - 第 8 行：`p.nickname` 可能是 `undefined`，报 TS18048。
 - 第 13 行：用 `=== undefined` 判断年龄，0 岁也能正确显示（a07）。
-- 第 19 行：`ada` 根本没有 `nickname` 属性，`bob` 有这个属性但值是 `undefined`，`in` 运算符能区分两者（输出 `false true`）。默认情况下 TypeScript 不区分这两种情况，a12 讲过的 `exactOptionalPropertyTypes` 选项可以让它区分。
+- 第 19 行：`'属性名' in 对象` 检查对象（包括它的原型链）上有没有这个属性（b07 会用它来收窄类型）。`ada` 根本没有 `nickname` 属性，`bob` 有这个属性但值是 `undefined`，`in` 能区分两者（输出 `false true`）。默认情况下 TypeScript 不区分这两种情况，a12 讲过的 `exactOptionalPropertyTypes` 选项可以让它区分。
 :::
 
 ## readonly：不能重新赋值的属性
@@ -91,7 +91,7 @@ console.log(order, frozen);
 
 和所有类型一样，`readonly` 在编译后被擦除。运行时真正阻止修改的是 `Object.freeze(obj)`：冻结后对属性赋值，在严格模式（模块代码都是严格模式）下会抛出 `TypeError`。`Object.freeze` 同样是浅的，TypeScript 会把它的返回值标成 `Readonly<…>`。
 
-另一个边界：只读的对象可以赋给**可变**类型的变量，再通过那个变量修改。TypeScript 允许这样做，`readonly` 只能防止“直接”修改。
+另一个边界：带 `readonly` 属性的对象可以赋给属性**可变**的类型的变量（例如把 `Readonly<{ x: number }>` 赋给 `{ x: number }`），再通过那个变量修改。TypeScript 允许这样做，`readonly` 只能防止“直接”修改。只读**数组**不同：`readonly string[]` 不能赋给 `string[]`（a17）。
 
 :::playground{#freeze expect="2540@main.ts:3" run=error}
 ```ts file=main.ts
@@ -120,7 +120,9 @@ interface Settings {
   language?: string;
 }
 
-function update(current: Settings, patch: Partial<Settings>): Settings {
+type SettingsPatch = Partial<Settings>;
+
+function update(current: Settings, patch: SettingsPatch): Settings {
   return { ...current, ...patch };
 }
 
@@ -131,8 +133,8 @@ const complete: Required<Settings> = { theme: 'dark', fontSize: 16, language: 'z
 const locked: Readonly<Settings> = base;
 console.log(complete, locked);
 ```
-- 第 12 行：`patch` 只提供了 `fontSize`，这是 `Partial<Settings>` 允许的。注意 a12 的提醒：如果 `patch` 里有值为 `undefined` 的属性，展开会把它也覆盖进去。
-- 把鼠标停在 `Partial<Settings>` 上，可以看到 TypeScript 展开后的类型。这些工具类型的实现原理（映射类型）在 C 阶段讲。
+- 把鼠标停在第 7 行的 `SettingsPatch` 上，可以看到展开后的类型：每个属性都变成了可选。这些工具类型的实现原理（映射类型）在 C 阶段讲。
+- 第 14 行：`patch` 只提供了 `fontSize`，这是 `Partial<Settings>` 允许的。注意 a12 的提醒：如果 `patch` 里有值为 `undefined` 的属性，展开会把它也覆盖进去。
 :::
 
 ::exercise{#profile-label}

@@ -163,7 +163,7 @@ describe('normalizeProducts', () => {
 :::
 
 :::explanation
-测试里的 `extra` 比 `RawProduct` 多了一个 `supplier` 字段，它仍然可以作为 `RawProduct` 传入（结构化类型）。所以“结果只有四个属性”只能靠**明确地新建对象**来保证：`{ id: …, name: …, price: …, tags: … }`。任何形式的 `{ ...item, … }` 都会把 `internal_cost` 和 `supplier` 一起带出去，而 TypeScript 不会报错——展开后的对象拥有 `Product` 要求的全部属性，多出来的属性在类型检查里是允许的。
+测试里的 `extra` 比 `RawProduct` 多了一个 `supplier` 字段，它仍然可以作为 `RawProduct` 传入（结构化类型）。所以“结果只有四个属性”只能靠**明确地新建对象**来保证：`{ id: …, name: …, price: …, tags: … }`。任何形式的 `{ ...item, … }` 都会把 `internal_cost` 和 `supplier` 一起带出去，而 TypeScript 不会报错：多余属性检查只检查对象字面量里**显式写出**的属性，通过 `...item` 展开进来的属性不在检查范围内；展开后的对象又拥有 `Product` 要求的全部属性。
 
 `[...(item.tags ?? [])]`：`tags` 缺失时得到 `[]`，存在时复制一份新数组。
 

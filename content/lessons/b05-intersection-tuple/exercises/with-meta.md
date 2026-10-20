@@ -4,7 +4,7 @@ title: 保存后的草稿
 ---
 草稿的类型是 `Draft`。保存之后，它会多出 `id` 和 `savedAt` 两个属性。
 
-1. 用交叉类型定义并导出 `Saved`：`Draft` 加上 `{ id: number; savedAt: string }`。
+1. 定义并导出 `Saved`：`Draft` 加上 `{ id: number; savedAt: string }`。用交叉类型 `&` 写（用 `interface … extends Draft` 也可以）。
 2. 实现 `save(draft, id, now)`：返回一个新的 `Saved` 对象，`savedAt` 的值是参数 `now`。不能修改传入的草稿。
 
 :::files{role=starter}
@@ -71,7 +71,7 @@ expectTypeOf<Saved>().toExtend<Draft>();
 :::explanation
 `Draft & { id: number; savedAt: string }` 表示“草稿的全部属性，再加上 `id` 和 `savedAt`”。`Saved` 仍然可以当作 `Draft` 使用（它拥有 `Draft` 的全部属性）。
 
-`{ ...draft, id, savedAt: now }` 创建了一个新对象，原草稿不变。起始代码直接返回 `draft`，缺少两个属性，TypeScript 会报错。
+`{ ...draft, id, savedAt: now }` 创建了一个新对象，原草稿不变。起始代码先报找不到 `Saved`（TS2304）；定义了 `Saved` 之后如果仍然直接返回 `draft`，缺少两个属性，TypeScript 同样会报错。
 
 类型测试里的 `.branded` 让比较时把交叉类型展开再比较，否则 `A & B` 和写在一起的对象类型会被认为“写法不同”。
 :::

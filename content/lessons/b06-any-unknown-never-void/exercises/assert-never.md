@@ -5,7 +5,7 @@ title: 不会漏掉的单位换算
 长度单位只有四种：`type Unit = 'mm' | 'cm' | 'm' | 'km'`。实现：
 
 1. **`assertNever(value)`**：参数类型是 `never`，返回类型也是 `never`。它在运行时抛出 `Error`，`message` 为 `` `未处理的值：${String(value)}` ``。它的作用是放在 `switch` 的 `default` 分支里做穷尽检查：如果以后给 `Unit` 加了新单位却忘了处理，`default` 里的值就不再是 `never`，TypeScript 会报错。
-2. **`toMillimeters(value, unit)`**：把某个单位的数值换算成毫米。用 `switch` 处理四种单位，`default` 分支调用 `assertNever`。
+2. **`toMillimeters(value, unit)`**：把某个单位的数值换算成毫米。用 `switch` 处理四种单位，`default` 分支调用 `assertNever`（用 `Record<Unit, number>` 查表也能达到同样的穷尽效果，见解释）。
 3. **`convert(value, from, to)`**：把 `from` 单位的数值换算成 `to` 单位。例如 `convert(250, 'cm', 'm')` 得到 `2.5`。
 
 换算关系：1 cm = 10 mm，1 m = 1000 mm，1 km = 1000 m。
@@ -124,6 +124,8 @@ assertNever('mm');
 改成 `default: return assertNever(unit);` 后，情况就不同了：只有当所有单位都已处理、`unit` 在 `default` 里变成 `never` 时，这一行才能通过类型检查。以后有人给 `Unit` 加上 `'inch'`，这一行就会报错，直接指出需要补充的位置。万一运行时真的来了一个意料之外的值（例如来自未经校验的外部数据），`assertNever` 也会抛出清楚的错误，而不是返回错误的数字。
 
 `1_000_000` 中的下划线是数字分隔符，只为了好读，和 `1000000` 完全相同。
+
+另一种写法是查表：`const MM_PER_UNIT: Record<Unit, number> = { … }`。`Record<Unit, number>` 要求每个单位都有对应的值，漏写一个键同样会报错，也能起到穷尽检查的作用。
 :::
 
 :::variant{kind=alt name=lookup-table}

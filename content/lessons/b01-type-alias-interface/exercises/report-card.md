@@ -132,7 +132,7 @@ expectTypeOf<Student['scores']>().toEqualTypeOf<{ [subject: string]: number }>()
 
 开启 `noUncheckedIndexedAccess` 后，`student.scores[subject]` 的类型是 `number | undefined`，TypeScript 强迫你处理“没有这门科目”的情况——这正是规格里要排除的学生。判断要用 `!== undefined`：用真假检查的话，0 分会被误当成“没有这门科目”（a07）。
 
-`Object.entries` 返回的键值对只包含真实存在的键，值的类型是 `number`，不需要检查 `undefined`。普通对象的字符串键按插入顺序遍历（纯数字形式的键除外，它们会按数值排在前面——科目名不会遇到这种情况）。
+`Object.entries` 返回的键值对只包含真实存在的键，值的类型是 `number`，不需要检查 `undefined`。普通对象的字符串键按插入顺序遍历（非负整数形式的键除外，例如 `'2'`、`'10'`，它们会按数值排在最前面——科目名不会遇到这种情况）。
 :::
 
 :::variant{kind=alt name=entries-reduce}

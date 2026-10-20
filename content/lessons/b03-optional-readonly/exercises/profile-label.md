@@ -139,7 +139,7 @@ export function profileLabel(profile: Profile): string {
 ```
 :::
 
-:::variant{kind=wrong name=unchecked-nickname fails=types reason="直接调用可选属性上的方法，没有检查 undefined"}
+:::variant{kind=wrong name=unchecked-nickname fails=types reason="没有检查 undefined 就读取可选属性的 .length"}
 ```ts file=profile.ts
 export interface Profile {
   name: string;

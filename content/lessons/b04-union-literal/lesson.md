@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: 一个值经常“可能是这个，也可能是那个”：ID 可能是数字或字符串，订单状态只能是待付款、已付款、已发货中的一个。Java 用重载、枚举或者干脆用 String 表示，TypeScript 则有更直接的工具：联合类型 A | B，和只包含一个具体值的字面量类型。两者组合起来，可以精确地描述“只能是这几个值之一”。
 objectives:
   - 用联合类型 A | B 描述多种可能，知道只能直接使用所有成员共有的操作
@@ -36,11 +36,15 @@ function format(value: string | number): string {
 }
 
 console.log(format(3.14159), format('  已售罄  '));
-console.log(String(42), (42).toString(), 'x'.toString());
+
+function show(value: string | number): string {
+  return value.toString();
+}
+console.log(show(42), show('x'));
 ```
 - 第 2 行：`toFixed` 只有数字才有，字符串没有，报 TS2339。
 - 第 6 行检查之后，分支里的 `value` 是 `number`；`if` 之后剩下的只能是 `string`。
-- `toString()` 是字符串和数字都有的方法，可以直接在 `string | number` 上调用。
+- 第 15 行：`toString()` 是字符串和数字都有的方法，可以直接在 `string | number` 上调用。
 :::
 
 ## 字面量类型
@@ -64,7 +68,7 @@ console.log(status);
 ```
 - 第 4 行：`'closed'` 不在 `Status` 中，报 TS2322。拼错状态名这类错误会在编译期被发现。
 - 在编辑器里输入 `status = '`，自动补全会列出三个合法的值。
-- 数字也可以是字面量类型（第 7 行）。`boolean` 其实就是 `true | false`。
+- 数字也可以是字面量类型（第 7 行）。第 11 行：`201` 不在 `200 | 404 | 500` 中，报 TS2345。`boolean` 其实就是 `true | false`。
 :::
 
 ## 类型拓宽：什么时候字面量变成了 string

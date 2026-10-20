@@ -2,7 +2,7 @@
 kind: task
 title: 把 any 换成 unknown
 ---
-`readTheme(json)` 从 JSON 文本中读取主题设置：解析结果是对象并且 `theme` 是 `'light'` 或 `'dark'` 时返回它，其他情况都返回 `'light'`。
+`readTheme(json)` 从 JSON 文本中读取主题设置（`json` 一定是合法的 JSON 文本）：解析结果是对象并且 `theme` 是 `'light'` 或 `'dark'` 时返回它，其他情况都返回 `'light'`。
 
 起始代码用了 `any`，判题规则不允许。把 `config` 的类型改成 `unknown`，然后补上必要的检查，让类型检查和测试都通过。
 

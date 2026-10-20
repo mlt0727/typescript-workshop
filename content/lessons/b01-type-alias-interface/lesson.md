@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 35
-review: ai-draft
+review: self-reviewed
 problem: "A 阶段里，对象类型大多直接写在参数上，例如 user: { name: string; born: number }。同一个形状用在三四个地方时，这样写既啰嗦又容易改漏。TypeScript 用 type 和 interface 给对象形状起名字。它们大部分时候可以互换，但也有几处真正的区别。"
 objectives:
   - 用 type 和 interface 给对象形状命名，并在参数、返回值和变量上使用
@@ -160,7 +160,7 @@ for (const [fruit, count] of Object.entries(stock)) {
 ## 常见错误
 
 - **同一个对象形状到处重复书写**：起一个名字，改一处就够了。
-- **意外的声明合并**：两个文件里同名的 `interface` 会合并，可能让对象多出必需的属性。
+- **意外的声明合并**：同一个文件（模块）里同名的 `interface` 会合并，可能让对象多出必需的属性。不同的模块文件互不影响；要给全局类型补充属性，需要专门的 `declare global` 写法。
 - **以为索引签名的读取结果一定存在**：在本平台它包含 `undefined`。
 - **用 `interface` 写联合类型**：做不到，联合类型用 `type`。
 

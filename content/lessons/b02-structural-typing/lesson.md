@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: 在 Java 里，一个类必须声明 implements 某个接口，才能当作这个接口使用。TypeScript 不看名字和声明，只看形状：只要一个值拥有需要的属性，它就“是”这个类型。这让代码非常灵活，但也意味着类型不会阻止多余的属性流过去——除了一个特殊情况：直接写出的对象字面量。
 objectives:
   - 理解结构化类型：类型兼容只看形状，不看名字或声明
@@ -25,7 +25,7 @@ references:
 
 TypeScript 的类型系统是**结构化**的（structural typing）：判断一个值能不能当作某个类型使用时，只比较它们的**形状**——有没有需要的属性、属性的类型是否兼容。类型叫什么名字、值是怎样创建的、有没有“声明实现了”这个类型，都不重要。
 
-Java、C# 的类型系统是**名义**的（nominal）：类型必须通过 `implements`、`extends` 明确建立关系。
+Java、C# 的类型系统是**名义**的（nominal）：类型必须通过 `implements`、`extends` 明确建立关系。（TypeScript 也有少数例外：带私有成员的类按声明来源比较，b12 会讲。）
 
 :::playground{#structural}
 ```ts file=main.ts
@@ -79,7 +79,7 @@ function draw(options: DrawOptions): string {
 console.log(draw({ width: 10, colour: 'red' }));
 console.log(p1, p2);
 ```
-- 第 7 行：先放进变量再赋值，不检查多余属性，没有错误。
+- 第 7 行：先放进变量再赋值，不检查多余属性，没有错误。同理，通过展开 `{ ...ok }` 带进来的属性也不检查，多余属性检查只看字面量里**显式写出**的属性。
 - 第 8 行：直接写对象字面量，`z` 是多余的，报 TS2353。
 - 第 17 行：`colour` 拼错了（应该是 `color`），TypeScript 报 TS2561 并给出了建议。如果没有这项检查，`color` 是可选属性，拼错的那个会被悄悄忽略，画出来的是黑色。运行一下看看。
 :::

@@ -7,7 +7,7 @@
       explain: "`any` 关闭了检查，任何操作都能通过——包括运行时会出错的操作。"
     - text: "`const n: number = a;`"
       correct: true
-      explain: "`any` 可以赋给任何类型，这正是它危险的地方。"
+      explain: "`any` 可以赋给几乎任何类型（`never` 除外），这正是它危险的地方。"
     - text: "`u.name`"
       explain: "`unknown` 必须先收窄才能读取属性（TS18046）。"
     - text: "`const n: number = u;`"
@@ -34,14 +34,14 @@
         case 'red': return '#f00';
         case 'green': return '#0f0';
         default: {
-          const never: never = c;
-          return never;
+          const unreachable: never = c;
+          return unreachable;
         }
       }
     }
     ```
   options:
-    - text: "TypeScript 在 `const never: never = c;` 这一行报错，提醒 `'blue'` 还没有处理"
+    - text: "TypeScript 在 `const unreachable: never = c;` 这一行报错，提醒 `'blue'` 还没有处理"
       correct: true
       explain: 加入 `'blue'` 后，`default` 里的 `c` 类型变成 `'blue'`，不能赋给 `never`。这就是穷尽检查。
     - text: 没有任何报错，运行时返回 `undefined`

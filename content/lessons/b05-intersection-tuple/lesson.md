@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 30
-review: ai-draft
+review: self-reviewed
 problem: 联合类型表示“A 或 B”。有时需要的是“既是 A 又是 B”：一个带时间戳的用户，就是“用户”加上“时间戳”。另一种常见需求是“固定长度、每个位置类型不同”的数组，例如函数同时返回最小值和最大值。TypeScript 用交叉类型 A & B 和元组 [A, B] 描述这两种情况。
 objectives:
   - 用交叉类型 A & B 组合对象类型，并和 interface extends 对比
@@ -41,7 +41,7 @@ console.log(describe(ada));
 - 第 11 行：`ada` 拥有 `describe` 需要的全部属性（b02 的结构化类型）。
 :::
 
-**`&` 和 `extends` 怎么选？** 两者都能组合对象类型。`interface … extends …` 在属性冲突时会直接报错，错误信息通常也更清楚；`&` 可以用于任何类型（包括类型别名和联合类型），写起来更灵活。
+**`&` 和 `extends` 怎么选？** 两者都能组合对象类型。`interface … extends …` 在属性冲突时会直接报错，错误信息通常也更清楚，但它只能扩展对象类型（包括对象形状的类型别名）；`&` 还能用于联合类型、基本类型等任何类型，写起来更灵活。
 
 ## 冲突的交叉：never
 

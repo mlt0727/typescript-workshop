@@ -2232,8 +2232,8 @@
       ]
     },
     "b01-type-alias-interface": {
-      "verifiedAt": "2026-10-20T10:06:22.129Z",
-      "sourceHash": "2a18d4d01ffccd81",
+      "verifiedAt": "2026-10-20T10:32:41.393Z",
+      "sourceHash": "a2ba11985f662cf0",
       "ok": true,
       "checks": [
         {
@@ -2339,8 +2339,8 @@
       ]
     },
     "b02-structural-typing": {
-      "verifiedAt": "2026-10-20T10:08:24.196Z",
-      "sourceHash": "cd3dc2980104dbf5",
+      "verifiedAt": "2026-10-20T10:32:41.779Z",
+      "sourceHash": "e3b05a429f1ffaa8",
       "ok": true,
       "checks": [
         {
@@ -2431,8 +2431,8 @@
       ]
     },
     "b03-optional-readonly": {
-      "verifiedAt": "2026-10-20T10:10:45.746Z",
-      "sourceHash": "2753dcb82d0f3e1e",
+      "verifiedAt": "2026-10-20T10:32:42.215Z",
+      "sourceHash": "88f063b369af4012",
       "ok": true,
       "checks": [
         {
@@ -2538,8 +2538,8 @@
       ]
     },
     "b04-union-literal": {
-      "verifiedAt": "2026-10-20T10:14:41.581Z",
-      "sourceHash": "5c4f16c07aebc74e",
+      "verifiedAt": "2026-10-20T10:32:42.675Z",
+      "sourceHash": "16d820d8c2581d32",
       "ok": true,
       "checks": [
         {
@@ -2550,7 +2550,7 @@
         {
           "target": "playground:union-basics:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 3.14 已售罄 | [log] 42 42 x"
+          "detail": "期望 done，实际 done；输出：[log] 3.14 已售罄 | [log] 42 x"
         },
         {
           "target": "playground:literal-types:types",
@@ -2640,8 +2640,8 @@
       ]
     },
     "b05-intersection-tuple": {
-      "verifiedAt": "2026-10-20T10:14:42.112Z",
-      "sourceHash": "2350aaf8cdc9f9d8",
+      "verifiedAt": "2026-10-20T10:32:43.158Z",
+      "sourceHash": "4142cea7107ead35",
       "ok": true,
       "checks": [
         {
@@ -2747,8 +2747,8 @@
       ]
     },
     "b06-any-unknown-never-void": {
-      "verifiedAt": "2026-10-20T10:17:28.376Z",
-      "sourceHash": "65cfc49d71dc0473",
+      "verifiedAt": "2026-10-20T10:32:43.541Z",
+      "sourceHash": "cc371768db05441b",
       "ok": true,
       "checks": [
         {
