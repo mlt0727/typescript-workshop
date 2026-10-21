@@ -10844,6 +10844,108 @@
         }
       ]
     },
+    "h06-server-errors": {
+      "verifiedAt": "2026-10-21T16:05:27.173Z",
+      "sourceHash": "2d5da5ac4f9290e1",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:swallowed-redirect:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:swallowed-redirect:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 接住所有错误： 500：出了点问题 | [log] 重新抛出： NEXT_REDIRECT → Next.js 接住它，返回 307"
+        },
+        {
+          "target": "exercise:error-responses:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(toErrorResponse › 校验错误：422，带上每个字段的信息 ⟶ expect(…).toMatchObject({,toErrorResponse › 其他预期的错误：各自的状态码和信息，没有 fields ⟶ 请求体不是有效的 JSON,toErrorResponse › 未预期的错误：500，不透露原来的信息 ⟶ expect(…).toStrictEqual({ error: '服务器出错了，请稍后再试', requestId: 'req-7' }),toErrorResponse › 响应头：JSON、不缓存、带上请求的 id ⟶ expect(…).toBe('no-store'),readJson › 无法解析的请求体（包括空的）：BadRequestError ⟶ {\"title\":)"
+        },
+        {
+          "target": "exercise:error-responses:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:error-responses:alt:table-and-text",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:error-responses:wrong:leak-message",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toErrorResponse › 未预期的错误：500，不透露原来的信息 ⟶ expect(…).toStrictEqual({ error: '服务器出错了，请稍后再试', requestId: 'req-7' }))"
+        },
+        {
+          "target": "exercise:error-responses:wrong:syntax-error-400",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toErrorResponse › 未预期的错误：500，不透露原来的信息 ⟶ expect(…).toBe(500))"
+        },
+        {
+          "target": "exercise:error-responses:wrong:forbidden-401",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toErrorResponse › 其他预期的错误：各自的状态码和信息，没有 fields ⟶ 没有权限)"
+        },
+        {
+          "target": "exercise:error-responses:wrong:cacheable",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toErrorResponse › 响应头：JSON、不缓存、带上请求的 id ⟶ expect(…).toBe('no-store'))"
+        },
+        {
+          "target": "exercise:error-responses:wrong:readjson-catch-all",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(readJson › 不是解析的问题（请求体已经被读过了）：原样抛出 ⟶ expect(…).toBeInstanceOf([Function: TypeError]))"
+        },
+        {
+          "target": "exercise:with-error-handling:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(withErrorHandling › 成功：响应原样返回，加上 X-Request-Id，记录一条日志 ⟶ expect(…).toBe('req-1'),withErrorHandling › 每个请求一个新的 id；context 原样交给 handler ⟶ expect(…).toStrictEqual([ 'req-1', 'req-2' ]),withErrorHandling › 预期的错误：变成对应的 JSON 响应，日志中没有 error ⟶ ValidationError: 输入有误,withErrorHandling › 未预期的错误：500，响应中没有细节，日志中有原来的 error ⟶ Error: 连接失败：密码 hunter2,withErrorHandling › handler 自己返回的 5xx：照样记录，没有 error ⟶ expect(…).toStrictEqual([,withErrorHandling › 只看 digest 的前缀：别的错误即使有 digest 也是普通的错误 ⟶ Error: x,withErrorHandling › Response.redirect 的响应头不能修改：也要能加上 X-Request-Id ⟶ expect(…).toBe('req-1'),withErrorHandling › 日志中的 path 不含查询字符串（里面可能有令牌） ⟶ expect(…).toBe('/api/callback'))"
+        },
+        {
+          "target": "exercise:with-error-handling:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-error-handling:alt:then-callbacks",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:with-error-handling:wrong:swallow-control-flow",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withErrorHandling › redirect()、notFound() 的控制流原样抛出，交给 Next.js 处理 ⟶ expect(…).toBe(Error: NEXT_REDIRECT { digest: 'NEXT_REDIRECT;replace;/login;307;' }))"
+        },
+        {
+          "target": "exercise:with-error-handling:wrong:mutate-headers",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withErrorHandling › Response.redirect 的响应头不能修改：也要能加上 X-Request-Id ⟶ expect(…).toBe(303))"
+        },
+        {
+          "target": "exercise:with-error-handling:wrong:id-per-wrapper",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withErrorHandling › 每个请求一个新的 id；context 原样交给 handler ⟶ expect(…).toStrictEqual([ 'req-1', 'req-2' ]),withErrorHandling › 预期的错误：变成对应的 JSON 响应，日志中没有 error ⟶ expect(…).toStrictEqual([)"
+        },
+        {
+          "target": "exercise:with-error-handling:wrong:log-error-always",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withErrorHandling › 预期的错误：变成对应的 JSON 响应，日志中没有 error ⟶ expect(…).toStrictEqual([)"
+        },
+        {
+          "target": "exercise:with-error-handling:wrong:log-full-url",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withErrorHandling › 成功：响应原样返回，加上 X-Request-Id，记录一条日志 ⟶ expect(…).toStrictEqual([,withErrorHandling › 预期的错误：变成对应的 JSON 响应，日志中没有 error ⟶ expect(…).toStrictEqual([,withErrorHandling › 未预期的错误：500，响应中没有细节，日志中有原来的 error ⟶ expect(…).toStrictEqual([,withErrorHandling › handler 自己返回的 5xx：照样记录，没有 error ⟶ expect(…).toStrictEqual([,withErrorHandling › 日志中的 path 不含查询字符串（里面可能有令牌） ⟶ expect(…).toBe('/api/callback'))"
+        },
+        {
+          "target": "exercise:with-error-handling:wrong:log-can-break",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withErrorHandling › 日志函数出错不影响响应 ⟶ Error: 日志服务不可用)"
+        }
+      ]
+    },
     "i01-static-vs-server": {
       "verifiedAt": "2026-10-21T02:16:04.710Z",
       "sourceHash": "369fce9321180dab",

@@ -1,0 +1,44 @@
+- id: expected-or-not
+  type: single
+  prompt: 一个 Server Function 保存用户的昵称，昵称已经被别人用了。应该怎样把这件事告诉用户？
+  options:
+    - text: "作为返回值，例如 `{ status: 'error', message: '这个昵称已经被使用了' }`，由 useActionState 显示"
+      correct: true
+      explain: 这是预期的错误，它的信息是写给用户的；作为值返回，生产环境中也能原样显示。
+    - text: "`throw new Error('这个昵称已经被使用了')`，在 error.tsx 中显示 `error.message`"
+      explain: 生产环境中浏览器收到的 message 是一段通用的说明，用户看不到这句话。
+    - text: 返回 500，让用户稍后再试
+      explain: 稍后再试也不会成功；这不是服务器的问题。
+- id: production-message
+  type: single
+  prompt: 服务端组件抛出了 `new Error('连接失败：密码 hunter2')`，被 error.tsx 接住。在生产环境中，浏览器里的 `error.message` 是什么？
+  options:
+    - text: 一段通用的说明，原来的信息只在服务器的日志中；两边可以用 `digest` 对应起来
+      correct: true
+      explain: 实测浏览器中是 `Minified React error #441…`，日志中有完整的信息和同一个 digest。
+    - text: 原来的信息，包括密码
+      explain: 那是开发模式的行为。生产环境中 Next.js 会隐藏服务端组件的错误信息。
+    - text: 空字符串
+      explain: 有一段通用的说明，以及可以用来查日志的 digest。
+- id: status-codes
+  type: single
+  prompt: 一个已经登录的用户请求删除别人的项目。Route Handler 应该返回什么状态码？
+  options:
+    - text: "403"
+      correct: true
+      explain: 登录了，但没有权限；重新登录也没有用。
+    - text: "401"
+      explain: 401 表示没有登录，客户端会让用户重新登录。
+    - text: "404"
+      explain: 有时为了不暴露“这个项目存在”，也会故意返回 404；但按照这个接口的约定，没有权限是 403。
+- id: swallowed-redirect
+  type: single
+  prompt: "一个 Route Handler 写成 `try { const user = await requireUser(); … } catch { return Response.json({ error: '出错了' }, { status: 500 }) }`，其中 `requireUser` 在没有登录时调用 `redirect('/login')`。没有登录的用户会得到什么？"
+  options:
+    - text: 500 和 `{"error":"出错了"}`：redirect() 抛出的错误被 catch 接住了
+      correct: true
+      explain: 实测如此。在 catch 的第一行调用 `unstable_rethrow(error)`，跳转才能生效。
+    - text: 307，跳转到 /login
+      explain: redirect() 是靠抛出错误实现的，catch 接住它之后，Next.js 就看不到它了。
+    - text: TypeScript 会报错，redirect 不能写在 try 中
+      explain: 类型检查不会阻止这种写法，这正是它容易被忽略的原因。
