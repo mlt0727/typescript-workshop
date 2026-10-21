@@ -11517,6 +11517,73 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加任务 › 其他错误（违反业务规则、连接失败）用 role=\"alert\" 显示 ⟶ TestingLibraryElementError: Unable to find role=\"alert\")"
         }
       ]
+    },
+    "p2-05-tests": {
+      "verifiedAt": "2026-10-21T06:14:01.468Z",
+      "sourceHash": "80110b9c3e6384b0",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:weak-data:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:weak-data:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 安全检查 官网改版 | 官网改版 安全检查 | [log] 官网改版 数据迁移 | 官网改版 数据迁移 | [log] 培训课程 安全检查 | 安全检查 培训课程"
+        },
+        {
+          "target": "exercise:test-query:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=null-first:missed,no-trim:missed,code-units:missed,overdue-done:missed,case-sensitive:missed,no-tie-break:missed,unchecked-status:missed,writes-defaults:missed"
+        },
+        {
+          "target": "exercise:test-query:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=null-first:caught(tests),no-trim:caught(tests),code-units:caught(tests),overdue-done:caught(tests),case-sensitive:caught(tests),no-tie-break:caught(tests),unchecked-status:caught(tests),writes-defaults:caught(tests)"
+        },
+        {
+          "target": "exercise:test-query:alt:table-driven",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=null-first:caught(tests),no-trim:caught(tests),code-units:caught(tests),overdue-done:caught(tests),case-sensitive:caught(tests),no-tie-break:caught(tests),unchecked-status:caught(tests),writes-defaults:caught(tests)"
+        },
+        {
+          "target": "exercise:test-query:wrong:happy-path",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=null-first:missed,no-trim:missed,code-units:missed,overdue-done:missed,case-sensitive:missed,no-tie-break:missed,unchecked-status:missed,writes-defaults:missed"
+        },
+        {
+          "target": "exercise:test-query:wrong:expects-code-units",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(listProjects › 按名称排序 ⟶ expect(…).toEqual([ '培训课程', '安全检查', '数据迁移' ]))"
+        },
+        {
+          "target": "exercise:test-task-actions:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-optimistic:missed,not-disabled:missed,send-empty:missed,error-as-field:missed,no-revert:missed,no-revalidate:missed"
+        },
+        {
+          "target": "exercise:test-task-actions:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-optimistic:caught(tests),not-disabled:caught(tests),send-empty:caught(tests),error-as-field:caught(tests),no-revert:caught(tests),no-revalidate:caught(tests)"
+        },
+        {
+          "target": "exercise:test-task-actions:alt:keyboard-and-within",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-optimistic:caught(tests),not-disabled:caught(tests),send-empty:caught(tests),error-as-field:caught(tests),no-revert:caught(tests),no-revalidate:caught(tests)"
+        },
+        {
+          "target": "exercise:test-task-actions:wrong:success-only",
+          "ok": true,
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-optimistic:missed,not-disabled:missed,send-empty:missed,error-as-field:missed,no-revert:missed,no-revalidate:caught(tests)"
+        },
+        {
+          "target": "exercise:test-task-actions:wrong:expects-no-revert",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(服务器拒绝之后，复选框保持点击之后的状态 ⟶ expect(…).not.toBeChecked())"
+        }
+      ]
     }
   }
 }

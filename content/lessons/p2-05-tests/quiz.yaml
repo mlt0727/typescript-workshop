@@ -1,0 +1,44 @@
+- id: which-layer
+  type: single
+  prompt: “没有截止日期的项目排在最后”这条规则，最适合在哪一层测试？
+  options:
+    - text: 单元测试：直接调用 listProjects，用几个准备好的项目检查顺序
+      correct: true
+      explain: 规则的细节在最下层测，快、稳定，失败时一眼就能看出原因。
+    - text: 组件测试：渲染列表页，选择“按截止日期排序”，再读列表
+      explain: 能测，但慢，而且界面的任何改动都可能让它失败。页面只需要确认用了这个函数。
+    - text: 端到端测试：在浏览器中打开构建好的网站检查
+      explain: 端到端测试最慢，留给只有它能发现的问题，例如构建和部署。
+- id: coverage
+  type: single
+  prompt: 一组测试的代码覆盖率是 100%。这说明什么？
+  options:
+    - text: 每一行代码都在测试中运行过，但不说明运行的结果被检查过
+      correct: true
+      explain: 一个没有 expect 的测试也能让覆盖率达到 100%。变异测试检查的是“写错了，测试能不能发现”。
+    - text: 代码中没有错误了
+      explain: 覆盖率不检查结果；有错误的代码也可以全部被运行一遍。
+    - text: 每一种可能的输入都测试过了
+      explain: 覆盖率只关心哪些行运行过，和输入的种类无关。
+- id: optimistic-test
+  type: single
+  prompt: 测试乐观更新时，只写了 `await waitFor(() => expect(checkbox).toBeChecked())`。这个测试有什么问题？
+  options:
+    - text: 没有乐观更新的实现，等服务器回应之后也会勾选，测试照样通过
+      correct: true
+      explain: 要在同一个 waitFor 中检查一个“服务器还没有回应”的标志，例如进度还没变。
+    - text: waitFor 不能用在复选框上
+      explain: waitFor 可以等待任何断言成立。
+    - text: 应该在点击之后立刻检查，不需要等待
+      explain: 界面在下一次渲染时才更新（在 WebKit 中会晚一点），立刻检查可能太早，测试会时好时坏。
+- id: isolation
+  type: single
+  prompt: 为什么每个组件测试都创建一个新的模拟服务器，而不是所有测试共用一个？
+  options:
+    - text: 每个测试从同样的数据开始，互不影响，可以单独运行，也可以按任意顺序运行
+      correct: true
+      explain: 共用一个服务器时，上一个测试添加的任务会出现在下一个测试中。
+    - text: 模拟服务器只能处理一个请求
+      explain: 它可以处理任意多个请求；问题在于数据会被前面的测试修改。
+    - text: 共用服务器会让测试变慢
+      explain: 速度不是主要原因，主要是测试之间的依赖。
