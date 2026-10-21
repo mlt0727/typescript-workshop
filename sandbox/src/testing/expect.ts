@@ -1,4 +1,4 @@
-import { computeAccessibleName } from 'dom-accessibility-api';
+import { computeAccessibleDescription, computeAccessibleName } from 'dom-accessibility-api';
 import { inspect } from '../inspect.ts';
 import { equals, matchesObject } from './equality.ts';
 import { isMock, type MockFn } from './mock.ts';
@@ -381,6 +381,13 @@ const matchers: Record<string, Matcher> = {
     const e = rest[0];
     const pass = rest.length === 0 || e === undefined ? name !== '' : typeof e === 'string' ? name === e : (e as RegExp).test(name);
     return { pass, message: '期望可访问名称（accessible name）', expected: e === undefined ? undefined : show(e), actual: show(name) };
+  },
+  toHaveAccessibleDescription: (a, ...rest) => {
+    const el = requireElement(a, 'toHaveAccessibleDescription');
+    const description = computeAccessibleDescription(el);
+    const e = rest[0];
+    const pass = rest.length === 0 || e === undefined ? description !== '' : typeof e === 'string' ? description === e : (e as RegExp).test(description);
+    return { pass, message: '期望可访问描述（accessible description）', expected: e === undefined ? undefined : show(e), actual: show(description) };
   },
   toBeInvalid: (a) => {
     const el = requireElement(a, 'toBeInvalid');

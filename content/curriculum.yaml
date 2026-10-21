@@ -66,7 +66,7 @@ stages:
       - { id: e10-url-routing, title: URL、History 与基础路由, status: published, prerequisites: [d10-state-and-render, e06-runtime-validation] }
       - { id: e11-cors, title: CORS 的真实边界, status: published, prerequisites: [e05-fetch-json] }
       - { id: e12-xss, title: 基础 XSS 防范, status: published, prerequisites: [d06-dom-create-update] }
-      - { id: e13-env-secrets, title: 客户端环境变量与密钥边界, status: draft, prerequisites: [f02-vite-project] }
+      - { id: e13-env-secrets, title: 客户端环境变量与密钥边界, status: published, prerequisites: [f02-vite-project, f04-devtools, f12-build-ci] }
 
   - id: C
     title: 进阶类型与类型设计
@@ -83,7 +83,7 @@ stages:
       - { id: c09-boundary-modeling, title: 边界数据建模, status: published, prerequisites: [c08-generic-api-design, e06-runtime-validation] }
       - { id: c10-avoid-any, title: 避免 any 与不必要的双重断言, status: published, prerequisites: [c09-boundary-modeling] }
       - { id: c11-strict-options, title: strict、strictNullChecks 与 noUncheckedIndexedAccess, status: published, prerequisites: [c10-avoid-any] }
-      - { id: c12-modules-dts, title: 模块与 .d.ts 基础, status: draft, prerequisites: [c11-strict-options, f03-tsconfig] }
+      - { id: c12-modules-dts, title: 模块与 .d.ts 基础, status: published, prerequisites: [c11-strict-options, f03-tsconfig] }
 
   - id: D
     title: HTML、CSS 与 DOM
@@ -135,7 +135,7 @@ stages:
       - { id: g12-effect-pitfalls, title: 避免滥用 Effect 与性能 Hook, status: published, prerequisites: [g11-effects] }
       - { id: g13-routing, title: 用 React Router 组织页面, status: published, prerequisites: [g12-effect-pitfalls, e10-url-routing] }
       - { id: g14-async-data, title: 异步数据与错误状态, status: published, prerequisites: [g13-routing, e08-abort-races] }
-      - { id: g15-a11y-component-tests, title: 可访问性与组件测试, status: draft, prerequisites: [g14-async-data, f08-dom-tests] }
+      - { id: g15-a11y-component-tests, title: 可访问性与组件测试, status: published, prerequisites: [g14-async-data, f08-dom-tests] }
 
   - id: H
     title: Next.js 与基础全栈实验

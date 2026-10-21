@@ -2,7 +2,7 @@
 kind: task
 title: 启动时验证配置
 ---
-在 `env.ts` 中实现 `parseEnv(env)`：`env` 就是 `import.meta.env`（变量名 → 字符串），把它验证并转换成应用使用的 `AppConfig`。**所有的值先去掉首尾空白，空字符串当作没有设置。**
+在 `env.ts` 中实现 `parseEnv(env)`：`env` 就是 `import.meta.env`（变量名 → 值。自己定义的 `VITE_` 变量都是字符串；Vite 内置的 `DEV`、`PROD`、`SSR` 是布尔值，这道题不使用它们），把它验证并转换成应用使用的 `AppConfig`。**所有的值先去掉首尾空白，空字符串当作没有设置。**
 
 1. `VITE_API_BASE`：必需，必须是 `http:` 或 `https:` 的完整网址，转换成 `URL`。没有设置时错误是 `VITE_API_BASE 是必需的`，格式不对时是 `VITE_API_BASE 必须是 http 或 https 的完整网址`；
 2. `VITE_TIMEOUT_MS`：可选，默认 5000；设置了的话必须只由数字组成，并且在 100 到 60000 之间（包括两端），否则错误是 `VITE_TIMEOUT_MS 必须是 100 到 60000 之间的整数`；
@@ -154,6 +154,11 @@ describe('parseEnv：成功', () => {
     expect(result.config.sentryDsn).toBe('https://abc@o1.ingest.sentry.io/2');
   });
 
+  test('DSN 也去掉首尾的空白', () => {
+    const result = parseEnv({ ...base, VITE_SENTRY_DSN: '  https://abc@o1.ingest.sentry.io/2  ' });
+    expect(result.ok && result.config.sentryDsn).toBe('https://abc@o1.ingest.sentry.io/2');
+  });
+
   test('空字符串和只有空白都当作没有设置', () => {
     const result = parseEnv({ ...base, VITE_TIMEOUT_MS: '', VITE_SENTRY_DSN: '   ' });
     expect(result).toMatchObject({ ok: true, config: { timeoutMs: 5000, sentryDsn: null } });
@@ -191,7 +196,8 @@ describe('parseEnv：错误', () => {
   });
 
   test('名字像密钥的 VITE_ 变量（不分大小写），按名字排序', () => {
-    expect(parseEnv({ ...base, VITE_STRIPE_SECRET_KEY: 'x', VITE_db_password: 'y', SECRET_TOKEN: 'z', VITE_PUBLIC_KEY: 'pk' })).toEqual({
+    // 对象中的顺序与排序后的顺序相反：结果要按名字排序
+    expect(parseEnv({ ...base, VITE_db_password: 'y', VITE_STRIPE_SECRET_KEY: 'x', SECRET_TOKEN: 'z', VITE_PUBLIC_KEY: 'pk' })).toEqual({
       ok: false,
       errors: ['VITE_STRIPE_SECRET_KEY 看起来是密钥，不应该以 VITE_ 开头（会被打包进前端代码）', 'VITE_db_password 看起来是密钥，不应该以 VITE_ 开头（会被打包进前端代码）'],
     });
@@ -267,8 +273,8 @@ export function parseEnv(env: Readonly<Record<string, string | undefined>>): Env
   let timeoutMs = 5000;
   const rawTimeout = get('VITE_TIMEOUT_MS');
   if (rawTimeout !== undefined) {
-    const n = Number.parseInt(rawTimeout, 10);
-    if (String(n) === rawTimeout && n >= 100 && n <= 60000) timeoutMs = n;
+    const n = /^[0-9]+$/.test(rawTimeout) ? Number.parseInt(rawTimeout, 10) : Number.NaN;
+    if (n >= 100 && n <= 60000) timeoutMs = n;
     else errors.push('VITE_TIMEOUT_MS 必须是 100 到 60000 之间的整数');
   }
 

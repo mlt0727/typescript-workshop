@@ -13,7 +13,7 @@ title: 检查构建产物中泄露的密钥
 | `'stripe-secret'` | `sk_live_` 或 `sk_test_` 后面跟至少 10 个字母或数字（`pk_` 开头的是可公开的密钥，不报告） |
 | `'private-key'` | `-----BEGIN PRIVATE KEY-----`，`BEGIN` 后面也可以有 `RSA ` 或 `EC ` |
 
-前三种的前后都不能紧挨着字母、数字或 `_`（正则中的 `\b`），否则只是一个更长的字符串中的一段。
+前三种的前后都不能紧挨着字母、数字或 `_`（正则中的 `\b`，见 f01 的正则一节），否则只是一个更长的字符串中的一段。正则中的 `{36}` 表示前面的部分正好重复 36 次，`{10,}` 表示至少 10 次。
 
 **服务端环境变量的值**：名字**不以** `VITE_` 开头、并且值至少 8 个字符的变量，它的值出现在构建产物中就是泄露，`kind` 为 `'env-value'`。（`VITE_` 变量本来就是公开的。）
 
@@ -53,7 +53,7 @@ export type Finding = { file: string; line: number; column: number; kind: Findin
 const PATTERNS: [FindingKind, RegExp][] = [
   ['github-token', /\bghp_[A-Za-z0-9]{36}\b/g],
   ['aws-access-key', /\bAKIA[0-9A-Z]{16}\b/g],
-  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}/g],
+  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}\b/g],
   ['private-key', /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/g],
 ];
 
@@ -151,6 +151,36 @@ describe('服务端环境变量的值', () => {
     expect(scanBundle(files, { VITE_API_BASE: 'https://api.example.com', PIN: '1234567', SHORT: 'abcdefg' })).toEqual([]);
   });
 
+  test('紧挨着 _ 时不报告；RSA、EC 私钥和 sk_test_ 也要报告', () => {
+    expect(scanBundle({ 'a.js': 'sk' + '_live_' + 'abcdefghij' + '_suffix' }, {})).toEqual([]);
+    const text = '-----BEGIN ' + 'RSA PRIVATE KEY-----\n-----BEGIN ' + 'EC PRIVATE KEY-----\n' + 'sk' + '_test_' + '4eC39HqLyjWDarjtT1zdp7dc';
+    expect(scanBundle({ 'a.js': text }, {}).map((f) => [f.line, f.kind])).toEqual([
+      [1, 'private-key'],
+      [2, 'private-key'],
+      [3, 'stripe-secret'],
+    ]);
+  });
+
+  test('长度必须正好：ghp_ 后面是 37 个字符时不报告；正好 8 个字符的值要检查', () => {
+    expect(scanBundle({ 'a.js': 'gh' + 'p_' + 'a'.repeat(37) }, {})).toEqual([]);
+    expect(scanBundle({ 'a.js': `x = "${'AK' + 'IA'}ABCDEFGHIJ23456"` }, {})).toEqual([]);
+    expect(scanBundle({ 'a.js': 'x=12345678' }, { PIN: '12345678' }).map((f) => f.kind)).toEqual(['env-value']);
+  });
+
+  test('AKIA 的前后也要检查边界', () => {
+    expect(scanBundle({ 'a.js': `x${'AK' + 'IA'}ABCDEFGHIJ234567` }, {})).toEqual([]);
+    expect(scanBundle({ 'a.js': `${'AK' + 'IA'}ABCDEFGHIJ234567X` }, {})).toEqual([]);
+  });
+
+  test('同一个文件中不同种类的结果也按行、列排序', () => {
+    const text = `${github}\n${'AK' + 'IA'}ABCDEFGHIJ234567 x=12345678`;
+    expect(scanBundle({ 'a.js': text }, { PIN: '12345678' }).map((f) => [f.line, f.column, f.kind])).toEqual([
+      [1, 1, 'github-token'],
+      [2, 1, 'aws-access-key'],
+      [2, 24, 'env-value'],
+    ]);
+  });
+
   test('多个文件：按文件名、行、列排序', () => {
     const secret = 'top-secret-value';
     const files = { 'z.js': `x\n${secret}`, 'a.js': `${secret}${secret}`, 'm.html': '<p>ok</p>' };
@@ -195,7 +225,7 @@ type Rule = { kind: FindingKind; regex: RegExp };
 const RULES: Rule[] = [
   { kind: 'github-token', regex: /(?<![A-Za-z0-9_])ghp_[A-Za-z0-9]{36}(?![A-Za-z0-9_])/g },
   { kind: 'aws-access-key', regex: /(?<![A-Za-z0-9_])AKIA[0-9A-Z]{16}(?![A-Za-z0-9_])/g },
-  { kind: 'stripe-secret', regex: /(?<![A-Za-z0-9_])sk_(?:live|test)_[0-9A-Za-z]{10,}/g },
+  { kind: 'stripe-secret', regex: /(?<![A-Za-z0-9_])sk_(?:live|test)_[0-9A-Za-z]{10,}(?![A-Za-z0-9_])/g },
   { kind: 'private-key', regex: /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/g },
 ];
 
@@ -237,7 +267,7 @@ export type Finding = { file: string; line: number; column: number; kind: Findin
 const PATTERNS: [FindingKind, RegExp][] = [
   ['github-token', /\bghp_[A-Za-z0-9]{36}\b/g],
   ['aws-access-key', /\bAKIA[0-9A-Z]{16}\b/g],
-  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}/g],
+  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}\b/g],
   ['private-key', /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/g],
 ];
 
@@ -280,7 +310,7 @@ export type Finding = { file: string; line: number; column: number; kind: Findin
 const PATTERNS: [FindingKind, RegExp][] = [
   ['github-token', /\bghp_[A-Za-z0-9]{36}\b/g],
   ['aws-access-key', /\bAKIA[0-9A-Z]{16}\b/g],
-  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}/g],
+  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}\b/g],
   ['private-key', /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/g],
 ];
 
@@ -323,7 +353,7 @@ export type Finding = { file: string; line: number; column: number; kind: Findin
 const PATTERNS: [FindingKind, RegExp][] = [
   ['github-token', /\bghp_[A-Za-z0-9]{36}\b/g],
   ['aws-access-key', /\bAKIA[0-9A-Z]{16}\b/g],
-  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}/g],
+  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}\b/g],
   ['private-key', /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/g],
 ];
 
@@ -366,7 +396,7 @@ export type Finding = { file: string; line: number; column: number; kind: Findin
 const PATTERNS: [FindingKind, RegExp][] = [
   ['github-token', /\bghp_[A-Za-z0-9]{36}\b/g],
   ['aws-access-key', /\bAKIA[0-9A-Z]{16}\b/g],
-  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}/g],
+  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}\b/g],
   ['private-key', /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/g],
 ];
 
@@ -408,7 +438,7 @@ export type Finding = { file: string; line: number; column: number; kind: Findin
 const PATTERNS: [FindingKind, RegExp][] = [
   ['github-token', /ghp_[A-Za-z0-9]{36}/g],
   ['aws-access-key', /\bAKIA[0-9A-Z]{16}\b/g],
-  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}/g],
+  ['stripe-secret', /\bsk_(?:live|test)_[0-9A-Za-z]{10,}\b/g],
   ['private-key', /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/g],
 ];
 

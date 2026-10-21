@@ -10,7 +10,7 @@ grading: tests
 3. 点击“取消”或按 Esc：关闭，不调用 `onConfirm`；点击确认按钮（文字是 `confirmLabel`）：调用一次 `onConfirm`，然后关闭；
 4. 关闭之后，焦点回到打开对话框的那个按钮上。
 
-在 `ConfirmButton.test.tsx` 中写测试。平台准备了七个错误的版本，有的错在功能上，有的只是焦点或名字不对（用鼠标完全看不出来），你的测试要发现每一个。
+在 `ConfirmButton.test.tsx` 中写测试。平台准备了十个错误的版本，有的错在功能上，有的只是焦点、名字或描述不对（用鼠标完全看不出来），你的测试要发现每一个。
 
 :::files{role=support}
 ```tsx file=ConfirmButton.tsx readonly
@@ -124,7 +124,8 @@ describe('ConfirmButton', () => {
   test('打开：对话框有名字，焦点在“取消”上', async () => {
     const { user, trigger } = setup();
     await user.click(trigger);
-    expect(screen.getByRole('alertdialog', { name: '删除这个项目？' })).toBeInTheDocument();
+    const dialog = screen.getByRole('alertdialog', { name: '删除这个项目？' });
+    expect(dialog).toHaveAccessibleDescription('删除后无法恢复。');
     expect(screen.getByRole('button', { name: '取消' })).toHaveFocus();
   });
 
@@ -628,8 +629,208 @@ export function ConfirmButton({ label, title, message, confirmLabel, onConfirm }
 ```
 :::
 
+:::mutant{name=confirm-does-nothing hint="点击确认按钮只关闭了对话框，没有调用 onConfirm：需要检查确认之后 onConfirm 被调用了一次"}
+```tsx file=ConfirmButton.tsx
+import { useEffect, useId, useRef, useState } from 'react';
+
+type ConfirmButtonProps = {
+  label: string;
+  title: string;
+  message: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+};
+
+export function ConfirmButton({ label, title, message, confirmLabel, onConfirm }: ConfirmButtonProps) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
+  const messageId = useId();
+
+  // 打开时焦点移到最不危险的按钮“取消”上
+  useEffect(() => {
+    if (open) cancelRef.current?.focus();
+  }, [open]);
+
+  const close = () => {
+    setOpen(false);
+    // 关闭后焦点回到打开对话框的按钮
+    triggerRef.current?.focus();
+  };
+
+  return (
+    <>
+      <button ref={triggerRef} type="button" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+        {label}
+      </button>
+      {open && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          aria-describedby={messageId}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') close();
+          }}
+        >
+          <h2 id={titleId}>{title}</h2>
+          <p id={messageId}>{message}</p>
+          <button ref={cancelRef} type="button" onClick={close}>
+            取消
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              close();
+            }}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+```
+:::
+
+:::mutant{name=confirm-twice hint="确认时调用了两次 onConfirm（例如删除了两次）：需要检查调用的次数正好是一次"}
+```tsx file=ConfirmButton.tsx
+import { useEffect, useId, useRef, useState } from 'react';
+
+type ConfirmButtonProps = {
+  label: string;
+  title: string;
+  message: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+};
+
+export function ConfirmButton({ label, title, message, confirmLabel, onConfirm }: ConfirmButtonProps) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
+  const messageId = useId();
+
+  // 打开时焦点移到最不危险的按钮“取消”上
+  useEffect(() => {
+    if (open) cancelRef.current?.focus();
+  }, [open]);
+
+  const close = () => {
+    setOpen(false);
+    // 关闭后焦点回到打开对话框的按钮
+    triggerRef.current?.focus();
+  };
+
+  return (
+    <>
+      <button ref={triggerRef} type="button" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+        {label}
+      </button>
+      {open && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          aria-describedby={messageId}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') close();
+          }}
+        >
+          <h2 id={titleId}>{title}</h2>
+          <p id={messageId}>{message}</p>
+          <button ref={cancelRef} type="button" onClick={close}>
+            取消
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onConfirm();
+              onConfirm();
+              close();
+            }}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+```
+:::
+
+:::mutant{name=no-description hint="对话框没有描述（缺少 aria-describedby）：读屏软件只读出标题，不知道“删除后无法恢复”。需要检查对话框的可访问描述"}
+```tsx file=ConfirmButton.tsx
+import { useEffect, useId, useRef, useState } from 'react';
+
+type ConfirmButtonProps = {
+  label: string;
+  title: string;
+  message: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+};
+
+export function ConfirmButton({ label, title, message, confirmLabel, onConfirm }: ConfirmButtonProps) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
+  const messageId = useId();
+
+  // 打开时焦点移到最不危险的按钮“取消”上
+  useEffect(() => {
+    if (open) cancelRef.current?.focus();
+  }, [open]);
+
+  const close = () => {
+    setOpen(false);
+    // 关闭后焦点回到打开对话框的按钮
+    triggerRef.current?.focus();
+  };
+
+  return (
+    <>
+      <button ref={triggerRef} type="button" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+        {label}
+      </button>
+      {open && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') close();
+          }}
+        >
+          <h2 id={titleId}>{title}</h2>
+          <p id={messageId}>{message}</p>
+          <button ref={cancelRef} type="button" onClick={close}>
+            取消
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onConfirm();
+              close();
+            }}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+```
+:::
+
 :::hint{level=1}
-对照规格的四条，每条至少一个测试：按**名字**查找对话框（`getByRole('alertdialog', { name: '删除这个项目？' })`）；打开之后 `取消` 按钮 `toHaveFocus()`；取消、Esc、确认三种关闭方式；每种关闭之后检查 `onConfirm` 调用了几次、对话框是否还在（`queryByRole` 加 `toBeNull()`）、焦点是否回到了触发按钮。
+对照规格的四条，每条至少一个测试：按**名字**查找对话框（`getByRole('alertdialog', { name: '删除这个项目？' })`），再用 `toHaveAccessibleDescription('删除后无法恢复。')` 检查它的描述；打开之后 `取消` 按钮 `toHaveFocus()`；取消、Esc、确认三种关闭方式；每种关闭之后检查 `onConfirm` 调用了几次、对话框是否还在（`queryByRole` 加 `toBeNull()`）、焦点是否回到了触发按钮。
 :::
 
 :::hint{level=2}
@@ -637,7 +838,7 @@ export function ConfirmButton({ label, title, message, confirmLabel, onConfirm }
 :::
 
 :::explanation
-七个错误的版本中，有四个用鼠标完全看不出来：
+十个错误的版本中，有六个用鼠标完全看不出来：
 
 | 错误 | 只有这样的测试能发现 |
 | --- | --- |
@@ -645,12 +846,14 @@ export function ConfirmButton({ label, title, message, confirmLabel, onConfirm }
 | 焦点放在了“删除”上 | 打开之后检查焦点在“取消”上 |
 | 关闭后焦点没有回去 | 关闭之后检查触发按钮的焦点 |
 | 按 Esc 不能关闭 | 用键盘操作 |
+| 对话框没有名字 | 按名字查找对话框 |
+| 对话框没有描述 | 检查可访问描述 |
 
-“对话框没有名字”则会让 `getByRole('alertdialog', { name: … })` 找不到它：按名字查找本身就是一个可访问性的检查。
+“对话框没有名字”会让 `getByRole('alertdialog', { name: … })` 找不到它：按名字查找本身就是一个可访问性的检查。另外，“确认时没有调用”“调用了两次”这样的功能错误，要用 `toHaveBeenCalledTimes(1)` 检查确切的次数。
 
 这些测试把 APG 中模态对话框的要求变成了可以反复运行的检查。以后有人重构这个组件（例如改用原生的 `<dialog>`），只要测试还通过，键盘用户和读屏软件用户的体验就没有被破坏。
 
-注意测试中的 Esc：组件在 `onKeyDown` 中自己处理了它。如果组件依赖原生 `<dialog>` 的 Esc 关闭，user-event 模拟的按键不会触发浏览器的这个默认行为，测试需要换一种方式（例如触发 `cancel` 事件），在真实的浏览器中则可以用 Playwright 按下真正的键盘按键（f09）。
+注意测试中的 Esc：组件在 `onKeyDown` 中自己处理了它。如果组件依赖原生 `<dialog>` 的 Esc 关闭，user-event 模拟的按键不会触发浏览器的这个默认行为（在 Chromium 和 WebKit 中实测都是如此）。派发一个合成的 `cancel` 事件也不会关闭对话框，它只会调用 `cancel` 的监听器；只有组件在这个监听器中自己关闭对话框时，测试才能这样写。在真实的浏览器中，可以用 Playwright 按下真正的键盘按键（f09）。
 :::
 
 :::variant{kind=alt name=keyboard-flow}
@@ -672,6 +875,7 @@ test('完整的键盘流程', async () => {
   trigger.focus();
   await user.keyboard('{Enter}');
   const dialog = screen.getByRole('alertdialog', { name: '清空回收站？' });
+  expect(dialog).toHaveAccessibleDescription(/永久删除/);
   expect(document.activeElement).toBe(screen.getByRole('button', { name: '取消' }));
 
   await user.keyboard('{Escape}');
@@ -692,7 +896,7 @@ test('完整的键盘流程', async () => {
 ```
 :::
 
-:::variant{kind=wrong name=mouse-only fails=mutants misses=focus-on-confirm,no-escape,no-initial-focus,no-return-focus reason="只用鼠标测试了“确认”和“取消”：焦点和 Esc 都没有检查"}
+:::variant{kind=wrong name=mouse-only fails=mutants misses=focus-on-confirm,no-escape,no-initial-focus,no-return-focus,no-description reason="只用鼠标测试了“确认”和“取消”：焦点、Esc 和对话框的描述都没有检查"}
 ```tsx file=ConfirmButton.test.tsx
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

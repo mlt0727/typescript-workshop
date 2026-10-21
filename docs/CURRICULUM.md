@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 101 / 规划总数 126**（草稿 4，规划中 21）
+**已发布 104 / 规划总数 126**（草稿 1，规划中 21）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -56,7 +56,7 @@
 | `b16-assertions-as-const-satisfies` 类型断言、as const 与 satisfies | ✅ 已发布 | `b15-generic-constraints` |
 | `b17-enums-and-alternatives` 枚举与可擦除语法 | ✅ 已发布 | `b16-assertions-as-const-satisfies` |
 
-## E. 浏览器机制、异步与数据（已发布 12 / 13）
+## E. 浏览器机制、异步与数据（已发布 13 / 13）
 
 事件循环、Promise、fetch、运行时校验、取消与竞态、存储、URL 与安全边界。
 
@@ -74,9 +74,9 @@
 | `e10-url-routing` URL、History 与基础路由 | ✅ 已发布 | `d10-state-and-render`、`e06-runtime-validation` |
 | `e11-cors` CORS 的真实边界 | ✅ 已发布 | `e05-fetch-json` |
 | `e12-xss` 基础 XSS 防范 | ✅ 已发布 | `d06-dom-create-update` |
-| `e13-env-secrets` 客户端环境变量与密钥边界 | 📝 草稿 | `f02-vite-project` |
+| `e13-env-secrets` 客户端环境变量与密钥边界 | ✅ 已发布 | `f02-vite-project`、`f04-devtools`、`f12-build-ci` |
 
-## C. 进阶类型与类型设计（已发布 11 / 12）
+## C. 进阶类型与类型设计（已发布 12 / 12）
 
 类型运算的工程用途；区分“类型体操”和日常收益。部分内容可选学。
 
@@ -93,7 +93,7 @@
 | `c09-boundary-modeling` 边界数据建模 | ✅ 已发布 | `c08-generic-api-design`、`e06-runtime-validation` |
 | `c10-avoid-any` 避免 any 与不必要的双重断言 | ✅ 已发布 | `c09-boundary-modeling` |
 | `c11-strict-options` strict、strictNullChecks 与 noUncheckedIndexedAccess | ✅ 已发布 | `c10-avoid-any` |
-| `c12-modules-dts` 模块与 .d.ts 基础 | 📝 草稿 | `c11-strict-options`、`f03-tsconfig` |
+| `c12-modules-dts` 模块与 .d.ts 基础 | ✅ 已发布 | `c11-strict-options`、`f03-tsconfig` |
 
 ## D. HTML、CSS 与 DOM（已发布 10 / 10）
 
@@ -131,7 +131,7 @@
 | `f11-lint-format` 格式化与静态检查 | ✅ 已发布 | `f03-tsconfig` |
 | `f12-build-ci` 生产构建与 CI | ✅ 已发布 | `f11-lint-format`、`f10-git`、`f09-e2e` |
 
-## G. React + TypeScript（已发布 14 / 15）
+## G. React + TypeScript（已发布 15 / 15）
 
 组件、props、state、表单、Hook、Effect、路由与测试，全部在真实预览中练习。
 
@@ -151,7 +151,7 @@
 | `g12-effect-pitfalls` 避免滥用 Effect 与性能 Hook | ✅ 已发布 | `g11-effects` |
 | `g13-routing` 用 React Router 组织页面 | ✅ 已发布 | `g12-effect-pitfalls`、`e10-url-routing` |
 | `g14-async-data` 异步数据与错误状态 | ✅ 已发布 | `g13-routing`、`e08-abort-races` |
-| `g15-a11y-component-tests` 可访问性与组件测试 | 📝 草稿 | `g14-async-data`、`f08-dom-tests` |
+| `g15-a11y-component-tests` 可访问性与组件测试 | ✅ 已发布 | `g14-async-data`、`f08-dom-tests` |
 
 ## H. Next.js 与基础全栈实验（已发布 0 / 9）
 

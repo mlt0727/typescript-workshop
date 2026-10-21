@@ -5038,8 +5038,8 @@
       ]
     },
     "c12-modules-dts": {
-      "verifiedAt": "2026-10-20T23:29:45.921Z",
-      "sourceHash": "3fbb4405b5fe407b",
+      "verifiedAt": "2026-10-21T00:59:47.282Z",
+      "sourceHash": "980a4970a5bd5ebd",
       "ok": true,
       "checks": [
         {
@@ -5065,22 +5065,22 @@
         {
           "target": "exercise:declare-legacy:wrong:named-export",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2349@legacy-chart.test-d.ts:6 This expression is not callable.；TS2349@legacy-chart.test-d.ts:8 This expression is not callable.；TS7006@legacy-chart.test-d.ts:14 Parameter 'point' implicitly has an 'any' type.；TS2344@legacy-chart.test-d.ts:15 Type 'Point' does not satisfy the constraint 'never'.；TS) rules=ok tests=n/a"
+          "detail": "被拒绝（types）；types=fail(TS2349@legacy-chart.test-d.ts:6 This expression is not callable.；TS2349@legacy-chart.test-d.ts:8 This expression is not callable.；TS2578@legacy-chart.test-d.ts:17 Unused '@ts-expect-error' directive.；TS7006@legacy-chart.test-d.ts:20 Parameter 'point' implicitly has an 'any' type.；TS2344@legacy-chart) rules=ok tests=n/a"
         },
         {
           "target": "exercise:declare-legacy:wrong:required-options",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2741@main.ts:4 Property 'animate' is missing in type '{ type: \"line\"; title: string; }' but required in type 'ChartOptions'.；TS2345@legacy-chart.test-d.ts:6 Argument of type '{ type: \"line\"; }' is not assignable to parameter of type 'ChartOptions'.) rules=ok tests=n/a"
+          "detail": "被拒绝（types）；types=fail(TS2741@main.ts:4 Property 'animate' is missing in type '{ type: \"line\"; title: string; }' but required in type 'ChartOptions'.；TS2345@legacy-chart.test-d.ts:6 Argument of type '{ type: \"line\"; }' is not assignable to parameter of type 'ChartOptions'.；TS2344@legacy-chart.test-d.ts:19 Type '{ type: \"l) rules=ok tests=n/a"
         },
         {
           "target": "exercise:declare-legacy:wrong:loose-events",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2344@legacy-chart.test-d.ts:15 Type 'Point' does not satisfy the constraint '\"Expected: ..., Actual: never\"'.；TS2344@legacy-chart.test-d.ts:19 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: never\"'.；TS2344@legacy-chart.test-d.ts:20 Type 'number' does not satisfy the cons) rules=ok tests=n/a"
+          "detail": "被拒绝（types）；types=fail(TS2344@legacy-chart.test-d.ts:21 Type 'Point' does not satisfy the constraint '\"Expected: ..., Actual: never\"'.；TS2344@legacy-chart.test-d.ts:25 Type 'number' does not satisfy the constraint '\"Expected: number, Actual: never\"'.；TS2344@legacy-chart.test-d.ts:26 Type 'number' does not satisfy the cons) rules=ok tests=n/a"
         },
         {
           "target": "exercise:declare-legacy:wrong:mutable-themes",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2344@legacy-chart.test-d.ts:11 Type 'readonly string[]' does not satisfy the constraint '\"Expected: never, Actual: string\"[]'.；TS2578@legacy-chart.test-d.ts:34 Unused '@ts-expect-error' directive.) rules=ok tests=n/a"
+          "detail": "被拒绝（types）；types=fail(TS2344@legacy-chart.test-d.ts:11 Type 'readonly string[]' does not satisfy the constraint '\"Expected: never, Actual: string\"[]'.；TS2578@legacy-chart.test-d.ts:41 Unused '@ts-expect-error' directive.) rules=ok tests=n/a"
         },
         {
           "target": "exercise:declare-legacy:wrong:shorthand",
@@ -5090,7 +5090,7 @@
         {
           "target": "exercise:augment-events:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@cart.ts:4 Argument of type '\"cart:add\"' is not assignable to parameter of type 'never'.；TS2345@cart.ts:8 Argument of type '\"cart:clear\"' is not assignable to parameter of type 'never'.；TS2345@toast.ts:6 Argument of type '\"toast:show\"' is not assignable to parameter of type 'never'.；TS2345@mai) rules=ok tests=fail(cart › 数量不是正整数时抛出 RangeError，不发出事件 ⟶ 0,toast › connectCartToasts 把购物车的事件转换成提示，断开之后不再提示 ⟶ expect(…).toEqual([ '已加入购物车：pen × 2', '购物车已清空' ]))"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2345@cart.ts:4 Argument of type '\"cart:add\"' is not assignable to parameter of type 'never'.；TS2345@cart.ts:8 Argument of type '\"cart:clear\"' is not assignable to parameter of type 'never'.；TS2345@toast.ts:6 Argument of type '\"toast:show\"' is not assignable to parameter of type 'never'.；TS2345@mai) rules=ok tests=fail(cart › 数量不是正整数时抛出 RangeError，不发出事件 ⟶ 0,toast › connectCartToasts 把购物车的事件转换成提示（语气是 info），断开之后不再提示 ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:augment-events:solution:solution",
@@ -5120,7 +5120,7 @@
         {
           "target": "exercise:augment-events:wrong:never-disconnects",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toast › connectCartToasts 把购物车的事件转换成提示，断开之后不再提示 ⟶ expect(…).toEqual([ '已加入购物车：pen × 2', '购物车已清空' ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toast › connectCartToasts 把购物车的事件转换成提示（语气是 info），断开之后不再提示 ⟶ expect(…).toEqual([)"
         }
       ]
     },
@@ -7499,8 +7499,8 @@
       ]
     },
     "e13-env-secrets": {
-      "verifiedAt": "2026-10-20T23:34:12.380Z",
-      "sourceHash": "7ca9b8871a9f1518",
+      "verifiedAt": "2026-10-21T00:59:47.767Z",
+      "sourceHash": "e99b89a0e95eda8f",
       "ok": true,
       "checks": [
         {
@@ -7516,7 +7516,7 @@
         {
           "target": "exercise:parse-env:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseEnv：成功 › 默认值 ⟶ expect(…).toBe(5000),parseEnv：成功 › 全部设置；去掉空白，忽略空的名字 ⟶ expect(…).toEqual([ 'dark-mode', 'beta-search' ]),parseEnv：成功 › 空字符串和只有空白都当作没有设置 ⟶ expect(…).toMatchObject({ ok: true, config: { timeoutMs: 5000, sentryDsn: null } }),parseEnv：错误 › 缺少接口地址 ⟶ expect(…).toEqual({ ok: false, errors: [ 'VITE_API_BASE 是必需的' ] }),parseEnv：错误 › 接口地址必须是 http 或 https 的完整网址 ⟶ TypeError: Failed to construct 'URL': Invalid URL,parseEnv：错误 › 超时必须是范围内的整数 ⟶ 99,parseEnv：错误 › 功能名只能是小写字母开头的字母、数字和 - ⟶ expect(…).toEqual({,parseEnv：错误 › 名字像密钥的 VITE_ 变量（不分大小写），按名字排序 ⟶ expect(…).toEqual({,parseEnv：错误 › 收集全部错误，按顺序 ⟶ TypeError: Failed to construct 'URL': Invalid URL)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseEnv：成功 › 默认值 ⟶ expect(…).toBe(5000),parseEnv：成功 › 全部设置；去掉空白，忽略空的名字 ⟶ expect(…).toEqual([ 'dark-mode', 'beta-search' ]),parseEnv：成功 › DSN 也去掉首尾的空白 ⟶ expect(…).toBe('https://abc@o1.ingest.sentry.io/2'),parseEnv：成功 › 空字符串和只有空白都当作没有设置 ⟶ expect(…).toMatchObject({ ok: true, config: { timeoutMs: 5000, sentryDsn: null } }),parseEnv：错误 › 缺少接口地址 ⟶ expect(…).toEqual({ ok: false, errors: [ 'VITE_API_BASE 是必需的' ] }),parseEnv：错误 › 接口地址必须是 http 或 https 的完整网址 ⟶ TypeError: Failed to construct 'URL': Invalid URL,parseEnv：错误 › 超时必须是范围内的整数 ⟶ 99,parseEnv：错误 › 功能名只能是小写字母开头的字母、数字和 - ⟶ expect(…).toEqual({,parseEnv：错误 › 名字像密钥的 VITE_ 变量（不分大小写），按名字排序 ⟶ expect(…).toEqual({,parseEnv：错误 › 收集全部错误，按顺序 ⟶ TypeError: Failed to construct 'URL': Invalid URL)"
         },
         {
           "target": "exercise:parse-env:solution:solution",
@@ -7556,7 +7556,7 @@
         {
           "target": "exercise:scan-bundle:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(已知格式的密钥 › 四种格式，位置从 1 开始，详情只显示前 4 个字符 ⟶ expect(…).toEqual([,已知格式的密钥 › 格式不完整或者是可公开的密钥时不报告 ⟶ expect(…).toEqual([]),已知格式的密钥 › 同一个文件中出现多次 ⟶ expect(…).toEqual([ 1, 42 ]),服务端环境变量的值 › 非 VITE_ 变量的值出现在构建产物中 ⟶ expect(…).toEqual([,服务端环境变量的值 › 多个文件：按文件名、行、列排序 ⟶ expect(…).toEqual([ [ 'a.js', 1, 1 ], [ 'a.js', 1, 17 ], [ 'z.js', 2, 1 ] ]))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(已知格式的密钥 › 四种格式，位置从 1 开始，详情只显示前 4 个字符 ⟶ expect(…).toEqual([,已知格式的密钥 › 格式不完整或者是可公开的密钥时不报告 ⟶ expect(…).toEqual([]),已知格式的密钥 › 同一个文件中出现多次 ⟶ expect(…).toEqual([ 1, 42 ]),服务端环境变量的值 › 非 VITE_ 变量的值出现在构建产物中 ⟶ expect(…).toEqual([,服务端环境变量的值 › 紧挨着 _ 时不报告；RSA、EC 私钥和 sk_test_ 也要报告 ⟶ expect(…).toEqual([ [ 1, 'private-key' ], [ 2, 'private-key' ], [ 3, 'stripe-secret' ] ]),服务端环境变量的值 › 长度必须正好：ghp_ 后面是 37 个字符时不报告；正好 8 个字符的值要检查 ⟶ expect(…).toEqual([]),服务端环境变量的值 › 同一个文件中不同种类的结果也按行、列排序 ⟶ expect(…).toEqual([,服务端环境变量的值 › 多个文件：按文件名、行、列排序 ⟶ expect(…).toEqual([ [ 'a.js', 1, 1 ], [ 'a.js', 1, 17 ], [ 'z.js', 2, 1 ] ]))"
         },
         {
           "target": "exercise:scan-bundle:solution:solution",
@@ -7576,7 +7576,7 @@
         {
           "target": "exercise:scan-bundle:wrong:zero-based-column",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 四种格式，位置从 1 开始，详情只显示前 4 个字符 ⟶ expect(…).toEqual([,已知格式的密钥 › 同一个文件中出现多次 ⟶ expect(…).toEqual([ 1, 42 ]),服务端环境变量的值 › 非 VITE_ 变量的值出现在构建产物中 ⟶ expect(…).toEqual([,服务端环境变量的值 › 多个文件：按文件名、行、列排序 ⟶ expect(…).toEqual([ [ 'a.js', 1, 1 ], [ 'a.js', 1, 17 ], [ 'z.js', 2, 1 ] ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 四种格式，位置从 1 开始，详情只显示前 4 个字符 ⟶ expect(…).toEqual([,已知格式的密钥 › 同一个文件中出现多次 ⟶ expect(…).toEqual([ 1, 42 ]),服务端环境变量的值 › 非 VITE_ 变量的值出现在构建产物中 ⟶ expect(…).toEqual([,服务端环境变量的值 › 同一个文件中不同种类的结果也按行、列排序 ⟶ expect(…).toEqual([,服务端环境变量的值 › 多个文件：按文件名、行、列排序 ⟶ expect(…).toEqual([ [ 'a.js', 1, 1 ], [ 'a.js', 1, 17 ], [ 'z.js', 2, 1 ] ]))"
         },
         {
           "target": "exercise:scan-bundle:wrong:flags-public-vars",
@@ -7586,18 +7586,18 @@
         {
           "target": "exercise:scan-bundle:wrong:first-match-only",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 同一个文件中出现多次 ⟶ expect(…).toEqual([ 1, 42 ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 同一个文件中出现多次 ⟶ expect(…).toEqual([ 1, 42 ]),服务端环境变量的值 › 紧挨着 _ 时不报告；RSA、EC 私钥和 sk_test_ 也要报告 ⟶ expect(…).toEqual([ [ 1, 'private-key' ], [ 2, 'private-key' ], [ 3, 'stripe-secret' ] ]))"
         },
         {
           "target": "exercise:scan-bundle:wrong:no-word-boundary",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 格式不完整或者是可公开的密钥时不报告 ⟶ expect(…).toEqual([]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(已知格式的密钥 › 格式不完整或者是可公开的密钥时不报告 ⟶ expect(…).toEqual([]),服务端环境变量的值 › 长度必须正好：ghp_ 后面是 37 个字符时不报告；正好 8 个字符的值要检查 ⟶ expect(…).toEqual([]))"
         }
       ]
     },
     "f01-node-npm": {
-      "verifiedAt": "2026-10-21T00:33:50.017Z",
-      "sourceHash": "6f60cfcde41a1989",
+      "verifiedAt": "2026-10-21T00:57:42.024Z",
+      "sourceHash": "e98e748be682d1ae",
       "ok": true,
       "checks": [
         {
@@ -8409,8 +8409,8 @@
       ]
     },
     "f10-git": {
-      "verifiedAt": "2026-10-21T00:34:45.275Z",
-      "sourceHash": "acba1efc30fb59b8",
+      "verifiedAt": "2026-10-21T00:57:42.869Z",
+      "sourceHash": "f092527e90c1b536",
       "ok": true,
       "checks": [
         {
@@ -10228,8 +10228,8 @@
       ]
     },
     "g15-a11y-component-tests": {
-      "verifiedAt": "2026-10-21T00:40:13.683Z",
-      "sourceHash": "094f921d34ad18d7",
+      "verifiedAt": "2026-10-21T01:00:02.099Z",
+      "sourceHash": "854e4057fa6d3ab5",
       "ok": true,
       "checks": [
         {
@@ -10245,7 +10245,7 @@
         {
           "target": "exercise:tabs:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › tablist 有名字；选中的标签页与它的面板互相关联 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tablist\" and name \"账户设置\",Tabs：角色、名字与状态 › 只有选中的标签页在 Tab 的顺序中（roving tabindex） ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tablist\" and name \"账户设置\",Tabs：角色、名字与状态 › initialId 不存在时选中第一个 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\",Tabs：操作 › 点击切换面板 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"账单\",Tabs：操作 › 按 Tab 进入时焦点在选中的标签页上，再按 Tab 到面板 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"安全\",Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"个人资料\")"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › tablist 有名字；选中的标签页与它的面板互相关联 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tablist\" and name \"账户设置\",Tabs：角色、名字与状态 › 只有选中的标签页在 Tab 的顺序中（roving tabindex） ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tablist\" and name \"账户设置\",Tabs：角色、名字与状态 › 页面上有两个 Tabs 时 id 不重复；面板的 aria-labelledby 指向它自己的标签页 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\",Tabs：角色、名字与状态 › initialId 不存在时选中第一个 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\",Tabs：操作 › 点击切换面板 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"账单\",Tabs：操作 › 按 Tab 进入时焦点在选中的标签页上，再按 Tab 到面板 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"安全\",Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\" and name \"个人资料\",Tabs：操作 › 方向键、Home、End 阻止默认的行为（页面滚动） ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\")"
         },
         {
           "target": "exercise:tabs:solution:solution",
@@ -10275,32 +10275,32 @@
         {
           "target": "exercise:tabs:wrong:panels-visible",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › tablist 有名字；选中的标签页与它的面板互相关联 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\",Tabs：操作 › 点击切换面板 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\",Tabs：操作 › 按 Tab 进入时焦点在选中的标签页上，再按 Tab 到面板 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\",Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\")"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › tablist 有名字；选中的标签页与它的面板互相关联 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\",Tabs：角色、名字与状态 › 页面上有两个 Tabs 时 id 不重复；面板的 aria-labelledby 指向它自己的标签页 ⟶ expect(…).toHaveAttribute('aria-selected', 'true'),Tabs：操作 › 点击切换面板 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\",Tabs：操作 › 按 Tab 进入时焦点在选中的标签页上，再按 Tab 到面板 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\",Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ TestingLibraryElementError: Found multiple elements with the role \"tabpanel\")"
         },
         {
           "target": "exercise:tabs:wrong:no-selected-state",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › tablist 有名字；选中的标签页与它的面板互相关联 ⟶ expect(…).toEqual([ 'true', 'false', 'false' ]),Tabs：角色、名字与状态 › initialId 不存在时选中第一个 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\",Tabs：操作 › 点击切换面板 ⟶ expect(…).toHaveAttribute('aria-selected', 'true'),Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ expect(…).toHaveAttribute('aria-selected', 'true'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(Tabs：角色、名字与状态 › tablist 有名字；选中的标签页与它的面板互相关联 ⟶ expect(…).toEqual([ 'true', 'false', 'false' ]),Tabs：角色、名字与状态 › 页面上有两个 Tabs 时 id 不重复；面板的 aria-labelledby 指向它自己的标签页 ⟶ expect(…).toHaveAttribute('aria-selected', 'true'),Tabs：角色、名字与状态 › initialId 不存在时选中第一个 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\",Tabs：操作 › 点击切换面板 ⟶ expect(…).toHaveAttribute('aria-selected', 'true'),Tabs：操作 › 方向键在两端循环，Home 与 End；焦点移动的同时切换面板 ⟶ expect(…).toHaveAttribute('aria-selected', 'true'),Tabs：操作 › 方向键、Home、End 阻止默认的行为（页面滚动） ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"tab\")"
         },
         {
           "target": "exercise:test-confirm-dialog:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-initial-focus:missed,focus-on-confirm:missed,no-return-focus:missed,unlabelled:missed,no-escape:missed,stays-open:missed,cancel-confirms:missed"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-initial-focus:missed,focus-on-confirm:missed,no-return-focus:missed,unlabelled:missed,no-escape:missed,stays-open:missed,cancel-confirms:missed,confirm-does-nothing:missed,confirm-twice:missed,no-description:missed"
         },
         {
           "target": "exercise:test-confirm-dialog:solution:solution",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=no-initial-focus:caught(tests),focus-on-confirm:caught(tests),no-return-focus:caught(tests),unlabelled:caught(tests),no-escape:caught(tests),stays-open:caught(tests),cancel-confirms:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-initial-focus:caught(tests),focus-on-confirm:caught(tests),no-return-focus:caught(tests),unlabelled:caught(tests),no-escape:caught(tests),stays-open:caught(tests),cancel-confirms:caught(tests),confirm-does-nothing:caught(tests),confirm-twice:caught(tests),no-description:caught(tests)"
         },
         {
           "target": "exercise:test-confirm-dialog:alt:keyboard-flow",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=no-initial-focus:caught(tests),focus-on-confirm:caught(tests),no-return-focus:caught(tests),unlabelled:caught(tests),no-escape:caught(tests),stays-open:caught(tests),cancel-confirms:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-initial-focus:caught(tests),focus-on-confirm:caught(tests),no-return-focus:caught(tests),unlabelled:caught(tests),no-escape:caught(tests),stays-open:caught(tests),cancel-confirms:caught(tests),confirm-does-nothing:caught(tests),confirm-twice:caught(tests),no-description:caught(tests)"
         },
         {
           "target": "exercise:test-confirm-dialog:wrong:mouse-only",
           "ok": true,
-          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-initial-focus:missed,focus-on-confirm:missed,no-return-focus:missed,unlabelled:caught(tests),no-escape:missed,stays-open:caught(tests),cancel-confirms:caught(tests)"
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-initial-focus:missed,focus-on-confirm:missed,no-return-focus:missed,unlabelled:caught(tests),no-escape:missed,stays-open:caught(tests),cancel-confirms:caught(tests),confirm-does-nothing:caught(tests),confirm-twice:caught(tests),no-description:missed"
         },
         {
           "target": "exercise:test-confirm-dialog:wrong:expects-confirm-focus",

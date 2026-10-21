@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 一个用 div 和 onClick 拼出来的“按钮”，用鼠标点完全正常，用键盘却按不到，读屏软件读出来的只是一段文字；一个弹出的确认框，键盘用户按 Tab 却跑到了它背后的页面上，关掉之后焦点也不知道去了哪里。这些问题在视觉上完全看不出来，只有用键盘、用读屏软件（或者用按角色查找的测试）才会暴露。这一课总结组件可访问性的几条核心规则：优先用原生元素，正确的名字、角色和状态，键盘操作与焦点管理；按 WAI-ARIA 的模式实现一个可以用键盘操作的标签页组件；再为一个确认对话框写组件测试，把这些要求固定下来。
 objectives:
   - 优先使用原生的交互元素，为自定义组件提供正确的角色、可访问的名字和状态（aria-selected、aria-expanded 等）
@@ -77,7 +77,7 @@ createRoot(container).render(<App />);
 自定义的复合组件（标签页、菜单、列表框、树）要按照 WAI-ARIA APG 中对应模式的键盘约定实现，用户在不同的网站上才能用同样的方式操作。标签页的约定：
 
 - 标签页的容器是 `role="tablist"`，有名字（`aria-label` 或 `aria-labelledby`）；每个标签页是 `role="tab"`，`aria-selected` 标出当前的那个，`aria-controls` 指向它的面板；每个面板是 `role="tabpanel"`，`aria-labelledby` 指向它的标签页；
-- 按 Tab 进入标签页时，焦点落在**当前选中**的那一个上；再按 Tab，离开标签页，到达面板；
+- 按 Tab 进入标签页时，焦点落在**当前选中**的那一个上；再按 Tab，离开标签页，到达面板（面板设置了 `tabIndex={0}` 时；面板中第一个元素本身就能获得焦点时，APG 说面板可以不设置）；
 - 在标签页上按 **右方向键**到下一个、**左方向键**到上一个，在两端循环；**Home**、**End** 到第一个、最后一个。“自动激活”的标签页在焦点移动时同时切换面板。
 
 “按 Tab 只停在选中的那一个上”用 **roving tabindex** 实现：选中的标签页 `tabIndex={0}`，其他的 `tabIndex={-1}`（不在 Tab 的顺序中，但可以用代码 `focus()`）。方向键的处理函数中把焦点移到新的标签页上，并更新选中的状态。
@@ -112,8 +112,9 @@ f08 已经讲过按角色和名字查找元素。检查可访问性时，再加�
 ```tsx
 const user = userEvent.setup();
 render(<Tabs label="账户设置" tabs={tabs} />);
-const [profile, security] = screen.getAllByRole('tab');
-await user.click(security!);
+const profile = screen.getByRole('tab', { name: '个人资料' });
+const security = screen.getByRole('tab', { name: '安全' });
+await user.click(security);
 expect(security).toHaveAttribute('aria-selected', 'true');
 expect(screen.getByRole('tabpanel')).toHaveAccessibleName('安全');
 await user.keyboard('{ArrowLeft}');

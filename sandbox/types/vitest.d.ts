@@ -73,6 +73,7 @@ export interface Matchers<R> {
   toHaveAttribute(name: string, value?: string): R;
   toHaveClass(...classNames: string[]): R;
   toHaveAccessibleName(name?: string | RegExp): R;
+  toHaveAccessibleDescription(description?: string | RegExp): R;
   toBeInvalid(): R;
   toBeValid(): R;
   toContainElement(element: Element | null): R;

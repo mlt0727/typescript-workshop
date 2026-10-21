@@ -177,9 +177,9 @@ describe('toast', () => {
     expect(handler.mock.calls).toEqual([[{ message: '已保存', tone: 'info' }], [{ message: '保存失败', tone: 'error' }]]);
   });
 
-  test('connectCartToasts 把购物车的事件转换成提示，断开之后不再提示', () => {
-    const messages: string[] = [];
-    const off = on('toast:show', ({ message }) => messages.push(message));
+  test('connectCartToasts 把购物车的事件转换成提示（语气是 info），断开之后不再提示', () => {
+    const messages: { message: string; tone: string }[] = [];
+    const off = on('toast:show', (payload) => messages.push(payload));
     const disconnect = connectCartToasts();
     addToCart('pen', 2);
     clearCart();
@@ -187,7 +187,10 @@ describe('toast', () => {
     addToCart('eraser');
     clearCart();
     off();
-    expect(messages).toEqual(['已加入购物车：pen × 2', '购物车已清空']);
+    expect(messages).toEqual([
+      { message: '已加入购物车：pen × 2', tone: 'info' },
+      { message: '购物车已清空', tone: 'info' },
+    ]);
   });
 });
 ```
@@ -195,8 +198,10 @@ describe('toast', () => {
 import { expectTypeOf } from 'vitest';
 import { emit, on, type AppEvents } from './bus';
 
-// 两个模块扩充之后，AppEvents 中正好有这三个事件
+// 两个模块扩充之后，AppEvents 中正好有这三个事件，数据的类型也正好是规格中的样子
 expectTypeOf<keyof AppEvents>().toEqualTypeOf<'cart:add' | 'cart:clear' | 'toast:show'>();
+expectTypeOf<AppEvents['cart:add']>().toEqualTypeOf<{ sku: string; quantity: number }>();
+expectTypeOf<AppEvents['cart:clear']>().toEqualTypeOf<undefined>();
 
 emit('cart:add', { sku: 'pen', quantity: 1 });
 emit('cart:clear', undefined);
@@ -232,7 +237,7 @@ emit('toast:show', { message: '注意', tone: 'warning' });
 
 扩充只影响类型，运行时什么也没有：`declare module` 整段都会被去掉。所以 `bus.ts` 中的 `Map` 用的是 `PropertyKey` 和 `unknown`，类型与事件的对应关系完全由 `on`、`emit` 的签名保证。`bus.ts` 中那一处 `payload as AppEvents[K]` 是 c10 讲过的“关在一个函数中”的断言：运行时传给处理函数的正是 `emit` 时的那个值，签名已经保证了它的类型。
 
-这和 Vue、Pinia、Express 等类库的做法相同：类库提供一个空的（或部分的）接口，使用者通过模块扩充加上自己的属性。
+这和 Vue、Pinia 等类库的做法相同：类库提供一个空的（或部分的）接口，使用者通过模块扩充加上自己的属性。
 :::
 
 :::variant{kind=alt name=extends-alias}

@@ -5,7 +5,7 @@ title: 可以用键盘操作的标签页
 起始的 `Tabs` 组件用鼠标可以切换，但没有任何角色，也不能用键盘操作。按 WAI-ARIA APG 的标签页模式（自动激活）重写它：
 
 1. 容器 `role="tablist"`，名字是 `label`；每个标签页是 `role="tab"` 的按钮，文字是 `tab.label`；每个面板 `role="tabpanel"`，`tabIndex={0}`；
-2. 选中的标签页 `aria-selected="true"`，其他的为 `"false"`；标签页的 `aria-controls` 是它的面板的 `id`，面板的 `aria-labelledby` 是它的标签页的 `id`（`id` 用 `useId()` 加上标签页的 `id` 组成，保证页面上有两个 `Tabs` 时也不重复）；
+2. 选中的标签页 `aria-selected="true"`，其他的为 `"false"`；标签页的 `aria-controls` 是它的面板的 `id`，面板的 `aria-labelledby` 是它的标签页的 `id`（页面上有两个 `Tabs` 时，`id` 也不能重复，例如用 `useId()` 加上标签页的 `id` 组成）；
 3. 只显示选中的面板，其他的用 `hidden` 隐藏（或者不渲染）；
 4. **roving tabindex**：选中的标签页 `tabIndex={0}`，其他的 `-1`；
 5. 一开始选中 `initialId` 对应的标签页，没有或者不存在时选中第一个；点击标签页时选中它；
@@ -142,7 +142,7 @@ export function Tabs({ label, tabs, initialId }: TabsProps) {
 
 :::files{role=tests}
 ```tsx file=Tabs.test.tsx
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, test } from 'vitest';
 import { Tabs, type TabItem } from './Tabs';
@@ -170,6 +170,23 @@ describe('Tabs：角色、名字与状态', () => {
   test('只有选中的标签页在 Tab 的顺序中（roving tabindex）', () => {
     render(<Tabs label="账户设置" tabs={tabs} initialId="security" />);
     expect(allTabs().map((tab) => tab.tabIndex)).toEqual([-1, 0, -1]);
+  });
+
+  test('页面上有两个 Tabs 时 id 不重复；面板的 aria-labelledby 指向它自己的标签页', () => {
+    render(
+      <>
+        <Tabs label="账户设置" tabs={tabs} />
+        <Tabs label="团队设置" tabs={tabs} initialId="billing" />
+      </>,
+    );
+    const ids = screen.getAllByRole('tab').map((tab) => tab.id);
+    expect(ids.every((id) => id !== '')).toBe(true);
+    expect(new Set(ids).size).toBe(6);
+    for (const panel of screen.getAllByRole('tabpanel')) {
+      const tab = document.getElementById(panel.getAttribute('aria-labelledby') ?? '');
+      expect(tab).toHaveAttribute('aria-controls', panel.id);
+      expect(tab).toHaveAttribute('aria-selected', 'true');
+    }
   });
 
   test('initialId 不存在时选中第一个', () => {
@@ -220,6 +237,14 @@ describe('Tabs：操作', () => {
     await user.keyboard('{Home}');
     expect(tabNamed('个人资料')).toHaveFocus();
     expect(screen.getByRole('tabpanel')).toHaveTextContent('头像与昵称');
+  });
+
+  test('方向键、Home、End 阻止默认的行为（页面滚动）', () => {
+    render(<Tabs label="账户设置" tabs={tabs} />);
+    for (const key of ['ArrowRight', 'ArrowLeft', 'End', 'Home']) {
+      // dispatchEvent 的返回值：默认行为被阻止时是 false
+      expect(fireEvent.keyDown(screen.getByRole('tab', { selected: true }), { key }), key).toBe(false);
+    }
   });
 });
 ```

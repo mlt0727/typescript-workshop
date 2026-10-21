@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 你用 npm 装了一个只有 JavaScript 的旧库，import 它时 TypeScript 报 TS7016，说找不到它的类型声明；Vite 项目中 import logo from './logo.svg' 却能通过检查，类型是 string；某个插件说“在你的项目中声明这个接口，就能得到类型提示”。这些背后都是声明文件（.d.ts）：只有类型、没有实现的 TypeScript 文件。这一课讲清楚 .d.ts 是什么、TypeScript 从哪里找到一个包的类型、怎样为没有类型的库写声明、全局声明与模块扩充（module augmentation）的写法，以及怎样从自己的代码生成 .d.ts。
 objectives:
   - 说明 .d.ts 的作用，读懂 tsc --declaration 生成的声明文件
@@ -111,7 +111,7 @@ whatever.anything.goes();
 ```
 - 这个示例只看类型，不要运行：`legacy-chart` 和 `untyped-lib` 只存在于声明中，没有可以运行的实现。
 - 把鼠标停在 `createChart`、`chart` 上，看到的是声明中写的类型；把第 4 行的 `y: 2` 改成 `y: '2'` 会报错。
-- `whatever` 来自只有一行的简写声明，它的类型是 `any`：第 8 行随便写什么都不报错。
+- `whatever` 来自只有一行的简写声明，它的类型是 `any`：第 8 行随便写什么都不报错。（把鼠标停在 `whatever` 上，显示的是 `module "untyped-lib"`；写一行 `const w = whatever;`，再停在 `w` 上，就能看到 `any`。）
 :::
 
 ## 全局声明
@@ -174,7 +174,7 @@ emit('cart:add', { sku: 'a' }); // ✓
 emit('cart:add', { sku: 1 }); // TS2322
 ```
 
-`bus.ts` 不需要知道有哪些事件，每个模块在自己的文件中把自己的事件加进 `AppEvents`。很多类库用这种方式让使用者扩展类型：Vue 的 `ComponentCustomProperties`、Express 的 `Request`、Pinia 的插件。下面的编程挑战就是这样一个事件总线。
+`bus.ts` 不需要知道有哪些事件，每个模块在自己的文件中把自己的事件加进 `AppEvents`。很多类库用这种方式让使用者扩展类型，例如 Vue 的 `ComponentCustomProperties`、Pinia 的插件。（Express 的 `Request` 用的是另一种写法：`declare global { namespace Express { interface Request { … } } }`，扩充的是全局的命名空间。）下面的编程挑战就是这样一个事件总线。
 
 ## 在这个网站上
 
@@ -194,4 +194,4 @@ emit('cart:add', { sku: 1 }); // TS2322
 - **在模块中直接写 `interface Window`**：模块中的声明是局部的，不会和全局的 `Window` 合并。用 `declare global { … }`，或者放进一个没有 `import`/`export` 的 `.d.ts`。
 - **在全局的 `.d.ts` 中写了 `import`**：整个文件变成了模块，其中原来的全局声明全部失效。需要导入类型时用 `import('./x').Type` 这种写法，或者改成 `declare global`。
 - **声明与实现不一致**：`.d.ts` 只是一个“承诺”，TypeScript 不会检查实现是否真的如此。自己写的声明要和库的文档、源码对照。
-- **扩充时写错了模块名**：`declare module './bus'` 中的路径要和导入时的写法解析到同一个文件，否则就成了声明一个新的模块，原来的接口没有任何变化。
+- **扩充写错了地方**：`declare module './bus'` 中的路径写错时，TypeScript 报 TS2664（找不到要扩充的模块），这还容易发现。更隐蔽的是把这段扩充写进一个没有 `import`/`export` 的 `.d.ts`：在那里，`declare module './bus' { … }` 是在声明一个新的模块，不报任何错误，`AppEvents` 也没有任何变化。模块扩充要写在模块文件中（文件中有 `import` 或 `export`）。

@@ -15,7 +15,7 @@
   options:
     - text: 落在当前选中的标签页上；再按 Tab 离开标签页，到达面板
       correct: true
-      explain: 组内用方向键移动，整组在 Tab 的顺序中只占一个位置（roving tabindex）。
+      explain: 组内用方向键移动，整组在 Tab 的顺序中只占一个位置（roving tabindex）。面板设置了 tabIndex=0，所以下一次 Tab 到达面板。
     - text: 落在第一个标签页上；再按 Tab 到第二个标签页
       explain: 这样键盘用户要按 5 次 Tab 才能越过这组标签页。
     - text: 标签页不应该获得焦点，直接到面板

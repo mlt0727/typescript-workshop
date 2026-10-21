@@ -89,14 +89,21 @@ expectTypeOf(version).toEqualTypeOf<string>();
 expectTypeOf(themes).toEqualTypeOf<readonly string[]>();
 
 chart.setData([{ x: 1, y: 2 }]);
+// 库不会修改传入的数组：只读的数组也能传进去
+const frozen: readonly Point[] = [{ x: 1, y: 2 }];
+chart.setData(frozen);
+// @ts-expect-error 点的坐标是数字
+chart.setData([{ x: '1', y: 2 }]);
+expectTypeOf<ChartOptions>().toEqualTypeOf<{ type: 'line' | 'bar'; title?: string; animate?: boolean }>();
 const off = chart.on('click', (point) => {
   expectTypeOf(point).toEqualTypeOf<Point>();
 });
 expectTypeOf(off).toEqualTypeOf<() => void>();
-chart.on('resize', (width, height) => {
+const offResize = chart.on('resize', (width, height) => {
   expectTypeOf(width).toEqualTypeOf<number>();
   expectTypeOf(height).toEqualTypeOf<number>();
 });
+expectTypeOf(offResize).toEqualTypeOf<() => void>();
 expectTypeOf(chart.destroy).returns.toEqualTypeOf<void>();
 
 // @ts-expect-error type 只能是 line 或 bar
@@ -131,7 +138,7 @@ themes.push('dark');
 - **可选属性**描述可以省略的选项；
 - **`readonly` 数组**描述“不应该修改”：库返回的是内部的数组，调用方 `push` 一下就改坏了库的状态，声明中写成只读，编译器就会阻止它。
 
-默认导出与具名导出要和库实际的导出方式一致，这对应的是运行时的行为：类型写成具名导出，`import createChart from 'legacy-chart'` 的类型检查就会失败（反过来，如果库实际是具名导出而声明写成默认导出，类型检查通过了，运行时却拿到 `undefined`）。
+默认导出与具名导出要和库实际的导出方式一致，这对应的是运行时的行为。声明写成具名导出时，`import createChart from 'legacy-chart'` 这一行本身不报错（得到的是整个模块），调用 `createChart(…)` 时报 TS2349（这个表达式不能调用）。反过来，如果库实际是具名导出而声明写成了默认导出，类型检查能通过，运行时却会出错：ES 模块的库在加载时就报 `does not provide an export named 'default'`；CommonJS 的库，默认导入得到的是整个 `module.exports` 对象，调用它同样失败。
 
 写好的声明可以放在项目中的 `src/types/` 之类的文件夹里；如果这个库还有别人在用，可以把它贡献给 DefinitelyTyped，以 `@types/legacy-chart` 发布。
 :::
@@ -159,7 +166,7 @@ declare module 'legacy-chart' {
 ```
 :::
 
-:::variant{kind=wrong name=named-export fails=types reason="把 createChart 写成了具名导出：文档中它是默认导出，import createChart from … 报错"}
+:::variant{kind=wrong name=named-export fails=types reason="把 createChart 写成了具名导出：文档中它是默认导出，默认导入得到的是整个模块，调用 createChart(…) 时报 TS2349"}
 ```ts file=legacy-chart.d.ts
 declare module 'legacy-chart' {
   export interface Point {

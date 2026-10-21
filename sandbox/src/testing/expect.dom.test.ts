@@ -25,3 +25,20 @@ describe('toHaveTextContent', () => {
     expect(() => platformExpect(element('已保存')).not.toHaveTextContent('')).not.toThrow();
   });
 });
+
+describe('toHaveAccessibleDescription', () => {
+  type DescriptionAssertion = { toHaveAccessibleDescription(description?: string | RegExp): void };
+  const describedExpect = untypedExpect as unknown as (actual: unknown) => DescriptionAssertion & { not: DescriptionAssertion };
+
+  test('按 aria-describedby 计算描述；不传参数时检查“有描述”', () => {
+    document.body.innerHTML = '<div role="alertdialog" aria-describedby="d1 d2"><p id="d1">删除之后</p><p id="d2">无法恢复。</p></div><button>无描述</button>';
+    const dialog = document.querySelector('[role="alertdialog"]');
+    const button = document.querySelector('button');
+    expect(() => describedExpect(dialog).toHaveAccessibleDescription('删除之后 无法恢复。')).not.toThrow();
+    expect(() => describedExpect(dialog).toHaveAccessibleDescription(/无法恢复/)).not.toThrow();
+    expect(() => describedExpect(dialog).toHaveAccessibleDescription()).not.toThrow();
+    expect(() => describedExpect(dialog).toHaveAccessibleDescription('别的')).toThrow();
+    expect(() => describedExpect(button).toHaveAccessibleDescription()).toThrow();
+    expect(() => describedExpect(button).not.toHaveAccessibleDescription()).not.toThrow();
+  });
+});

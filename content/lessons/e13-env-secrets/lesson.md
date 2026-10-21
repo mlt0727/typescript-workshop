@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: 前端代码需要知道接口的地址、第三方服务的公开 ID，开发时和上线后还各不相同，这些通常放在环境变量里。可是浏览器中没有环境变量：Vite 在构建时把 import.meta.env.VITE_API_BASE 直接替换成了字符串，写进打包后的 JavaScript，任何人打开开发者工具都能看到。把 API 密钥放进 VITE_ 开头的变量，就等于把它公开了。这一课讲清楚 Vite 的 .env 文件、VITE_ 前缀与加载顺序，什么可以放进前端、什么必须留在服务器，以及怎样在启动时验证配置、在构建后检查有没有泄露密钥。
 objectives:
   - 说明 Vite 如何加载 .env、.env.local、.env.[mode] 文件，以及只有 VITE_ 开头的变量会暴露给前端代码
@@ -95,7 +95,7 @@ console.log(replaceEnv(source, env));
 
 ## 给 import.meta.env 加上类型
 
-`vite/client` 中已经声明了 `MODE`、`DEV` 等内置变量。自己的变量用 c12 讲的声明合并补上，例如在 `src/vite-env.d.ts` 中：
+`vite/client` 中已经声明了 `MODE`、`DEV` 等内置变量。自己的变量用 b01 讲的接口声明合并补上，例如在 `src/vite-env.d.ts` 中：
 
 ```ts
 /// <reference types="vite/client" />
