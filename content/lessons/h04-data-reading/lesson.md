@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 在 g14 中，组件先渲染出来，再在 effect 中请求数据，数据到达之后再渲染一次。服务端组件不需要这样绕：它本身就是一个 async 函数，直接 await 数据库或者接口，渲染出来的就是有数据的 HTML。但数据读取一旦搬到服务器上，就有了新的问题：几个组件都需要同一份数据时会不会查好几次，前后依赖的请求会不会排成一串，哪些结果可以在请求之间共用、共用多久，数据改了之后怎样让缓存失效。这一课在实测的 Next.js 16.4.2 项目中回答这些问题：React.cache 在一个请求中去重，'use cache' 在请求之间缓存，cacheLife 决定缓存多久，cacheTag 与 revalidateTag 让缓存按需失效。
 objectives:
   - 在服务端组件中用 async/await 读取数据，用 Promise.all 让互不依赖的请求并行
@@ -103,7 +103,28 @@ console.log(results.map((r) => r.status), '约', round(Date.now() - start), 'ms'
 - 第 14 行：`Promise.all` 只要有一个失败就整个失败；需要“各自成败”时用 `Promise.allSettled`（e04）。
 :::
 
-页面和它所在的各层布局本身是并行渲染的，每一层都会尽早开始自己的请求。真正有依赖的请求（先要知道艺人的 id 才能查他的歌单），把依赖的部分放进 `<Suspense>`：先显示已经有的内容，剩下的流式送出。
+页面和它所在的各层布局本身是并行渲染的，每一层都会尽早开始自己的请求。
+
+## 流式渲染：先送出已经有的内容
+
+真正有依赖的请求（先要知道艺人的 id 才能查他的歌单），或者很慢的请求，不要让整个页面等它。把等待它的组件放进 `<Suspense>`：
+
+```tsx
+export default async function ArtistPage({ params }: PageProps<'/artists/[id]'>) {
+  const { id } = await params;
+  const artist = await getArtist(id);
+  return (
+    <main>
+      <h1>{artist.name}</h1>
+      <Suspense fallback={<p>正在加载歌单…</p>}>
+        <Playlists artistId={artist.id} />
+      </Suspense>
+    </main>
+  );
+}
+```
+
+服务器先把标题和“正在加载歌单…”送给浏览器，`Playlists` 的数据准备好之后，再在**同一个响应**中把它的 HTML 送过去替换掉占位的内容。h01 中实测的 `/time` 页面就是这样（◐）。`loading.tsx` 相当于把整个页面包在一个 `<Suspense>` 中（h02）；`<Suspense>` 包得越靠近慢的那部分，用户越早看到其余的内容。
 
 ## 同一个请求中去重：React.cache
 
@@ -113,15 +134,18 @@ console.log(results.map((r) => r.status), '约', round(Date.now() - start), 'ms'
 // app/h04/_lib/data.ts
 import { cache } from 'react';
 
+let calls = 0;
+
 export async function loadUser(id: string) {
-  console.log(`[h04] loadUser(${id})`);
+  calls += 1;
+  console.log(`[h04] loadUser(${id}) #${calls}`);
   // …查询数据库
 }
 
 export const getUser = cache(loadUser);
 ```
 
-实测项目中的一个页面在 `<Suspense>` 中渲染了三个组件，分别读取用户 `1`、`1`、`2`。用 `getUser` 时，每个请求的服务器日志：
+实测项目中的一个页面在 `<Suspense>` 中先 `await connection()`（h01：让这部分在每个请求时渲染，否则它在构建时就生成好了，请求时看不到日志），再渲染三个组件，分别读取用户 `1`、`1`、`2`。用 `getUser` 时，每个请求的服务器日志：
 
 ```text
 [h04] request dedupe
@@ -134,13 +158,13 @@ export const getUser = cache(loadUser);
 
 每个请求中用户 `1` 只查了一次；第二个请求又查了一次：`React.cache` 的缓存**只属于一个请求**，请求之间不共享。同样的页面改成直接调用 `loadUser`，一个请求查了三次（`#5`、`#6`、`#7`）。
 
-`fetch` 不需要这样包装：同一次渲染中，相同的 `fetch` 请求会自动去重。数据库查询、SDK 调用这些不是 `fetch` 的读取，才需要 `React.cache`。
+`fetch` 不需要这样包装：渲染服务端组件的过程中，地址和选项都相同的 `GET` 请求会自动去重（Route Handler 中的 `fetch` 不会）。数据库查询、SDK 调用这些不是 `fetch` 的读取，才需要 `React.cache`。还要注意：`React.cache` 只在渲染服务端组件的过程中有效，在组件之外（例如 Route Handler 中）调用，每次都会执行。
 
 ::exercise{#request-memo}
 
 ## 请求之间缓存：'use cache'
 
-`React.cache` 只在一个请求中有效。商品目录、文章列表这类“所有人看到的都一样、改得也不频繁”的数据，应该在请求之间共用：这是 `'use cache'` 的作用。它写在一个 `async` 函数（或者组件、整个文件）的开头：
+`React.cache` 只在一个请求中有效。商品目录、文章列表这类“所有人看到的都一样、改得也不频繁”的数据，应该在请求之间共用：这是 `'use cache'` 的作用（需要开启 Cache Components）。它写在一个 `async` 函数（或者组件、整个文件）的开头：
 
 ```ts
 import { cacheLife, cacheTag } from 'next/cache';
@@ -154,15 +178,15 @@ export async function getStamp() {
 }
 ```
 
-缓存的**键**由构建、函数本身和它的参数（以及它从外层捕获的变量）共同决定，所以参数和返回值都必须能序列化，规则和 h03 中传给客户端组件的 props 类似（参数还更严格一些）。`cacheLife` 决定缓存多久，三个时间的含义：
+缓存的**键**由构建、函数本身和它的参数（以及它从外层捕获的变量）共同决定，所以参数和返回值都必须能序列化，规则和 h03 中传给客户端组件的 props 类似（参数还更严格一些）。参数是按序列化之后的内容比较的：两个内容相同的对象参数会命中同一个缓存，这一点和按引用比较的 `React.cache` 不同。`cacheLife` 决定缓存多久，三个时间的含义：
 
 | 属性 | 含义 |
 | --- | --- |
 | `stale` | 浏览器中的路由器可以直接使用这份数据、不问服务器的时间 |
-| `revalidate` | 过了这个时间，下一个请求先拿到旧的结果，服务器在后台重新生成 |
+| `revalidate` | 过了这个时间，结果需要重新生成：页面缓存和共享的缓存先返回旧的结果、在后台重新生成（见下面的实测）；默认的内存缓存则直接丢掉它，下一次调用等新的结果 |
 | `expire` | 过了这个时间还没有请求来刷新它，下一个请求必须等新的结果 |
 
-也可以用预设的名字，例如 `cacheLife('hours')`（`stale` 5 分钟，`revalidate` 1 小时，`expire` 1 天）；不调用 `cacheLife` 时是 `'default'`（5 分钟、15 分钟、永不过期）。`revalidate` 为 0、`expire` 不到 5 分钟或者使用 `'seconds'` 的缓存太短，不会被放进构建时的静态外壳，而是变成请求时才填的“洞”。
+也可以用预设的名字，例如 `cacheLife('hours')`（`stale` 5 分钟，`revalidate` 1 小时，`expire` 1 天）；不调用 `cacheLife` 时是 `'default'`（5 分钟、15 分钟、永不过期）。`revalidate` 为 0、`expire` 不到 5 分钟、`stale` 不到 30 秒，或者使用 `'seconds'` 的缓存太短，不会被放进构建时的静态外壳，而是变成请求时才填的“洞”。上面的例子把 `stale` 设为 30 就是这个原因；浏览器中的路由器也至少把数据保留 30 秒，实测这个页面的响应头中有 `x-nextjs-stale-time: 30`。
 
 实测项目中一个页面只显示 `await getStamp()` 的结果。构建时的路由表多了两列（h01 的练习遇到这种表头会报错）：
 
@@ -181,11 +205,11 @@ Route (app)                  Revalidate  Expire
 04:32:44  2026-10-21T08:32:43.533Z  HIT     ← 5 秒之内：直接返回
 ```
 
-这就是 stale-while-revalidate：过了 `revalidate`，**触发**重新生成的那个请求拿到的仍然是旧的内容，没有人需要等。
+这就是 stale-while-revalidate：过了 `revalidate`，**触发**重新生成的那个请求拿到的仍然是旧的内容，没有人需要等。注意这里观察到的是**整个页面**的缓存（`x-nextjs-cache`）。`'use cache'` 函数自己的缓存保存在哪里，由缓存处理器决定：Next.js 默认的内存处理器在过了 `revalidate` 时就丢弃条目（内存中的条目很可能在被读到之前就被清掉，提前准备新的结果是浪费），下一次调用会等新的结果；共享的存储（例如 Redis）可以一直先返回旧值到 `expire`。练习二模拟的是后一种。
 
 ## 按需失效：cacheTag 与 revalidateTag
 
-时间到了才刷新，不适合“编辑刚发布了一篇文章”这样的场景。`cacheTag('h04-stamp')` 给缓存的结果打上标签，数据改变时调用 `revalidateTag('h04-stamp', 'max')`，所有带这个标签的缓存都变旧。实测项目中一个 Route Handler 调用了它：
+时间到了才刷新，不适合“编辑刚发布了一篇文章”这样的场景。`cacheTag('h04-stamp')` 给缓存的结果打上标签，数据改变时调用 `revalidateTag('h04-stamp', 'max')`，所有带这个标签的缓存都变旧。第二个参数是一个缓存时间的配置（预设的名字或者对象），决定旧的内容在后台刷新期间还能用多久：`'max'` 表示最长（一年）。Next.js 16 中只传一个参数的写法已经废弃，它相当于让缓存立刻过期。实测项目中一个 Route Handler 调用了它：
 
 ```text
 04:32:44  2026-10-21T08:32:43.533Z  HIT
@@ -194,7 +218,7 @@ POST /api/h04/revalidate → {"ok":true}
 04:32:46  2026-10-21T08:32:45.166Z  HIT     ← 新的
 ```
 
-和时间到了一样，失效之后的第一个请求仍然拿到旧的内容。这对文章列表没问题，但对“用户刚刚修改了自己的资料，页面却还显示旧的”就不行了。这时用 `updateTag(tag)`：它让缓存**立刻**过期，下一个请求等新的结果。`updateTag` 只能在 Server Function 中调用（h05），`revalidateTag` 在 Server Function 和 Route Handler 中都可以。还有一个 `revalidatePath('/profile')` 按地址失效，官方文档建议优先用标签，它更精确。
+和时间到了一样，失效之后的第一个请求仍然拿到旧的内容。这对文章列表没问题，但对“用户刚刚修改了自己的资料，页面却还显示旧的”就不行了。这时用 `updateTag(tag)`：它让缓存**立刻**过期，下一个请求等新的结果。`updateTag` 只能在作为 action 调用的 Server Function（文档中叫 Server Action，h05）中调用，`revalidateTag` 在 Server Function 和 Route Handler 中都可以。还有一个 `revalidatePath('/profile')` 按地址失效，官方文档建议优先用标签，它更精确。
 
 | | `revalidateTag(tag, 'max')` | `updateTag(tag)` |
 | --- | --- | --- |
@@ -204,9 +228,9 @@ POST /api/h04/revalidate → {"ok":true}
 
 ## 什么不应该缓存
 
-- **因人而异的数据**：当前用户的购物车不能放进所有人共用的缓存。`'use cache'` 的函数（以及它调用的函数）中不能读取 `cookies()`、`headers()`、`searchParams`，否则报错；在缓存的函数外面读出需要的值，作为参数传进去，它就成了键的一部分，不同的值有各自的缓存。只有极少数无法这样改的情况才用 `'use cache: private'`；
+- **因人而异的数据**：当前用户的购物车不能放进所有人共用的缓存。`'use cache'` 的函数（以及它调用的函数）中不能读取 `cookies()`、`headers()`、`searchParams`，否则报错；在缓存的函数外面读出需要的值，作为参数传进去，它就成了键的一部分，不同的值有各自的缓存。只有极少数无法这样改的情况才用 `'use cache: private'`（它的结果不会跨请求保存在服务器上）；
 - **必须准确的数据**：库存、余额这类数据，缓存中的旧值可能导致错误的决定，宁可每次都读；
-- **以为缓存会一直留着**：默认的缓存保存在服务器的内存中。在无服务器的环境中，每个请求可能落在不同的实例上，运行时的缓存条目通常留不住（构建时生成的部分不受影响），需要时用 `'use cache: remote'` 交给平台提供的缓存。重新部署之后所有的缓存都失效，因为键中包含了构建。
+- **以为缓存会一直留着**：默认的缓存保存在服务器的内存中。在无服务器的环境中，每个请求可能落在不同的实例上，运行时的缓存条目通常留不住（构建时生成的部分不受影响），需要时用 `'use cache: remote'` 交给平台提供的缓存（要配置缓存处理器，多一次网络往返，也可能产生费用）。重新部署之后所有的缓存都失效，因为键中包含了构建。
 
 ## 编程挑战
 

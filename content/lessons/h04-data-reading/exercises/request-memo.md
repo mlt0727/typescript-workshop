@@ -7,7 +7,7 @@ title: 同一个请求中去重
 1. `memo(fn)` 返回一个函数，参数和返回值的类型与 `fn` 相同；
 2. 在同一个作用域中，用**同样的参数**再次调用这个函数时，不再调用 `fn`，直接返回第一次的结果（同一个值，对象就是同一个对象）。同样的参数是指：参数的个数相同，并且每个位置上的参数像 `Map` 的键那样相等：基本类型按值比较（`1` 和 `'1'` 不同，`NaN` 等于 `NaN`），对象按引用比较；
 3. `fn` 抛出了错误时，同样的参数再次调用会抛出**同一个**错误，也不再调用 `fn`。`fn` 是异步函数时，返回的 Promise 本身就是结果：同时发出的调用共用一个 Promise，失败的 Promise 也一样被记住；
-4. 每次调用 `memo` 都得到一份新的缓存；不同的作用域之间什么都不共享。
+4. 不同的作用域之间什么都不共享。（同一个作用域中对同一个函数调用两次 `memo` 会不会共用缓存，这里不规定。React 的文档说每次 `cache(fn)` 都是新的缓存，但 React 19.3 的实现按原来的函数查找；不要依赖这两种行为中的任何一种。）
 
 :::files{role=starter}
 ```ts file=request-scope.ts
@@ -195,17 +195,28 @@ describe('createRequestScope().memo', () => {
     const failed = memoized('x');
     expect(memoized('x')).toBe(failed);
     await expect(failed).rejects.toThrow('不存在');
+    // 失败之后再调用：仍然是同一个 Promise，不会再查一次
+    expect(memoized('x')).toBe(failed);
     expect(fn).toHaveBeenCalledTimes(2);
   });
 
-  test('每次 memo 都有自己的缓存；不同的作用域（不同的请求）互不共享', () => {
-    const fn = vi.fn((id: string) => id);
+  test('返回 undefined 也是一个结果', () => {
     const scope = createRequestScope();
-    scope.memo(fn)('1');
-    scope.memo(fn)('1');
-    const other = createRequestScope();
-    other.memo(fn)('1');
-    expect(fn).toHaveBeenCalledTimes(3);
+    const fn = vi.fn((_id: string): undefined => undefined);
+    const memoized = scope.memo(fn);
+    memoized('1');
+    memoized('1');
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  test('不同的作用域（不同的请求）互不共享', () => {
+    const fn = vi.fn((id: string) => id);
+    const getInFirst = createRequestScope().memo(fn);
+    getInFirst('1');
+    getInFirst('1');
+    const getInSecond = createRequestScope().memo(fn);
+    getInSecond('1');
+    expect(fn).toHaveBeenCalledTimes(2);
   });
 
   test('一个页面中三个组件读取用户：同一个请求中数据库只查两次', async () => {
