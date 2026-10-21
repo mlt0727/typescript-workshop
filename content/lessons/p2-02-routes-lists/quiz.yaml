@@ -1,0 +1,44 @@
+- id: path-or-query
+  type: single
+  prompt: 项目编号放在路径中（`/projects/p2`），筛选条件放在查询参数中（`?status=active`）。这样划分的理由是什么？
+  options:
+    - text: 编号决定显示哪一个资源，缺了它页面就不存在；筛选条件只是查看方式，可以省略，省略时有默认值
+      correct: true
+      explain: “看哪一个”放在路径中，“怎样看”放在查询参数中。
+    - text: 查询参数不会被浏览器保存到历史记录中
+      explain: 查询参数是地址的一部分，历史记录中保存的是完整的地址。
+    - text: 路径中不能出现中文和空格，所以搜索词只能放在查询参数中
+      explain: 路径中也可以有编码后的中文；这不是划分的理由。
+- id: location-state
+  type: single
+  prompt: 详情页用 `useLocation().state` 读出列表页传来的 `listSearch`。下面哪种写法最合适？
+  options:
+    - text: 把 `state` 当作 `unknown`，确认它是对象、有 `listSearch` 并且是字符串之后再用，否则用空字符串
+      correct: true
+      explain: 直接打开的详情页没有 state；旧版本的应用写进去的 state 格式也可能不同。
+    - text: "`location.state.listSearch`：类型检查没有报错，说明它一定存在"
+      explain: state 的类型是 any，类型检查根本没有检查它。直接打开的详情页中 state 是 null，这一行就会抛出异常。
+    - text: "`location.state as { listSearch: string }`，用断言写清楚它的类型"
+      explain: 断言只是告诉编译器“相信我”，运行时什么也不检查。
+- id: replace-redirect
+  type: single
+  prompt: 根地址 `/` 的 loader 返回 `redirect('/projects')`。用户打开 `/` 之后按“后退”，会发生什么？
+  options:
+    - text: 回到 `/`，又被转到 `/projects`，看起来“后退”没有用
+      correct: true
+      explain: redirect 新增一条历史记录。用 replace('/projects') 替换 `/` 这一条，“后退”就回到之前的页面。
+    - text: 回到打开 `/` 之前的页面
+      explain: 这是 replace 的效果；redirect 会在历史记录中留下 `/`。
+    - text: 页面报错，因为 loader 不能返回转向
+      explain: loader 可以返回 redirect 或 replace 的响应，路由会转到那个地址。
+- id: sort-chinese
+  type: single
+  prompt: "`['官网改版', '安全检查', '数据迁移'].toSorted()` 的顺序是按什么排的？"
+  options:
+    - text: 按每个字符的 UTF-16 码元，也就是汉字在 Unicode 中的编号，不是拼音
+      correct: true
+      explain: 按拼音排序要用 localeCompare(b, 'zh-CN') 或 Intl.Collator('zh-CN')。
+    - text: 按拼音，因为页面的语言是中文
+      explain: 不带比较函数的 sort/toSorted 不考虑任何语言，只比较码元。
+    - text: 按笔画数
+      explain: 默认的排序不知道笔画；它只比较字符的编号。

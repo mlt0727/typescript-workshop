@@ -11171,6 +11171,118 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(没有变化时返回原来的对象 › 同样的名称、日期、状态 ⟶ rename)"
         }
       ]
+    },
+    "p2-02-routes-lists": {
+      "verifiedAt": "2026-10-21T01:55:27.951Z",
+      "sourceHash": "d165fbb370685525",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:url-params:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:url-params:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] name due due | [log] q=%E5%B0%8F%E6%9E%97+%26+%E9%98%BF%E6%98%8E&status=active | [log] 小林 & 阿明 | [log] a b+c  null | [log] true"
+        },
+        {
+          "target": "playground:collation:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:collation:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 培训课程 季度报告 安全检查 官网改版 招聘计划 数据迁移 | [log] 安全检查 官网改版 季度报告 培训课程 数据迁移 招聘计划 | [log] 安全检查 官网改版 季度报告 培训课程 数据迁移 招聘计划 | [log] A B a b a A b B"
+        },
+        {
+          "target": "exercise:project-query:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseFilters › 读出三个参数 ⟶ expect(…).toEqual({ status: 'active', q: '小林', sort: 'name' }),parseFilters › 搜索词原样保留（包括空白），由筛选时处理 ⟶ expect(…).toBe(' 小 '),parseFilters › 和 toSearchParams 互为逆运算 ⟶ expect(…).toEqual({ status: 'done', q: '', sort: 'name' }),listProjects：筛选 › 按状态筛选 ⟶ expect(…).toEqual([ '官网改版', '数据迁移' ]),listProjects：筛选 › 已过期：没有完成、截止日期在今天之前（已完成的和今天到期的都不算） ⟶ expect(…).toEqual([ '数据迁移', '招聘计划' ]),listProjects：筛选 › 搜索名称或负责人，去掉首尾空白，不区分大小写 ⟶ expect(…).toEqual([ '数据迁移' ]),listProjects：筛选 › 几个条件同时生效 ⟶ expect(…).toEqual([ '培训课程' ]),listProjects：排序 › 按截止日期：早的在前，没有截止日期的在最后，日期相同时按名称 ⟶ expect(…).toEqual([ '数据迁移', '安全检查', '官网改版', '季度报告', '培训课程', '招聘计划' ]),listProjects：排序 › 按名称：中文按拼音排序 ⟶ expect(…).toEqual([ '安全检查', '官网改版', '季度报告', '培训课程', '数据迁移', '招聘计划' ]))"
+        },
+        {
+          "target": "exercise:project-query:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-query:alt:guard-and-collator",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-query:wrong:no-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(listProjects：筛选 › 搜索名称或负责人，去掉首尾空白，不区分大小写 ⟶ expect(…).toEqual([ '数据迁移', '培训课程' ]))"
+        },
+        {
+          "target": "exercise:project-query:wrong:null-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(listProjects：排序 › 按截止日期：早的在前，没有截止日期的在最后，日期相同时按名称 ⟶ expect(…).toEqual([ '数据迁移', '安全检查', '官网改版', '季度报告', '培训课程', '招聘计划' ]))"
+        },
+        {
+          "target": "exercise:project-query:wrong:code-units",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(listProjects：排序 › 按名称：中文按拼音排序 ⟶ expect(…).toEqual([ '安全检查', '官网改版', '季度报告', '培训课程', '数据迁移', '招聘计划' ]))"
+        },
+        {
+          "target": "exercise:project-query:wrong:overdue-done",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(listProjects：筛选 › 已过期：没有完成、截止日期在今天之前（已完成的和今天到期的都不算） ⟶ expect(…).toEqual([ '数据迁移', '招聘计划' ]))"
+        },
+        {
+          "target": "exercise:project-query:wrong:cast",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@18,type-assertion@20) tests=fail(parseFilters › 不认识的值用默认值 ⟶ status=Active)"
+        },
+        {
+          "target": "exercise:project-query:wrong:sort-in-place",
+          "ok": true,
+          "detail": "被拒绝（types）；types=fail(TS2339@query.ts:56 Property 'sort' does not exist on type 'readonly Readonly<{ id: string; name: string; owner: string; status: \"planning\" | \"active\" | \"done\"; dueDate: string | null; tasks: readonly Readonly<{ id: string; title: string; done: boolean; }>[]; }>[]'.) rules=ok tests=fail(listProjects：排序 › 不修改传入的数组 ⟶ expect(…).toEqual([ '安全检查', '官网改版', '季度报告', '培训课程', '数据迁移', '招聘计划' ]))"
+        },
+        {
+          "target": "exercise:project-pages:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(地址 › / 转到 /projects，并且替换历史记录：“后退”不会又回到 / ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"项目\",地址 › 其他地址：“页面不存在”，显示在布局的 main 中 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",列表页 › 默认显示全部项目，按截止日期排序 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\",列表页 › 每一项：名称链接到详情页，后面是负责人、状态、进度、截止日期，过期的标出“已过期” ⟶ Error: 列表中没有“数据迁移”,列表页 › 筛选条件来自地址 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 状态,列表页 › 搜索词来自地址；地址中不认识的值按默认值处理 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 搜索,列表页 › 没有符合条件的项目 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\",修改筛选条件 › 改变状态：更新地址并新增历史记录，“后退”时列表和下拉框都跟着变 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 状态,修改筛选条件 › 选回默认值时，参数从地址中删除；其他参数保留 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 排序,修改筛选条件 › 输入搜索词：更新地址，替换当前的历史记录 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 搜索,详情页 › 从列表进入详情，再返回：保留列表的筛选条件，页面不重新加载 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\" and name \"数据迁移\",详情页 › 显示负责人、状态、进度、截止日期和任务 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",详情页 › 截止日期的几种情况 ⟶ TestingLibraryElementError: Unable to find an element with the text: 截止日期：2026-11-15（还有 26 天）. This could be because the text is broken up by multiple elements.,详情页 › 没有任务时显示“还没有任务” ⟶ TestingLibraryElementError: Unable to find an element with the text: 进度：0/0（0%）. This could be because the text is broken up by multiple elements. In this case,,详情页 › 直接打开详情页（不是从列表进入）：返回 /projects ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\" and name \"返回项目列表\",详情页 › 导航中保存的数据格式不对时，也返回 /projects，页面不出错 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",详情页 › 没有这个项目 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\")"
+        },
+        {
+          "target": "exercise:project-pages:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-pages:alt:navigate-nested",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-pages:wrong:push-redirect",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(地址 › / 转到 /projects，并且替换历史记录：“后退”不会又回到 / ⟶ “后退”应该回到进入 / 之前的页面)"
+        },
+        {
+          "target": "exercise:project-pages:wrong:filters-state",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改筛选条件 › 改变状态：更新地址并新增历史记录，“后退”时列表和下拉框都跟着变 ⟶ expect(…).toHaveValue('overdue'))"
+        },
+        {
+          "target": "exercise:project-pages:wrong:back-plain",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(详情页 › 从列表进入详情，再返回：保留列表的筛选条件，页面不重新加载 ⟶ expect(…).toHaveAttribute('href', '/projects?status=active&sort=name'),详情页 › 没有这个项目 ⟶ expect(…).toHaveAttribute('href', '/projects?q=a'))"
+        },
+        {
+          "target": "exercise:project-pages:wrong:state-unchecked",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(详情页 › 导航中保存的数据格式不对时，也返回 /projects，页面不出错 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\")"
+        },
+        {
+          "target": "exercise:project-pages:wrong:search-push",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改筛选条件 › 输入搜索词：更新地址，替换当前的历史记录 ⟶ 输入时应该替换历史记录，“后退”一次就离开列表页)"
+        }
+      ]
     }
   }
 }
