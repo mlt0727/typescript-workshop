@@ -10386,6 +10386,78 @@
         }
       ]
     },
+    "i02-deploy-static": {
+      "verifiedAt": "2026-10-21T01:32:18.346Z",
+      "sourceHash": "fb3c81e9f8a5f6c5",
+      "ok": true,
+      "checks": [
+        {
+          "target": "exercise:asset-urls:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(assetUrls › 脚本和样式表，按出现的顺序，解析成完整的地址 ⟶ expect(…).toEqual([,assetUrls › 相对路径相对于页面的地址：深层的地址上指到了别的文件夹 ⟶ expect(…).toEqual([,assetUrls › 部署在子路径上：以 / 开头的地址从网站的根开始 ⟶ expect(…).toBe('https://user.github.io/assets/index-CMnIaEjP.js'),assetUrls › modulepreload 也是脚本；其他的 link（图标、preconnect）不算 ⟶ expect(…).toEqual([,assetUrls › 单引号也可以；没有 src 的内联脚本、data: 地址不算；去掉 #，保留查询参数，重复的只算一次 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:asset-urls:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:asset-urls:alt:attribute-map",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:asset-urls:wrong:from-origin",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(assetUrls › 相对路径相对于页面的地址：深层的地址上指到了别的文件夹 ⟶ expect(…).toBe('https://shop.example/products/assets/index-CMnIaEjP.js'))"
+        },
+        {
+          "target": "exercise:asset-urls:wrong:double-quotes-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(assetUrls › 单引号也可以；没有 src 的内联脚本、data: 地址不算；去掉 #，保留查询参数，重复的只算一次 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:asset-urls:wrong:every-link",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(assetUrls › modulepreload 也是脚本；其他的 link（图标、preconnect）不算 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:smoke-test:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(smokeTest › base 为 ./ 加上回退：深层的页面上，脚本和样式表的地址变成了 /products/assets/…，得到的是网页 ⟶ expect(…).toEqual([,smokeTest › 部署在子路径上，base 却是 /：资源 404 ⟶ expect(…).toEqual([,smokeTest › 资源被删除；页面的类型不是网页；连接不上 ⟶ expect(…).toEqual([,smokeTest › 几个页面引用同一个文件时只请求一次；页面按顺序检查 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:smoke-test:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:smoke-test:alt:parallel-assets",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:smoke-test:wrong:status-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › base 为 ./ 加上回退：深层的页面上，脚本和样式表的地址变成了 /products/assets/…，得到的是网页 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:smoke-test:wrong:from-origin",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › base 为 ./ 加上回退：深层的页面上，脚本和样式表的地址变成了 /products/assets/…，得到的是网页 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:smoke-test:wrong:no-dedupe",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › 几个页面引用同一个文件时只请求一次；页面按顺序检查 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:smoke-test:wrong:stop-at-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › 没有回退：深层的地址 404 ⟶ expect(…).toEqual([,smokeTest › 资源被删除；页面的类型不是网页；连接不上 ⟶ expect(…).toEqual([)"
+        }
+      ]
+    },
     "p1-01-plan-and-model": {
       "verifiedAt": "2026-10-20T18:21:38.286Z",
       "sourceHash": "c8c207d111027106",

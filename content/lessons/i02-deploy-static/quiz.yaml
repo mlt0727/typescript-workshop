@@ -1,0 +1,44 @@
+- id: refresh-404
+  type: single
+  prompt: 一个用 createBrowserRouter 的单页应用部署在一个只会按路径找文件的静态服务器上。从首页点击链接进入 `/products/205` 一切正常，在这个页面上刷新却是 404。原因是什么？
+  options:
+    - text: 刷新时浏览器向服务器请求 `/products/205`，而 dist 中没有这个文件；点击链接时路由在浏览器中切换，没有请求服务器
+      correct: true
+      explain: 需要配置回退：找不到文件的页面地址返回 index.html。
+    - text: 刷新时浏览器的缓存过期了，JavaScript 没有加载
+      explain: 404 的是页面本身，与缓存无关。
+    - text: React Router 只在第一次加载时工作，刷新之后需要重新初始化
+      explain: 刷新之后服务器根本没有返回 index.html，路由的代码没有机会运行。
+- id: relative-base
+  type: single
+  prompt: "构建时 `base` 是 `./`，`index.html` 中是 `<script src=\"./assets/app.js\">`。在有回退的服务器上打开 `https://shop.example/products/205`，脚本的地址被解析成什么？"
+  options:
+    - text: "`https://shop.example/products/assets/app.js`"
+      correct: true
+      explain: 相对地址相对于页面所在的“文件夹” /products/。这个文件不存在，页面一片空白。
+    - text: "`https://shop.example/assets/app.js`"
+      explain: 只有在第一层的页面（例如 /products）上才会解析成这个地址。
+    - text: "`https://shop.example/products/205/assets/app.js`"
+      explain: 205 是“文件名”，不是文件夹；只有 /products/205/ 这样以 / 结尾时才是。
+- id: basename
+  type: single
+  prompt: "应用部署在 `https://user.github.io/shop/`，构建时设置了 `base: '/shop/'`，资源都加载成功了，页面上显示的却是“页面不存在”。最可能缺了什么？"
+  options:
+    - text: 路由的 basename：路由看到的地址是 /shop/，而路由表中只有 /
+      correct: true
+      explain: "`createBrowserRouter(routes, { basename: '/shop' })`，可以用 import.meta.env.BASE_URL 得到前缀。"
+    - text: 404.html
+      explain: 页面已经显示出来了，问题出在路由的匹配上。
+    - text: 把 base 改成 ./
+      explain: 相对路径在深层的地址上会让资源的地址出错。
+- id: github-pages
+  type: single
+  prompt: 在 GitHub Pages 上把 index.html 复制一份作为 404.html，让单页应用的深层地址也能显示。这样做的副作用是什么？
+  options:
+    - text: 这些页面返回的状态码是 404，搜索引擎和监控工具会认为它们不存在
+      correct: true
+      explain: 实测这样部署的网站，深层地址返回的是 404 和 404.html 的内容。
+    - text: 资源文件也都会返回 404.html
+      explain: 存在的资源文件照常返回，只有找不到的地址才返回 404.html。
+    - text: 没有副作用，和 Vercel 的改写完全一样
+      explain: 改写返回的是 200；404.html 返回的是 404。

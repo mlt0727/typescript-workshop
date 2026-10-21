@@ -1,0 +1,151 @@
+[
+  {
+    "url": "https://good.example/",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>商店</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-CMnIaEjP.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-D8J8pCed.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n"
+  },
+  {
+    "url": "https://good.example/products",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>商店</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-CMnIaEjP.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-D8J8pCed.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n"
+  },
+  {
+    "url": "https://good.example/products/205",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>商店</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-CMnIaEjP.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-D8J8pCed.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n"
+  },
+  {
+    "url": "https://good.example/assets/index-CMnIaEjP.js",
+    "headers": {
+      "content-type": "text/javascript; charset=utf-8"
+    },
+    "body": "console.log(\"app\")"
+  },
+  {
+    "url": "https://good.example/assets/index-D8J8pCed.css",
+    "headers": {
+      "content-type": "text/css; charset=utf-8"
+    },
+    "body": "body{margin:0}"
+  },
+  {
+    "url": "https://good.example/data.json",
+    "body": {
+      "ok": true
+    }
+  },
+  {
+    "url": "https://no-fallback.example/",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>商店</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-CMnIaEjP.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-D8J8pCed.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n"
+  },
+  {
+    "url": "https://no-fallback.example/assets/index-CMnIaEjP.js",
+    "headers": {
+      "content-type": "text/javascript; charset=utf-8"
+    },
+    "body": "console.log(\"app\")"
+  },
+  {
+    "url": "https://no-fallback.example/assets/index-D8J8pCed.css",
+    "headers": {
+      "content-type": "text/css; charset=utf-8"
+    },
+    "body": "body{margin:0}"
+  },
+  {
+    "url": "https://no-fallback.example/*",
+    "status": 404,
+    "statusText": "Not Found",
+    "headers": {
+      "content-type": "text/plain; charset=utf-8"
+    },
+    "body": "The page could not be found"
+  },
+  {
+    "url": "https://relative.example/assets/index-CMnIaEjP.js",
+    "headers": {
+      "content-type": "text/javascript; charset=utf-8"
+    },
+    "body": "console.log(\"app\")"
+  },
+  {
+    "url": "https://relative.example/assets/index-D8J8pCed.css",
+    "headers": {
+      "content-type": "text/css; charset=utf-8"
+    },
+    "body": "body{margin:0}"
+  },
+  {
+    "url": "https://relative.example/*",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>商店</title>\n    <script type=\"module\" crossorigin src=\"./assets/index-CMnIaEjP.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"./assets/index-D8J8pCed.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n"
+  },
+  {
+    "url": "https://user.github.io/shop/",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>商店</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-CMnIaEjP.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-D8J8pCed.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n"
+  },
+  {
+    "url": "https://user.github.io/shop/assets/index-CMnIaEjP.js",
+    "headers": {
+      "content-type": "text/javascript; charset=utf-8"
+    },
+    "body": "console.log(\"app\")"
+  },
+  {
+    "url": "https://user.github.io/shop/assets/index-D8J8pCed.css",
+    "headers": {
+      "content-type": "text/css; charset=utf-8"
+    },
+    "body": "body{margin:0}"
+  },
+  {
+    "url": "https://user.github.io/*",
+    "status": 404,
+    "statusText": "Not Found",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<h1>404</h1>"
+  },
+  {
+    "url": "https://broken.example/",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>商店</title>\n    <script type=\"module\" crossorigin src=\"/assets/index-CMnIaEjP.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-D8J8pCed.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>\n"
+  },
+  {
+    "url": "https://broken.example/assets/index-CMnIaEjP.js",
+    "status": 404,
+    "statusText": "Not Found",
+    "headers": {
+      "content-type": "text/plain; charset=utf-8"
+    },
+    "body": "Not Found"
+  },
+  {
+    "url": "https://broken.example/assets/index-D8J8pCed.css",
+    "headers": {
+      "content-type": "text/css; charset=utf-8"
+    },
+    "body": "body{margin:0}"
+  },
+  {
+    "url": "https://down.example/*",
+    "networkError": true
+  }
+]
