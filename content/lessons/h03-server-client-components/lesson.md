@@ -13,6 +13,7 @@ references:
   - title: Server and Client Components — Next.js（16.4，随 next 包附带的文档）
     url: https://nextjs.org/docs/app/getting-started/server-and-client-components
     checked: 2026-10-21
+    note: 以 Next.js 16.4.2（React 19.3.0）为准；课中的实测项目由 create-next-app 16.4.2 生成
   - title: The Server and Client Boundary — Next.js
     url: https://nextjs.org/docs/app/guides/server-and-client-boundary
     checked: 2026-10-21

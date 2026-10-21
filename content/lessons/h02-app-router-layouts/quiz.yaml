@@ -40,7 +40,7 @@
   options:
     - text: "`/blog/new` 匹配 `/blog/new`；`/blog/a/b` 匹配 `/blog/[[...slug]]`"
       correct: true
-      explain: 同一个位置上固定的段最优先；`/blog/[id]` 只匹配一段，`/blog/a/b` 有两段，只能退回到捕获段。
+      explain: 同一个位置上固定的段最优先；`/blog/[id]` 只匹配一段，`/blog/a/b` 有两段，只能退回到可选的捕获段。
     - text: "`/blog/new` 匹配 `/blog/[id]`；`/blog/a/b` 匹配 `/blog/[[...slug]]`"
       explain: 固定的段优先于动态段，与文件的创建顺序无关。
     - text: 两个都匹配 `/blog/[[...slug]]`，因为它能匹配所有的地址

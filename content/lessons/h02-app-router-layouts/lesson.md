@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 在 g13 中，路由是我们自己在代码中写的一张表：哪个地址显示哪个组件、哪些页面共用一个外框。Next.js 的 App Router 把这张表交给文件夹：app/projects/[id]/page.tsx 就是 /projects/:id 这个页面，app/projects/layout.tsx 就是这些页面共用的外框。这样一来，“哪个文件是页面”“地址中的参数是什么”“几个路由都能匹配时用哪一个”都由约定决定。这一课讲清楚这些约定，并在实测的 Next.js 16.4.2 项目中确认它们的细节：哪些文件产生路由，布局在导航时保留什么，动态路由的参数长什么样，开启 Cache Components 时怎样读取参数，以及地址有多余的斜杠、大小写不同、包含编码时会发生什么。
 objectives:
   - 根据文件的路径说出它产生的路由：page 与 route 文件、动态段、路由组、私有文件夹
@@ -14,6 +14,7 @@ references:
   - title: Layouts and Pages — Next.js（16.4，随 next 包附带的文档）
     url: https://nextjs.org/docs/app/getting-started/layouts-and-pages
     checked: 2026-10-21
+    note: 以 Next.js 16.4.2（React 19.3.0）为准；课中的实测项目由 create-next-app 16.4.2 生成
   - title: Project structure and organization — Next.js
     url: https://nextjs.org/docs/app/getting-started/project-structure
     checked: 2026-10-21
@@ -25,6 +26,9 @@ references:
     checked: 2026-10-21
   - title: generateStaticParams — Next.js
     url: https://nextjs.org/docs/app/api-reference/functions/generate-static-params
+    checked: 2026-10-21
+  - title: Prefetching（Partial Prefetching）— Next.js
+    url: https://nextjs.org/docs/app/guides/prefetching
     checked: 2026-10-21
   - title: decodeURIComponent() — MDN
     url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent
@@ -57,8 +61,8 @@ g13 用 React Router 写过一张路由表。App Router 中没有这张表：**�
 所以 `app/projects/[id]/page.tsx` 是 `/projects/[id]` 这个页面，`app/api/health/route.ts` 是 `/api/health` 这个接口。几个实测的细节：
 
 - **扩展名**：`page.ts`、`route.tsx`、`route.jsx` 都产生了路由，默认的四种扩展名（`tsx`、`ts`、`jsx`、`js`）对两种文件都有效；
-- **只有 `page` 和 `route` 产生路由**：文件夹中只有 `layout.tsx` 或者其他代码时，这个地址仍然是 404。`app/lab-test/route.test.ts` 没有出现在路由表中：文件名要完整地是 `route` 加扩展名；
-- **私有文件夹**：名字以 `_` 开头的文件夹和它里面的所有东西都不参与路由。实测项目中的 `app/_priv/page.tsx` 不在路由表中，请求 `/_priv` 返回 404。把只在一个页面中用到的组件、数据放在旁边的 `_components/`、`_lib/` 中，是常见的做法；
+- **页面和接口只来自 `page` 和 `route`**：文件夹中只有 `layout.tsx` 或者其他代码时，这个地址仍然是 404。`app/lab-test/route.test.ts` 没有出现在路由表中：文件名要完整地是 `route` 加扩展名。另外，`favicon.ico`、`icon.png`、`opengraph-image.png`、`sitemap.ts`、`robots.ts` 这些**元数据文件**也会产生路由：实测项目中 create-next-app 生成的 `app/favicon.ico` 就是 `/favicon.ico`（返回 200，`image/x-icon`）；
+- **私有文件夹**：名字以 `_` 开头的文件夹和它里面的所有东西都不参与路由。实测项目中的 `app/_priv/page.tsx` 不在路由表中，请求 `/_priv` 返回 404。把只在一个页面中用到的组件、数据放在旁边的 `_components/`、`_lib/` 中，是常见的做法。确实需要以 `_` 开头的地址时，文件夹名用 `%5F` 开头（`_` 编码之后的样子）；
 - **路由组**：名字用圆括号括起来的文件夹（例如 `(marketing)`）只用来组织文件，不出现在地址中：`app/(marketing)/about/page.tsx` 是 `/about`。它的一个用途是让一部分页面共用一个布局，而不改变它们的地址。
 
 不在 `app/` 中的文件不是 App Router 的路由（使用 `src/` 文件夹时，是 `src/app/`）。
@@ -67,7 +71,7 @@ g13 用 React Router 写过一张路由表。App Router 中没有这张表：**�
 
 ## 布局
 
-根布局 `app/layout.tsx` 是必须的，它必须输出 `<html>` 和 `<body>`。实测项目中 create-next-app 生成的根布局是这样的（省略了字体）：
+根布局 `app/layout.tsx` 是必须的，它必须输出 `<html>` 和 `<body>`（一个例外：可以不写 `app/layout.tsx`，而是在几个路由组中各写一个根布局）。实测项目中 create-next-app 生成的根布局是这样的（省略了字体）：
 
 ```tsx
 export default function RootLayout({ children }: LayoutProps<'/'>) {
@@ -111,18 +115,18 @@ export default function ProjectsLayout({ children }: LayoutProps<'/projects'>) {
 
 ## 链接与导航
 
-上面的第 2 步和第 3 步的区别就是 `<Link>` 和普通跳转的区别。`next/link` 的 `<Link>` 渲染成一个普通的 `<a>`（不运行 JavaScript 时也能用），运行 JavaScript 之后，点击它只请求新页面需要的部分，在当前页面中替换。链接进入视口或者鼠标移到它上面时，它还会预先获取目标页面：静态的页面全部获取，动态的页面只获取共用的布局和 `loading.tsx` 这样的部分（或者不获取）。点击时需要等待的就少了。
+上面的第 2 步和第 3 步的区别就是 `<Link>` 和普通跳转的区别。`next/link` 的 `<Link>` 渲染成一个普通的 `<a>`（不运行 JavaScript 时也能用），运行 JavaScript 之后，点击它只请求新页面需要的部分，在当前页面中替换。在生产环境中（`next dev` 中不会），链接进入视口或者鼠标移到它上面时，它还会预先获取目标页面，点击时需要等待的就少了。预先获取多少取决于设置：create-next-app 16.4 生成的 `next.config.ts` 中开启了 `partialPrefetching`（它需要 Cache Components），这时每个路由只预先获取一份“外壳”（App Shell：不依赖具体地址的那部分，同一个路由的所有链接共用一份），参数、查询字符串相关的内容在导航之后流式送来。没有开启它时，静态的页面整个预先获取，动态的页面只获取到第一个 `loading.tsx` 为止。
 
 在 App Router 中写站内链接，用 `<Link>`；只有确实需要整页加载时（例如跳到另一个应用），才用普通的 `<a>` 或 `location`。
 
 ## 动态路由
 
-文件夹名用方括号括起来是动态段，它的值从地址中得到。三种写法和实测的参数（用 Route Handler 把 `params` 原样返回）：
+文件夹名用方括号括起来是动态段，它的值从地址中得到。三种写法和实测的参数（用 Route Handler 把 `params` 原样返回，例如 `export async function GET(_request: Request, ctx: RouteContext<'/api/one/[id]'>) { return Response.json(await ctx.params); }`，`RouteContext` 也是 Next.js 生成的全局类型）：
 
 | 文件夹 | 地址 | `params` |
 | --- | --- | --- |
 | `[id]` | `/api/one/p1` | `{ id: 'p1' }` |
-| `[...slug]`（捕获段） | `/shop/a/b` | `{ slug: ['a', 'b'] }`；`/shop` 是 404 |
+| `[...slug]`（捕获段） | `/api/params/a/b` | `{ slug: ['a', 'b'] }`；没有段时 404（实测 `/shop`） |
 | `[[...slug]]`（可选的捕获段） | `/api/r/a` | `{ slug: ['a'] }` |
 | `[[...slug]]` | `/api/r` | `{}`：`'slug' in params` 是 `false` |
 
@@ -161,7 +165,7 @@ export default async function ProjectPage({ params }: PageProps<'/projects/[id]'
 Error: Route "/docs/[[...slug]]": Next.js encountered uncached or runtime data during prerendering.
 ```
 
-改法有两种：
+构建的错误信息给出了几种改法：
 
 1. **把读取参数的部分放进 `<Suspense>`**：外壳构建时生成，参数相关的部分在请求时生成。路由表中这个页面是 ◐：
 
@@ -179,7 +183,9 @@ Error: Route "/docs/[[...slug]]": Next.js encountered uncached or runtime data d
    ```
 
    页面组件本身不再是 `async`，`params.then(...)` 得到一个 Promise，React 在 `<Suspense>` 中等待它；
-2. **提供 `generateStaticParams`**：构建时用这些参数实际渲染页面，检查通过之后生成静态的 HTML。上面的 `/projects/[id]` 就是这样，它可以在顶层 `await params`。不在列表中的参数在第一次请求时渲染，成功之后保存下来。
+2. **加一个 `loading.tsx`**：它相当于把整个页面包在一个 `<Suspense>` 中，外壳中显示它的内容。这是最省事的写法，但整个页面都要等参数；
+3. **提供 `generateStaticParams`**：构建时用这些参数实际渲染页面，检查通过之后生成静态的 HTML。上面的 `/projects/[id]` 就是这样，它可以在顶层 `await params`。开启 Cache Components 时它至少要返回一个参数，返回空数组构建会失败。不在列表中的参数在第一次请求时渲染，结果保存下来（找不到的结果也一样，所以上面的 `/projects/p4` 第二次是 404）；
+4. **`export const instant = false`**：允许这个页面不生成外壳、等到请求时才整个渲染，路由表中是 ƒ。只在确实没有可以先显示的内容时使用。
 
 ## 一个地址匹配哪个路由
 
@@ -195,11 +201,17 @@ Error: Route "/docs/[[...slug]]": Next.js encountered uncached or runtime data d
 | `/api/r/guides/a/edit` | `/api/r/guides/[id]/edit` | `{ id: 'a' }` |
 | `/api/r/guides/a/b` | `/api/r/[[...slug]]` | `{ slug: ['guides', 'a', 'b'] }` |
 
-规律是：**越具体的越优先**。同一个位置上，固定的段优先于动态段，动态段优先于捕获段，捕获段优先于可选的捕获段；更具体的路由匹配不上时，退回到不那么具体的。`/projects/new` 和 `/projects/[id]` 都能匹配 `/projects/new`，实测显示的是“新建项目”这个页面。这个顺序只取决于路由的形状，与文件的创建顺序无关。
+规律是：**越具体的越优先**，更具体的路由匹配不上时，退回到不那么具体的。同一个位置上的几种段，实测的顺序是：
+
+- 固定的段优先于动态段：`/projects/new` 和 `/projects/[id]` 都能匹配 `/projects/new`，显示的是“新建项目”这个页面；
+- 动态段优先于捕获段：有 `/api/m/[id]` 和 `/api/m/[...rest]` 时，`/api/m/1` 匹配 `[id]`，`/api/m/1/2` 匹配 `[...rest]`；
+- 动态段优先于可选的捕获段：有 `/api/n/[id]` 和 `/api/n/[[...rest]]` 时，`/api/n/1` 匹配 `[id]`，`/api/n` 和 `/api/n/1/2` 匹配 `[[...rest]]`。
+
+同一层不能同时有 `[...slug]` 和 `[[...slug]]`，也不能同时有 `/docs` 和 `/docs/[[...slug]]` 两个页面：它们能匹配的地址重叠了，Next.js 会报错。这个顺序只取决于路由的形状，与文件的创建顺序无关。
 
 地址本身的几个细节：
 
-- 结尾的 `/`：`/projects/` 返回 **308**，`Location: /projects`（Next.js 默认去掉结尾的斜杠）；
+- 结尾的 `/`：`/projects/` 返回 **308**，`Location: /projects`（Next.js 默认去掉结尾的斜杠）；连续的 `/` 也一样：`/projects//p1` 返回 308，`Location: /projects/p1`；
 - 区分大小写：`/Projects` 是 **404**；
 - 无法解码的地址：`/api/one/%E4` 返回了 **500**（`%E4` 是一个不完整的 UTF-8 编码）。
 
@@ -230,7 +242,7 @@ try {
 
 ## 常见错误
 
-- **以为文件夹中有文件就能访问**：只有 `page` 和 `route` 文件让一个地址可以访问，`layout.tsx`、组件、数据文件都不会。
+- **以为文件夹中有文件就能访问**：只有 `page`、`route` 文件和元数据文件让一个地址可以访问，`layout.tsx`、组件、数据文件都不会。
 - **把需要每页重置的状态放在布局中**：布局在导航时保留状态，从一个项目切换到另一个时，布局中的输入框不会清空。
 - **站内链接用 `<a>` 或 `location`**：整个页面重新加载，布局中的状态全部丢失，也没有预先获取。
 - **同步地读取 `params`**：从 Next.js 15 开始它是 Promise，要 `await` 或者在 `<Suspense>` 中 `.then`。

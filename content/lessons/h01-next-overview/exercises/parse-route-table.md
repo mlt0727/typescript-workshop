@@ -4,11 +4,12 @@ title: 读出构建的路由表
 ---
 在 `route-table.ts` 中实现 `parseRouteTable(output)`：从 `next build` 的完整输出中读出 App Router 的路由表。
 
-1. 找到内容正好是 `Route (app)` 的那一行，从下一行开始读，读到第一个空行（或者输出的结尾）为止。没有这一行时返回空数组。换行可能是 `\n` 或 `\r\n`，行尾可能有空格；
-2. 每一行是：可选的缩进（`│ ` 或者两个空格），树形符号（`┌`、`├`、`└` 之一）和一个空格，然后是“一个符号加一个空格”或者“两个空格”，最后是地址；
-3. 有符号的一行是一个路由：`{ path, kind, group }`，`kind` 由符号决定（`SYMBOLS`）。没有缩进的路由 `group` 是 `null`；缩进的路由属于它上面最近的一个组标题，`group` 是那个标题的地址；
-4. 没有符号（两个空格）的一行是组标题，它本身不是一个路由；
-5. 不符合第 2 条格式的行，或者符号不在 `SYMBOLS` 中：抛出 `Error`，错误信息中包含这一行的内容。
+1. 找到第一个以 `Route (app)` 开头的行（表头），从下一行开始读，读到第一个空行（或者输出的结尾）为止。没有这样的行时返回空数组。换行可能是 `\n` 或 `\r\n`，行尾可能有空格；
+2. 表头后面还有别的内容时（例如用了 `'use cache'` 之后会多出 `Revalidate`、`Expire` 两列），这个练习不处理这种格式：抛出 `Error`，错误信息中包含表头这一行；
+3. 每一行是：可选的缩进（`│ ` 或者两个空格），树形符号（`┌`、`├`、`└`、`─` 之一，只有一个路由时是 `─`）和一个空格，然后是“一个符号加一个空格”或者“两个空格”，最后是地址。地址以 `/` 开头，一直到行尾，中间没有空白；
+4. 有符号的一行是一个路由：`{ path, kind, group }`，`kind` 由符号决定（`SYMBOLS`）。没有缩进的路由 `group` 是 `null`；缩进的路由属于它上面最近的一个组标题，`group` 是那个标题的地址；
+5. 没有符号（两个空格）、也没有缩进的一行是组标题，它本身不是一个路由；
+6. 其他的行都抛出 `Error`，错误信息中包含这一行的内容：不符合第 3 条格式的（例如省略了一部分路径时的 `[+3 more paths]`，构建较慢时地址后面的耗时 `(512 ms)`），符号不在 `SYMBOLS` 中的，以及缩进的组标题。
 
 :::files{role=starter}
 ```ts file=route-table.ts
@@ -55,14 +56,17 @@ export type RouteRow = Readonly<{ path: string; kind: RouteKind; group: string |
 /** next build 路由表中的符号 */
 export const SYMBOLS: Readonly<Record<string, RouteKind>> = { '○': 'static', '●': 'ssg', '◐': 'partial', 'ƒ': 'dynamic' };
 
-/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是地址 */
-const LINE = /^(│ | {2})?[┌├└] (?:(\S) | {2})(\S.*)$/;
+/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是以 / 开头、没有空白的地址 */
+const LINE = /^(│ | {2})?[┌├└─] (?:(\S) | {2})(\/\S*)$/;
 
 /** 从 next build 的输出中读出 App Router 的路由表 */
 export function parseRouteTable(output: string): RouteRow[] {
   const lines = output.split(/\r?\n/).map((line) => line.trimEnd());
-  const start = lines.indexOf('Route (app)');
+  const start = lines.findIndex((line) => line.startsWith('Route (app)'));
   if (start === -1) return [];
+  const header = lines[start] ?? '';
+  // 表头后面还有别的列（例如 Revalidate、Expire）：这个格式不认识，不要猜
+  if (header !== 'Route (app)') throw new Error(`无法解析：${header}`);
   const rows: RouteRow[] = [];
   let group: string | null = null;
   for (const line of lines.slice(start + 1)) {
@@ -71,7 +75,8 @@ export function parseRouteTable(output: string): RouteRow[] {
     if (match === null) throw new Error(`无法解析：${line}`);
     const [, indent, symbol, path = ''] = match;
     if (symbol === undefined) {
-      // 没有符号的一行是一组的标题，下面缩进的几行属于它
+      // 没有符号的一行是一组的标题，下面缩进的几行属于它；组标题本身不会缩进
+      if (indent !== undefined) throw new Error(`无法解析：${line}`);
       group = path;
       continue;
     }
@@ -183,16 +188,38 @@ describe('parseRouteTable', () => {
     expect(parseRouteTable('Error: Route "/docs/[[...slug]]": Next.js encountered uncached or runtime data during prerendering.')).toEqual([]);
   });
 
+  test('只有一个路由时，树形符号是 ─', () => {
+    expect(parseRouteTable('Route (app)\n─ ○ /\n')).toEqual([{ path: '/', kind: 'static', group: null }]);
+  });
+
+  test('只读 App Router 的那一张表，后面的 Route (pages) 不读', () => {
+    const output = ['Route (app)', '┌ ○ /', '└ ○ /_not-found', '', 'Route (pages)', '┌ ○ /legacy', '└ ○ /404', ''].join('\n');
+    expect(parseRouteTable(output)).toEqual([
+      { path: '/', kind: 'static', group: null },
+      { path: '/_not-found', kind: 'static', group: null },
+    ]);
+    expect(parseRouteTable('Route (pages)\n┌ ○ /legacy\n└ ○ /404\n')).toEqual([]);
+  });
+
   test('认不出来的一行：抛出错误，错误信息中包含这一行', () => {
     expect(() => parseRouteTable('Route (app)\n├ ? /x\n')).toThrow('├ ? /x');
     expect(() => parseRouteTable('Route (app)\n/x\n')).toThrow('/x');
+    expect(() => parseRouteTable('Route (app)\n├ ○  /x\n')).toThrow('├ ○  /x');
+    expect(() => parseRouteTable('Route (app)\n├   /a/[id]\n│ ├   /a/x\n')).toThrow('│ ├   /a/x');
+  });
+
+  test('不认识的格式也要报错：别的列、省略的路径、耗时', () => {
+    const withColumns = ['Route (app)           Revalidate  Expire', '┌ ○ /', '├ ○ /products                15m      1y', ''].join('\n');
+    expect(() => parseRouteTable(withColumns)).toThrow('Revalidate');
+    expect(() => parseRouteTable('Route (app)\n├   /p/[id]\n│ ├ ○ /p/1\n│ └ ○ [+3 more paths]\n')).toThrow('[+3 more paths]');
+    expect(() => parseRouteTable('Route (app)\n└ ○ /slow (512 ms)\n')).toThrow('/slow (512 ms)');
   });
 });
 ```
 :::
 
 :::hint{level=1}
-`output.split(/\r?\n/)` 分成行，再 `trimEnd()`；`lines.indexOf('Route (app)')` 找到起点。每一行用正文示例中的正则匹配，三个分组分别是缩进、符号和地址；符号是 `undefined` 时，这一行是组标题。
+`output.split(/\r?\n/)` 分成行，再 `trimEnd()`；`lines.findIndex((line) => line.startsWith('Route (app)'))` 找到表头，它不正好是 `'Route (app)'` 时报错。每一行用一个正则匹配，三个分组分别是缩进、符号和地址（正文示例中的正则还要改两处：树形符号加上 `─`，地址改成 `\/\S*`）；符号是 `undefined` 时，这一行是组标题。
 :::
 
 :::hint{level=2}
@@ -201,6 +228,8 @@ describe('parseRouteTable', () => {
 
 :::explanation
 构建输出是给人看的，不是给程序读的：树形的线条、对齐用的空格、符号都只是为了好看。把它变成结构化的数据，就要先把格式描述清楚，再一行一行地按这个格式读。格式之外的行要报错，而不是悄悄跳过：Next.js 换了一种输出的格式，解析的程序应该大声地失败，而不是返回一个看起来正常、其实少了几行的结果。
+
+这张表实际上还有几种这个练习没有处理的样子（都来自 Next.js 16.4.2 打印路由表的代码和随包的文档）：用了缓存的路由后面有 `Revalidate`、`Expire` 两列；生成的路径太多时只列出几条，最后一行是 `[+N more paths]`；预渲染较慢的页面后面有耗时。地址必须以 `/` 开头、不能有空白，这两条规则让这些行都会报错，而不是被读成一个奇怪的地址。
 
 组的处理是一个小的状态机：组标题打开一个组，后面缩进的行属于它，下一个没有缩进的行结束它。最后一组的子行前面是两个空格而不是 `│ `，因为下面已经没有别的行，不需要竖线了。
 
@@ -221,28 +250,33 @@ export const SYMBOLS: Readonly<Record<string, RouteKind>> = { '○': 'static', '
 
 const kindOf = (symbol: string): RouteKind | undefined => (Object.hasOwn(SYMBOLS, symbol) ? SYMBOLS[symbol] : undefined);
 
-/** 不用正则，按位置读：缩进 2 个字符，树形符号 2 个字符，符号 2 个字符 */
+/** 不用正则，按位置读：缩进 2 个字符，树形符号 2 个字符，符号 2 个字符，剩下的是地址 */
 export function parseRouteTable(output: string): RouteRow[] {
   const all = output.split('\n').map((line) => line.replace(/\s+$/, ''));
-  const from = all.indexOf('Route (app)');
+  const from = all.findIndex((line) => line.startsWith('Route (app)'));
   if (from < 0) return [];
+  if (all[from] !== 'Route (app)') throw new Error(`无法解析：${all[from] ?? ''}`);
   const end = all.indexOf('', from);
   const rows: RouteRow[] = [];
   let group: string | null = null;
   for (const line of all.slice(from + 1, end === -1 ? undefined : end)) {
     const nested = line.startsWith('│ ') || line.startsWith('  ');
     const rest = nested ? line.slice(2) : line;
-    if (!'┌├└'.includes(rest.charAt(0)) || rest.charAt(1) !== ' ') throw new Error(`无法解析：${line}`);
-    const symbol = rest.charAt(2);
     const path = rest.slice(4);
-    if (symbol === ' ' && rest.charAt(3) === ' ' && !nested) {
-      group = path;
-    } else {
-      const kind = kindOf(symbol);
-      if (kind === undefined || rest.charAt(3) !== ' ' || path === '') throw new Error(`无法解析：${line}`);
-      if (!nested) group = null;
-      rows.push({ path, kind, group });
+    const validPath = path.startsWith('/') && !/\s/.test(path);
+    if (!'┌├└─'.includes(rest.charAt(0)) || rest.charAt(1) !== ' ' || rest.charAt(3) !== ' ' || !validPath) {
+      throw new Error(`无法解析：${line}`);
     }
+    const symbol = rest.charAt(2);
+    if (symbol === ' ') {
+      if (nested) throw new Error(`无法解析：${line}`);
+      group = path;
+      continue;
+    }
+    const kind = kindOf(symbol);
+    if (kind === undefined) throw new Error(`无法解析：${line}`);
+    if (!nested) group = null;
+    rows.push({ path, kind, group });
   }
   return rows;
 }
@@ -276,14 +310,17 @@ export type RouteRow = Readonly<{ path: string; kind: RouteKind; group: string |
 /** next build 路由表中的符号 */
 export const SYMBOLS: Readonly<Record<string, RouteKind>> = { '○': 'static', '●': 'ssg', '◐': 'partial', 'ƒ': 'dynamic' };
 
-/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是地址 */
-const LINE = /^(│ | {2})?[┌├└] (?:(\S) | {2})(\S.*)$/;
+/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是以 / 开头、没有空白的地址 */
+const LINE = /^(│ | {2})?[┌├└─] (?:(\S) | {2})(\/\S*)$/;
 
 /** 从 next build 的输出中读出 App Router 的路由表 */
 export function parseRouteTable(output: string): RouteRow[] {
   const lines = output.split(/\r?\n/).map((line) => line.trimEnd());
-  const start = lines.indexOf('Route (app)');
+  const start = lines.findIndex((line) => line.startsWith('Route (app)'));
   if (start === -1) return [];
+  const header = lines[start] ?? '';
+  // 表头后面还有别的列（例如 Revalidate、Expire）：这个格式不认识，不要猜
+  if (header !== 'Route (app)') throw new Error(`无法解析：${header}`);
   const rows: RouteRow[] = [];
   let group: string | null = null;
   for (const line of lines.slice(start + 1)) {
@@ -292,7 +329,8 @@ export function parseRouteTable(output: string): RouteRow[] {
     if (match === null) throw new Error(`无法解析：${line}`);
     const [, indent, symbol, path = ''] = match;
     if (symbol === undefined) {
-      // 没有符号的一行是一组的标题，下面缩进的几行属于它
+      // 没有符号的一行是一组的标题，下面缩进的几行属于它；组标题本身不会缩进
+      if (indent !== undefined) throw new Error(`无法解析：${line}`);
       group = path;
       continue;
     }
@@ -333,14 +371,17 @@ export type RouteRow = Readonly<{ path: string; kind: RouteKind; group: string |
 /** next build 路由表中的符号 */
 export const SYMBOLS: Readonly<Record<string, RouteKind>> = { '○': 'static', '●': 'ssg', '◐': 'partial', 'ƒ': 'dynamic' };
 
-/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是地址 */
-const LINE = /^(│ )?[┌├└] (?:(\S) | {2})(\S.*)$/;
+/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是以 / 开头、没有空白的地址 */
+const LINE = /^(│ )?[┌├└─] (?:(\S) | {2})(\/\S*)$/;
 
 /** 从 next build 的输出中读出 App Router 的路由表 */
 export function parseRouteTable(output: string): RouteRow[] {
   const lines = output.split(/\r?\n/).map((line) => line.trimEnd());
-  const start = lines.indexOf('Route (app)');
+  const start = lines.findIndex((line) => line.startsWith('Route (app)'));
   if (start === -1) return [];
+  const header = lines[start] ?? '';
+  // 表头后面还有别的列（例如 Revalidate、Expire）：这个格式不认识，不要猜
+  if (header !== 'Route (app)') throw new Error(`无法解析：${header}`);
   const rows: RouteRow[] = [];
   let group: string | null = null;
   for (const line of lines.slice(start + 1)) {
@@ -349,7 +390,8 @@ export function parseRouteTable(output: string): RouteRow[] {
     if (match === null) throw new Error(`无法解析：${line}`);
     const [, indent, symbol, path = ''] = match;
     if (symbol === undefined) {
-      // 没有符号的一行是一组的标题，下面缩进的几行属于它
+      // 没有符号的一行是一组的标题，下面缩进的几行属于它；组标题本身不会缩进
+      if (indent !== undefined) throw new Error(`无法解析：${line}`);
       group = path;
       continue;
     }
@@ -390,14 +432,17 @@ export type RouteRow = Readonly<{ path: string; kind: RouteKind; group: string |
 /** next build 路由表中的符号 */
 export const SYMBOLS: Readonly<Record<string, RouteKind>> = { '○': 'static', '●': 'ssg', '◐': 'partial', 'ƒ': 'dynamic' };
 
-/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是地址 */
-const LINE = /^(│ | {2})?[┌├└] (?:(\S) | {2})(\S.*)$/;
+/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是以 / 开头、没有空白的地址 */
+const LINE = /^(│ | {2})?[┌├└─] (?:(\S) | {2})(\/\S*)$/;
 
 /** 从 next build 的输出中读出 App Router 的路由表 */
 export function parseRouteTable(output: string): RouteRow[] {
   const lines = output.split(/\r?\n/).map((line) => line.trimEnd());
-  const start = lines.indexOf('Route (app)');
+  const start = lines.findIndex((line) => line.startsWith('Route (app)'));
   if (start === -1) return [];
+  const header = lines[start] ?? '';
+  // 表头后面还有别的列（例如 Revalidate、Expire）：这个格式不认识，不要猜
+  if (header !== 'Route (app)') return [];
   const rows: RouteRow[] = [];
   let group: string | null = null;
   for (const line of lines.slice(start + 1)) {
@@ -406,7 +451,8 @@ export function parseRouteTable(output: string): RouteRow[] {
     if (match === null) continue;
     const [, indent, symbol, path = ''] = match;
     if (symbol === undefined) {
-      // 没有符号的一行是一组的标题，下面缩进的几行属于它
+      // 没有符号的一行是一组的标题，下面缩进的几行属于它；组标题本身不会缩进
+      if (indent !== undefined) throw new Error(`无法解析：${line}`);
       group = path;
       continue;
     }
@@ -447,14 +493,17 @@ export type RouteRow = Readonly<{ path: string; kind: RouteKind; group: string |
 /** next build 路由表中的符号 */
 export const SYMBOLS: Readonly<Record<string, RouteKind>> = { '○': 'static', '●': 'ssg', '◐': 'partial', 'ƒ': 'dynamic' };
 
-/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是地址 */
-const LINE = /^(│ | {2})?[┌├└] (?:(\S) | {2})(\S.*)$/;
+/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是以 / 开头、没有空白的地址 */
+const LINE = /^(│ | {2})?[┌├└─] (?:(\S) | {2})(\/\S*)$/;
 
 /** 从 next build 的输出中读出 App Router 的路由表 */
 export function parseRouteTable(output: string): RouteRow[] {
   const lines = output.split('\n');
-  const start = lines.indexOf('Route (app)');
+  const start = lines.findIndex((line) => line.startsWith('Route (app)'));
   if (start === -1) return [];
+  const header = lines[start] ?? '';
+  // 表头后面还有别的列（例如 Revalidate、Expire）：这个格式不认识，不要猜
+  if (header !== 'Route (app)') throw new Error(`无法解析：${header}`);
   const rows: RouteRow[] = [];
   let group: string | null = null;
   for (const line of lines.slice(start + 1)) {
@@ -463,7 +512,69 @@ export function parseRouteTable(output: string): RouteRow[] {
     if (match === null) throw new Error(`无法解析：${line}`);
     const [, indent, symbol, path = ''] = match;
     if (symbol === undefined) {
-      // 没有符号的一行是一组的标题，下面缩进的几行属于它
+      // 没有符号的一行是一组的标题，下面缩进的几行属于它；组标题本身不会缩进
+      if (indent !== undefined) throw new Error(`无法解析：${line}`);
+      group = path;
+      continue;
+    }
+    const kind = SYMBOLS[symbol];
+    if (kind === undefined) throw new Error(`无法解析：${line}`);
+    if (indent === undefined) group = null;
+    rows.push({ path, kind, group });
+  }
+  return rows;
+}
+```
+```ts file=main.ts
+import { parseRouteTable } from './route-table';
+
+const output = `✓ Generating static pages using 12 workers (12/12)
+
+Route (app)
+┌ ○ /
+├ ƒ /api/echo
+├   /projects/[id]
+│ ├ ◐ /projects/[id]
+│ └ ○ /projects/p1
+└ ◐ /time
+
+○  (Static)  prerendered as static content`;
+
+console.log(parseRouteTable(output));
+```
+:::
+
+:::variant{kind=wrong name=any-path fails=tests reason="地址可以是任何内容：[+3 more paths] 和带耗时的行被读成了奇怪的地址"}
+```ts file=route-table.ts
+export type RouteKind = 'static' | 'ssg' | 'partial' | 'dynamic';
+
+/** 路由表中的一行：path 是地址，group 是它所在的那一组（动态路由的模式），不在组中时是 null */
+export type RouteRow = Readonly<{ path: string; kind: RouteKind; group: string | null }>;
+
+/** next build 路由表中的符号 */
+export const SYMBOLS: Readonly<Record<string, RouteKind>> = { '○': 'static', '●': 'ssg', '◐': 'partial', 'ƒ': 'dynamic' };
+
+/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是以 / 开头、没有空白的地址 */
+const LINE = /^(│ | {2})?[┌├└─] (?:(\S) | {2})(\S.*)$/;
+
+/** 从 next build 的输出中读出 App Router 的路由表 */
+export function parseRouteTable(output: string): RouteRow[] {
+  const lines = output.split(/\r?\n/).map((line) => line.trimEnd());
+  const start = lines.findIndex((line) => line.startsWith('Route (app)'));
+  if (start === -1) return [];
+  const header = lines[start] ?? '';
+  // 表头后面还有别的列（例如 Revalidate、Expire）：这个格式不认识，不要猜
+  if (header !== 'Route (app)') throw new Error(`无法解析：${header}`);
+  const rows: RouteRow[] = [];
+  let group: string | null = null;
+  for (const line of lines.slice(start + 1)) {
+    if (line === '') break;
+    const match = LINE.exec(line);
+    if (match === null) throw new Error(`无法解析：${line}`);
+    const [, indent, symbol, path = ''] = match;
+    if (symbol === undefined) {
+      // 没有符号的一行是一组的标题，下面缩进的几行属于它；组标题本身不会缩进
+      if (indent !== undefined) throw new Error(`无法解析：${line}`);
       group = path;
       continue;
     }

@@ -2,14 +2,14 @@
 kind: challenge
 title: 比较两次构建
 ---
-在 CI 中，每次构建之后可以把路由表和上一次的比较：一个页面从 ○ 变成了 ƒ，往往说明有人不小心让它每次请求都要在服务器上渲染。在 `compare.ts` 中实现（`route-table.ts` 是上一个练习的答案，只读）：
+在 CI 中，每次构建之后可以把路由表和上一次的比较：一个页面从 ○ 变成了 ◐、一个 Route Handler 从 ○ 变成了 ƒ，往往说明有人让它（或者它的一部分）每次请求都要在服务器上运行。在 `compare.ts` 中实现（`route-table.ts` 是上一个练习的答案，只读）：
 
 1. `compareBuilds(before, after)`：参数是两次 `next build` 的完整输出。用 `parseRouteTable` 读出路由表，按地址比较：
    - 只在 `after` 中有：`{ type: 'added', path, kind }`；
    - 只在 `before` 中有：`{ type: 'removed', path, kind }`；
    - 两边都有，类型不同：`{ type: 'changed', path, from, to, worse }`。`worse` 表示变得更“动态”：按 ○ 和 ● 为 0、◐ 为 1、ƒ 为 2 排序，`to` 比 `from` 大时为 `true`；
    - 类型相同：不是变化，不出现；
-   - 结果按地址排序（直接比较字符串）；
+   - 结果按地址排序：直接用 `<`、`>` 比较字符串（按 UTF-16 码元比较，大写字母排在小写字母前面），不用 `localeCompare`；
 2. `regressions(changes)`：需要人看一眼的变化，即消失的页面和 `worse` 为 `true` 的变化，保持原来的顺序。
 
 :::files{role=starter}
@@ -45,14 +45,17 @@ export type RouteRow = Readonly<{ path: string; kind: RouteKind; group: string |
 /** next build 路由表中的符号 */
 export const SYMBOLS: Readonly<Record<string, RouteKind>> = { '○': 'static', '●': 'ssg', '◐': 'partial', 'ƒ': 'dynamic' };
 
-/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是地址 */
-const LINE = /^(│ | {2})?[┌├└] (?:(\S) | {2})(\S.*)$/;
+/** 一行：可选的缩进（“│ ”或两个空格），树形符号和一个空格，然后是“符号 + 空格”或者两个空格，最后是以 / 开头、没有空白的地址 */
+const LINE = /^(│ | {2})?[┌├└─] (?:(\S) | {2})(\/\S*)$/;
 
 /** 从 next build 的输出中读出 App Router 的路由表 */
 export function parseRouteTable(output: string): RouteRow[] {
   const lines = output.split(/\r?\n/).map((line) => line.trimEnd());
-  const start = lines.indexOf('Route (app)');
+  const start = lines.findIndex((line) => line.startsWith('Route (app)'));
   if (start === -1) return [];
+  const header = lines[start] ?? '';
+  // 表头后面还有别的列（例如 Revalidate、Expire）：这个格式不认识，不要猜
+  if (header !== 'Route (app)') throw new Error(`无法解析：${header}`);
   const rows: RouteRow[] = [];
   let group: string | null = null;
   for (const line of lines.slice(start + 1)) {
@@ -61,7 +64,8 @@ export function parseRouteTable(output: string): RouteRow[] {
     if (match === null) throw new Error(`无法解析：${line}`);
     const [, indent, symbol, path = ''] = match;
     if (symbol === undefined) {
-      // 没有符号的一行是一组的标题，下面缩进的几行属于它
+      // 没有符号的一行是一组的标题，下面缩进的几行属于它；组标题本身不会缩进
+      if (indent !== undefined) throw new Error(`无法解析：${line}`);
       group = path;
       continue;
     }
@@ -142,10 +146,18 @@ describe('compareBuilds', () => {
   });
 
   test('变得更静态不算变差；○ 和 ● 一样静态', () => {
-    expect(compareBuilds(table('├ ƒ /a', '├ ◐ /b', '└ ● /c'), table('├ ◐ /a', '├ ○ /b', '└ ○ /c'))).toEqual([
+    expect(compareBuilds(table('├ ƒ /a', '├ ◐ /b', '├ ● /c', '└ ○ /d'), table('├ ◐ /a', '├ ○ /b', '├ ○ /c', '└ ● /d'))).toEqual([
       { type: 'changed', path: '/a', from: 'dynamic', to: 'partial', worse: false },
       { type: 'changed', path: '/b', from: 'partial', to: 'static', worse: false },
       { type: 'changed', path: '/c', from: 'ssg', to: 'static', worse: false },
+      { type: 'changed', path: '/d', from: 'static', to: 'ssg', worse: false },
+    ]);
+  });
+
+  test('直接比较字符串排序：大写字母排在小写字母前面', () => {
+    expect(compareBuilds(table('└ ○ /'), table('├ ○ /apple', '├ ○ /Zebra', '└ ○ /'))).toEqual([
+      { type: 'added', path: '/Zebra', kind: 'static' },
+      { type: 'added', path: '/apple', kind: 'static' },
     ]);
   });
 
@@ -326,6 +338,76 @@ export function compareBuilds(before: string, after: string): Change[] {
 /** 需要人看一眼的变化：页面消失了，或者变得更“动态”了 */
 export function regressions(changes: readonly Change[]): Change[] {
   return changes.filter((c) => c.type !== 'changed' || c.worse);
+}
+```
+:::
+
+:::variant{kind=wrong name=ssg-ranked-apart fails=tests reason="把 ○ 和 ● 分成了两级：从 ○ 变成 ● 被报告成变差"}
+```ts file=compare.ts
+import { parseRouteTable, type RouteKind } from './route-table';
+
+export type Change =
+  | { type: 'added'; path: string; kind: RouteKind }
+  | { type: 'removed'; path: string; kind: RouteKind }
+  | { type: 'changed'; path: string; from: RouteKind; to: RouteKind; worse: boolean };
+
+/** 越大越“动态”：静态的页面可以直接从 CDN 返回，动态的页面每次都要在服务器上渲染 */
+const RANK: Record<RouteKind, number> = { static: 0, ssg: 1, partial: 2, dynamic: 3 };
+
+/** 比较两次构建的路由表，按地址排序返回所有的变化 */
+export function compareBuilds(before: string, after: string): Change[] {
+  const old = new Map(parseRouteTable(before).map((row) => [row.path, row.kind]));
+  const now = new Map(parseRouteTable(after).map((row) => [row.path, row.kind]));
+  const changes: Change[] = [];
+  for (const [path, kind] of now) {
+    const from = old.get(path);
+    if (from === undefined) changes.push({ type: 'added', path, kind });
+    else if (from !== kind) changes.push({ type: 'changed', path, from, to: kind, worse: RANK[kind] > RANK[from] });
+  }
+  for (const [path, kind] of old) {
+    if (!now.has(path)) changes.push({ type: 'removed', path, kind });
+  }
+  return changes.toSorted((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
+}
+
+/** 需要人看一眼的变化：页面消失了，或者变得更“动态”了 */
+export function regressions(changes: readonly Change[]): Change[] {
+  return changes.filter((c) => c.type === 'removed' || (c.type === 'changed' && c.worse));
+}
+```
+:::
+
+:::variant{kind=wrong name=locale-sort fails=tests reason="用 localeCompare 排序：顺序和直接比较字符串不同，/apple 排到了 /Zebra 前面"}
+```ts file=compare.ts
+import { parseRouteTable, type RouteKind } from './route-table';
+
+export type Change =
+  | { type: 'added'; path: string; kind: RouteKind }
+  | { type: 'removed'; path: string; kind: RouteKind }
+  | { type: 'changed'; path: string; from: RouteKind; to: RouteKind; worse: boolean };
+
+/** 越大越“动态”：静态的页面可以直接从 CDN 返回，动态的页面每次都要在服务器上渲染 */
+const RANK: Record<RouteKind, number> = { static: 0, ssg: 0, partial: 1, dynamic: 2 };
+
+/** 比较两次构建的路由表，按地址排序返回所有的变化 */
+export function compareBuilds(before: string, after: string): Change[] {
+  const old = new Map(parseRouteTable(before).map((row) => [row.path, row.kind]));
+  const now = new Map(parseRouteTable(after).map((row) => [row.path, row.kind]));
+  const changes: Change[] = [];
+  for (const [path, kind] of now) {
+    const from = old.get(path);
+    if (from === undefined) changes.push({ type: 'added', path, kind });
+    else if (from !== kind) changes.push({ type: 'changed', path, from, to: kind, worse: RANK[kind] > RANK[from] });
+  }
+  for (const [path, kind] of old) {
+    if (!now.has(path)) changes.push({ type: 'removed', path, kind });
+  }
+  return changes.toSorted((a, b) => a.path.localeCompare(b.path));
+}
+
+/** 需要人看一眼的变化：页面消失了，或者变得更“动态”了 */
+export function regressions(changes: readonly Change[]): Change[] {
+  return changes.filter((c) => c.type === 'removed' || (c.type === 'changed' && c.worse));
 }
 ```
 :::

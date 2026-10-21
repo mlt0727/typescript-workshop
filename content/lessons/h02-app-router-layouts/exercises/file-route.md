@@ -10,6 +10,8 @@ title: 文件对应的路由
 4. 路由组（名字用圆括号括起来的文件夹，例如 `(marketing)`）不出现在地址中；
 5. 路径中有任何一个私有文件夹（名字以 `_` 开头）时，这个文件不产生路由。
 
+这个练习不考虑元数据文件（`favicon.ico`、`icon.png`、`sitemap.ts` 等，它们也会产生路由，见正文）、并行路由的 `@slot` 文件夹和拦截路由的 `(.)` 文件夹。
+
 :::files{role=starter}
 ```ts file=file-route.ts
 export type AppRoute = Readonly<{ pattern: string; kind: 'page' | 'route' }>;
@@ -122,6 +124,10 @@ describe('routeFromFile', () => {
     expect(routeFromFile('app/blog/_drafts/hello/page.tsx')).toBeNull();
   });
 
+  test('只有以 _ 开头的文件夹才是私有的', () => {
+    expect(routeFromFile('app/user_profile/page.tsx')).toEqual({ pattern: '/user_profile', kind: 'page' });
+  });
+
   test('其他文件不产生路由', () => {
     for (const file of ['app/layout.tsx', 'app/projects/loading.tsx', 'app/not-found.tsx', 'app/globals.css', 'app/projects/pages.tsx', 'app/projects/template.tsx', 'app/projects/page.module.css', 'app/api/route.test.ts']) {
       expect(routeFromFile(file), file).toBeNull();
@@ -213,6 +219,32 @@ export function routeFromFile(file: string): AppRoute | null {
   for (const folder of parts.slice(1, -1)) {
     // 私有文件夹（以 _ 开头）中的文件都不是路由
     if (folder.startsWith('_')) continue;
+    // 路由组 (name) 只用来组织文件，不出现在地址中
+    if (folder.startsWith('(') && folder.endsWith(')')) continue;
+    segments.push(folder);
+  }
+  return { pattern: `/${segments.join('/')}`, kind: match[1] === 'page' ? 'page' : 'route' };
+}
+```
+:::
+
+:::variant{kind=wrong name=underscore-anywhere fails=tests reason="名字中有 _ 就当作私有文件夹：user_profile 是一个普通的文件夹"}
+```ts file=file-route.ts
+export type AppRoute = Readonly<{ pattern: string; kind: 'page' | 'route' }>;
+
+/** 默认的扩展名：tsx、ts、jsx、js */
+const FILE = /^(page|route)\.(tsx|ts|jsx|js)$/;
+
+/** app/ 中的一个文件对应的路由；不产生路由的文件返回 null */
+export function routeFromFile(file: string): AppRoute | null {
+  const parts = file.split('/');
+  if (parts[0] !== 'app' || parts.length < 2) return null;
+  const match = FILE.exec(parts.at(-1) ?? '');
+  if (match === null) return null;
+  const segments: string[] = [];
+  for (const folder of parts.slice(1, -1)) {
+    // 私有文件夹（以 _ 开头）中的文件都不是路由
+    if (folder.includes('_')) return null;
     // 路由组 (name) 只用来组织文件，不出现在地址中
     if (folder.startsWith('(') && folder.endsWith(')')) continue;
     segments.push(folder);

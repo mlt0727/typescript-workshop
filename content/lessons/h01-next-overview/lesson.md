@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 45
-review: ai-draft
+review: self-reviewed
 problem: 到目前为止，我们写的都是单页应用：服务器只送来一个几乎是空的 index.html 和一些 JavaScript，页面在浏览器中生成，数据在浏览器中请求。这种方式简单、部署便宜，但也有它做不到或者做不好的事：首屏要等 JavaScript 下载、运行完才有内容，密钥不能放在浏览器中，数据要先下载页面再请求。Next.js 是 React 官方推荐的框架之一，它让同一个 React 应用的一部分在服务器上运行：有的页面在构建时就生成好，有的在请求到达时生成，有的先送出一个静态的外壳再把其余的内容流式送来。这一课先看清楚它解决了什么问题，在自己的电脑上创建并构建一个 Next.js 16 的项目，读懂构建输出中的路由表。
 objectives:
   - 说出单页应用在首屏、数据请求和密钥上的局限，以及服务端渲染怎样解决它们
@@ -13,6 +13,7 @@ references:
   - title: Installation — Next.js（16.4，随 next 包附带的文档）
     url: https://nextjs.org/docs/app/getting-started/installation
     checked: 2026-10-21
+    note: 以 Next.js 16.4.2（React 19.3.0）为准；课中的实测项目由 create-next-app 16.4.2 生成
   - title: Building your application（构建输出中的符号）— Next.js
     url: https://nextjs.org/docs/app/guides/building
     checked: 2026-10-21
@@ -82,7 +83,7 @@ npx create-next-app@16.4.2 demo --ts --app --eslint --no-tailwind --no-src-dir -
 
 生成的项目中：
 
-- `package.json` 中是 `next` 16.4.2、`react` 和 `react-dom` 19.3.0，开发依赖中的 TypeScript 是 `^5`（安装的是 5.9.3）；
+- `package.json` 中是 `next` 16.4.2、`react` 和 `react-dom` 19.3.0，开发依赖中的 TypeScript 是 `^5`（安装的是 5.9.3）。这个网站的编辑器使用的是 TypeScript 6.0.3，H 阶段的代码在两个版本中都一样；
 - `next.config.ts` 中已经写好了 `cacheComponents: true` 和 `partialPrefetching: true`；
 - `app/` 中有 `layout.tsx`（所有页面共用的外框）、`page.tsx`（首页）和 CSS；
 - 还有一个 `AGENTS.md`，提醒 AI 编程助手先读 `node_modules/next/dist/docs/` 中随版本附带的文档：这个版本的 API 可能和它们“记得”的不一样。这句话对人也适用，这一课的引用就来自那里。
@@ -125,13 +126,13 @@ Route (app)
 ```
 
 - **○ 静态**：整个页面构建时就生成好了。`/about`、`/projects` 只显示代码中的数据；`/api/health` 是一个不读取请求的 Route Handler，它的响应也在构建时生成；
-- **◐ 部分预渲染**：构建时生成了静态的外壳，其余的部分在请求到达时生成。`/time` 显示当前的时间，这部分包在 `<Suspense>` 中，必须在请求时才能算出来；
+- **◐ 部分预渲染**：构建时生成了静态的外壳，其余的部分在请求到达时生成。`/time` 显示当前的时间：显示时间的组件先 `await connection()`（来自 `next/server`，表示下面的内容要等到请求到达时才能生成），再读 `new Date()`，这个组件包在 `<Suspense>` 中；
 - **ƒ 动态**：完全在请求时生成。`/api/echo` 读取了请求中的查询参数，每个请求都不一样；
 - **一组**：`/projects/[id]` 这样的动态路由下面列出了构建时已经生成的几个地址（`/projects/p1`、`/projects/p2`，来自 `generateStaticParams`，h02），以及其他地址的“后备”（`◐ /projects/[id]`）。
 
 没有开启 Cache Components 的项目中还会看到 `●`（SSG：从 `generateStaticParams` 生成的静态页面）。
 
-这张表值得在每次构建时看一眼：一个本来是 ○ 的页面变成了 ◐ 或 ƒ，往往是因为有人在里面读了 cookie、请求头或者当前的时间，每个请求都要在服务器上重新渲染，变慢了，也更贵了。
+这张表值得在每次构建时看一眼：一个本来是 ○ 的页面变成了 ◐，往往是因为有人在里面读了 cookie、请求头这样的请求时的数据，`<Suspense>` 中的那一部分每个请求都要在服务器上重新渲染；一个 Route Handler 从 ○ 变成了 ƒ，说明它开始读取请求了。每个请求都要做的工作多了，响应就慢了，也更贵了。开启 Cache Components 时，页面通常要写了 `export const instant = false`（允许整个页面等到请求时才渲染）才会是 ƒ。
 
 开启 Cache Components 之后，构建还会**检查**每个页面能不能生成静态的外壳。在实测的项目中，一个页面在 `<Suspense>` 之外读取了路由参数，构建直接失败了：
 
@@ -170,7 +171,7 @@ console.log([...'├○◐ƒ│'].map((c) => `${c} U+${c.codePointAt(0)?.toStrin
 - **以为服务端渲染之后就不需要 JavaScript 了**：HTML 让内容先显示出来，交互仍然要等 React 在浏览器中接管（水合）。
 - **以为 Next.js 的页面都在服务器上运行**：客户端组件的代码仍然会发给浏览器并在那里运行，服务端组件才只在服务器上运行（h03）。
 - **凭记忆写 Next.js 的代码**：Next.js 的大版本之间变化很大（例如 16 把 Middleware 改名为 Proxy，新项目默认开启 Cache Components）。以项目中安装的版本附带的文档为准。
-- **不看构建输出**：一个页面悄悄从 ○ 变成了 ƒ，只有路由表会告诉你。
+- **不看构建输出**：一个页面悄悄从 ○ 变成了 ◐、一个接口从 ○ 变成了 ƒ，只有路由表会告诉你。
 
 ## 下一步
 
