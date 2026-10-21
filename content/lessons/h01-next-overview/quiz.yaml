@@ -1,0 +1,44 @@
+- id: spa-first-paint
+  type: single
+  prompt: 一个单页应用的 index.html 中只有一个空的 `<div id="root"></div>`。在网络很慢的手机上，用户最先看到的是什么？
+  options:
+    - text: 空白的页面，直到 JavaScript 下载并运行完、再请求到数据之后，内容才出现
+      correct: true
+      explain: 服务端渲染让服务器直接送来有内容的 HTML，首屏不必等这些步骤。
+    - text: 页面的内容，只是暂时不能交互
+      explain: 那是服务端渲染的效果；单页应用的 HTML 中根本没有内容。
+    - text: 浏览器自动显示一个加载动画
+      explain: 浏览器不知道页面在等什么，只会显示 HTML 中已有的东西。
+- id: symbols
+  type: single
+  prompt: 构建输出中 `◐ /time` 的 ◐ 表示什么？
+  options:
+    - text: 构建时生成了静态的外壳，其余的部分（例如当前时间）在请求到达时生成，并在同一个响应中流式送出
+      correct: true
+      explain: 开启 Cache Components 之后，App Router 的页面都按这种方式渲染；◐ 说明这个页面有一部分在请求时才能算出来。
+    - text: 这个页面构建失败了一半
+      explain: 构建失败会直接报错；◐ 是正常的结果。
+    - text: 这个页面只在浏览器中渲染
+      explain: 静态的外壳和流式的内容都是服务器生成的 HTML。
+- id: route-handler
+  type: single
+  prompt: "两个 Route Handler：`/api/health` 总是返回 `{ ok: true }`，`/api/echo` 读取请求中的查询参数。构建之后它们分别是什么？"
+  options:
+    - text: "`/api/health` 是 ○（构建时就生成了响应），`/api/echo` 是 ƒ（每个请求都要运行）"
+      correct: true
+      explain: 实测如此：不依赖请求的响应可以在构建时生成。
+    - text: 两个都是 ƒ，Route Handler 总是在请求时运行
+      explain: 不读取请求、也没有其他动态数据的 GET 处理函数，构建时就可以运行一次。
+    - text: 两个都是 ○
+      explain: 读取请求的处理函数，结果取决于每个请求，只能在请求时运行。
+- id: docs
+  type: single
+  prompt: 想确认 Next.js 16 中某个 API 的用法，最可靠的依据是什么？
+  options:
+    - text: 项目中安装的 next 版本附带的文档（node_modules/next/dist/docs/），或者对应版本的官方文档
+      correct: true
+      explain: Next.js 的大版本之间变化很大；文档和安装的版本一致，才不会用到已经改名或者废弃的 API。
+    - text: 网上搜到的最早的教程
+      explain: 越早的教程越可能已经过时，例如 Middleware 在 16 中已经改名为 Proxy。
+    - text: 记得的用法
+      explain: 记忆中的用法可能来自别的版本。

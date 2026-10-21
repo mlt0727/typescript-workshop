@@ -10309,6 +10309,88 @@
         }
       ]
     },
+    "h01-next-overview": {
+      "verifiedAt": "2026-10-21T07:32:45.229Z",
+      "sourceHash": "ece674b7528991de",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:route-line:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:route-line:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] \"├ ○ /about\" { indent: '', symbol: '○', path: '/about' } | [log] \"│ └ ◐ /docs/[[...slug]]\" { indent: '│ ', symbol: '◐', path: '/docs/[[...slug]]' } | [log] \"├   /projects/[id]\" { indent: '', symbol: '（组标题）', path: '/projects/[id]' } | [log] \"└ ƒ /api/echo\" { indent: '', symbol: 'ƒ', path: '/api/echo' } | [log] ├ U+251C  ○ U+25CB  ◐ U+25D0  ƒ U+192  │ U+2502"
+        },
+        {
+          "target": "exercise:parse-route-table:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseRouteTable › 读出每一行的地址和类型；组标题本身不是一行 ⟶ expect(…).toEqual([,parseRouteTable › 最后一组的子行用两个空格缩进；没有 Cache Components 时还有 ● ⟶ expect(…).toEqual([,parseRouteTable › 组结束之后的一行不再属于这个组 ⟶ expect(…).toEqual([,parseRouteTable › Windows 的换行、行尾的空格都不影响结果 ⟶ expect(…).toEqual([,parseRouteTable › 认不出来的一行：抛出错误，错误信息中包含这一行 ⟶ expect(…).toThrow('├ ? /x'))"
+        },
+        {
+          "target": "exercise:parse-route-table:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-route-table:alt:by-position",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-route-table:wrong:no-groups",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseRouteTable › 读出每一行的地址和类型；组标题本身不是一行 ⟶ expect(…).toEqual([,parseRouteTable › 最后一组的子行用两个空格缩进；没有 Cache Components 时还有 ● ⟶ expect(…).toEqual([,parseRouteTable › 组结束之后的一行不再属于这个组 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:parse-route-table:wrong:bar-indent-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseRouteTable › 最后一组的子行用两个空格缩进；没有 Cache Components 时还有 ● ⟶ Error: 无法解析：  ├ ◐ /products/[id])"
+        },
+        {
+          "target": "exercise:parse-route-table:wrong:skip-unknown",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseRouteTable › 认不出来的一行：抛出错误，错误信息中包含这一行 ⟶ expect(…).toThrow('├ ? /x'))"
+        },
+        {
+          "target": "exercise:parse-route-table:wrong:no-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseRouteTable › Windows 的换行、行尾的空格都不影响结果 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:compare-builds:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(compareBuilds › 新增、消失、类型变了的页面，按地址排序；没有变化的不出现 ⟶ expect(…).toEqual([,compareBuilds › 变得更静态不算变差；○ 和 ● 一样静态 ⟶ expect(…).toEqual([,compareBuilds › 之前的构建失败了（没有路由表）：所有页面都是新增的 ⟶ expect(…).toEqual([,regressions › 只留下消失的页面和变差的页面 ⟶ expect(…).toEqual([ '/about', '/api/health', '/pricing' ]))"
+        },
+        {
+          "target": "exercise:compare-builds:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:compare-builds:alt:all-paths-first",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:compare-builds:wrong:unsorted",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareBuilds › 新增、消失、类型变了的页面，按地址排序；没有变化的不出现 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:compare-builds:wrong:any-change-worse",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareBuilds › 变得更静态不算变差；○ 和 ● 一样静态 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:compare-builds:wrong:added-is-regression",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(regressions › 只留下消失的页面和变差的页面 ⟶ expect(…).toEqual([ '/about', '/api/health', '/pricing' ]),regressions › 变得更静态、新增的页面都不算 ⟶ expect(…).toEqual([]))"
+        }
+      ]
+    },
     "i01-static-vs-server": {
       "verifiedAt": "2026-10-21T02:16:04.710Z",
       "sourceHash": "369fce9321180dab",

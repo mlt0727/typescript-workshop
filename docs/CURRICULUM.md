@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 113 / 规划总数 126**（草稿 0，规划中 13）
+**已发布 113 / 规划总数 126**（草稿 1，规划中 12）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -159,7 +159,7 @@
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `h01-next-overview` 从 SPA 到服务端渲染：Next.js 解决什么问题 | ⬜ 规划中 | `g13-routing`、`f12-build-ci` |
+| `h01-next-overview` 从 SPA 到服务端渲染：Next.js 解决什么问题 | 📝 草稿 | `g13-routing`、`f12-build-ci` |
 | `h02-app-router-layouts` App Router：路由与布局 | ⬜ 规划中 | `h01-next-overview` |
 | `h03-server-client-components` 服务端组件与客户端组件的边界 | ⬜ 规划中 | `h02-app-router-layouts` |
 | `h04-data-reading` 在服务端读取数据 | ⬜ 规划中 | `h03-server-client-components` |
