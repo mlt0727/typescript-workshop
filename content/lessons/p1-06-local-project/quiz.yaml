@@ -8,7 +8,7 @@
     - text: 不释放的话，下载的文件会损坏
       explain: 文件的内容与是否释放无关；释放得太早（下载还没开始）反而可能让下载失败。
     - text: 不释放的话，别的网站也能通过这个地址读取数据
-      explain: blob 地址只在创建它的页面（同一个来源）中有效，别的网站不能使用它。
+      explain: blob 地址只在创建它的来源（同一个网站）中有效，别的网站不能使用它。
 - id: accept
   type: single
   prompt: "导入的输入框写了 `accept=\".json,application/json\"`。关于它，下面哪个说法正确？"

@@ -8,7 +8,7 @@ mode: ts
 1. `null`：`{ ok: true, board: EMPTY_BOARD, migrated: false }`；
 2. 不是合法的 JSON：`JSON 格式不正确`；解析出来不是对象（数组、`null`、数字……）：`数据的格式不正确`；
 3. `version` 是 2：`board.tasks` 必须是数组（否则 `数据的格式不正确`），每个任务都要符合 `Task`：
-   - `id` 是 `t` 加上不以 0 开头的数字；`title` 符合添加任务时的标题规则：`parseTitle(title)` 成功，并且结果和 `title` 完全相同（也就是已经整理过，没有首尾空白，词之间只有一个空格）；`tags` 是最多 3 个、互不重复、不为空、不超过 10 个字符的字符串；`status` 是三列之一；`createdAt` 是有限的数字（`Number.isFinite`）；
+   - `id` 是 `t` 加上不以 0 开头的数字；`title` 符合添加任务时的标题规则：`parseTitle(title)` 成功，并且结果和 `title` 完全相同（也就是已经整理过，没有首尾空白，词之间只有一个空格）；`tags` 是最多 3 个、互不重复、不为空、不含空白、不超过 10 个字符的字符串（和添加任务时的规则一样：输入框中的标签是用空白分开的，不可能含有空白）；`status` 是三列之一；`createdAt` 是有限的数字（`Number.isFinite`）；
    - 不符合时：`第 2 个任务的数据不正确`（数字是它在数组中的位置，从 1 开始）；
    - 只取出这五个字段组成新的对象，其他字段丢掉；
 4. `version` 是 1（旧版本）：`{ version: 1, todos: [{ id, text, done }] }`，`todos` 必须是数组（否则 `数据的格式不正确`）。每一项的 `id` 是正整数、`text` 是字符串、`done` 是布尔值。转换成任务：`id` 变成 `'t' + id`；标题按添加任务时的规则整理 `text`（任意空白分隔的词用一个空格连起来），超过 40 个字符时只保留前 40 个，再去掉末尾的空白，整理之后为空、或者有任何一项不符合要求时 `第 2 个待办的数据不正确`；没有标签，`done` 为 `true` 时在“已完成”、否则在“待办”，`createdAt` 是它在数组中的下标；`nextId` 是最大的 `id` 加 1；结果中 `migrated` 为 `true`；
@@ -185,7 +185,7 @@ function parseTask(value: unknown): Task | null {
   const items: readonly unknown[] = tags;
   const cleanTags: string[] = [];
   for (const tag of items) {
-    if (typeof tag !== 'string' || tag === '' || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
+    if (typeof tag !== 'string' || tag === '' || /\s/.test(tag) || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
     cleanTags.push(tag);
   }
   if (!isStatus(status) || typeof createdAt !== 'number' || !Number.isFinite(createdAt)) return null;
@@ -317,6 +317,8 @@ describe('loadBoard', () => {
       { tags: ['a', 'b', 'c', 'd'] },
       { tags: ['工作', '工作'] },
       { tags: [''] },
+      { tags: ['a b'] },
+      { tags: ['a\nb'] },
       { tags: ['一二三四五六七八九十一'] },
       { createdAt: '昨天' },
     ];
@@ -461,7 +463,7 @@ const status: Check<Status> = (value) => {
 function tagList(value: unknown): string[] | null {
   if (!Array.isArray(value) || value.length > 3) return null;
   const list: readonly unknown[] = value;
-  const tags = list.map((t) => (typeof t === 'string' && t !== '' && length(t) <= 10 ? t : null));
+  const tags = list.map((t) => (typeof t === 'string' && t !== '' && !/\s/.test(t) && length(t) <= 10 ? t : null));
   if (tags.some((t) => t === null)) return null;
   const strings = tags.filter((t): t is string => t !== null);
   return new Set(strings).size === strings.length ? strings : null;
@@ -608,7 +610,7 @@ function parseTask(value: unknown): Task | null {
   const items: readonly unknown[] = tags;
   const cleanTags: string[] = [];
   for (const tag of items) {
-    if (typeof tag !== 'string' || tag === '' || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
+    if (typeof tag !== 'string' || tag === '' || /\s/.test(tag) || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
     cleanTags.push(tag);
   }
   if (!isStatus(status) || typeof createdAt !== 'number' || !Number.isFinite(createdAt)) return null;
@@ -721,7 +723,7 @@ function parseTask(value: unknown): Task | null {
   const items: readonly unknown[] = tags;
   const cleanTags: string[] = [];
   for (const tag of items) {
-    if (typeof tag !== 'string' || tag === '' || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
+    if (typeof tag !== 'string' || tag === '' || /\s/.test(tag) || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
     cleanTags.push(tag);
   }
   if (!isStatus(status) || typeof createdAt !== 'number' || !Number.isFinite(createdAt)) return null;
@@ -829,7 +831,7 @@ function parseTask(value: unknown): Task | null {
   const items: readonly unknown[] = tags;
   const cleanTags: string[] = [];
   for (const tag of items) {
-    if (typeof tag !== 'string' || tag === '' || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
+    if (typeof tag !== 'string' || tag === '' || /\s/.test(tag) || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
     cleanTags.push(tag);
   }
   if (!isStatus(status) || typeof createdAt !== 'number' || !Number.isFinite(createdAt)) return null;
@@ -942,7 +944,7 @@ function parseTask(value: unknown): Task | null {
   const items: readonly unknown[] = tags;
   const cleanTags: string[] = [];
   for (const tag of items) {
-    if (typeof tag !== 'string' || tag === '' || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
+    if (typeof tag !== 'string' || tag === '' || /\s/.test(tag) || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
     cleanTags.push(tag);
   }
   if (!isStatus(status) || typeof createdAt !== 'number' || !Number.isFinite(createdAt)) return null;
@@ -1052,7 +1054,7 @@ function parseTask(value: unknown): Task | null {
   const items: readonly unknown[] = tags;
   const cleanTags: string[] = [];
   for (const tag of items) {
-    if (typeof tag !== 'string' || tag === '' || tag.length > 10 || cleanTags.includes(tag)) return null;
+    if (typeof tag !== 'string' || tag === '' || /\s/.test(tag) || tag.length > 10 || cleanTags.includes(tag)) return null;
     cleanTags.push(tag);
   }
   if (!isStatus(status) || typeof createdAt !== 'number' || !Number.isFinite(createdAt)) return null;

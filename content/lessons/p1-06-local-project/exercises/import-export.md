@@ -10,11 +10,11 @@ title: 导入与导出任务板
 4. **导入**：用户在“导入 JSON 文件”中选择了文件（`change` 事件）之后：
    - 没有选择文件时什么也不做；
    - 文件大于 `MAX_IMPORT_BYTES`（1 MB）时显示 `导入失败：文件太大（最多 1 MB）`，**不读取**它的内容；
-   - 否则读取文本，用 `loadBoard` 验证。失败时显示 `导入失败：原因`（`loadBoard` 给出的原因），任务板不变；
-   - 成功时用 `window.confirm` 询问 `用文件中的 N 个任务替换当前的任务板吗？`。确认后调用 `replaceBoard`，显示 `已导入 N 个任务`，转换过旧版本的数据时后面再加上 `（已从旧版本的格式转换）`；取消时显示 `已取消导入`，任务板不变；
+   - 否则读取文本（读取本身失败时显示 `导入失败：无法读取这个文件`），用 `loadBoard` 验证。失败时显示 `导入失败：原因`（`loadBoard` 给出的原因），任务板不变；
+   - 成功时用 `window.confirm` 询问 `用文件中的 N 个任务替换当前的任务板吗？`（`confirm(文字)` 弹出一个带“确定”和“取消”的对话框，等用户点击之后返回 `true` 或 `false`）。确认后调用 `replaceBoard`，显示 `已导入 N 个任务`，转换过旧版本的数据时后面再加上 `（已从旧版本的格式转换）`；取消时显示 `已取消导入`，任务板不变；
 5. 每次选择文件之后都清空输入框的 `value`，这样再次选择同一个文件也能导入。
 
-这个网站的预览不允许下载文件（见正文），测试会拦截 `createObjectURL` 和链接的 `click()`，检查生成的文件。下载到本机（“下载本地项目”）运行时，可以真的下载和导入。
+这个网站的预览不允许下载文件（见正文），测试会拦截 `createObjectURL` 和链接的 `click()`，检查生成的文件。预览中也不能弹出 `confirm` 的对话框：它总是返回 `false`，所以在预览中导入总是显示“已取消导入”；测试中用 `vi.spyOn(window, 'confirm')` 决定它的返回值。下载到本机（“下载本地项目”）运行时，可以真的下载和导入。
 
 :::files{role=support}
 ```html file=index.html readonly
@@ -620,7 +620,7 @@ function parseTask(value: unknown): Task | null {
   const items: readonly unknown[] = tags;
   const cleanTags: string[] = [];
   for (const tag of items) {
-    if (typeof tag !== 'string' || tag === '' || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
+    if (typeof tag !== 'string' || tag === '' || /\s/.test(tag) || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
     cleanTags.push(tag);
   }
   if (!isStatus(status) || typeof createdAt !== 'number' || !Number.isFinite(createdAt)) return null;
@@ -896,6 +896,29 @@ describe('导出', () => {
     await nextTask();
     expect(revoked).toHaveBeenCalledWith('blob:test/1');
   });
+
+  test('导出 Markdown 用的也是当前的任务板', async () => {
+    const { files } = captureDownloads();
+    const user = userEvent.setup();
+    await user.type(screen.getByLabelText('新任务'), '买面包 #家{Enter}');
+    await user.click(screen.getByRole('button', { name: '导出 Markdown' }));
+    expect(await files[0]?.text()).toContain('- 买面包 #家');
+  });
+
+  for (const name of ['导出 JSON', '导出 Markdown']) {
+    test(`${name}：点击链接时地址还没有被释放，之后才释放`, async () => {
+      const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+      vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test/x');
+      const revokedAtClick: number[] = [];
+      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {
+        revokedAtClick.push(revoke.mock.calls.length);
+      });
+      await userEvent.setup().click(screen.getByRole('button', { name }));
+      expect(revokedAtClick).toEqual([0]);
+      await nextTask();
+      expect(revoke).toHaveBeenCalledWith('blob:test/x');
+    });
+  }
 });
 
 describe('导入', () => {
@@ -951,6 +974,30 @@ describe('导入', () => {
     await user.upload(importInput(), jsonFile(text + ' '.repeat(1024 * 1024 - new Blob([text]).size)));
     expect(await screen.findByText('已导入 1 个任务')).toBeVisible();
     expect(confirm).toHaveBeenCalledTimes(1);
+  });
+
+  test('太大的文件：用任何方法都不读取（这里 size 是假的，内容其实是有效的任务板）', async () => {
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const file = jsonFile(serializeBoard(IMPORTED));
+    Object.defineProperty(file, 'size', { value: 1024 * 1024 + 1 });
+    const reads = [vi.spyOn(file, 'text'), vi.spyOn(file, 'arrayBuffer'), vi.spyOn(file, 'slice')];
+    const readAsText = vi.spyOn(FileReader.prototype, 'readAsText');
+    await userEvent.setup().upload(importInput(), file);
+    expect(await screen.findByText('导入失败：文件太大（最多 1 MB）')).toBeVisible();
+    for (const read of reads) expect(read).not.toHaveBeenCalled();
+    expect(readAsText).not.toHaveBeenCalled();
+    expect(confirm).not.toHaveBeenCalled();
+  });
+
+  test('失败之后也清空输入框', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const user = userEvent.setup();
+    await user.upload(importInput(), jsonFile('这不是 JSON'));
+    expect(await screen.findByText('导入失败：JSON 格式不正确')).toBeVisible();
+    expect(importInput()).toHaveProperty('value', '');
+    await user.upload(importInput(), jsonFile(' '.repeat(1024 * 1024 + 1)));
+    expect(await screen.findByText('导入失败：文件太大（最多 1 MB）')).toBeVisible();
+    expect(importInput()).toHaveProperty('value', '');
   });
 
   test('导入之后清空输入框：同一个文件可以再选一次', async () => {

@@ -10800,8 +10800,8 @@
       ]
     },
     "p1-05-persistence": {
-      "verifiedAt": "2026-10-20T18:22:13.469Z",
-      "sourceHash": "e9865b474fced770",
+      "verifiedAt": "2026-10-21T01:14:54.866Z",
+      "sourceHash": "eab4fe6387b226b4",
       "ok": true,
       "checks": [
         {
@@ -10917,8 +10917,8 @@
       ]
     },
     "p1-06-local-project": {
-      "verifiedAt": "2026-10-21T00:48:31.427Z",
-      "sourceHash": "51463251ecc5a28a",
+      "verifiedAt": "2026-10-21T01:17:29.579Z",
+      "sourceHash": "ae4bbeb31178e043",
       "ok": true,
       "checks": [
         {
@@ -10964,7 +10964,7 @@
         {
           "target": "exercise:import-export:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(导出 › 导出 JSON：内容、类型和文件名；状态中说明导出了几个任务 ⟶ expect(…).toEqual([ { href: 'blob:test/1', download: 'taskboard.json' } ]),导出 › 导出 Markdown：内容、类型和文件名 ⟶ expect(…).toEqual([ { href: 'blob:test/1', download: 'taskboard.md' } ]),导出 › 导出的是当前的任务板；下载之后释放 object URL ⟶ expect(…).toEqual([ '写周报', '修自行车', '买牛奶', 'Read the TS Handbook', '买面包' ]),导入 › 确认之后替换任务板并保存；状态中说明导入了几个任务 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已导入 1 个任务. This could be because the text is broken up by multiple elements. In this case, ,导入 › 旧版本的数据：转换之后导入，并说明 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已导入 1 个任务（已从旧版本的格式转换）. This could be because the text is broken up by multiple elements. In,导入 › 取消：任务板不变，也不保存 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已取消导入. This could be because the text is broken up by multiple elements. In this case, you ,导入 › 无效的文件：说明原因，不询问、不替换 ⟶ TestingLibraryElementError: Unable to find an element with the text: 导入失败：JSON 格式不正确. This could be because the text is broken up by multiple elements. In this ,导入 › 超过 1 MB 的文件不读取；正好 1 MB 可以导入 ⟶ TestingLibraryElementError: Unable to find an element with the text: 导入失败：文件太大（最多 1 MB）. This could be because the text is broken up by multiple elements. In th,导入 › 导入之后清空输入框：同一个文件可以再选一次 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已取消导入. This could be because the text is broken up by multiple elements. In this case, you )"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(Timeout: 测试运行超过 8 秒，已停止。)"
         },
         {
           "target": "exercise:import-export:solution:solution",
@@ -10984,12 +10984,12 @@
         {
           "target": "exercise:import-export:wrong:no-reset",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导入 › 导入之后清空输入框：同一个文件可以再选一次 ⟶ expect(…).toHaveProperty('value', ''))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导入 › 失败之后也清空输入框 ⟶ expect(…).toHaveProperty('value', ''),导入 › 导入之后清空输入框：同一个文件可以再选一次 ⟶ expect(…).toHaveProperty('value', ''))"
         },
         {
           "target": "exercise:import-export:wrong:reads-first",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导入 › 超过 1 MB 的文件不读取；正好 1 MB 可以导入 ⟶ expect(…).not.toHaveBeenCalled())"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导入 › 超过 1 MB 的文件不读取；正好 1 MB 可以导入 ⟶ expect(…).not.toHaveBeenCalled(),导入 › 太大的文件：用任何方法都不读取（这里 size 是假的，内容其实是有效的任务板） ⟶ TestingLibraryElementError: Unable to find an element with the text: 导入失败：文件太大（最多 1 MB）. This could be because the text is broken up by multiple elements. In th)"
         },
         {
           "target": "exercise:import-export:wrong:boundary",

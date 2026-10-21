@@ -67,6 +67,18 @@ export function scriptEntry(html: string): string | undefined {
 
 const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+/**
+ * 网站上的预览总是按 UTF-8 解析页面；本机的 Vite 服务器返回的 Content-Type 没有 charset，
+ * 没有 <meta charset> 的页面会被浏览器按 windows-1252 解码，中文变成乱码。缺少时补上。
+ */
+export function withCharset(html: string): string {
+  if (/<meta\b[^>]*\bcharset\s*=/i.test(html)) return html;
+  const meta = '<meta charset="UTF-8" />';
+  if (/<head\b[^>]*>/i.test(html)) return html.replace(/<head\b[^>]*>/i, (head) => `${head}\n    ${meta}`);
+  if (/<html\b[^>]*>/i.test(html)) return html.replace(/<html\b[^>]*>/i, (tag) => `${tag}\n  <head>\n    ${meta}\n  </head>`);
+  return `${meta}\n${html}`;
+}
+
 function versions(names: readonly Package[]): Record<string, string> {
   return Object.fromEntries([...names].sort().map((name) => [name, LOCAL_VERSIONS[name]]));
 }
@@ -170,7 +182,9 @@ export function buildLocalProject(input: LocalProjectInput): Record<string, stri
   const browserShim = browserLike && /from\s+['"]vitest\/browser['"]/.test(sources);
   const mockFetch = (input.fixtures?.length ?? 0) > 0 && input.mockFetchSource !== undefined;
 
-  if (browserLike && files['index.html'] === undefined) {
+  const html = files['index.html'];
+  if (browserLike && html !== undefined) files['index.html'] = withCharset(html);
+  if (browserLike && html === undefined) {
     const root = mode === 'react' ? '<div id="root"></div>' : '';
     files['index.html'] = `<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <meta charset="UTF-8" />\n    <title>${escapeHtml(input.title)}</title>\n  </head>\n  <body>\n    ${root}\n    <script type="module" src="./${entry}"></script>\n  </body>\n</html>\n`;
   }
@@ -299,8 +313,8 @@ function readme(
     '## 运行',
     '',
     input.mode === 'ts'
-      ? '需要 Node.js 22.12 或更高的版本（Vitest 5 的要求，见 f01）。在这个文件夹中：'
-      : '需要 Node.js 22.22.2、24.15 或更高的版本（jsdom 30 的要求，见 f01）。在这个文件夹中：',
+      ? '需要 Node.js 22（22.12 及以上）、24 或 26 及以上的版本（Vitest 5 的要求，见 f01）。在这个文件夹中：'
+      : '需要 Node.js 22（22.22.2 及以上）、24（24.15 及以上）或 26 及以上的版本（jsdom 30 的要求，见 f01；其他版本安装时会出现 `EBADENGINE` 警告）。在这个文件夹中：',
     '',
     '- `npm install`：安装依赖',
     run,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { rawCheckOptions } from '../../compiler/config.ts';
-import { buildLocalProject, localProjectName, scriptEntry, type LocalProjectInput } from './local-project.ts';
+import { buildLocalProject, localProjectName, scriptEntry, withCharset, type LocalProjectInput } from './local-project.ts';
 
 const base: LocalProjectInput = {
   lessonId: 'f06-unit-tests',
@@ -100,6 +100,19 @@ describe('buildLocalProject', () => {
     expect(files['README.md']).toContain('`*.test-d.tsx` 是类型测试');
     expect(buildLocalProject(base)['vite.config.ts']).not.toContain('passWithNoTests');
     expect(buildLocalProject(base)['README.md']).not.toContain('与网站上的区别');
+  });
+
+  it('页面没有 <meta charset> 时补上（否则本机的 Vite 服务器上中文是乱码）', () => {
+    expect(withCharset('<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <title>任务板</title>\n  </head>\n</html>')).toBe(
+      '<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <meta charset="UTF-8" />\n    <title>任务板</title>\n  </head>\n</html>',
+    );
+    expect(withCharset('<html><body>中文</body></html>')).toBe('<html>\n  <head>\n    <meta charset="UTF-8" />\n  </head><body>中文</body></html>');
+    expect(withCharset('<p>中文</p>')).toBe('<meta charset="UTF-8" />\n<p>中文</p>');
+    const already = '<head><meta charset="utf-8"></head>';
+    expect(withCharset(already)).toBe(already);
+    const exported = buildLocalProject({ ...base, mode: 'dom', entry: 'main.ts', files: { 'index.html': '<html><head></head><body></body></html>', 'main.ts': '' } });
+    expect(exported['index.html']).toContain('<meta charset="UTF-8" />');
+    expect(buildLocalProject({ ...base, files: { 'index.html': '<p>x</p>', 'a.ts': '' } })['index.html']).toBe('<p>x</p>');
   });
 
   it('dom 模式每个测试前恢复地址、<html> 与 <body> 的属性', () => {

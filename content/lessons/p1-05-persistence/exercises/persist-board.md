@@ -538,7 +538,7 @@ function parseTask(value: unknown): Task | null {
   const items: readonly unknown[] = tags;
   const cleanTags: string[] = [];
   for (const tag of items) {
-    if (typeof tag !== 'string' || tag === '' || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
+    if (typeof tag !== 'string' || tag === '' || /\s/.test(tag) || charCount(tag) > 10 || cleanTags.includes(tag)) return null;
     cleanTags.push(tag);
   }
   if (!isStatus(status) || typeof createdAt !== 'number' || !Number.isFinite(createdAt)) return null;
