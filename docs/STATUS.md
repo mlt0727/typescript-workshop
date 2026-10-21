@@ -69,7 +69,7 @@
 | `npm run content:verify:webkit`（生产构建） | 全部 126 节通过：一次全量运行中通过 113 节后到达当时 15 分钟的超时（课时增加之后，全量运行需要更长时间；超时已改为 30 分钟），其余 13 节和修改过的 3 节单独运行全部通过 |
 | `npx playwright test --project=e2e --project=e2e-webkit`（生产预览，含 CSP） | 73 项通过，1 项跳过（“规划中的课时”页面：课程图谱中已经没有规划中的课时）；新增“课程更新之后的草稿”和“首页如实显示数量” |
 
-**未验证**：Firefox（本机 Playwright 无法启动 Firefox：`spawn UNKNOWN`）；真实的 Safari 和 iPhone（WebKit 的结果来自 Playwright 的 WebKit 构建）；真实移动设备（只做了视口模拟）；问 AI 的真实模型调用；中国大陆网络下访问 `*.vercel.app` 的可用性。
+**未验证**：Firefox（本机 Playwright 无法启动 Firefox：`spawn UNKNOWN`）；真实的 Safari 和 iPhone（WebKit 的结果来自 Playwright 的 WebKit 构建）；真实移动设备（只做了视口模拟）；问 AI 的真实模型调用。
 
 ## 课程审查记录
 
@@ -131,10 +131,9 @@
 
 ## 阻塞与需要你处理的事项
 
-1. **部署**：GitHub 仓库 `mlt0727/typescript-workshop` 与 Vercel 项目已关联，每次推送到 `main` 自动部署（最近的提交上都有 Vercel 写入的状态 “Deployment has completed”）。Vercel 连接器对团队作用域返回 403（需要你在连接器中重新授权团队访问），部署状态通过线上站点和 GitHub 的提交状态核对。
+1. **部署**：GitHub 仓库 `mlt0727/typescript-workshop` 与 Vercel 项目已关联，每次推送到 `main` 自动部署（最近的提交上都有 Vercel 写入的状态 “Deployment has completed”）。Vercel 连接器对团队作用域返回 403（需要在连接器中重新授权团队访问）；2026-10-21 在 Vercel 控制台（你的 Chrome，只读）核对：全部部署都是 Ready，最新的提交是当前的生产部署，运行日志中没有警告和错误。
 2. **问 AI 的密钥**：在 Vercel 项目 → Settings → Environment Variables 添加 `ANTHROPIC_API_KEY`（可选 `AI_MODEL`），然后重新部署。线上 `/api/health` 目前返回 `"ai":false`。
-3. 若在中国大陆访问 `*.vercel.app` 不稳定，可以绑定自己的域名。
-4. **人工审核**：全部课程都只经过 AI 审查（`self-reviewed`）。如果要标为 `reviewed`，需要有人实际读过并确认。
+3. **人工审核**：全部课程都只经过 AI 审查（`self-reviewed`）。如果要标为 `reviewed`，需要有人实际读过并确认。
 
 ## 下一步
 
