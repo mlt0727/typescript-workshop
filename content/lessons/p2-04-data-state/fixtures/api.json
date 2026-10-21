@@ -86,6 +86,30 @@
     }
   },
   {
+    "url": "/api/projects/slowbody",
+    "delayMs": 50,
+    "bodyDelayMs": 3000,
+    "body": {
+      "id": "p1",
+      "name": "官网改版",
+      "owner": "小林",
+      "status": "active",
+      "dueDate": "2026-11-15",
+      "tasks": [
+        {
+          "id": "t1",
+          "title": "整理需求",
+          "done": true
+        },
+        {
+          "id": "t2",
+          "title": "设计稿",
+          "done": false
+        }
+      ]
+    }
+  },
+  {
     "url": "/api/projects/p1/tasks",
     "method": "POST",
     "delayMs": 50,

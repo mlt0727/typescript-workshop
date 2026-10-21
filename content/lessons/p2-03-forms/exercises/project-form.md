@@ -160,7 +160,7 @@ export type Project = Readonly<{
 ```ts file=data.ts readonly
 import type { Project } from './model';
 
-/** 这个里程碑还没有服务器（p2-04 再从服务器加载）：项目数据先写在这里 */
+/** 项目的示例数据（p2-04 起，由模拟的服务器从这份数据开始） */
 export const PROJECTS: readonly Project[] = [
   {
     id: 'p1',

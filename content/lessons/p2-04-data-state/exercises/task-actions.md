@@ -5,9 +5,9 @@ timeoutMs: 30000
 ---
 `routes.tsx` 中的详情页已经能加载项目、处理“找不到”和加载失败（可以重试）。任务的复选框现在是只读的。完成“写”的部分：
 
-1. **action**：给 `projects/:projectId` 路由加上 `action: projectAction`。表单中的 `intent` 是 `'toggle'` 时，用 `setTaskDone` 修改任务（`taskId`、`done` 两个字段，`done` 是 `'true'` 或 `'false'`）；是 `'add'` 时，用 `addTask` 添加任务（`title` 字段，去掉首尾空白之后为空时**不发请求**，直接当作“任务不能为空”的字段错误）。成功时返回 `data({ ok: true })`；失败时返回带有 4xx 状态码的 `data(…)`，其中有显示给用户的信息（用 `errorMessage`），422 时还要有 `title` 字段的错误；
+1. **action**：给 `projects/:projectId` 路由加上 `action: projectAction`。表单中的 `intent` 是 `'toggle'` 时，用 `setTaskDone` 修改任务（提交 `taskId` 和 `done` 两个字段，例如 `done` 是 `'true'` 或 `'false'`）；是 `'add'` 时，用 `addTask` 添加任务（`title` 字段，去掉首尾空白之后为空时**不发请求**，直接当作“任务不能为空”的字段错误）。成功时返回 `data({ ok: true })`；失败时返回带有 4xx 状态码的 `data(…)`，其中有显示给用户的信息（用 `errorMessage`），422 时还要有 `title` 字段的错误；
 2. **勾选任务**：每个任务用自己的 `useFetcher()` 提交。复选框的名字（标签）是任务的名称。提交期间显示提交的值（乐观更新）；失败时显示 loader 的数据，并在这个任务的 `<li>` 中用一个 `role="alert"` 的元素说明原因；
-3. **添加任务**：列表后面一个表单，输入框的标签是“新任务”，提交按钮是“添加”。提交期间按钮禁用，文字是“添加中…”。字段错误：输入框加上 `aria-invalid="true"`，`aria-describedby` 指向显示错误的元素，输入的内容保留；其他错误：用一个 `role="alert"` 的元素说明。成功之后清空输入框。
+3. **添加任务**：列表后面一个表单，输入框的标签是“新任务”，提交按钮是“添加”。提交期间（`fetcher.state` 不是 `'idle'`，包括之后重新加载数据的时候）按钮不可用：`aria-disabled="true"` 并忽略提交（e07），或者 `disabled`；文字是“添加中…”。字段错误：输入框加上 `aria-invalid="true"`，`aria-describedby` 指向显示错误的元素，焦点移到输入框，输入的内容保留；其他错误：用一个 `role="alert"` 的元素说明。成功之后清空输入框。
 
 `api.ts` 是上一个练习的答案；`fake-server.ts` 是内存中的服务器，测试中每个请求要等 200 毫秒，它拒绝重名的任务（422），已完成的项目（`p3`）不能修改任务（409）。这些文件和 `main.tsx` 都是只读的。
 
@@ -20,6 +20,7 @@ import {
   Navigate,
   Outlet,
   useLoaderData,
+  useNavigation,
   useRevalidator,
   useRouteError,
   type LoaderFunctionArgs,
@@ -46,7 +47,14 @@ function ProjectError() {
   return (
     <div role="alert">
       <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
-      <button type="button" disabled={revalidator.state === 'loading'} onClick={() => void revalidator.revalidate()}>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
         {revalidator.state === 'loading' ? '正在重试…' : '重试'}
       </button>
     </div>
@@ -87,11 +95,14 @@ function ProjectPage() {
 }
 
 function Layout() {
+  const navigation = useNavigation();
   return (
     <>
       <header>
         <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
       </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
       <main>
         <Outlet />
       </main>
@@ -169,7 +180,7 @@ export async function request<T>(path: string, parse: (value: unknown) => T | nu
       ...(body === undefined ? {} : { body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } }),
     });
   } catch (error) {
-    // 被中止不是“连接失败”：交给调用方（例如路由），它知道这次请求已经不需要了
+    // 被中止不是“连接失败”：调用方已经不需要这次请求了，继续抛出原来的错误
     if (signal?.aborted) throw error;
     return { ok: false, error: { kind: 'network' } };
   }
@@ -385,7 +396,7 @@ export function summarize(project: Project, today: string): Summary {
 ```ts file=data.ts readonly
 import type { Project } from './model';
 
-/** 这个里程碑还没有服务器（p2-04 再从服务器加载）：项目数据先写在这里 */
+/** 项目的示例数据（p2-04 起，由模拟的服务器从这份数据开始） */
 export const PROJECTS: readonly Project[] = [
   {
     id: 'p1',
@@ -469,6 +480,7 @@ import {
   Outlet,
   useFetcher,
   useLoaderData,
+  useNavigation,
   useRevalidator,
   useRouteError,
   type ActionFunctionArgs,
@@ -496,7 +508,14 @@ function ProjectError() {
   return (
     <div role="alert">
       <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
-      <button type="button" disabled={revalidator.state === 'loading'} onClick={() => void revalidator.revalidate()}>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
         {revalidator.state === 'loading' ? '正在重试…' : '重试'}
       </button>
     </div>
@@ -560,27 +579,38 @@ function TaskItem({ task }: { task: Task }) {
 function AddTask() {
   const fetcher = useFetcher<typeof projectAction>();
   const form = useRef<HTMLFormElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // 'submitting'（等待 action）和 'loading'（action 完成之后，等待 loader）都算提交期间
   const busy = fetcher.state !== 'idle';
   const result = fetcher.state === 'idle' ? fetcher.data : undefined;
   const fieldError = result?.ok === false ? result.fieldError : undefined;
   const otherError = result?.ok === false && result.fieldError === undefined ? result.message : undefined;
 
-  // 添加成功之后清空输入框：这是对 DOM 的操作，不是 setState
+  // 结果到达之后操作 DOM（不是 setState）：成功时清空输入框；输入有误时把焦点移到输入框，读屏软件会读出它的错误
   useEffect(() => {
     if (result?.ok === true) form.current?.reset();
+    else if (result?.ok === false && result.fieldError !== undefined) input.current?.focus();
   }, [result]);
 
   return (
-    <fetcher.Form method="post" ref={form}>
+    <fetcher.Form
+      method="post"
+      ref={form}
+      onSubmit={(e) => {
+        // 按钮用 aria-disabled（焦点不会丢失，e07），所以要在这里忽略提交期间的再次提交
+        if (busy) e.preventDefault();
+      }}
+    >
       <input type="hidden" name="intent" value="add" />
       <label htmlFor="title">新任务</label>{' '}
       <input
+        ref={input}
         id="title"
         name="title"
         aria-invalid={fieldError !== undefined}
         aria-describedby={fieldError !== undefined ? 'title-error' : undefined}
       />{' '}
-      <button type="submit" disabled={busy}>
+      <button type="submit" aria-disabled={busy}>
         {busy ? '添加中…' : '添加'}
       </button>
       {fieldError !== undefined && <p id="title-error">{fieldError}</p>}
@@ -609,11 +639,14 @@ function ProjectPage() {
 }
 
 function Layout() {
+  const navigation = useNavigation();
   return (
     <>
       <header>
         <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
       </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
       <main>
         <Outlet />
       </main>
@@ -665,8 +698,21 @@ async function open(path: string) {
 const checkbox = (name: string) => screen.getByRole('checkbox', { name });
 const titleInput = () => screen.getByLabelText('新任务');
 const addButton = () => screen.getByRole('button', { name: /^添加/ });
-const taskNames = () => within(screen.getByRole('list', { name: '任务' })).getAllByRole('checkbox').map((box) => box.closest('li')?.textContent?.trim());
+const lastTask = () => within(screen.getByRole('list', { name: '任务' })).getAllByRole('checkbox').at(-1);
 const writes = (requests: string[]) => requests.filter((r) => !r.startsWith('GET'));
+const reads = (requests: string[]) => requests.filter((r) => r.startsWith('GET'));
+/** 按钮不可用：disabled，或者 aria-disabled="true"（e07） */
+const unavailable = (button: HTMLElement) => button.hasAttribute('disabled') || button.getAttribute('aria-disabled') === 'true';
+/** 内容包含 text 的那个 role="alert" 的元素（页面上可能有几个） */
+async function alertWith(text: string): Promise<HTMLElement> {
+  let found: HTMLElement | undefined;
+  await waitFor(() => {
+    found = screen.getAllByRole('alert').find((el) => el.textContent?.includes(text));
+    expect(found, `应该有一个内容包含“${text}”的 role="alert"`).toBeDefined();
+  });
+  if (found === undefined) throw new Error('不会到这里');
+  return found;
+}
 
 describe('读取（起始代码已经写好）', () => {
   test('显示项目和任务', async () => {
@@ -682,7 +728,7 @@ describe('读取（起始代码已经写好）', () => {
     server.offline = true;
     vi.spyOn(globalThis, 'fetch').mockImplementation(server.fetch);
     render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: ['/projects/p1'] })} />);
-    expect(await screen.findByRole('alert')).toHaveTextContent('加载失败：无法连接服务器，请检查网络后重试');
+    expect(await alertWith('加载失败')).toHaveTextContent('加载失败：无法连接服务器，请检查网络后重试');
     server.offline = false;
     await userEvent.setup().click(screen.getByRole('button', { name: '重试' }));
     expect(await screen.findByRole('heading', { level: 1, name: '官网改版' })).toBeInTheDocument();
@@ -714,21 +760,29 @@ describe('勾选任务', () => {
     expect(writes(server.requests)).toEqual(['PATCH /api/projects/p1/tasks/t1']);
   });
 
-  test('服务器拒绝时恢复原来的状态，并在这个任务旁边说明原因', async () => {
-    const { user } = await open('/projects/p3');
+  test('每个任务独立保存：连续勾选两个，两个都保存了', async () => {
+    const { server, user } = await open('/projects/p1');
+    await user.click(checkbox('设计稿'));
+    await user.click(checkbox('写文案'));
+    expect(await screen.findByText(/进度：3\/3/)).toBeInTheDocument();
+    expect(writes(server.requests).toSorted()).toEqual(['PATCH /api/projects/p1/tasks/t2', 'PATCH /api/projects/p1/tasks/t3']);
+  });
+
+  test('服务器拒绝时恢复原来的状态，在这个任务旁边说明原因，并且不重新加载数据', async () => {
+    const { server, user } = await open('/projects/p3');
     await user.click(checkbox('汇总数据'));
     await waitFor(() => expect(checkbox('汇总数据'), '提交期间先显示提交的值').not.toBeChecked());
-    const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('已完成的项目不能修改任务');
-    expect(alert.closest('li'), '错误信息应该显示在这个任务中').toBe(checkbox('汇总数据').closest('li'));
+    const alert = await alertWith('已完成的项目不能修改任务');
+    expect(checkbox('汇总数据').closest('li'), '错误信息应该显示在这个任务中').toContainElement(alert);
     expect(checkbox('汇总数据')).toBeChecked();
+    expect(server.requests, '失败的提交之后不应该重新加载数据（action 要返回 4xx）').toEqual(['GET /api/projects/p3', 'PATCH /api/projects/p3/tasks/t1']);
   });
 
   test('连接失败时也恢复原来的状态', async () => {
     const { server, user } = await open('/projects/p1');
     server.offline = true;
     await user.click(checkbox('设计稿'));
-    expect(await screen.findByRole('alert')).toHaveTextContent('无法连接服务器，请检查网络后重试');
+    await alertWith('无法连接服务器，请检查网络后重试');
     expect(checkbox('设计稿')).not.toBeChecked();
     expect(screen.getByText(/进度：1\/3/)).toBeInTheDocument();
   });
@@ -740,32 +794,36 @@ describe('添加任务', () => {
     await user.type(titleInput(), ' 联系客户 ');
     await user.click(addButton());
     expect(await screen.findByRole('checkbox', { name: '联系客户' })).not.toBeChecked();
-    expect(taskNames().at(-1)).toBe('联系客户');
+    expect(lastTask()).toHaveAccessibleName('联系客户');
     await waitFor(() => expect(titleInput()).toHaveValue(''));
     expect(screen.getByText(/进度：1\/4/)).toBeInTheDocument();
     expect(writes(server.requests)).toEqual(['POST /api/projects/p1/tasks']);
   });
 
-  test('提交期间按钮不能再点，不会重复提交', async () => {
+  test('提交期间（包括之后重新加载数据的时候）按钮不可用，不会重复提交', async () => {
     const { server, user } = await open('/projects/p1');
     await user.type(titleInput(), '联系客户');
     await user.click(addButton());
-    await waitFor(() => expect(addButton()).toBeDisabled());
+    await waitFor(() => expect(unavailable(addButton()), '提交之后按钮应该不可用').toBe(true));
     expect(addButton()).toHaveTextContent('添加中…');
+    // 服务器收下了任务，React Router 正在重新加载数据：这时也不能再提交
+    await waitFor(() => expect(reads(server.requests)).toHaveLength(2));
+    expect(unavailable(addButton()), '重新加载数据期间按钮也应该不可用').toBe(true);
     await user.click(addButton());
     await user.type(titleInput(), '{Enter}');
     await screen.findByRole('checkbox', { name: '联系客户' });
+    await waitFor(() => expect(unavailable(addButton())).toBe(false));
     expect(writes(server.requests), '只应该发出一次请求').toEqual(['POST /api/projects/p1/tasks']);
-    expect(addButton()).toBeEnabled();
     expect(addButton()).toHaveTextContent('添加');
   });
 
-  test('服务器返回的字段错误显示在输入框旁边，输入的内容保留', async () => {
+  test('服务器返回的字段错误显示在输入框旁边，焦点移到输入框，输入的内容保留', async () => {
     const { user } = await open('/projects/p1');
     await user.type(titleInput(), '设计稿');
     await user.click(addButton());
     await waitFor(() => expect(titleInput()).toHaveAttribute('aria-invalid', 'true'));
     expect(titleInput()).toHaveAccessibleDescription('已经有一个叫“设计稿”的任务');
+    await waitFor(() => expect(titleInput(), '焦点移到出错的输入框，读屏软件会读出它的错误').toHaveFocus());
     // 等一会儿：清空输入框的代码（如果有）会在提交结束之后运行
     await new Promise((resolve) => setTimeout(resolve, 100));
     expect(titleInput(), '出错之后，输入的内容应该保留').toHaveValue('设计稿');
@@ -789,12 +847,12 @@ describe('添加任务', () => {
     const { server, user } = await open('/projects/p3');
     await user.type(titleInput(), '补充');
     await user.click(addButton());
-    expect(await screen.findByRole('alert')).toHaveTextContent('已完成的项目不能修改任务');
+    await alertWith('已完成的项目不能修改任务');
     expect(titleInput()).toHaveValue('补充');
     expect(titleInput()).not.toHaveAttribute('aria-invalid', 'true');
     server.offline = true;
     await user.click(addButton());
-    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('无法连接服务器，请检查网络后重试'));
+    await alertWith('无法连接服务器，请检查网络后重试');
   });
 });
 ```
@@ -805,7 +863,7 @@ action 中 `const form = await request.formData()`，`form.get('intent')` 决定
 :::
 
 :::hint{level=2}
-乐观更新：`const done = fetcher.formData ? fetcher.formData.get('done') === 'true' : task.done`。失败的信息只在 `fetcher.state === 'idle'` 并且 `fetcher.data?.ok === false` 时显示。添加任务用 `<fetcher.Form method="post">`，里面放一个 `<input type="hidden" name="intent" value="add" />`；`const busy = fetcher.state !== 'idle'`。清空输入框：给表单一个 ref，在依赖 `fetcher.data` 的 Effect 中，结果成功时调用 `form.current?.reset()`。
+乐观更新：`const done = fetcher.formData ? fetcher.formData.get('done') === 'true' : task.done`。失败的信息只在 `fetcher.state === 'idle'` 并且 `fetcher.data?.ok === false` 时显示。添加任务用 `<fetcher.Form method="post">`，里面放一个 `<input type="hidden" name="intent" value="add" />`；`const busy = fetcher.state !== 'idle'`，按钮 `aria-disabled={busy}`，表单的 `onSubmit` 中 `if (busy) e.preventDefault()`。清空输入框和移动焦点：给表单和输入框各一个 ref，在依赖结果的 Effect 中，成功时调用 `form.current?.reset()`，有字段错误时调用 `input.current?.focus()`。
 :::
 
 :::explanation
@@ -813,7 +871,7 @@ action 中 `const form = await request.formData()`，`form.get('intent')` 决定
 
 乐观更新完全是“算出来的”：提交期间 `fetcher.formData` 存在，显示提交的值；提交结束之后它消失，显示的就是 loader 的数据。成功和失败两种情况都不需要额外的代码，复选框就会停在正确的状态上。如果把勾选的状态复制进 `useState`，就要自己记得在失败时改回去，还要在 loader 的数据变化时同步，两份数据迟早会不一致。
 
-`fetcher.state` 在提交期间是 `'submitting'`，action 完成之后、loader 重新运行期间是 `'loading'`，都不是 `'idle'`。按钮在这整段时间都禁用：新任务出现在列表中之前，用户不能再提交一次。
+`fetcher.state` 在提交期间是 `'submitting'`，action 完成之后、loader 重新运行期间是 `'loading'`，都不是 `'idle'`。按钮在这整段时间都不可用：新任务出现在列表中之前，用户不能再提交一次（错误解 `submitting-only` 只看了 `'submitting'`）。按钮用 `aria-disabled`，焦点不会丢失（e07），提交的检查放在表单的 `onSubmit` 中。
 
 空的任务在 action 中就拦下来：这一步运行在浏览器中，不发请求也能给出结果；服务器仍然会检查（它不能相信任何客户端），这里只是省掉一次没有意义的请求。
 
@@ -822,7 +880,7 @@ action 中 `const form = await request.formData()`，`form.get('intent')` 决定
 
 :::variant{kind=alt name=json-and-controlled}
 ```tsx file=routes.tsx
-import { useState, type SubmitEvent } from 'react';
+import { useEffect, useRef, useState, type SubmitEvent } from 'react';
 import {
   data,
   isRouteErrorResponse,
@@ -831,6 +889,7 @@ import {
   Outlet,
   useFetcher,
   useLoaderData,
+  useNavigation,
   useRevalidator,
   useRouteError,
   type ActionFunctionArgs,
@@ -858,7 +917,14 @@ function ProjectError() {
   return (
     <div role="alert">
       <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
-      <button type="button" disabled={revalidator.state === 'loading'} onClick={() => void revalidator.revalidate()}>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
         {revalidator.state === 'loading' ? '正在重试…' : '重试'}
       </button>
     </div>
@@ -927,6 +993,7 @@ function AddTask() {
   const fetcher = useFetcher<typeof projectAction>();
   const [title, setTitle] = useState('');
   const [handled, setHandled] = useState(fetcher.data);
+  const input = useRef<HTMLInputElement>(null);
   const busy = fetcher.state !== 'idle';
   const result = busy ? undefined : fetcher.data;
   // 渲染时根据新的结果调整 state：成功之后清空输入框（不需要 Effect）
@@ -935,6 +1002,10 @@ function AddTask() {
     if (fetcher.data?.ok === true) setTitle('');
   }
   const fieldError = result?.ok === false && result.field ? result.message : null;
+  // 字段错误出现时把焦点移到输入框（DOM 操作放在 Effect 中）；disabled 让按钮失去了焦点，这里也正好把焦点放回来
+  useEffect(() => {
+    if (fieldError !== null) input.current?.focus();
+  }, [fieldError, result]);
   const otherError = result?.ok === false && !result.field ? result.message : null;
 
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
@@ -949,6 +1020,7 @@ function AddTask() {
         <label>
           新任务{' '}
           <input
+            ref={input}
             value={title}
             onChange={(e) => setTitle(e.currentTarget.value)}
             aria-invalid={fieldError !== null || undefined}
@@ -985,11 +1057,14 @@ function ProjectPage() {
 }
 
 function Layout() {
+  const navigation = useNavigation();
   return (
     <>
       <header>
         <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
       </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
       <main>
         <Outlet />
       </main>
@@ -1028,6 +1103,7 @@ import {
   Outlet,
   useFetcher,
   useLoaderData,
+  useNavigation,
   useRevalidator,
   useRouteError,
   type ActionFunctionArgs,
@@ -1055,7 +1131,14 @@ function ProjectError() {
   return (
     <div role="alert">
       <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
-      <button type="button" disabled={revalidator.state === 'loading'} onClick={() => void revalidator.revalidate()}>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
         {revalidator.state === 'loading' ? '正在重试…' : '重试'}
       </button>
     </div>
@@ -1119,27 +1202,38 @@ function TaskItem({ task }: { task: Task }) {
 function AddTask() {
   const fetcher = useFetcher<typeof projectAction>();
   const form = useRef<HTMLFormElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // 'submitting'（等待 action）和 'loading'（action 完成之后，等待 loader）都算提交期间
   const busy = fetcher.state !== 'idle';
   const result = fetcher.state === 'idle' ? fetcher.data : undefined;
   const fieldError = result?.ok === false ? result.fieldError : undefined;
   const otherError = result?.ok === false && result.fieldError === undefined ? result.message : undefined;
 
-  // 添加成功之后清空输入框：这是对 DOM 的操作，不是 setState
+  // 结果到达之后操作 DOM（不是 setState）：成功时清空输入框；输入有误时把焦点移到输入框，读屏软件会读出它的错误
   useEffect(() => {
     if (result?.ok === true) form.current?.reset();
+    else if (result?.ok === false && result.fieldError !== undefined) input.current?.focus();
   }, [result]);
 
   return (
-    <fetcher.Form method="post" ref={form}>
+    <fetcher.Form
+      method="post"
+      ref={form}
+      onSubmit={(e) => {
+        // 按钮用 aria-disabled（焦点不会丢失，e07），所以要在这里忽略提交期间的再次提交
+        if (busy) e.preventDefault();
+      }}
+    >
       <input type="hidden" name="intent" value="add" />
       <label htmlFor="title">新任务</label>{' '}
       <input
+        ref={input}
         id="title"
         name="title"
         aria-invalid={fieldError !== undefined}
         aria-describedby={fieldError !== undefined ? 'title-error' : undefined}
       />{' '}
-      <button type="submit" disabled={busy}>
+      <button type="submit" aria-disabled={busy}>
         {busy ? '添加中…' : '添加'}
       </button>
       {fieldError !== undefined && <p id="title-error">{fieldError}</p>}
@@ -1168,11 +1262,14 @@ function ProjectPage() {
 }
 
 function Layout() {
+  const navigation = useNavigation();
   return (
     <>
       <header>
         <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
       </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
       <main>
         <Outlet />
       </main>
@@ -1211,6 +1308,7 @@ import {
   Outlet,
   useFetcher,
   useLoaderData,
+  useNavigation,
   useRevalidator,
   useRouteError,
   type ActionFunctionArgs,
@@ -1238,7 +1336,14 @@ function ProjectError() {
   return (
     <div role="alert">
       <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
-      <button type="button" disabled={revalidator.state === 'loading'} onClick={() => void revalidator.revalidate()}>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
         {revalidator.state === 'loading' ? '正在重试…' : '重试'}
       </button>
     </div>
@@ -1302,21 +1407,31 @@ function TaskItem({ task }: { task: Task }) {
 function AddTask() {
   const fetcher = useFetcher<typeof projectAction>();
   const form = useRef<HTMLFormElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // 'submitting'（等待 action）和 'loading'（action 完成之后，等待 loader）都算提交期间
   const busy = fetcher.state !== 'idle';
   const result = fetcher.state === 'idle' ? fetcher.data : undefined;
   const fieldError = result?.ok === false ? result.fieldError : undefined;
   const otherError = result?.ok === false && result.fieldError === undefined ? result.message : undefined;
 
-  // 添加成功之后清空输入框：这是对 DOM 的操作，不是 setState
+  // 结果到达之后操作 DOM（不是 setState）：成功时清空输入框；输入有误时把焦点移到输入框，读屏软件会读出它的错误
   useEffect(() => {
     if (result?.ok === true) form.current?.reset();
+    else if (result?.ok === false && result.fieldError !== undefined) input.current?.focus();
   }, [result]);
 
   return (
-    <fetcher.Form method="post" ref={form}>
+    <fetcher.Form
+      method="post"
+      ref={form}
+      onSubmit={(e) => {
+        // 按钮用 aria-disabled（焦点不会丢失，e07），所以要在这里忽略提交期间的再次提交
+      }}
+    >
       <input type="hidden" name="intent" value="add" />
       <label htmlFor="title">新任务</label>{' '}
       <input
+        ref={input}
         id="title"
         name="title"
         aria-invalid={fieldError !== undefined}
@@ -1351,11 +1466,628 @@ function ProjectPage() {
 }
 
 function Layout() {
+  const navigation = useNavigation();
   return (
     <>
       <header>
         <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
       </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: '/',
+    Component: Layout,
+    HydrateFallback: () => <p>正在加载…</p>,
+    children: [
+      { index: true, element: <Navigate to="/projects/p1" replace /> },
+      {
+        path: 'projects/:projectId',
+        loader: projectLoader,
+        action: projectAction,
+        Component: ProjectPage,
+        ErrorBoundary: ProjectError,
+      },
+    ],
+  },
+];
+```
+:::
+
+:::variant{kind=wrong name=submitting-only fails=tests reason="只在等待 action 时不可用：新任务还没有显示出来，按钮就又能点了"}
+```tsx file=routes.tsx
+import { useEffect, useRef } from 'react';
+import {
+  data,
+  isRouteErrorResponse,
+  Link,
+  Navigate,
+  Outlet,
+  useFetcher,
+  useLoaderData,
+  useNavigation,
+  useRevalidator,
+  useRouteError,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  type RouteObject,
+} from 'react-router';
+import { addTask, errorMessage, getProject, setTaskDone, type ApiError } from './api';
+import { STATUS_NAMES, type Task } from './model';
+import { summarize } from './summary';
+import { TODAY } from './data';
+
+// ---------- 读取（已经写好） ----------
+
+export async function projectLoader({ params, request }: LoaderFunctionArgs) {
+  const result = await getProject(params.projectId ?? '', request.signal);
+  if (result.ok) return result.data;
+  if (result.error.kind === 'not-found') throw data('没有这个项目', { status: 404 });
+  throw new Error(errorMessage(result.error));
+}
+
+function ProjectError() {
+  const error = useRouteError();
+  const revalidator = useRevalidator();
+  if (isRouteErrorResponse(error) && error.status === 404) return <h1>没有这个项目</h1>;
+  return (
+    <div role="alert">
+      <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
+        {revalidator.state === 'loading' ? '正在重试…' : '重试'}
+      </button>
+    </div>
+  );
+}
+
+// ---------- 写入 ----------
+
+type ActionResult = { ok: true } | { ok: false; message: string; fieldError?: string };
+
+const succeeded = () => data<ActionResult>({ ok: true });
+
+/** 失败时返回 4xx 的状态码：数据没有变，React Router 也就不会重新运行 loader */
+const failed = (error: ApiError) =>
+  data<ActionResult>(
+    { ok: false, message: errorMessage(error), fieldError: error.kind === 'invalid' ? error.errors.title : undefined },
+    { status: error.kind === 'invalid' ? 422 : 400 },
+  );
+
+export async function projectAction({ params, request }: ActionFunctionArgs) {
+  const projectId = params.projectId ?? '';
+  const form = await request.formData();
+  const intent = form.get('intent');
+  if (intent === 'toggle') {
+    const taskId = form.get('taskId');
+    if (typeof taskId !== 'string') throw data('缺少 taskId', { status: 400 });
+    const result = await setTaskDone(projectId, taskId, form.get('done') === 'true', request.signal);
+    return result.ok ? succeeded() : failed(result.error);
+  }
+  if (intent === 'add') {
+    const title = form.get('title');
+    const text = typeof title === 'string' ? title.trim() : '';
+    // 显然不对的输入，不必发给服务器
+    if (text === '') return data<ActionResult>({ ok: false, message: '任务不能为空', fieldError: '任务不能为空' }, { status: 422 });
+    const result = await addTask(projectId, text, request.signal);
+    return result.ok ? succeeded() : failed(result.error);
+  }
+  throw data('不认识的操作', { status: 400 });
+}
+
+function TaskItem({ task }: { task: Task }) {
+  const fetcher = useFetcher<typeof projectAction>();
+  // 乐观更新：提交还没有完成时，先显示提交的值
+  const done = fetcher.formData ? fetcher.formData.get('done') === 'true' : task.done;
+  const error = fetcher.state === 'idle' && fetcher.data?.ok === false ? fetcher.data.message : null;
+  return (
+    <li>
+      <label>
+        <input
+          type="checkbox"
+          checked={done}
+          onChange={(e) => void fetcher.submit({ intent: 'toggle', taskId: task.id, done: String(e.currentTarget.checked) }, { method: 'post' })}
+        />{' '}
+        {task.title}
+      </label>
+      {error !== null && <span role="alert"> {error}</span>}
+    </li>
+  );
+}
+
+function AddTask() {
+  const fetcher = useFetcher<typeof projectAction>();
+  const form = useRef<HTMLFormElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // 'submitting'（等待 action）和 'loading'（action 完成之后，等待 loader）都算提交期间
+  const busy = fetcher.state === 'submitting';
+  const result = fetcher.state === 'idle' ? fetcher.data : undefined;
+  const fieldError = result?.ok === false ? result.fieldError : undefined;
+  const otherError = result?.ok === false && result.fieldError === undefined ? result.message : undefined;
+
+  // 结果到达之后操作 DOM（不是 setState）：成功时清空输入框；输入有误时把焦点移到输入框，读屏软件会读出它的错误
+  useEffect(() => {
+    if (result?.ok === true) form.current?.reset();
+    else if (result?.ok === false && result.fieldError !== undefined) input.current?.focus();
+  }, [result]);
+
+  return (
+    <fetcher.Form
+      method="post"
+      ref={form}
+      onSubmit={(e) => {
+        // 按钮用 aria-disabled（焦点不会丢失，e07），所以要在这里忽略提交期间的再次提交
+        if (busy) e.preventDefault();
+      }}
+    >
+      <input type="hidden" name="intent" value="add" />
+      <label htmlFor="title">新任务</label>{' '}
+      <input
+        ref={input}
+        id="title"
+        name="title"
+        aria-invalid={fieldError !== undefined}
+        aria-describedby={fieldError !== undefined ? 'title-error' : undefined}
+      />{' '}
+      <button type="submit" aria-disabled={busy}>
+        {busy ? '添加中…' : '添加'}
+      </button>
+      {fieldError !== undefined && <p id="title-error">{fieldError}</p>}
+      {otherError !== undefined && <p role="alert">{otherError}</p>}
+    </fetcher.Form>
+  );
+}
+
+function ProjectPage() {
+  const project = useLoaderData<typeof projectLoader>();
+  const s = summarize(project, TODAY);
+  return (
+    <>
+      <h1>{project.name}</h1>
+      <p>
+        状态：{STATUS_NAMES[project.status]} · 进度：{s.done}/{s.total}
+      </p>
+      <ul aria-label="任务">
+        {project.tasks.map((task) => (
+          <TaskItem key={task.id} task={task} />
+        ))}
+      </ul>
+      <AddTask />
+    </>
+  );
+}
+
+function Layout() {
+  const navigation = useNavigation();
+  return (
+    <>
+      <header>
+        <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
+      </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: '/',
+    Component: Layout,
+    HydrateFallback: () => <p>正在加载…</p>,
+    children: [
+      { index: true, element: <Navigate to="/projects/p1" replace /> },
+      {
+        path: 'projects/:projectId',
+        loader: projectLoader,
+        action: projectAction,
+        Component: ProjectPage,
+        ErrorBoundary: ProjectError,
+      },
+    ],
+  },
+];
+```
+:::
+
+:::variant{kind=wrong name=ok-status fails=tests reason="失败时返回状态码 200：React Router 又重新加载了一遍数据"}
+```tsx file=routes.tsx
+import { useEffect, useRef } from 'react';
+import {
+  data,
+  isRouteErrorResponse,
+  Link,
+  Navigate,
+  Outlet,
+  useFetcher,
+  useLoaderData,
+  useNavigation,
+  useRevalidator,
+  useRouteError,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  type RouteObject,
+} from 'react-router';
+import { addTask, errorMessage, getProject, setTaskDone, type ApiError } from './api';
+import { STATUS_NAMES, type Task } from './model';
+import { summarize } from './summary';
+import { TODAY } from './data';
+
+// ---------- 读取（已经写好） ----------
+
+export async function projectLoader({ params, request }: LoaderFunctionArgs) {
+  const result = await getProject(params.projectId ?? '', request.signal);
+  if (result.ok) return result.data;
+  if (result.error.kind === 'not-found') throw data('没有这个项目', { status: 404 });
+  throw new Error(errorMessage(result.error));
+}
+
+function ProjectError() {
+  const error = useRouteError();
+  const revalidator = useRevalidator();
+  if (isRouteErrorResponse(error) && error.status === 404) return <h1>没有这个项目</h1>;
+  return (
+    <div role="alert">
+      <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
+        {revalidator.state === 'loading' ? '正在重试…' : '重试'}
+      </button>
+    </div>
+  );
+}
+
+// ---------- 写入 ----------
+
+type ActionResult = { ok: true } | { ok: false; message: string; fieldError?: string };
+
+const succeeded = () => data<ActionResult>({ ok: true });
+
+/** 失败时返回 4xx 的状态码：数据没有变，React Router 也就不会重新运行 loader */
+const failed = (error: ApiError) =>
+  data<ActionResult>(
+    { ok: false, message: errorMessage(error), fieldError: error.kind === 'invalid' ? error.errors.title : undefined },
+    { status: 200 },
+  );
+
+export async function projectAction({ params, request }: ActionFunctionArgs) {
+  const projectId = params.projectId ?? '';
+  const form = await request.formData();
+  const intent = form.get('intent');
+  if (intent === 'toggle') {
+    const taskId = form.get('taskId');
+    if (typeof taskId !== 'string') throw data('缺少 taskId', { status: 400 });
+    const result = await setTaskDone(projectId, taskId, form.get('done') === 'true', request.signal);
+    return result.ok ? succeeded() : failed(result.error);
+  }
+  if (intent === 'add') {
+    const title = form.get('title');
+    const text = typeof title === 'string' ? title.trim() : '';
+    // 显然不对的输入，不必发给服务器
+    if (text === '') return data<ActionResult>({ ok: false, message: '任务不能为空', fieldError: '任务不能为空' }, { status: 422 });
+    const result = await addTask(projectId, text, request.signal);
+    return result.ok ? succeeded() : failed(result.error);
+  }
+  throw data('不认识的操作', { status: 400 });
+}
+
+function TaskItem({ task }: { task: Task }) {
+  const fetcher = useFetcher<typeof projectAction>();
+  // 乐观更新：提交还没有完成时，先显示提交的值
+  const done = fetcher.formData ? fetcher.formData.get('done') === 'true' : task.done;
+  const error = fetcher.state === 'idle' && fetcher.data?.ok === false ? fetcher.data.message : null;
+  return (
+    <li>
+      <label>
+        <input
+          type="checkbox"
+          checked={done}
+          onChange={(e) => void fetcher.submit({ intent: 'toggle', taskId: task.id, done: String(e.currentTarget.checked) }, { method: 'post' })}
+        />{' '}
+        {task.title}
+      </label>
+      {error !== null && <span role="alert"> {error}</span>}
+    </li>
+  );
+}
+
+function AddTask() {
+  const fetcher = useFetcher<typeof projectAction>();
+  const form = useRef<HTMLFormElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // 'submitting'（等待 action）和 'loading'（action 完成之后，等待 loader）都算提交期间
+  const busy = fetcher.state !== 'idle';
+  const result = fetcher.state === 'idle' ? fetcher.data : undefined;
+  const fieldError = result?.ok === false ? result.fieldError : undefined;
+  const otherError = result?.ok === false && result.fieldError === undefined ? result.message : undefined;
+
+  // 结果到达之后操作 DOM（不是 setState）：成功时清空输入框；输入有误时把焦点移到输入框，读屏软件会读出它的错误
+  useEffect(() => {
+    if (result?.ok === true) form.current?.reset();
+    else if (result?.ok === false && result.fieldError !== undefined) input.current?.focus();
+  }, [result]);
+
+  return (
+    <fetcher.Form
+      method="post"
+      ref={form}
+      onSubmit={(e) => {
+        // 按钮用 aria-disabled（焦点不会丢失，e07），所以要在这里忽略提交期间的再次提交
+        if (busy) e.preventDefault();
+      }}
+    >
+      <input type="hidden" name="intent" value="add" />
+      <label htmlFor="title">新任务</label>{' '}
+      <input
+        ref={input}
+        id="title"
+        name="title"
+        aria-invalid={fieldError !== undefined}
+        aria-describedby={fieldError !== undefined ? 'title-error' : undefined}
+      />{' '}
+      <button type="submit" aria-disabled={busy}>
+        {busy ? '添加中…' : '添加'}
+      </button>
+      {fieldError !== undefined && <p id="title-error">{fieldError}</p>}
+      {otherError !== undefined && <p role="alert">{otherError}</p>}
+    </fetcher.Form>
+  );
+}
+
+function ProjectPage() {
+  const project = useLoaderData<typeof projectLoader>();
+  const s = summarize(project, TODAY);
+  return (
+    <>
+      <h1>{project.name}</h1>
+      <p>
+        状态：{STATUS_NAMES[project.status]} · 进度：{s.done}/{s.total}
+      </p>
+      <ul aria-label="任务">
+        {project.tasks.map((task) => (
+          <TaskItem key={task.id} task={task} />
+        ))}
+      </ul>
+      <AddTask />
+    </>
+  );
+}
+
+function Layout() {
+  const navigation = useNavigation();
+  return (
+    <>
+      <header>
+        <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
+      </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: '/',
+    Component: Layout,
+    HydrateFallback: () => <p>正在加载…</p>,
+    children: [
+      { index: true, element: <Navigate to="/projects/p1" replace /> },
+      {
+        path: 'projects/:projectId',
+        loader: projectLoader,
+        action: projectAction,
+        Component: ProjectPage,
+        ErrorBoundary: ProjectError,
+      },
+    ],
+  },
+];
+```
+:::
+
+:::variant{kind=wrong name=no-field-focus fails=tests reason="字段错误出现时没有移动焦点：读屏软件的用户不知道输入有误"}
+```tsx file=routes.tsx
+import { useEffect, useRef } from 'react';
+import {
+  data,
+  isRouteErrorResponse,
+  Link,
+  Navigate,
+  Outlet,
+  useFetcher,
+  useLoaderData,
+  useNavigation,
+  useRevalidator,
+  useRouteError,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  type RouteObject,
+} from 'react-router';
+import { addTask, errorMessage, getProject, setTaskDone, type ApiError } from './api';
+import { STATUS_NAMES, type Task } from './model';
+import { summarize } from './summary';
+import { TODAY } from './data';
+
+// ---------- 读取（已经写好） ----------
+
+export async function projectLoader({ params, request }: LoaderFunctionArgs) {
+  const result = await getProject(params.projectId ?? '', request.signal);
+  if (result.ok) return result.data;
+  if (result.error.kind === 'not-found') throw data('没有这个项目', { status: 404 });
+  throw new Error(errorMessage(result.error));
+}
+
+function ProjectError() {
+  const error = useRouteError();
+  const revalidator = useRevalidator();
+  if (isRouteErrorResponse(error) && error.status === 404) return <h1>没有这个项目</h1>;
+  return (
+    <div role="alert">
+      <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
+        {revalidator.state === 'loading' ? '正在重试…' : '重试'}
+      </button>
+    </div>
+  );
+}
+
+// ---------- 写入 ----------
+
+type ActionResult = { ok: true } | { ok: false; message: string; fieldError?: string };
+
+const succeeded = () => data<ActionResult>({ ok: true });
+
+/** 失败时返回 4xx 的状态码：数据没有变，React Router 也就不会重新运行 loader */
+const failed = (error: ApiError) =>
+  data<ActionResult>(
+    { ok: false, message: errorMessage(error), fieldError: error.kind === 'invalid' ? error.errors.title : undefined },
+    { status: error.kind === 'invalid' ? 422 : 400 },
+  );
+
+export async function projectAction({ params, request }: ActionFunctionArgs) {
+  const projectId = params.projectId ?? '';
+  const form = await request.formData();
+  const intent = form.get('intent');
+  if (intent === 'toggle') {
+    const taskId = form.get('taskId');
+    if (typeof taskId !== 'string') throw data('缺少 taskId', { status: 400 });
+    const result = await setTaskDone(projectId, taskId, form.get('done') === 'true', request.signal);
+    return result.ok ? succeeded() : failed(result.error);
+  }
+  if (intent === 'add') {
+    const title = form.get('title');
+    const text = typeof title === 'string' ? title.trim() : '';
+    // 显然不对的输入，不必发给服务器
+    if (text === '') return data<ActionResult>({ ok: false, message: '任务不能为空', fieldError: '任务不能为空' }, { status: 422 });
+    const result = await addTask(projectId, text, request.signal);
+    return result.ok ? succeeded() : failed(result.error);
+  }
+  throw data('不认识的操作', { status: 400 });
+}
+
+function TaskItem({ task }: { task: Task }) {
+  const fetcher = useFetcher<typeof projectAction>();
+  // 乐观更新：提交还没有完成时，先显示提交的值
+  const done = fetcher.formData ? fetcher.formData.get('done') === 'true' : task.done;
+  const error = fetcher.state === 'idle' && fetcher.data?.ok === false ? fetcher.data.message : null;
+  return (
+    <li>
+      <label>
+        <input
+          type="checkbox"
+          checked={done}
+          onChange={(e) => void fetcher.submit({ intent: 'toggle', taskId: task.id, done: String(e.currentTarget.checked) }, { method: 'post' })}
+        />{' '}
+        {task.title}
+      </label>
+      {error !== null && <span role="alert"> {error}</span>}
+    </li>
+  );
+}
+
+function AddTask() {
+  const fetcher = useFetcher<typeof projectAction>();
+  const form = useRef<HTMLFormElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // 'submitting'（等待 action）和 'loading'（action 完成之后，等待 loader）都算提交期间
+  const busy = fetcher.state !== 'idle';
+  const result = fetcher.state === 'idle' ? fetcher.data : undefined;
+  const fieldError = result?.ok === false ? result.fieldError : undefined;
+  const otherError = result?.ok === false && result.fieldError === undefined ? result.message : undefined;
+
+  // 结果到达之后操作 DOM（不是 setState）：成功时清空输入框；输入有误时把焦点移到输入框，读屏软件会读出它的错误
+  useEffect(() => {
+    if (result?.ok === true) form.current?.reset();
+  }, [result]);
+
+  return (
+    <fetcher.Form
+      method="post"
+      ref={form}
+      onSubmit={(e) => {
+        // 按钮用 aria-disabled（焦点不会丢失，e07），所以要在这里忽略提交期间的再次提交
+        if (busy) e.preventDefault();
+      }}
+    >
+      <input type="hidden" name="intent" value="add" />
+      <label htmlFor="title">新任务</label>{' '}
+      <input
+        ref={input}
+        id="title"
+        name="title"
+        aria-invalid={fieldError !== undefined}
+        aria-describedby={fieldError !== undefined ? 'title-error' : undefined}
+      />{' '}
+      <button type="submit" aria-disabled={busy}>
+        {busy ? '添加中…' : '添加'}
+      </button>
+      {fieldError !== undefined && <p id="title-error">{fieldError}</p>}
+      {otherError !== undefined && <p role="alert">{otherError}</p>}
+    </fetcher.Form>
+  );
+}
+
+function ProjectPage() {
+  const project = useLoaderData<typeof projectLoader>();
+  const s = summarize(project, TODAY);
+  return (
+    <>
+      <h1>{project.name}</h1>
+      <p>
+        状态：{STATUS_NAMES[project.status]} · 进度：{s.done}/{s.total}
+      </p>
+      <ul aria-label="任务">
+        {project.tasks.map((task) => (
+          <TaskItem key={task.id} task={task} />
+        ))}
+      </ul>
+      <AddTask />
+    </>
+  );
+}
+
+function Layout() {
+  const navigation = useNavigation();
+  return (
+    <>
+      <header>
+        <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
+      </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
       <main>
         <Outlet />
       </main>
@@ -1394,6 +2126,7 @@ import {
   Outlet,
   useFetcher,
   useLoaderData,
+  useNavigation,
   useRevalidator,
   useRouteError,
   type ActionFunctionArgs,
@@ -1421,7 +2154,14 @@ function ProjectError() {
   return (
     <div role="alert">
       <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
-      <button type="button" disabled={revalidator.state === 'loading'} onClick={() => void revalidator.revalidate()}>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
         {revalidator.state === 'loading' ? '正在重试…' : '重试'}
       </button>
     </div>
@@ -1485,27 +2225,38 @@ function TaskItem({ task }: { task: Task }) {
 function AddTask() {
   const fetcher = useFetcher<typeof projectAction>();
   const form = useRef<HTMLFormElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // 'submitting'（等待 action）和 'loading'（action 完成之后，等待 loader）都算提交期间
   const busy = fetcher.state !== 'idle';
   const result = fetcher.state === 'idle' ? fetcher.data : undefined;
   const fieldError = result?.ok === false ? result.fieldError : undefined;
   const otherError = result?.ok === false && result.fieldError === undefined ? result.message : undefined;
 
-  // 添加成功之后清空输入框：这是对 DOM 的操作，不是 setState
+  // 结果到达之后操作 DOM（不是 setState）：成功时清空输入框；输入有误时把焦点移到输入框，读屏软件会读出它的错误
   useEffect(() => {
     if (result !== undefined) form.current?.reset();
+    if (result?.ok === false && result.fieldError !== undefined) input.current?.focus();
   }, [result]);
 
   return (
-    <fetcher.Form method="post" ref={form}>
+    <fetcher.Form
+      method="post"
+      ref={form}
+      onSubmit={(e) => {
+        // 按钮用 aria-disabled（焦点不会丢失，e07），所以要在这里忽略提交期间的再次提交
+        if (busy) e.preventDefault();
+      }}
+    >
       <input type="hidden" name="intent" value="add" />
       <label htmlFor="title">新任务</label>{' '}
       <input
+        ref={input}
         id="title"
         name="title"
         aria-invalid={fieldError !== undefined}
         aria-describedby={fieldError !== undefined ? 'title-error' : undefined}
       />{' '}
-      <button type="submit" disabled={busy}>
+      <button type="submit" aria-disabled={busy}>
         {busy ? '添加中…' : '添加'}
       </button>
       {fieldError !== undefined && <p id="title-error">{fieldError}</p>}
@@ -1534,11 +2285,14 @@ function ProjectPage() {
 }
 
 function Layout() {
+  const navigation = useNavigation();
   return (
     <>
       <header>
         <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
       </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
       <main>
         <Outlet />
       </main>
@@ -1577,6 +2331,7 @@ import {
   Outlet,
   useFetcher,
   useLoaderData,
+  useNavigation,
   useRevalidator,
   useRouteError,
   type ActionFunctionArgs,
@@ -1604,7 +2359,14 @@ function ProjectError() {
   return (
     <div role="alert">
       <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
-      <button type="button" disabled={revalidator.state === 'loading'} onClick={() => void revalidator.revalidate()}>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
         {revalidator.state === 'loading' ? '正在重试…' : '重试'}
       </button>
     </div>
@@ -1667,27 +2429,38 @@ function TaskItem({ task }: { task: Task }) {
 function AddTask() {
   const fetcher = useFetcher<typeof projectAction>();
   const form = useRef<HTMLFormElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // 'submitting'（等待 action）和 'loading'（action 完成之后，等待 loader）都算提交期间
   const busy = fetcher.state !== 'idle';
   const result = fetcher.state === 'idle' ? fetcher.data : undefined;
   const fieldError = result?.ok === false ? result.fieldError : undefined;
   const otherError = result?.ok === false && result.fieldError === undefined ? result.message : undefined;
 
-  // 添加成功之后清空输入框：这是对 DOM 的操作，不是 setState
+  // 结果到达之后操作 DOM（不是 setState）：成功时清空输入框；输入有误时把焦点移到输入框，读屏软件会读出它的错误
   useEffect(() => {
     if (result?.ok === true) form.current?.reset();
+    else if (result?.ok === false && result.fieldError !== undefined) input.current?.focus();
   }, [result]);
 
   return (
-    <fetcher.Form method="post" ref={form}>
+    <fetcher.Form
+      method="post"
+      ref={form}
+      onSubmit={(e) => {
+        // 按钮用 aria-disabled（焦点不会丢失，e07），所以要在这里忽略提交期间的再次提交
+        if (busy) e.preventDefault();
+      }}
+    >
       <input type="hidden" name="intent" value="add" />
       <label htmlFor="title">新任务</label>{' '}
       <input
+        ref={input}
         id="title"
         name="title"
         aria-invalid={fieldError !== undefined}
         aria-describedby={fieldError !== undefined ? 'title-error' : undefined}
       />{' '}
-      <button type="submit" disabled={busy}>
+      <button type="submit" aria-disabled={busy}>
         {busy ? '添加中…' : '添加'}
       </button>
       {fieldError !== undefined && <p id="title-error">{fieldError}</p>}
@@ -1716,11 +2489,14 @@ function ProjectPage() {
 }
 
 function Layout() {
+  const navigation = useNavigation();
   return (
     <>
       <header>
         <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
       </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
       <main>
         <Outlet />
       </main>
@@ -1759,6 +2535,7 @@ import {
   Outlet,
   useFetcher,
   useLoaderData,
+  useNavigation,
   useRevalidator,
   useRouteError,
   type ActionFunctionArgs,
@@ -1786,7 +2563,14 @@ function ProjectError() {
   return (
     <div role="alert">
       <p>加载失败：{error instanceof Error ? error.message : '未知的错误'}</p>
-      <button type="button" disabled={revalidator.state === 'loading'} onClick={() => void revalidator.revalidate()}>
+      <button
+        type="button"
+        aria-disabled={revalidator.state === 'loading'}
+        onClick={() => {
+          // 重新加载期间按钮仍然可以获得焦点（e07），在这里忽略重复的点击
+          if (revalidator.state !== 'loading') void revalidator.revalidate();
+        }}
+      >
         {revalidator.state === 'loading' ? '正在重试…' : '重试'}
       </button>
     </div>
@@ -1850,27 +2634,38 @@ function TaskItem({ task }: { task: Task }) {
 function AddTask() {
   const fetcher = useFetcher<typeof projectAction>();
   const form = useRef<HTMLFormElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  // 'submitting'（等待 action）和 'loading'（action 完成之后，等待 loader）都算提交期间
   const busy = fetcher.state !== 'idle';
   const result = fetcher.state === 'idle' ? fetcher.data : undefined;
   const fieldError = result?.ok === false ? result.fieldError : undefined;
   const otherError = result?.ok === false && result.fieldError === undefined ? result.message : undefined;
 
-  // 添加成功之后清空输入框：这是对 DOM 的操作，不是 setState
+  // 结果到达之后操作 DOM（不是 setState）：成功时清空输入框；输入有误时把焦点移到输入框，读屏软件会读出它的错误
   useEffect(() => {
     if (result?.ok === true) form.current?.reset();
+    else if (result?.ok === false && result.fieldError !== undefined) input.current?.focus();
   }, [result]);
 
   return (
-    <fetcher.Form method="post" ref={form}>
+    <fetcher.Form
+      method="post"
+      ref={form}
+      onSubmit={(e) => {
+        // 按钮用 aria-disabled（焦点不会丢失，e07），所以要在这里忽略提交期间的再次提交
+        if (busy) e.preventDefault();
+      }}
+    >
       <input type="hidden" name="intent" value="add" />
       <label htmlFor="title">新任务</label>{' '}
       <input
+        ref={input}
         id="title"
         name="title"
         aria-invalid={fieldError !== undefined}
         aria-describedby={fieldError !== undefined ? 'title-error' : undefined}
       />{' '}
-      <button type="submit" disabled={busy}>
+      <button type="submit" aria-disabled={busy}>
         {busy ? '添加中…' : '添加'}
       </button>
       {fieldError !== undefined && <p id="title-error">{fieldError}</p>}
@@ -1899,11 +2694,14 @@ function ProjectPage() {
 }
 
 function Layout() {
+  const navigation = useNavigation();
   return (
     <>
       <header>
         <Link to="/projects/p1">官网改版</Link> <Link to="/projects/p3">季度报告</Link>
       </header>
+      {/* 在页面之间切换、等待 loader 时的提示（g14） */}
+      <p role="status">{navigation.state === 'loading' ? '正在加载…' : ''}</p>
       <main>
         <Outlet />
       </main>

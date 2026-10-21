@@ -110,7 +110,7 @@ async function open(path: string) {
 
 ### 等待，而不是假设时机
 
-点击之后，界面不一定在 `user.click` 返回时就已经更新了：请求要等服务器回应；即使不需要等服务器，React Router 也在 transition 中更新状态（g13），实测在 WebKit 中，提交之后按钮变成禁用、复选框显示新的值，都比 Chromium 晚一点才渲染出来。所以：
+点击之后，界面不一定在 `user.click` 返回时就已经更新了：请求要等服务器回应；即使不需要等服务器，React Router 也在 transition 中更新状态（g13），实测在 WebKit 中，提交之后按钮变成不可用、复选框显示新的值，都比 Chromium 晚一点才渲染出来。所以：
 
 - 等待会出现的元素用 `await screen.findBy…`；
 - 等待一个条件成立用 `await waitFor(() => { expect(…) })`：它反复运行回调，直到其中的断言都通过，或者超时（默认 1 秒）；

@@ -37,7 +37,7 @@
   options:
     - text: 状态码是 4xx、5xx 时，React Router 默认不在提交之后重新运行 loader：数据没有变，不需要重新加载
       correct: true
-      explain: 返回 200 也能工作，只是多请求了一次数据。
+      explain: 返回 200 时 React Router 会白白再请求一次数据；如果这时连接断了，重新加载也会失败，整个页面换成错误边界。
     - text: 不这样做，fetcher.data 就读不到返回的对象
       explain: 两种写法 fetcher.data 都能读到；区别在于是否重新加载数据。
     - text: 状态码 400 会让页面显示错误边界

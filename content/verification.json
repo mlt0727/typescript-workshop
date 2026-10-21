@@ -11106,8 +11106,8 @@
       ]
     },
     "p2-01-plan-and-types": {
-      "verifiedAt": "2026-10-21T05:38:26.857Z",
-      "sourceHash": "c838afe56299b23d",
+      "verifiedAt": "2026-10-21T06:48:19.505Z",
+      "sourceHash": "a96ef6e2a65a24ec",
       "ok": true,
       "checks": [
         {
@@ -11198,8 +11198,8 @@
       ]
     },
     "p2-02-routes-lists": {
-      "verifiedAt": "2026-10-21T05:38:34.093Z",
-      "sourceHash": "29de76f32ac23460",
+      "verifiedAt": "2026-10-21T06:48:30.357Z",
+      "sourceHash": "20bb3266144ec2b2",
       "ok": true,
       "checks": [
         {
@@ -11325,8 +11325,8 @@
       ]
     },
     "p2-03-forms": {
-      "verifiedAt": "2026-10-21T06:24:48.589Z",
-      "sourceHash": "d749af616cce4072",
+      "verifiedAt": "2026-10-21T06:49:04.618Z",
+      "sourceHash": "49b51f13c3e22b36",
       "ok": true,
       "checks": [
         {
@@ -11437,8 +11437,8 @@
       ]
     },
     "p2-04-data-state": {
-      "verifiedAt": "2026-10-21T06:02:49.370Z",
-      "sourceHash": "11f6f0b6a3ff9d12",
+      "verifiedAt": "2026-10-21T07:05:42.641Z",
+      "sourceHash": "877c7001dda0695b",
       "ok": true,
       "checks": [
         {
@@ -11454,7 +11454,7 @@
         {
           "target": "exercise:api-client:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(成功的请求 › POST、PATCH：方法、JSON 的请求体和 Content-Type ⟶ expect(…).toBe('{\"title\":\"写文案\"}'),失败的请求 › 连接失败 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：TypeError: Failed to fetch,失败的请求 › 404 ⟶ expect(…).toEqual({ ok: false, error: { kind: 'not-found' } }),失败的请求 › 422：每个字段的错误 ⟶ expect(…).toEqual({,失败的请求 › 409：服务器给出的原因 ⟶ expect(…).toEqual({ ok: false, error: { kind: 'conflict', message: '已完成的项目不能修改任务' } }),失败的请求 › 409、422 的响应体格式不对时，当作服务器的错误 ⟶ expect(…).toEqual({ ok: false, error: { kind: 'server', status: 422 } }),失败的请求 › 其他的错误状态码 ⟶ expect(…).toEqual({ ok: false, error: { kind: 'server', status: 500 } }),失败的请求 › 成功的状态码，但数据不对：不是 JSON，或者格式不对 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', \"<!doctype \"... is not valid JSON,errorMessage › 每一种错误的信息 ⟶ expect(…).toBe('无法连接服务器，请检查网络后重试'))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(成功的请求 › POST、PATCH：方法、JSON 的请求体和 Content-Type ⟶ expect(…).toBe('{\"title\":\"写文案\"}'),失败的请求 › 连接失败（传入了 signal、但没有中止时也一样） ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：TypeError: Failed to fetch,失败的请求 › 404 ⟶ expect(…).toEqual({ ok: false, error: { kind: 'not-found' } }),失败的请求 › 422：每个字段的错误 ⟶ expect(…).toEqual({,失败的请求 › 409：服务器给出的原因 ⟶ expect(…).toEqual({ ok: false, error: { kind: 'conflict', message: '已完成的项目不能修改任务' } }),失败的请求 › 409、422 的响应体格式不对时，当作服务器的错误 ⟶ expect(…).toEqual({ ok: false, error: { kind: 'server', status: 422 } }),失败的请求 › 其他的错误状态码 ⟶ expect(…).toEqual({ ok: false, error: { kind: 'server', status: 500 } }),失败的请求 › 成功的状态码，但数据不对：不是 JSON，或者格式不对 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', \"<!doctype \"... is not valid JSON,errorMessage › 每一种错误的信息 ⟶ expect(…).toBe('无法连接服务器，请检查网络后重试'))"
         },
         {
           "target": "exercise:api-client:solution:solution",
@@ -11470,6 +11470,16 @@
           "target": "exercise:api-client:wrong:abort-as-network",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(失败的请求 › 被中止的请求不是失败：原来的错误继续抛出 ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：{ ok: false, error: { kind: 'network' } })"
+        },
+        {
+          "target": "exercise:api-client:wrong:abort-if-signal",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(失败的请求 › 连接失败（传入了 signal、但没有中止时也一样） ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：TypeError: Failed to fetch)"
+        },
+        {
+          "target": "exercise:api-client:wrong:body-abort-ignored",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(失败的请求 › 读取响应体时被中止：同样继续抛出，而不是当作格式不对的数据 ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：{ ok: false, error: { kind: 'bad-response' } })"
         },
         {
           "target": "exercise:api-client:wrong:no-json-guard",
@@ -11489,7 +11499,7 @@
         {
           "target": "exercise:task-actions:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(勾选任务 › 立刻显示新的状态（乐观更新），保存之后进度也更新 ⟶ expect(…).toBeChecked(),勾选任务 › 取消勾选也一样 ⟶ expect(…).not.toBeChecked(),勾选任务 › 服务器拒绝时恢复原来的状态，并在这个任务旁边说明原因 ⟶ 提交期间先显示提交的值,勾选任务 › 连接失败时也恢复原来的状态 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",添加任务 › 添加成功：任务出现在列表最后，输入框清空 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务,添加任务 › 提交期间按钮不能再点，不会重复提交 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务,添加任务 › 服务器返回的字段错误显示在输入框旁边，输入的内容保留 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务,添加任务 › 空的任务不发给服务器 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务,添加任务 › 其他错误（违反业务规则、连接失败）用 role=\"alert\" 显示 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(勾选任务 › 立刻显示新的状态（乐观更新），保存之后进度也更新 ⟶ expect(…).toBeChecked(),勾选任务 › 取消勾选也一样 ⟶ expect(…).not.toBeChecked(),勾选任务 › 每个任务独立保存：连续勾选两个，两个都保存了 ⟶ TestingLibraryElementError: Unable to find an element with the text: /进度：3\\/3/. This could be because the text is broken up by multiple elements. In this case, ,勾选任务 › 服务器拒绝时恢复原来的状态，在这个任务旁边说明原因，并且不重新加载数据 ⟶ 提交期间先显示提交的值,勾选任务 › 连接失败时也恢复原来的状态 ⟶ TestingLibraryElementError: Unable to find role=\"alert\",添加任务 › 添加成功：任务出现在列表最后，输入框清空 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务,添加任务 › 提交期间（包括之后重新加载数据的时候）按钮不可用，不会重复提交 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务,添加任务 › 服务器返回的字段错误显示在输入框旁边，焦点移到输入框，输入的内容保留 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务,添加任务 › 空的任务不发给服务器 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务,添加任务 › 其他错误（违反业务规则、连接失败）用 role=\"alert\" 显示 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 新任务)"
         },
         {
           "target": "exercise:task-actions:solution:solution",
@@ -11504,17 +11514,32 @@
         {
           "target": "exercise:task-actions:wrong:no-optimistic",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(勾选任务 › 立刻显示新的状态（乐观更新），保存之后进度也更新 ⟶ TestingLibraryElementError: Unable to find an element with the text: /进度：1\\/3/. This could be because the text is broken up by multiple elements. In this case, ,勾选任务 › 取消勾选也一样 ⟶ TestingLibraryElementError: Unable to find an element with the text: /进度：1\\/3/. This could be because the text is broken up by multiple elements. In this case, ,勾选任务 › 服务器拒绝时恢复原来的状态，并在这个任务旁边说明原因 ⟶ 提交期间先显示提交的值)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(勾选任务 › 立刻显示新的状态（乐观更新），保存之后进度也更新 ⟶ TestingLibraryElementError: Unable to find an element with the text: /进度：1\\/3/. This could be because the text is broken up by multiple elements. In this case, ,勾选任务 › 取消勾选也一样 ⟶ TestingLibraryElementError: Unable to find an element with the text: /进度：1\\/3/. This could be because the text is broken up by multiple elements. In this case, ,勾选任务 › 服务器拒绝时恢复原来的状态，在这个任务旁边说明原因，并且不重新加载数据 ⟶ 提交期间先显示提交的值)"
         },
         {
           "target": "exercise:task-actions:wrong:not-disabled",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加任务 › 提交期间按钮不能再点，不会重复提交 ⟶ expect(…).toBeDisabled())"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加任务 › 提交期间（包括之后重新加载数据的时候）按钮不可用，不会重复提交 ⟶ 提交之后按钮应该不可用)"
+        },
+        {
+          "target": "exercise:task-actions:wrong:submitting-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加任务 › 提交期间（包括之后重新加载数据的时候）按钮不可用，不会重复提交 ⟶ 重新加载数据期间按钮也应该不可用)"
+        },
+        {
+          "target": "exercise:task-actions:wrong:ok-status",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(勾选任务 › 服务器拒绝时恢复原来的状态，在这个任务旁边说明原因，并且不重新加载数据 ⟶ 失败的提交之后不应该重新加载数据（action 要返回 4xx）,勾选任务 › 连接失败时也恢复原来的状态 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"checkbox\" and name \"设计稿\")"
+        },
+        {
+          "target": "exercise:task-actions:wrong:no-field-focus",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加任务 › 服务器返回的字段错误显示在输入框旁边，焦点移到输入框，输入的内容保留 ⟶ 焦点移到出错的输入框，读屏软件会读出它的错误)"
         },
         {
           "target": "exercise:task-actions:wrong:reset-always",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加任务 › 服务器返回的字段错误显示在输入框旁边，输入的内容保留 ⟶ 出错之后，输入的内容应该保留,添加任务 › 其他错误（违反业务规则、连接失败）用 role=\"alert\" 显示 ⟶ TestingLibraryElementError: Unable to find role=\"alert\")"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(添加任务 › 服务器返回的字段错误显示在输入框旁边，焦点移到输入框，输入的内容保留 ⟶ 出错之后，输入的内容应该保留,添加任务 › 其他错误（违反业务规则、连接失败）用 role=\"alert\" 显示 ⟶ TestingLibraryElementError: Unable to find role=\"alert\")"
         },
         {
           "target": "exercise:task-actions:wrong:send-empty",
@@ -11529,8 +11554,8 @@
       ]
     },
     "p2-05-tests": {
-      "verifiedAt": "2026-10-21T06:14:01.468Z",
-      "sourceHash": "80110b9c3e6384b0",
+      "verifiedAt": "2026-10-21T06:51:45.435Z",
+      "sourceHash": "ffbcb60934a647f2",
       "ok": true,
       "checks": [
         {
