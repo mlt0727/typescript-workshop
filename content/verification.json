@@ -10524,8 +10524,8 @@
       ]
     },
     "h03-server-client-components": {
-      "verifiedAt": "2026-10-21T08:28:20.994Z",
-      "sourceHash": "4d0859d63f64fdbf",
+      "verifiedAt": "2026-10-21T08:46:04.595Z",
+      "sourceHash": "6ab664f82671c963",
       "ok": true,
       "checks": [
         {
@@ -10541,7 +10541,7 @@
         {
           "target": "exercise:check-props:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(checkProps › 函数不能传，类本身也是函数 ⟶ expect(…).toStrictEqual([,checkProps › 没有用 Symbol.for 注册的 symbol ⟶ expect(…).toStrictEqual([ { path: 'a', kind: 'symbol' } ]),checkProps › 类的实例、没有原型的对象 ⟶ expect(…).toStrictEqual([,checkProps › 报告了一个对象之后，不再检查它里面 ⟶ expect(…).toStrictEqual([,checkProps › 嵌套的对象和数组：路径中的 . 和 [i] ⟶ expect(…).toStrictEqual([,checkProps › Map 和 Set 里面也要检查 ⟶ expect(…).toStrictEqual([,checkProps › 按深度优先的顺序报告所有的问题 ⟶ expect(…).toStrictEqual([)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(checkProps › 函数不能传，类本身也是函数 ⟶ expect(…).toStrictEqual([,checkProps › 没有用 Symbol.for 注册的 symbol ⟶ expect(…).toStrictEqual([ { path: 'a', kind: 'symbol' } ]),checkProps › 类的实例、没有原型的对象 ⟶ expect(…).toStrictEqual([,checkProps › 报告了一个对象之后，不再检查它里面 ⟶ expect(…).toStrictEqual([,checkProps › 嵌套的对象和数组：路径中的 . 和 [i] ⟶ expect(…).toStrictEqual([,checkProps › Map 的每个条目先检查键，再检查值 ⟶ expect(…).toStrictEqual([,checkProps › Map 和 Set 里面也要检查 ⟶ expect(…).toStrictEqual([,checkProps › 按深度优先的顺序报告所有的问题 ⟶ expect(…).toStrictEqual([)"
         },
         {
           "target": "exercise:check-props:solution:solution",
@@ -10571,7 +10571,7 @@
         {
           "target": "exercise:check-props:wrong:skip-collections",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkProps › Map 和 Set 里面也要检查 ⟶ expect(…).toStrictEqual([)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkProps › Map 的每个条目先检查键，再检查值 ⟶ expect(…).toStrictEqual([,checkProps › Map 和 Set 里面也要检查 ⟶ expect(…).toStrictEqual([)"
         },
         {
           "target": "exercise:check-props:wrong:date-not-allowed",
@@ -10579,14 +10579,19 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkProps › 可以传过去的值：没有问题 ⟶ expect(…).toStrictEqual([]))"
         },
         {
+          "target": "exercise:check-props:wrong:error-allowed",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkProps › 类的实例、没有原型的对象 ⟶ expect(…).toStrictEqual([)"
+        },
+        {
           "target": "exercise:check-props:wrong:stop-at-first",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkProps › 函数不能传，类本身也是函数 ⟶ expect(…).toStrictEqual([,checkProps › 类的实例、没有原型的对象 ⟶ expect(…).toStrictEqual([,checkProps › 报告了一个对象之后，不再检查它里面 ⟶ expect(…).toStrictEqual([,checkProps › 嵌套的对象和数组：路径中的 . 和 [i] ⟶ expect(…).toStrictEqual([,checkProps › Map 和 Set 里面也要检查 ⟶ expect(…).toStrictEqual([,checkProps › 按深度优先的顺序报告所有的问题 ⟶ expect(…).toStrictEqual([)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkProps › 函数不能传，类本身也是函数 ⟶ expect(…).toStrictEqual([,checkProps › 类的实例、没有原型的对象 ⟶ expect(…).toStrictEqual([,checkProps › 报告了一个对象之后，不再检查它里面 ⟶ expect(…).toStrictEqual([,checkProps › 嵌套的对象和数组：路径中的 . 和 [i] ⟶ expect(…).toStrictEqual([,checkProps › Map 的每个条目先检查键，再检查值 ⟶ expect(…).toStrictEqual([,checkProps › Map 和 Set 里面也要检查 ⟶ expect(…).toStrictEqual([,checkProps › 按深度优先的顺序报告所有的问题 ⟶ expect(…).toStrictEqual([)"
         },
         {
           "target": "exercise:module-boundary:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(analyzeBoundary › 没有错误的应用：两张模块图 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 客户端组件导入了只能在服务器上运行的模块：它导入的模块也都在客户端 ⟶ expect(…).toContain('lib/db.ts'),analyzeBoundary › 服务端组件直接导入了只能在浏览器中运行的模块 ⟶ expect(…).toContain('lib/use-debounce.ts'),analyzeBoundary › 忘了写 'use client'：这个模块和它导入的模块都留在了服务端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 只需要在入口写 'use client'；客户端中的 'use client' 不改变什么 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 导入路径是广度优先时第一次到达的那一条 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 客户端入口按服务端发现它们的顺序开始 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 页面本身是客户端组件；循环导入 ⟶ expect(…).toStrictEqual({)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(analyzeBoundary › 没有错误的应用：两张模块图 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 客户端组件导入了只能在服务器上运行的模块：它导入的模块也都在客户端 ⟶ expect(…).toContain('lib/db.ts'),analyzeBoundary › 服务端组件直接导入了只能放在客户端的模块 ⟶ expect(…).toContain('lib/use-debounce.ts'),analyzeBoundary › 忘了写 'use client'：这个模块和它导入的模块都留在了服务端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 只需要在入口写 'use client'；客户端中的 'use client' 不改变什么 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 导入路径是广度优先时第一次到达的那一条 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 客户端入口按服务端发现它们的顺序开始 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 客户端入口按被发现的顺序，而不是按名字排序 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 服务端的模块图也是广度优先 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 先完成服务端的模块图，再从所有的客户端入口一起开始：路径不一定是全局最短的 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 两种错误一起按模块名排序 ⟶ expect(…).toStrictEqual([ 'lib/db.ts', 'lib/posts.ts', 'lib/use-debounce.ts' ]),analyzeBoundary › 服务端的循环导入 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 页面本身是客户端组件；循环导入 ⟶ expect(…).toStrictEqual({)"
         },
         {
           "target": "exercise:module-boundary:solution:solution",
@@ -10601,7 +10606,7 @@
         {
           "target": "exercise:module-boundary:wrong:no-propagation",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(analyzeBoundary › 没有错误的应用：两张模块图 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 客户端组件导入了只能在服务器上运行的模块：它导入的模块也都在客户端 ⟶ expect(…).toContain('lib/db.ts'),analyzeBoundary › 服务端组件直接导入了只能在浏览器中运行的模块 ⟶ expect(…).toContain('lib/use-debounce.ts'),analyzeBoundary › 忘了写 'use client'：这个模块和它导入的模块都留在了服务端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 只需要在入口写 'use client'；客户端中的 'use client' 不改变什么 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 导入路径是广度优先时第一次到达的那一条 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 客户端入口按服务端发现它们的顺序开始 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 页面本身是客户端组件；循环导入 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(analyzeBoundary › 没有错误的应用：两张模块图 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 客户端组件导入了只能在服务器上运行的模块：它导入的模块也都在客户端 ⟶ expect(…).toContain('lib/db.ts'),analyzeBoundary › 服务端组件直接导入了只能放在客户端的模块 ⟶ expect(…).toContain('lib/use-debounce.ts'),analyzeBoundary › 忘了写 'use client'：这个模块和它导入的模块都留在了服务端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 只需要在入口写 'use client'；客户端中的 'use client' 不改变什么 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 导入路径是广度优先时第一次到达的那一条 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 客户端入口按服务端发现它们的顺序开始 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 客户端入口按被发现的顺序，而不是按名字排序 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 先完成服务端的模块图，再从所有的客户端入口一起开始：路径不一定是全局最短的 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 两种错误一起按模块名排序 ⟶ expect(…).toStrictEqual([ 'lib/db.ts', 'lib/posts.ts', 'lib/use-debounce.ts' ]),analyzeBoundary › 页面本身是客户端组件；循环导入 ⟶ expect(…).toStrictEqual({)"
         },
         {
           "target": "exercise:module-boundary:wrong:through-boundary",
@@ -10611,17 +10616,22 @@
         {
           "target": "exercise:module-boundary:wrong:entry-in-both",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(analyzeBoundary › 没有错误的应用：两张模块图 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 客户端组件导入了只能在服务器上运行的模块：它导入的模块也都在客户端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 服务端组件直接导入了只能在浏览器中运行的模块 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 忘了写 'use client'：这个模块和它导入的模块都留在了服务端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 只需要在入口写 'use client'；客户端中的 'use client' 不改变什么 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 页面本身是客户端组件；循环导入 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(analyzeBoundary › 没有错误的应用：两张模块图 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 客户端组件导入了只能在服务器上运行的模块：它导入的模块也都在客户端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 服务端组件直接导入了只能放在客户端的模块 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 忘了写 'use client'：这个模块和它导入的模块都留在了服务端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 只需要在入口写 'use client'；客户端中的 'use client' 不改变什么 ⟶ expect(…).toStrictEqual({,analyzeBoundary › 两种错误一起按模块名排序 ⟶ expect(…).toStrictEqual([ 'lib/db.ts', 'lib/posts.ts', 'lib/use-debounce.ts' ]),analyzeBoundary › 页面本身是客户端组件；循环导入 ⟶ expect(…).toStrictEqual({)"
         },
         {
           "target": "exercise:module-boundary:wrong:stack-not-queue",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(analyzeBoundary › 客户端入口按服务端发现它们的顺序开始 ⟶ expect(…).toStrictEqual([)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(analyzeBoundary › 客户端入口按服务端发现它们的顺序开始 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 先完成服务端的模块图，再从所有的客户端入口一起开始：路径不一定是全局最短的 ⟶ expect(…).toStrictEqual([)"
         },
         {
           "target": "exercise:module-boundary:wrong:trace-from-client-entry",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(analyzeBoundary › 客户端组件导入了只能在服务器上运行的模块：它导入的模块也都在客户端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 导入路径是广度优先时第一次到达的那一条 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 客户端入口按服务端发现它们的顺序开始 ⟶ expect(…).toStrictEqual([)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(analyzeBoundary › 客户端组件导入了只能在服务器上运行的模块：它导入的模块也都在客户端 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 导入路径是广度优先时第一次到达的那一条 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 客户端入口按服务端发现它们的顺序开始 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 客户端入口按被发现的顺序，而不是按名字排序 ⟶ expect(…).toStrictEqual([,analyzeBoundary › 先完成服务端的模块图，再从所有的客户端入口一起开始：路径不一定是全局最短的 ⟶ expect(…).toStrictEqual([)"
+        },
+        {
+          "target": "exercise:module-boundary:wrong:entries-sorted",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(analyzeBoundary › 客户端入口按被发现的顺序，而不是按名字排序 ⟶ expect(…).toStrictEqual([)"
         },
         {
           "target": "exercise:module-boundary:wrong:unsorted",

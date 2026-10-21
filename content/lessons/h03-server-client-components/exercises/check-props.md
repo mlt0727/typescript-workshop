@@ -2,14 +2,14 @@
 kind: task
 title: 检查传给客户端组件的 props
 ---
-在 `serializable.ts` 中实现 `checkProps(props)`：在把 `props` 从服务端组件传给客户端组件之前，找出所有传不过去的值。规则来自正文中实测的 Next.js 16.4.2：
+在 `serializable.ts` 中实现 `checkProps(props)`：在把 `props` 从服务端组件传给客户端组件之前，找出所有传不过去、或者传过去会变样的值。规则来自 React 文档中的可序列化类型列表和正文中实测的 Next.js 16.4.2：
 
 1. **报告的问题**：`{ path, kind }`。`kind` 是下面四种之一：
    - `'function'`：函数（类本身也是函数）；
    - `'symbol'`：没有用 `Symbol.for` 注册的 symbol（`Symbol.keyFor` 返回 `undefined`）；
    - `'null-prototype'`：原型是 `null` 的对象（例如 `Object.create(null)`）；
-   - `'class-instance'`：原型不是 `Object.prototype` 的其他对象，下面第 3 条列出的内置类型除外。`URL`、`Error`、正则这样的内置类型也算（正文中讲了它们传过去之后的样子）；
-2. **继续往里检查**：普通对象（原型是 `Object.prototype`）检查它的每个属性（`Object.entries` 的顺序）；数组检查每个元素；`Set` 按 `[...set]` 的顺序检查每个元素；`Map` 按 `[...map]` 的顺序检查每个条目的键和值。报告了问题的值，不再检查它里面；
+   - `'class-instance'`：原型不是 `Object.prototype` 的其他对象，下面第 2、3 条列出的数组、`Set`、`Map` 和内置类型除外。`URL`、`Error`、正则这样的内置类型也算（正文中讲了它们传过去之后的样子）；
+2. **继续往里检查**：普通对象（原型是 `Object.prototype`）检查它的每个属性（`Object.entries` 的顺序）；数组检查每个元素；`Set` 按 `[...set]` 的顺序检查每个元素；`Map` 按 `[...map]` 的顺序检查每个条目，先检查键，再检查值。报告了问题的值，不再检查它里面；
 3. **不用检查的值**：字符串、数字、bigint、布尔值、`null`、`undefined`、用 `Symbol.for` 注册的 symbol，以及 `Date`、`Promise`、`ArrayBuffer` 和它的各种视图（`Uint8Array`、`DataView` 等，`ArrayBuffer.isView` 为 `true`），这些内置类型不往里检查；
 4. **路径**：顶层的属性就是属性名；对象的属性加上 `.名字`，数组和 `Set` 的元素加上 `[i]`，`Map` 的第 i 个条目的键加上 `[i][0]`、值加上 `[i][1]`。例如 `items[1].onClick`、`handlers[0][1]`；
 5. 按深度优先的顺序返回**所有**的问题。值中没有循环引用。
@@ -152,6 +152,8 @@ describe('checkProps', () => {
         ids: new Set(['x']),
         bytes: new Uint8Array([1, 2]),
         view: new DataView(new ArrayBuffer(2)),
+        ints: new Int32Array([1]),
+        floats: new Float64Array([1.5]),
         buffer: new ArrayBuffer(4),
         later: Promise.resolve('ok'),
       }),
@@ -170,11 +172,12 @@ describe('checkProps', () => {
   });
 
   test('类的实例、没有原型的对象', () => {
-    expect(checkProps({ price: new Money(5), dict: Object.create(null), pattern: /ab+c/, link: new URL('https://example.com/a') })).toStrictEqual([
+    expect(checkProps({ price: new Money(5), dict: Object.create(null), pattern: /ab+c/, link: new URL('https://example.com/a'), err: new Error('x') })).toStrictEqual([
       { path: 'price', kind: 'class-instance' },
       { path: 'dict', kind: 'null-prototype' },
       { path: 'pattern', kind: 'class-instance' },
       { path: 'link', kind: 'class-instance' },
+      { path: 'err', kind: 'class-instance' },
     ]);
   });
 
@@ -194,6 +197,13 @@ describe('checkProps', () => {
     expect(checkProps({ user: { name: 'a', format: () => '' }, items: [1, { done: true, onClick: () => {} }] })).toStrictEqual([
       { path: 'user.format', kind: 'function' },
       { path: 'items[1].onClick', kind: 'function' },
+    ]);
+  });
+
+  test('Map 的每个条目先检查键，再检查值', () => {
+    expect(checkProps({ m: new Map<unknown, unknown>([[Symbol('k'), () => 1]]) })).toStrictEqual([
+      { path: 'm[0][0]', kind: 'symbol' },
+      { path: 'm[0][1]', kind: 'function' },
     ]);
   });
 
@@ -487,6 +497,64 @@ export type Problem = Readonly<{ path: string; kind: ProblemKind }>;
 /** 可以传过去、不再往里检查的内置类型 */
 function isOpaqueBuiltin(value: object): boolean {
   return value instanceof Promise || value instanceof ArrayBuffer || ArrayBuffer.isView(value);
+}
+
+function check(value: unknown, path: string, problems: Problem[]): void {
+  if (typeof value === 'function') {
+    problems.push({ path, kind: 'function' });
+    return;
+  }
+  if (typeof value === 'symbol') {
+    // 只有用 Symbol.for 注册过的 symbol 才能在另一边找回来
+    if (Symbol.keyFor(value) === undefined) problems.push({ path, kind: 'symbol' });
+    return;
+  }
+  if (typeof value !== 'object' || value === null) return;
+  if (Array.isArray(value)) {
+    value.forEach((item, i) => check(item, `${path}[${i}]`, problems));
+    return;
+  }
+  if (value instanceof Set) {
+    [...value].forEach((item, i) => check(item, `${path}[${i}]`, problems));
+    return;
+  }
+  if (value instanceof Map) {
+    [...value].forEach(([key, item], i) => {
+      check(key, `${path}[${i}][0]`, problems);
+      check(item, `${path}[${i}][1]`, problems);
+    });
+    return;
+  }
+  if (isOpaqueBuiltin(value)) return;
+  const proto: unknown = Object.getPrototypeOf(value);
+  if (proto === null) {
+    problems.push({ path, kind: 'null-prototype' });
+    return;
+  }
+  if (proto !== Object.prototype) {
+    problems.push({ path, kind: 'class-instance' });
+    return;
+  }
+  for (const [key, item] of Object.entries(value)) check(item, `${path}.${key}`, problems);
+}
+
+/** 检查从服务端组件传给客户端组件的 props，按深度优先的顺序返回所有的问题 */
+export function checkProps(props: Readonly<Record<string, unknown>>): Problem[] {
+  const problems: Problem[] = [];
+  for (const [key, value] of Object.entries(props)) check(value, key, problems);
+  return problems;
+}
+```
+:::
+
+:::variant{kind=wrong name=error-allowed fails=tests reason="把 Error 当作可以直接传的值：浏览器中收到的 Error 已经没有原来的信息了"}
+```ts file=serializable.ts
+export type ProblemKind = 'function' | 'symbol' | 'class-instance' | 'null-prototype';
+export type Problem = Readonly<{ path: string; kind: ProblemKind }>;
+
+/** 可以传过去、不再往里检查的内置类型 */
+function isOpaqueBuiltin(value: object): boolean {
+  return value instanceof Error || value instanceof Date || value instanceof Promise || value instanceof ArrayBuffer || ArrayBuffer.isView(value);
 }
 
 function check(value: unknown, path: string, problems: Problem[]): void {

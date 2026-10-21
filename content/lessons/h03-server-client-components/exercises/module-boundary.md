@@ -4,18 +4,18 @@ title: 找出模块图的边界
 ---
 构建时，Next.js 从每个页面和布局开始沿着 `import` 走，把模块分到服务端和客户端两张模块图中，并报告越过边界的错误（正文中实测的两种）。在 `boundary.ts` 中实现 `analyzeBoundary(modules, entries)` 来模拟这个过程：
 
-1. `modules` 描述每个模块：`directive` 是文件开头的 `'use client'`（没有时省略）；`only` 表示它只能在服务器上运行（`'server'`，例如导入了 `server-only`）或者只能在浏览器中运行（`'client'`，例如使用了 `useState`）；`imports` 是它导入的模块，按代码中的顺序。`imports` 和 `entries` 中的模块都在 `modules` 中，导入可能有循环；
+1. `modules` 描述每个模块：`directive` 是文件开头的 `'use client'`（没有时省略）；`only` 表示它只能放在服务端的模块图中（`'server'`，例如导入了 `server-only`），或者只能放在客户端的模块图中（`'client'`，例如使用了 `useState`：客户端组件也在服务器上渲染 HTML，但这样的代码不能出现在服务端组件的模块图中）；`imports` 是它导入的模块，按代码中的顺序。`imports` 和 `entries` 中的模块都在 `modules` 中，导入可能有循环；
 2. **服务端的模块图**：从 `entries`（页面和布局）开始，沿着 `imports` 广度优先地访问。访问到有 `'use client'` 的模块时，它是一个**客户端入口**：它不属于服务端的模块图，也不再沿着它的 `imports` 往下走；
 3. **客户端的模块图**：服务端的模块图访问完之后，从所有的客户端入口开始（按它们在第 2 步中被访问到的顺序），沿着 `imports` 广度优先地访问。这里访问到的模块，不管有没有 `'use client'`，都属于客户端。一个模块可以同时属于两张模块图；
 4. **错误**：服务端的模块图中 `only` 是 `'client'` 的模块报告 `'client-only-in-server'`；客户端的模块图中 `only` 是 `'server'` 的模块报告 `'server-only-in-client'`。`trace` 是从某个入口到这个模块的导入路径：广度优先（按 `entries` 和 `imports` 的顺序）时**第一次**到达它的那一条；客户端中的模块，路径从服务端的入口开始，经过它所在的客户端入口；
-5. 返回 `{ server, client, errors }`：两张模块图中的模块名按字符串排序，`errors` 按 `module` 排序。
+5. 返回 `{ server, client, errors }`：两张模块图中的模块名按 `toSorted()` 的默认顺序排序，`errors` 按 `module` 排序（两种错误放在一起排）。
 
 :::files{role=starter}
 ```ts file=boundary.ts
 export type ModuleInfo = Readonly<{
   /** 文件开头的 'use client' 指令 */
   directive?: 'use client';
-  /** 只能在服务器上运行（例如导入了 server-only），或者只能在浏览器中运行（例如使用了 useState） */
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
   only?: 'server' | 'client';
   imports: readonly string[];
 }>;
@@ -55,7 +55,7 @@ console.log(JSON.stringify(report, null, 2));
 export type ModuleInfo = Readonly<{
   /** 文件开头的 'use client' 指令 */
   directive?: 'use client';
-  /** 只能在服务器上运行（例如导入了 server-only），或者只能在浏览器中运行（例如使用了 useState） */
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
   only?: 'server' | 'client';
   imports: readonly string[];
 }>;
@@ -164,7 +164,7 @@ describe('analyzeBoundary', () => {
     ]);
   });
 
-  test('服务端组件直接导入了只能在浏览器中运行的模块', () => {
+  test('服务端组件直接导入了只能放在客户端的模块', () => {
     const modules = { ...APP, 'app/ui/nav.tsx': { imports: ['app/ui/search.tsx', 'lib/use-debounce.ts'] } } satisfies Record<string, ModuleInfo>;
     const report = analyzeBoundary(modules, ENTRIES);
     expect(report.server).toContain('lib/use-debounce.ts');
@@ -221,10 +221,70 @@ describe('analyzeBoundary', () => {
       'lib/x.ts': { imports: ['lib/secret.ts'] },
       'lib/secret.ts': { only: 'server', imports: [] },
     };
-    // 广度优先：two.tsx 和 x.ts 在同一层，two.tsx 先被发现，所以从它到达 secret.ts
+    // one.tsx 和 two.tsx 都是客户端的起点：从 two.tsx 一步就到 secret.ts，比经过 x.ts 先到
     expect(analyzeBoundary(modules, ['app/layout.tsx', 'app/page.tsx']).errors).toStrictEqual([
       { kind: 'server-only-in-client', module: 'lib/secret.ts', trace: ['app/page.tsx', 'app/ui/two.tsx', 'lib/secret.ts'] },
     ]);
+  });
+
+  test('客户端入口按被发现的顺序，而不是按名字排序', () => {
+    const modules: Record<string, ModuleInfo> = {
+      'app/layout.tsx': { imports: ['app/ui/b.tsx'] },
+      'app/page.tsx': { imports: ['app/ui/a.tsx'] },
+      'app/ui/a.tsx': { directive: 'use client', imports: ['lib/secret.ts'] },
+      'app/ui/b.tsx': { directive: 'use client', imports: ['lib/secret.ts'] },
+      'lib/secret.ts': { only: 'server', imports: [] },
+    };
+    expect(analyzeBoundary(modules, ['app/layout.tsx', 'app/page.tsx']).errors).toStrictEqual([
+      { kind: 'server-only-in-client', module: 'lib/secret.ts', trace: ['app/layout.tsx', 'app/ui/b.tsx', 'lib/secret.ts'] },
+    ]);
+  });
+
+  test('服务端的模块图也是广度优先', () => {
+    const modules: Record<string, ModuleInfo> = {
+      'app/page.tsx': { imports: ['lib/a.ts', 'lib/hook.ts'] },
+      'lib/a.ts': { imports: ['lib/hook.ts'] },
+      'lib/hook.ts': { only: 'client', imports: [] },
+    };
+    expect(analyzeBoundary(modules, ['app/page.tsx']).errors).toStrictEqual([
+      { kind: 'client-only-in-server', module: 'lib/hook.ts', trace: ['app/page.tsx', 'lib/hook.ts'] },
+    ]);
+  });
+
+  test('先完成服务端的模块图，再从所有的客户端入口一起开始：路径不一定是全局最短的', () => {
+    const modules: Record<string, ModuleInfo> = {
+      'app/layout.tsx': { imports: ['app/ui/a.tsx'] },
+      'app/page.tsx': { imports: ['app/ui/nav.tsx'] },
+      'app/ui/nav.tsx': { imports: ['app/ui/nav2.tsx'] },
+      'app/ui/nav2.tsx': { imports: ['app/ui/b.tsx'] },
+      'app/ui/a.tsx': { directive: 'use client', imports: ['lib/x.ts'] },
+      'app/ui/b.tsx': { directive: 'use client', imports: ['lib/secret.ts'] },
+      'lib/x.ts': { imports: ['lib/secret.ts'] },
+      'lib/secret.ts': { only: 'server', imports: [] },
+    };
+    // 客户端的起点是 a.tsx 和 b.tsx：从 b.tsx 一步就到 secret.ts，比经过 x.ts 先到，
+    // 尽管 layout → a → x → secret 只有 4 个模块
+    expect(analyzeBoundary(modules, ['app/layout.tsx', 'app/page.tsx']).errors).toStrictEqual([
+      { kind: 'server-only-in-client', module: 'lib/secret.ts', trace: ['app/page.tsx', 'app/ui/nav.tsx', 'app/ui/nav2.tsx', 'app/ui/b.tsx', 'lib/secret.ts'] },
+    ]);
+  });
+
+  test('两种错误一起按模块名排序', () => {
+    const modules = {
+      ...APP,
+      'app/ui/nav.tsx': { imports: ['app/ui/search.tsx', 'lib/use-debounce.ts'] },
+      'app/ui/like-button.tsx': { directive: 'use client', only: 'client', imports: ['lib/format.ts', 'lib/posts.ts'] },
+    } satisfies Record<string, ModuleInfo>;
+    expect(analyzeBoundary(modules, ENTRIES).errors.map((error) => error.module)).toStrictEqual(['lib/db.ts', 'lib/posts.ts', 'lib/use-debounce.ts']);
+  });
+
+  test('服务端的循环导入', () => {
+    const modules: Record<string, ModuleInfo> = {
+      'app/page.tsx': { imports: ['lib/a.ts'] },
+      'lib/a.ts': { imports: ['lib/b.ts'] },
+      'lib/b.ts': { imports: ['lib/a.ts'] },
+    };
+    expect(analyzeBoundary(modules, ['app/page.tsx'])).toStrictEqual({ server: ['app/page.tsx', 'lib/a.ts', 'lib/b.ts'], client: [], errors: [] });
   });
 
   test("页面本身是客户端组件；循环导入", () => {
@@ -252,7 +312,7 @@ describe('analyzeBoundary', () => {
 
 两张模块图可以共用模块：`lib/format.ts` 被服务端组件和客户端组件都导入时，Next.js 为两边各编译一份（正文中实测，它同时出现在浏览器的代码块和服务器的代码块中）。它必须在两个环境中都能运行。
 
-报告错误时给出导入路径，是因为出问题的往往不是报错的那个文件：`lib/db.ts` 没有错，错的是某个客户端组件导入了它。广度优先保证给出的是最短的路径之一，并且结果是确定的。Next.js 的错误信息中也有这样的 “Import trace”。
+报告错误时给出导入路径，是因为出问题的往往不是报错的那个文件：`lib/db.ts` 没有错，错的是某个客户端组件导入了它。服务端的部分是从入口出发的最短路径；客户端的部分从所有的客户端入口一起开始，整条路径不一定是全局最短的（测试中有一个例子），但结果是确定的。Next.js 的错误信息中也有这样的 “Import trace”。
 
 替代解在遍历时记录每个模块是从哪个模块到达的，需要路径时再沿着它往回走；客户端中的路径往回走到客户端入口之后，接上服务端到达这个入口的路径。
 :::
@@ -262,7 +322,7 @@ describe('analyzeBoundary', () => {
 export type ModuleInfo = Readonly<{
   /** 文件开头的 'use client' 指令 */
   directive?: 'use client';
-  /** 只能在服务器上运行（例如导入了 server-only），或者只能在浏览器中运行（例如使用了 useState） */
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
   only?: 'server' | 'client';
   imports: readonly string[];
 }>;
@@ -340,7 +400,7 @@ export function analyzeBoundary(modules: Modules, entries: readonly string[]): B
 export type ModuleInfo = Readonly<{
   /** 文件开头的 'use client' 指令 */
   directive?: 'use client';
-  /** 只能在服务器上运行（例如导入了 server-only），或者只能在浏览器中运行（例如使用了 useState） */
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
   only?: 'server' | 'client';
   imports: readonly string[];
 }>;
@@ -401,7 +461,7 @@ export function analyzeBoundary(modules: Readonly<Record<string, ModuleInfo>>, e
 export type ModuleInfo = Readonly<{
   /** 文件开头的 'use client' 指令 */
   directive?: 'use client';
-  /** 只能在服务器上运行（例如导入了 server-only），或者只能在浏览器中运行（例如使用了 useState） */
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
   only?: 'server' | 'client';
   imports: readonly string[];
 }>;
@@ -462,7 +522,7 @@ export function analyzeBoundary(modules: Readonly<Record<string, ModuleInfo>>, e
 export type ModuleInfo = Readonly<{
   /** 文件开头的 'use client' 指令 */
   directive?: 'use client';
-  /** 只能在服务器上运行（例如导入了 server-only），或者只能在浏览器中运行（例如使用了 useState） */
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
   only?: 'server' | 'client';
   imports: readonly string[];
 }>;
@@ -523,7 +583,7 @@ export function analyzeBoundary(modules: Readonly<Record<string, ModuleInfo>>, e
 export type ModuleInfo = Readonly<{
   /** 文件开头的 'use client' 指令 */
   directive?: 'use client';
-  /** 只能在服务器上运行（例如导入了 server-only），或者只能在浏览器中运行（例如使用了 useState） */
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
   only?: 'server' | 'client';
   imports: readonly string[];
 }>;
@@ -584,7 +644,7 @@ export function analyzeBoundary(modules: Readonly<Record<string, ModuleInfo>>, e
 export type ModuleInfo = Readonly<{
   /** 文件开头的 'use client' 指令 */
   directive?: 'use client';
-  /** 只能在服务器上运行（例如导入了 server-only），或者只能在浏览器中运行（例如使用了 useState） */
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
   only?: 'server' | 'client';
   imports: readonly string[];
 }>;
@@ -640,12 +700,73 @@ export function analyzeBoundary(modules: Readonly<Record<string, ModuleInfo>>, e
 ```
 :::
 
+:::variant{kind=wrong name=entries-sorted fails=tests reason="客户端入口按名字排序，而不是按被发现的顺序：给出的导入路径不对"}
+```ts file=boundary.ts
+export type ModuleInfo = Readonly<{
+  /** 文件开头的 'use client' 指令 */
+  directive?: 'use client';
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
+  only?: 'server' | 'client';
+  imports: readonly string[];
+}>;
+
+export type BoundaryError = Readonly<{
+  kind: 'server-only-in-client' | 'client-only-in-server';
+  module: string;
+  trace: readonly string[];
+}>;
+
+export type BoundaryReport = Readonly<{ server: string[]; client: string[]; errors: BoundaryError[] }>;
+
+type Visit = Readonly<{ module: string; trace: readonly string[] }>;
+
+/** 广度优先地访问，返回每个模块第一次被访问到时的导入路径（按访问的顺序） */
+function walk(
+  modules: Readonly<Record<string, ModuleInfo>>,
+  starts: readonly Visit[],
+  follow: (module: string) => boolean,
+): Map<string, readonly string[]> {
+  const traces = new Map<string, readonly string[]>();
+  const queue = [...starts];
+  for (let visit = queue.shift(); visit !== undefined; visit = queue.shift()) {
+    if (traces.has(visit.module)) continue;
+    traces.set(visit.module, visit.trace);
+    if (!follow(visit.module)) continue;
+    for (const next of modules[visit.module]?.imports ?? []) {
+      queue.push({ module: next, trace: [...visit.trace, next] });
+    }
+  }
+  return traces;
+}
+
+/** 从页面和布局（服务端组件）开始，算出服务端和客户端的模块图，以及越过边界的错误 */
+export function analyzeBoundary(modules: Readonly<Record<string, ModuleInfo>>, entries: readonly string[]): BoundaryReport {
+  const isClientEntry = (module: string) => modules[module]?.directive === 'use client';
+  // 服务端的模块图在 'use client' 处停下：那个模块是客户端入口，它导入的东西都在客户端
+  const reached = walk(modules, entries.map((module) => ({ module, trace: [module] })), (module) => !isClientEntry(module));
+  const server = [...reached].filter(([module]) => !isClientEntry(module));
+  const clientEntries = [...reached].filter(([module]) => isClientEntry(module)).map(([module, trace]) => ({ module, trace })).toSorted((a, b) => (a.module < b.module ? -1 : 1));
+  const client = [...walk(modules, clientEntries, () => true)];
+
+  const errors: BoundaryError[] = [
+    ...server.filter(([module]) => modules[module]?.only === 'client').map(([module, trace]) => ({ kind: 'client-only-in-server' as const, module, trace })),
+    ...client.filter(([module]) => modules[module]?.only === 'server').map(([module, trace]) => ({ kind: 'server-only-in-client' as const, module, trace })),
+  ];
+  return {
+    server: server.map(([module]) => module).toSorted(),
+    client: client.map(([module]) => module).toSorted(),
+    errors: errors.toSorted((a, b) => (a.module < b.module ? -1 : a.module > b.module ? 1 : 0)),
+  };
+}
+```
+:::
+
 :::variant{kind=wrong name=unsorted fails=tests reason="两张模块图没有排序：顺序取决于访问的顺序"}
 ```ts file=boundary.ts
 export type ModuleInfo = Readonly<{
   /** 文件开头的 'use client' 指令 */
   directive?: 'use client';
-  /** 只能在服务器上运行（例如导入了 server-only），或者只能在浏览器中运行（例如使用了 useState） */
+  /** 只能放在服务端的模块图中（例如导入了 server-only），或者只能放在客户端的模块图中（例如使用了 useState） */
   only?: 'server' | 'client';
   imports: readonly string[];
 }>;
