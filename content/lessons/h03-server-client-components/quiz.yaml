@@ -1,0 +1,47 @@
+- id: where-code-runs
+  type: single
+  prompt: 一个服务端组件读取了数据库，把结果渲染成列表。这个组件的代码会被发给浏览器吗？
+  options:
+    - text: 不会，浏览器只收到渲染的结果（HTML 和 RSC Payload）
+      correct: true
+      explain: 实测中服务端组件中的常量名和代码都不在 `.next/static/` 的代码块中，只有渲染出来的文字出现在 HTML 和 RSC Payload 中。
+    - text: 会，React 需要它在浏览器中水合
+      explain: 需要水合的是客户端组件；服务端组件在浏览器中不运行。
+    - text: 会，但数据库的连接信息被删掉了
+      explain: 整个组件的代码都留在服务器上，不只是密钥。
+- id: directive-entry
+  type: single
+  prompt: "`search.tsx` 开头写了 `'use client'`，它导入了 `lib/use-debounce.ts`，后者使用了 `useState`、没有写 `'use client'`。会怎样？"
+  options:
+    - text: 正常工作：`use-debounce.ts` 是被客户端入口导入的，已经在客户端的模块图中
+      correct: true
+      explain: "`'use client'` 只需要写在入口；实测中没有指令的 `lib/use-toggle.ts` 被客户端组件导入时运行正常。"
+    - text: 构建失败，每个使用 `useState` 的文件都必须写 `'use client'`
+      explain: 只有被服务端组件直接导入、需要成为客户端入口的文件才需要它。
+    - text: "`use-debounce.ts` 在服务器上运行，`search.tsx` 在浏览器中运行"
+      explain: 模块属于导入它的那一边；从客户端入口导入的模块都在客户端。
+- id: serializable-props
+  type: multiple
+  prompt: 服务端组件把下面这些值作为 props 传给客户端组件。哪些在浏览器中收到的仍然是同一种类型的值？
+  options:
+    - text: "`new Date(...)`"
+      correct: true
+      explain: 实测收到的是 `Date` 的实例。
+    - text: "`new Map([['a', 1]])`"
+      correct: true
+      explain: "`Map` 和 `Set` 都可以传，里面的值也要能传。"
+    - text: "`new URL('https://example.com/a')`"
+      explain: 实测构建成功，但收到的是字符串，不再是 `URL`。
+    - text: "`() => console.log('点击')`"
+      explain: 函数不能传，构建（或请求时的渲染）报错；事件处理函数写在客户端组件里面。
+- id: children-slot
+  type: single
+  prompt: "服务端组件 `Page` 中写了 `<Modal><Cart /></Modal>`。`Modal` 是客户端组件，`Cart` 是服务端组件（没有 `'use client'`）。`Cart` 在哪里渲染？"
+  options:
+    - text: 在服务器上：它写在 `Page` 中，`Modal` 只收到它渲染好的结果
+      correct: true
+      explain: 渲染好的 React 元素可以作为 props（这里是 `children`）传给客户端组件，`Cart` 的代码不会进入浏览器。
+    - text: 在浏览器中：它是客户端组件的子元素
+      explain: 决定在哪里渲染的是写下它的组件（`Page`），而不是在树中包住它的组件。
+    - text: 这样写会报错，客户端组件中不能有服务端组件
+      explain: 不能的是在客户端组件的模块中 `import` 服务端组件；作为 `children` 传进去是推荐的做法。
