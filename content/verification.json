@@ -11536,6 +11536,123 @@
         }
       ]
     },
+    "i03-deploy-server": {
+      "verifiedAt": "2026-10-21T18:20:00.475Z",
+      "sourceHash": "0bf9e59c7f7c3042",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:stringify-error:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:stringify-error:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] {\"level\":\"error\",\"error\":{}} | [log] [] | [log] {\"level\":\"error\",\"error\":{\"name\":\"Error\",\"message\":\"保存失败\"}}"
+        },
+        {
+          "target": "exercise:log-line:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(formatLog › fields 不能覆盖 time、level、message ⟶ expect(…).toStrictEqual({,formatLog › 名字像密码、令牌的字段：值换成 [REDACTED]，包括嵌套的对象和数组中的 ⟶ expect(…).toStrictEqual({,formatLog › 密钥的值出现在任何字符串中都被替换：信息、字段、错误的信息 ⟶ expect(…).toBe(false),formatLog › 少于 8 个字符的“密钥”不替换（否则 a、the 这样的词都没了）；长的先替换 ⟶ expect(…).toMatchObject({ message: 'abc value [REDACTED] [REDACTED]' }),formatLog › 错误：只有 name、message 和 cause（没有 stack） ⟶ expect(…).toStrictEqual({,formatLog › 太长的字符串：按码点截断到 500 个，后面注明原来的长度 ⟶ expect(…).toMatchObject({,formatLog › 先替换密钥再截断：密钥跨过截断的位置时也不会漏出一部分 ⟶ expect(…).toBe(false),formatLog › 其他的值：Date 是 ISO 字符串，bigint 是字符串，undefined 和函数去掉，数组中的 undefined 是 null ⟶ TypeError: Do not know how to serialize a BigInt,formatLog › 循环引用：换成 [Circular]，不抛出错误；同一个对象出现两次不算循环 ⟶ TypeError: Converting circular structure to JSON)"
+        },
+        {
+          "target": "exercise:log-line:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:log-line:alt:cleaner-class",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:log-line:wrong:no-key-redaction",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 名字像密码、令牌的字段：值换成 [REDACTED]，包括嵌套的对象和数组中的 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:log-line:wrong:short-secrets",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 少于 8 个字符的“密钥”不替换（否则 a、the 这样的词都没了）；长的先替换 ⟶ expect(…).toMatchObject({ message: 'abc value [REDACTED] [REDACTED]' }))"
+        },
+        {
+          "target": "exercise:log-line:wrong:short-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 少于 8 个字符的“密钥”不替换（否则 a、the 这样的词都没了）；长的先替换 ⟶ expect(…).toMatchObject({ message: 'abc value [REDACTED] [REDACTED]' }))"
+        },
+        {
+          "target": "exercise:log-line:wrong:truncate-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 先替换密钥再截断：密钥跨过截断的位置时也不会漏出一部分 ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:log-line:wrong:no-cycle-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 循环引用：换成 [Circular]，不抛出错误；同一个对象出现两次不算循环 ⟶ RangeError: Maximum call stack size exceeded)"
+        },
+        {
+          "target": "exercise:log-line:wrong:seen-not-path",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 循环引用：换成 [Circular]，不抛出错误；同一个对象出现两次不算循环 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:log-line:wrong:fields-override",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › fields 不能覆盖 time、level、message ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:log-line:wrong:assign-line",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 字段名是 __proto__ 时也照样写出来 ⟶ expect(…).toBe('{\"time\":\"2026-10-21T10:00:00.000Z\",\"level\":\"info\",\"message\":\"m\",\"__proto__\":{\"isAdmin\":true}}'))"
+        },
+        {
+          "target": "exercise:request-log:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(withRequestLog › 每个请求一行日志：方法、路径、状态码、花的时间 ⟶ expect(…).toHaveLength(1),withRequestLog › 响应带上 x-request-id；请求中带着格式正确的 id 时沿用它 ⟶ expect(…).toBe('req-000001'),withRequestLog › 格式不对的 id 不沿用：太短、太长、有别的字符（可能是想往日志里注入内容） ⟶ short,withRequestLog › 4xx 是 warn，5xx 是 error ⟶ expect(…).toMatchObject([,withRequestLog › 处理函数抛出错误：返回 500 和 requestId；日志中有错误，但没有密钥 ⟶ Error: database refused: sk-live-0123456789abcdef,withRequestLog › 响应头不可修改时（Response.redirect）也能加上 x-request-id ⟶ expect(…).toBe('req-000001'))"
+        },
+        {
+          "target": "exercise:request-log:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:request-log:alt:then-outcome",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:request-log:wrong:query-logged",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 每个请求一行日志：方法、路径、状态码、花的时间 ⟶ expect(…).toStrictEqual({,withRequestLog › 查询参数不进日志 ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:request-log:wrong:trust-any-id",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 格式不对的 id 不沿用：太短、太长、有别的字符（可能是想往日志里注入内容） ⟶ short)"
+        },
+        {
+          "target": "exercise:request-log:wrong:mutate-headers",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 响应头不可修改时（Response.redirect）也能加上 x-request-id ⟶ TypeError: Failed to execute 'set' on 'Headers': Headers are immutable)"
+        },
+        {
+          "target": "exercise:request-log:wrong:error-not-logged",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 处理函数抛出错误：返回 500 和 requestId；日志中有错误，但没有密钥 ⟶ expect(…).toMatchObject({)"
+        },
+        {
+          "target": "exercise:request-log:wrong:always-info",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 4xx 是 warn，5xx 是 error ⟶ expect(…).toMatchObject([,withRequestLog › 处理函数抛出错误：返回 500 和 requestId；日志中有错误，但没有密钥 ⟶ expect(…).toMatchObject({)"
+        },
+        {
+          "target": "exercise:request-log:wrong:rethrow",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 处理函数抛出错误：返回 500 和 requestId；日志中有错误，但没有密钥 ⟶ Error: database refused: sk-live-0123456789abcdef)"
+        }
+      ]
+    },
     "p1-01-plan-and-model": {
       "verifiedAt": "2026-10-20T18:21:38.286Z",
       "sourceHash": "c8c207d111027106",

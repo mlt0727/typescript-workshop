@@ -1,0 +1,44 @@
+- id: sqlite-serverless
+  type: single
+  prompt: 把 p3-03 中用 SQLite 文件保存数据的服务器原样部署到 Vercel 的函数中。会有什么问题？
+  options:
+    - text: 函数的实例会被回收，几个实例之间也不共享本地文件，数据留不住，也不一致
+      correct: true
+      explain: 无服务器平台上，要保存的数据放进托管的数据库或者对象存储。p3-03 实测过两个实例的内存不共享，本地的文件也是同样的道理。
+    - text: 没有问题，Vercel 会把每个实例写的文件同步起来
+      explain: 平台不会同步实例的本地文件。
+    - text: SQLite 在 Vercel 上会自动换成 Postgres
+      explain: 平台不会替你换数据库，要自己写一个新的存储实现。
+- id: rollback-then-push
+  type: single
+  prompt: 在 Vercel 上用即时回滚退回了上一个部署，接着修好了 bug，推送到 main。修好的版本会自动上线吗？
+  options:
+    - text: 不会：回滚之后 Vercel 关闭了生产域名的自动分配，要先撤销回滚（或者用 vercel promote）
+      correct: true
+      explain: 这是 Vercel 文档中的说明。撤销回滚之后，推送到 main 的提交才会重新自动上线。
+    - text: 会，推送到 main 总是会自动上线
+      explain: 回滚之后不是这样。
+    - text: 不会，回滚之后这个项目再也不能部署了
+      explain: 可以部署，只是要先撤销回滚，或者手动把一个部署提升为生产部署。
+- id: rollback-migration
+  type: single
+  prompt: 新的版本执行了一个迁移，删除了 projects 表中的 owner 列。上线之后发现问题，回滚到了上一个版本。会怎样？
+  options:
+    - text: 上一个版本的代码还在使用 owner 列（用了 p3-03 的检查时，它会拒绝启动），回滚解决不了问题
+      correct: true
+      explain: 代码可以退回去，数据库的结构退不回去。删除、改名这样的修改要分步做（先扩展、后收缩），否则只能向前修复。
+    - text: 没有问题，回滚会把数据库也恢复到之前的状态
+      explain: 即时回滚只切换代码的部署，不碰数据库。
+    - text: Vercel 会自动执行反向的迁移，把列加回来
+      explain: 部署平台不知道你的迁移，更不会替你执行反向的迁移。
+- id: request-id
+  type: single
+  prompt: 为什么每个响应都带上 x-request-id，日志中也记录同一个 id？
+  options:
+    - text: 用户报告一个错误时给出这个 id，就能在大量的日志中找到这个请求的那一行
+      correct: true
+      explain: 500 的响应体中也带着 requestId，用户截图或者复制给你，就能直接定位。
+    - text: 浏览器需要它来缓存响应
+      explain: 缓存用的是 Cache-Control、ETag 这样的响应头，和请求的 id 无关。
+    - text: 它可以代替认证，标识是谁发的请求
+      explain: 请求的 id 只标识一次请求，谁都可以伪造，不能用来认证。
