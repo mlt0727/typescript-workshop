@@ -10737,6 +10737,113 @@
         }
       ]
     },
+    "h05-mutations-validation": {
+      "verifiedAt": "2026-10-21T15:54:12.024Z",
+      "sourceHash": "91e48f0e7ca6a6c1",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:form-data:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:form-data:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] a [ 'a', 'c' ] | [log] null false | [log] object true | [log] [object File] null"
+        },
+        {
+          "target": "exercise:todo-form-data:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseTodoForm › 最少的字段：标题；其他的取默认值 ⟶ expect(…).toStrictEqual({,parseTodoForm › 所有的字段；去掉首尾的空白 ⟶ expect(…).toStrictEqual({,parseTodoForm › 标题：必须有，最多 100 个字（按字符数，不按 UTF-16 码元） ⟶ expect(…).toStrictEqual({ ok: false, errors: { title: '请填写标题' } }),parseTodoForm › 客户端可以发送任何东西：文件不是文本 ⟶ expect(…).toStrictEqual({ ok: false, errors: { title: '标题必须是文本' } }),parseTodoForm › 优先级：空的时候是 normal，其他的值必须正好是三个之一 ⟶ expect(…).toMatchObject({ ok: true, value: { priority: 'normal' } }),parseTodoForm › 截止日期：必须是真正存在的日期 ⟶ expect(…).toMatchObject({ ok: true, value: { due: null } }),parseTodoForm › 标签：同名的多个字段，去掉空的和重复的，最多 5 个 ⟶ expect(…).toMatchObject({ ok: true, value: { tags: [ 'a', 'b' ] } }),parseTodoForm › 复选框：只有值是 on 才算选中 ⟶ expect(…).toMatchObject({ ok: true, value: { done: true } }),parseTodoForm › 一次报告所有的错误 ⟶ expect(…).toStrictEqual({,parseTodoForm › 不认识的字段不会进入结果：ownerId 应该来自登录的用户，而不是表单 ⟶ expect(…).toStrictEqual({,parseTodoForm › 同名的单值字段：只看第一个 ⟶ expect(…).toMatchObject({ ok: true, value: { title: '第一个' } }))"
+        },
+        {
+          "target": "exercise:todo-form-data:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-form-data:alt:field-checks",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-form-data:wrong:no-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTodoForm › 所有的字段；去掉首尾的空白 ⟶ expect(…).toStrictEqual({,parseTodoForm › 标题：必须有，最多 100 个字（按字符数，不按 UTF-16 码元） ⟶ expect(…).toStrictEqual({ ok: false, errors: { title: '请填写标题' } }))"
+        },
+        {
+          "target": "exercise:todo-form-data:wrong:utf16-length",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTodoForm › 标题：必须有，最多 100 个字（按字符数，不按 UTF-16 码元） ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:todo-form-data:wrong:string-coercion",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTodoForm › 客户端可以发送任何东西：文件不是文本 ⟶ expect(…).toStrictEqual({ ok: false, errors: { title: '标题必须是文本' } }))"
+        },
+        {
+          "target": "exercise:todo-form-data:wrong:regex-only-date",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTodoForm › 截止日期：必须是真正存在的日期 ⟶ 2026-02-30)"
+        },
+        {
+          "target": "exercise:todo-form-data:wrong:first-tag-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTodoForm › 所有的字段；去掉首尾的空白 ⟶ expect(…).toStrictEqual({,parseTodoForm › 标签：同名的多个字段，去掉空的和重复的，最多 5 个 ⟶ expect(…).toMatchObject({ ok: true, value: { tags: [ 'a', 'b' ] } }))"
+        },
+        {
+          "target": "exercise:todo-form-data:wrong:all-fields",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTodoForm › 不认识的字段不会进入结果：ownerId 应该来自登录的用户，而不是表单 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:todo-form-data:wrong:has-done",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseTodoForm › 复选框：只有值是 on 才算选中 ⟶ expect(…).toMatchObject({ ok: true, value: { done: false } }))"
+        },
+        {
+          "target": "exercise:action-form:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(TodoForm › 一开始：空的表单，没有错误，按钮可用 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\",TodoForm › 提交时把上一次的状态和表单数据交给 action ⟶ TestingLibraryElementError: Unable to find role=\"status\",TodoForm › 提交期间按钮不可用，文字是“保存中…” ⟶ expect(…).toBeDisabled(),TodoForm › 字段错误：标红、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'),TodoForm › 显示的是 action 返回的值：React 在提交之后会重置表单 ⟶ expect(…).toHaveValue('服务器整理过的标题'),TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标红 ⟶ expect(…).toHaveFocus(),TodoForm › 保存成功：清空表单，错误消失，显示消息 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'))"
+        },
+        {
+          "target": "exercise:action-form:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:action-form:alt:field-component",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:action-form:wrong:no-default-value",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 字段错误：标红、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveValue('很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长,TodoForm › 显示的是 action 返回的值：React 在提交之后会重置表单 ⟶ expect(…).toHaveValue('服务器整理过的标题'))"
+        },
+        {
+          "target": "exercise:action-form:wrong:no-describedby",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 字段错误：标红、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveAccessibleDescription('标题最多 100 个字'),TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标红 ⟶ expect(…).toHaveAccessibleDescription('截止日期不能早于今天'))"
+        },
+        {
+          "target": "exercise:action-form:wrong:enabled-while-pending",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 提交期间按钮不可用，文字是“保存中…” ⟶ expect(…).toBeDisabled(),TodoForm › 字段错误：标红、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'),TodoForm › 显示的是 action 返回的值：React 在提交之后会重置表单 ⟶ expect(…).toHaveValue('服务器整理过的标题'),TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标红 ⟶ expect(…).toHaveFocus(),TodoForm › 保存成功：清空表单，错误消失，显示消息 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'))"
+        },
+        {
+          "target": "exercise:action-form:wrong:focus-title-always",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标红 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:action-form:wrong:status-on-error-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 一开始：空的表单，没有错误，按钮可用 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\",TodoForm › 提交时把上一次的状态和表单数据交给 action ⟶ TestingLibraryElementError: Unable to find role=\"status\",TodoForm › 保存成功：清空表单，错误消失，显示消息 ⟶ TestingLibraryElementError: Unable to find role=\"status\")"
+        }
+      ]
+    },
     "i01-static-vs-server": {
       "verifiedAt": "2026-10-21T02:16:04.710Z",
       "sourceHash": "369fce9321180dab",

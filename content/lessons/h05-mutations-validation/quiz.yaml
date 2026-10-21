@@ -1,0 +1,44 @@
+- id: public-endpoint
+  type: single
+  prompt: 一个删除文章的 Server Function 只在“我的文章”页面中使用，这个页面只有登录的作者才能打开。函数中还需要检查调用者吗？
+  options:
+    - text: 需要：它是一个公开的 POST 接口，请求可以不经过这个页面直接发来，函数中要认证并确认调用者是这篇文章的作者
+      correct: true
+      explain: 实测不带 `Origin` 的请求照样能运行 Server Function。页面是否显示表单不是安全边界。
+    - text: 不需要：Next.js 的 Origin 检查会拒绝不是从这个页面发来的请求
+      explain: Origin 检查只挡住别的网站中的表单（浏览器会带上那个网站的 Origin）；不带 Origin 的请求实测仍然会运行。
+    - text: 不需要：动作 ID 是加密的，别人猜不到
+      explain: 动作 ID 就写在页面的 HTML 中，任何能打开页面的人都能看到。
+- id: formdata-get
+  type: single
+  prompt: "表单中有三个同名的复选框 `<input type=\"checkbox\" name=\"tags\" value=\"a\">`、`b`、`c`，用户选中了 a 和 c。Server Function 中怎样读到所有选中的值？"
+  options:
+    - text: "`formData.getAll('tags')`，得到 `['a', 'c']`"
+      correct: true
+      explain: 没有选中的复选框根本不发送；同名的字段用 `getAll`。
+    - text: "`formData.get('tags')`"
+      explain: "`get` 只返回第一个值 `'a'`。"
+    - text: "`formData.get('tags')?.split(',')`"
+      explain: 浏览器不会把同名的字段拼成一个逗号分隔的字符串，而且 `get` 的结果还可能是文件。
+- id: form-reset
+  type: single
+  prompt: 一个用 useActionState 的表单中有一个没有 `defaultValue` 的“备注”输入框。用户填了备注，提交之后 action 返回了一个校验错误。备注框中显示什么？
+  options:
+    - text: 空的：React 在 action 完成之后重置了表单
+      correct: true
+      explain: 实测如此。要保留它，让 action 把提交的值放进返回的状态，作为 `defaultValue`。
+    - text: 用户填的备注：出错时 React 不会重置表单
+      explain: 不管 action 返回了什么，完成之后都会重置。
+    - text: 浏览器会刷新页面，所有的输入框都是空的
+      explain: 有 JavaScript 时 React 拦下了提交，页面没有刷新；清空的原因是表单被重置了。
+- id: after-write
+  type: single
+  prompt: 用户在 Server Function 中添加了一条待办，列表的数据用 `cacheTag('todos')` 缓存。希望用户在同一次提交的响应中就看到新的一条，应该调用什么？
+  options:
+    - text: "`updateTag('todos')`"
+      correct: true
+      explain: 它让缓存立刻过期，并让当前页面在同一个响应中重新渲染。
+    - text: "`revalidateTag('todos', 'max')`"
+      explain: 它只把缓存标记为变旧，不会在这个响应中重新渲染，用户先看到的还是旧的列表。
+    - text: "先 `redirect('/todos')`，再 `updateTag('todos')`"
+      explain: "`redirect` 抛出异常，后面的代码不会运行。顺序要反过来。"

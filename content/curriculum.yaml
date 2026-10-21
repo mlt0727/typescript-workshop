@@ -145,7 +145,7 @@ stages:
       - { id: h02-app-router-layouts, title: App Router：路由与布局, status: published, prerequisites: [h01-next-overview] }
       - { id: h03-server-client-components, title: 服务端组件与客户端组件的边界, status: published, prerequisites: [h02-app-router-layouts] }
       - { id: h04-data-reading, title: 在服务端读取数据, status: draft, prerequisites: [h03-server-client-components] }
-      - { id: h05-mutations-validation, title: 数据写入与输入校验, status: planned, prerequisites: [h04-data-reading, e06-runtime-validation] }
+      - { id: h05-mutations-validation, title: 数据写入与输入校验, status: draft, prerequisites: [h04-data-reading, e06-runtime-validation] }
       - { id: h06-server-errors, title: 服务端错误处理, status: planned, prerequisites: [h05-mutations-validation] }
       - { id: h07-persistence, title: 持久化：内存、本地文件与数据库, status: planned, prerequisites: [h06-server-errors] }
       - { id: h08-env-config, title: 环境变量与配置, status: planned, prerequisites: [h07-persistence, e13-env-secrets] }
