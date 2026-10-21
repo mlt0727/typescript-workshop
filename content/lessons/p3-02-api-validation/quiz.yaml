@@ -1,0 +1,44 @@
+- id: lost-update
+  type: single
+  prompt: "A 和 B 都在项目是 `\"v1\"` 时打开了它。A 先保存，项目变成了 `\"v2\"`。B 接着发送 `PATCH`，带着 `If-Match: \"v1\"`。B 会得到什么？"
+  options:
+    - text: 412：B 的客户端应该重新读取项目，让 B 看到 A 的修改之后再决定
+      correct: true
+      explain: 实测如此。412 表示“你看到的已经不是现在的版本”，服务器什么都没有改。
+    - text: 200：B 的修改覆盖了 A 的
+      explain: 没有 If-Match 时就会这样，这正是要防止的“丢失的更新”。
+    - text: 428：B 没有说明自己看到的版本
+      explain: B 带了 If-Match，只是版本过时了。428 是完全没有带的时候。
+- id: server-retry
+  type: single
+  prompt: 写入时发现项目在读取之后被别人修改了（replace 返回 false）。为什么添加任务的接口可以在服务器上重新读取再试，修改项目的接口却应该返回 412？
+  options:
+    - text: 添加任务不依赖客户端看到的版本；修改项目是客户端根据旧的数据做的决定，服务器不能替它用在新的数据上
+      correct: true
+      explain: 重新检查之后再加一个任务，结果和请求的意思一样；替客户端重试修改，就是在它没有见过的数据上做决定。
+    - text: 添加任务的请求体更小，重试比较快
+      explain: 和大小无关，关键是请求的意思是否依赖它看到的数据。
+    - text: 修改项目时 Next.js 不允许在一个请求中写入两次
+      explain: Next.js 没有这样的限制。
+- id: static-get
+  type: single
+  prompt: "`app/api/projects/route.ts` 中的 `GET` 只是读取存储中的所有项目，没有读取请求，也没有 `await connection()`。部署之后修改了一个项目，再请求 `/api/projects` 会得到什么？"
+  options:
+    - text: 构建时的数据：这个 GET 在 next build 时运行了一次，结果被保存下来
+      correct: true
+      explain: 实测构建的输出中它是 ○，响应头是 x-nextjs-cache HIT 和 s-maxage=31536000。加上 await connection() 才会在每次请求时运行。
+    - text: 最新的数据：Route Handler 每次请求都会运行
+      explain: 不读取请求的 GET 处理函数会在构建时预渲染。
+    - text: 404：静态的接口只能在开发时访问
+      explain: 预渲染的结果照样可以访问，只是内容不会变。
+- id: precondition-order
+  type: single
+  prompt: 一个 PATCH 请求带着过时的 If-Match，请求体也不是合法的 JSON。接口应该返回什么？
+  options:
+    - text: "412"
+      correct: true
+      explain: 前提条件在处理请求体之前检查。版本不对时，修好请求体也没有用，客户端要先重新读取。
+    - text: "400"
+      explain: 先报告请求体的错误，客户端修好之后再提交，还是会遇到 412。
+    - text: "422"
+      explain: 请求体根本不是 JSON，谈不上字段的错误；而且前提条件应该先检查。
