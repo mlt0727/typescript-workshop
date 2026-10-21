@@ -190,6 +190,27 @@ describe('planMigrations', () => {
     expect(applied).toStrictEqual([record(M2)]);
   });
 });
+
+describe('planMigrations：更多的情况', () => {
+  const late: Migration = { id: '0002_add_owner', sql: 'ALTER TABLE projects ADD COLUMN owner TEXT' };
+
+  test('数据库中的记录不一定是排好序的（SELECT 没有 ORDER BY 时）', () => {
+    expect(planMigrations([M1, late, M2, M3], [record(M2), record(M1)])).toStrictEqual({ ok: false, error: '迁移 0002_add_owner 排在已经执行的 0002_create_tasks 前面' });
+    expect(planMigrations([M1], [record(M1), record(M3), record(M2)])).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0002_create_tasks' });
+  });
+
+  test('同一种问题有几个：报告编号最前面的', () => {
+    expect(planMigrations([M3, { id: M3.id, sql: 'x' }, M2, { id: M2.id, sql: 'y' }], [])).toStrictEqual({ ok: false, error: '迁移的编号重复：0002_create_tasks' });
+    const b: Migration = { id: '0001_b', sql: 'b' };
+    const a: Migration = { id: '0002_a', sql: 'a' };
+    expect(planMigrations([M1, a, b, M2, M3], [record(M1), record(M2)])).toStrictEqual({ ok: false, error: '迁移 0001_b 排在已经执行的 0002_create_tasks 前面' });
+  });
+
+  test('检查的顺序：重复先于多出来的，修改过的先于排错位置的', () => {
+    expect(planMigrations([M1, { ...M1 }], [record(M1), record(M3)])).toStrictEqual({ ok: false, error: '迁移的编号重复：0001_create_projects' });
+    expect(planMigrations([M1, late, { ...M2, sql: 'x' }], [record(M1), record(M2)])).toStrictEqual({ ok: false, error: '迁移 0002_create_tasks 在执行之后被修改过' });
+  });
+});
 ```
 :::
 
@@ -204,10 +225,10 @@ describe('planMigrations', () => {
 :::explanation
 四种拒绝都是“代码和数据库对不上”，继续启动只会让问题更难发现：
 
-- **编号重复**：两个人在不同的分支上都加了 `0003_…`，合并之后只有一个会被执行；
+- **编号重复**：两个分支加了同名的迁移，或者复制了一项之后忘了改 `id`，这两个迁移只有一个会被执行；
 - **数据库比代码新**：多半是部署了旧的代码，例如新版本出了问题，又回滚到了旧版本，而新版本已经执行了迁移。旧的代码不知道新的表结构，可能读错或者写坏数据。这是 i03 要讨论的“回滚为什么难”；
 - **执行过的迁移被修改了**：新建的数据库按修改之后的 SQL 建表，已经存在的数据库不会再执行它，两边从此不一样；
-- **新的迁移排在已经执行的前面**：同样是两个分支各加了一个迁移，在一个数据库中先执行了 `0003_b`，另一个中先执行了 `0003_a`，顺序不同，结果可能也不同。
+- **新的迁移排在已经执行的前面**：两个分支各加了一个迁移（例如 `0003_add_owner` 和 `0003_add_tags`），一个数据库先执行了其中一个，另一个数据库先执行了另一个，顺序不同，结果可能也不同。
 
 编号按字符串排序，所以要写成固定的位数：`0009` 排在 `0010` 前面，`9` 却排在 `10` 后面（测试中有这个例子）。
 
@@ -352,7 +373,6 @@ export function planMigrations(available: readonly Migration[], applied: readonl
   }
 
   const done = applied.toSorted((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-  // 数据库比代码新：多半是部署了旧的代码（例如回滚），先报告这个
   for (const record of done) {
     const migration = byId.get(record.id);
     if (migration !== undefined && checksum(migration.sql) !== record.checksum) return { ok: false, error: `迁移 ${record.id} 在执行之后被修改过` };
@@ -429,7 +449,6 @@ export function planMigrations(available: readonly Migration[], applied: readonl
   }
 
   const done = applied.toSorted((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-  // 数据库比代码新：多半是部署了旧的代码（例如回滚），先报告这个
   for (const record of done) {
     const migration = byId.get(record.id);
     if (migration !== undefined && checksum(migration.sql) !== record.checksum) return { ok: false, error: `迁移 ${record.id} 在执行之后被修改过` };

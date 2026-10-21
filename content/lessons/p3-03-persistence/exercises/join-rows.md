@@ -300,6 +300,37 @@ describe('rowsToProjects', () => {
     expect(b?.tasks.map((t) => t.id)).toStrictEqual(['t2']);
   });
 });
+
+describe('rowsToProjects：更多的情况', () => {
+  test('项目和任务各自的时间：created_at、updated_at、deleted_at 不会混在一起', () => {
+    const [p] = rowsToProjects([
+      project('p1', {
+        version: 3,
+        updated_at: '2026-10-09T00:00:00.000Z',
+        deleted_at: '2026-10-10T00:00:00.000Z',
+        task_id: 't2',
+        task_title: 'b',
+        task_done: 0,
+        task_position: 2,
+        task_created_at: '2026-10-03T00:00:00.000Z',
+        task_deleted_at: '2026-10-04T00:00:00.000Z',
+      }),
+    ]);
+    expect(p).toMatchObject({ createdAt: T0, updatedAt: '2026-10-09T00:00:00.000Z', deletedAt: '2026-10-10T00:00:00.000Z', version: 3 });
+    expect(p?.tasks[0]).toStrictEqual({ id: 't2', title: 'b', done: false, position: 2, createdAt: '2026-10-03T00:00:00.000Z', deletedAt: '2026-10-04T00:00:00.000Z' });
+  });
+
+  test('按第一次出现的顺序，而不是按创建的时间', () => {
+    const rows = [project('p2', { created_at: '2026-10-05T00:00:00.000Z' }), project('p1')];
+    expect(rowsToProjects(rows).map((p) => p.id)).toStrictEqual(['p2', 'p1']);
+  });
+
+  test('缺少 position 或者 created_at 也是缺少字段；done 是 -1 也不对', () => {
+    expect(() => rowsToProjects([project('p1', { task_id: 't9', task_title: 'x', task_done: 0, task_created_at: T0 })])).toThrow('数据库中的数据不对：项目 p1 的任务 t9 缺少字段');
+    expect(() => rowsToProjects([project('p1', { task_id: 't9', task_title: 'x', task_done: 0, task_position: 1 })])).toThrow('数据库中的数据不对：项目 p1 的任务 t9 缺少字段');
+    expect(() => rowsToProjects([project('p1', { task_id: 't9', task_title: 'x', task_done: -1, task_position: 1, task_created_at: T0 })])).toThrow('数据库中的数据不对：项目 p1 的任务 t9 的 done 是 -1');
+  });
+});
 ```
 :::
 

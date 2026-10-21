@@ -26,11 +26,11 @@
   options:
     - text: 一共 501 次查询，每次都要等一个网络的来回
       correct: true
-      explain: 实测本地的 SQLite 中 N+1 约 21 毫秒、JOIN 约 3.4 毫秒；网络上的每次来回要几毫秒到几十毫秒，501 次就是几秒钟。用一条 JOIN 读出所有的数据。
+      explain: 实测本地的 SQLite 中 N+1 约 21 毫秒，一条 JOIN 约 8 毫秒，两条查询约 3.4 毫秒；换成网络上的数据库，N+1 大约要再加上 501 个网络来回的时间。用一条 JOIN 或者固定的两条查询读出所有的数据。
     - text: 网络上的数据库不支持索引
       explain: 托管的数据库同样有索引，问题在于查询的次数。
     - text: 每次查询都要重新执行迁移
-      explain: 迁移只在启动时执行。
+      explain: 迁移只在第一次用到数据库时执行一次。
 - id: sqlite-boolean
   type: single
   prompt: tasks 表中 done 列的定义是 `INTEGER NOT NULL CHECK (done IN (0, 1))`。用 node:sqlite 读出一行，row.done 是什么？
