@@ -1,0 +1,19 @@
+name: 部署之后的冒烟测试
+
+# Vercel 每完成一次部署，就给对应的提交设置一个名为 Vercel 的状态。
+# status 事件只认默认分支上的工作流文件。
+on: status
+
+jobs:
+  smoke:
+    name: 检查线上的网站
+    # 只在 main 分支的提交部署成功（生产环境）时运行
+    if: github.event.context == 'Vercel' && github.event.state == 'success' && contains(github.event.branches.*.name, 'main')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      # 脚本没有依赖，Node 24 可以直接运行 TypeScript（去掉类型）
+      - run: node scripts/smoke-live.ts https://typescript-workshop-jade.vercel.app
