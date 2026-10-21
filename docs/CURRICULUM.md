@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 111 / 规划总数 126**（草稿 2，规划中 13）
+**已发布 113 / 规划总数 126**（草稿 0，规划中 13）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -169,7 +169,7 @@
 | `h08-env-config` 环境变量与配置 | ⬜ 规划中 | `h07-persistence`、`e13-env-secrets` |
 | `h09-auth-boundaries` 认证话题的安全边界 | ⬜ 规划中 | `h08-env-config` |
 
-## I. 项目与部署（已发布 12 / 18）
+## I. 项目与部署（已发布 14 / 18）
 
 三个层层递进的项目，每个拆成独立里程碑；以及静态与服务端部署。
 
@@ -187,8 +187,8 @@
 | `p2-02-routes-lists` 项目 2·项目面板：路由与列表 | ✅ 已发布 | `p2-01-plan-and-types`、`g13-routing` |
 | `p2-03-forms` 项目 2·项目面板：表单与校验 | ✅ 已发布 | `p2-02-routes-lists` |
 | `p2-04-data-state` 项目 2·项目面板：数据状态与错误处理 | ✅ 已发布 | `p2-03-forms`、`g14-async-data` |
-| `p2-05-tests` 项目 2·项目面板：组件测试与端到端测试 | 📝 草稿 | `p2-04-data-state`、`g15-a11y-component-tests` |
-| `p2-06-deploy` 项目 2·项目面板：静态部署与验证 | 📝 草稿 | `p2-05-tests`、`i02-deploy-static` |
+| `p2-05-tests` 项目 2·项目面板：组件测试与端到端测试 | ✅ 已发布 | `p2-04-data-state`、`g15-a11y-component-tests`、`f09-e2e` |
+| `p2-06-deploy` 项目 2·项目面板：静态部署与验证 | ✅ 已发布 | `p2-05-tests`、`i02-deploy-static` |
 | `p3-01-plan` 项目 3·全栈扩展：需求与数据边界 | ⬜ 规划中 | `h07-persistence`、`p2-06-deploy` |
 | `p3-02-api-validation` 项目 3·全栈扩展：服务端读写与校验 | ⬜ 规划中 | `p3-01-plan` |
 | `p3-03-persistence` 项目 3·全栈扩展：持久化与测试 | ⬜ 规划中 | `p3-02-api-validation` |

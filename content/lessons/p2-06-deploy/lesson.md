@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 项目面板要上线了。它是一个单页应用，用的是真实的路径（/projects/p1），i02 讲过这意味着什么：直接打开或者刷新深层的地址时，静态服务器要返回 index.html，资源和路由都要知道应用部署在哪个路径下。这一课把这些落实到项目面板上：从路由表生成部署平台的改写规则，让两者不会不一致；在只能提供 404.html 的 GitHub Pages 上，用一次跳转让深层地址也能打开，并且不让这个跳转被人利用；最后在每次部署之后自动运行冒烟测试。
 objectives:
   - 根据平台的能力选择部署方式：改写（200）、404.html 加跳转、hash 路由，知道各自的代价
@@ -52,7 +52,7 @@ references:
 
 i01、i02 比较过两种改写：`/(.*)` 匹配一切，简单，但找不到的资源也得到了 `index.html`；只为页面的地址写规则，找不到的地址仍然是 404，但规则要和路由表一致。后者容易出的问题是：加了一个页面，忘了加规则，这个页面在本地一切正常，部署之后一刷新就是 404。
 
-页面的地址本来就写在路由表中。React Router 的 `:projectId` 和 vercel.json 的 `:projectId` 写法相同（都来自 path-to-regexp 一类的语法，i01），所以可以直接从路由表算出改写规则：
+页面的地址本来就写在路由表中。React Router 的 `:projectId` 和 vercel.json 的 `:projectId` 写法相同（都来自 path-to-regexp 一类的语法，i01），所以可以直接从路由表算出改写规则。不过两边的匹配并不完全一样：React Router 不区分大小写，也接受结尾多一个斜杠（实测 `/Projects/p1`、`/projects/p1/` 都能匹配），而 Vercel 两样都不接受（i01，这个网站的冒烟测试也检查了 `/Settings`、`/settings/` 是 404）。改写规则只覆盖“标准”的写法，这正是我们想要的：同一个页面只有一种地址（p2-02）。
 
 ```ts
 // 项目面板的路由表（只看和地址有关的部分）
@@ -70,13 +70,21 @@ i01、i02 比较过两种改写：`/(.*)` 匹配一切，简单，但找不到�
 - **检查**：`vercel.json` 照常手写，加一个单元测试，比较其中的 `rewrites` 和从路由表算出来的结果。加了页面却忘了改 `vercel.json`，CI（f12）就会失败。
 
 ```ts
-test('vercel.json 的改写规则与路由表一致', () => {
-  const config: unknown = JSON.parse(readFileSync('vercel.json', 'utf8'));
-  expect(config).toMatchObject({ rewrites: vercelRewrites(routes) });
+test('vercel.json 中改写到 index.html 的规则与路由表一致', () => {
+  const config = JSON.parse(readFileSync('vercel.json', 'utf8')) as { rewrites: { source: string; destination: string }[] };
+  // vercel.json 中还可能有别的规则（例如交给函数的 /api/:path*），只比较改写到 index.html 的那些
+  expect(config.rewrites.filter((r) => r.destination === '/index.html')).toEqual(vercelRewrites(routes));
 });
 ```
 
-带 `*` 的路由（“页面不存在”）不生成规则：它的意思正是“其他所有的地址”，交给平台返回 404。两边的 `*` 写法也不同（React Router 的 `*`，vercel.json 中是 `:path*` 或 `(.*)`）。
+（这里的 `as` 只用在测试中，读进来的配置不对，测试会失败，并不会让错误的数据流进应用。）
+
+哪些路由算页面，要按 React Router 实际的匹配来定（实测 React Router 8.5）：
+
+- 有 `path` 的路由都能匹配它的地址，包括有子路由的布局：没有 `index` 子路由时，布局照样渲染，只是 `<Outlet />` 是空的；
+- `index` 路由的地址就是父路由的地址；没有 `path` 的布局不匹配任何地址；
+- 只有一个 `*` 的路由是“页面不存在”：它的意思正是“其他所有的地址”，不生成规则，交给平台返回 404；
+- `files/*` 这样以 `*` 结尾的路由匹配 `/files` 和它下面的任意地址，vercel.json 中对应的写法是 `/files/:path*`（零段或多段，i01）。
 
 ::exercise{#route-rewrites}
 
@@ -110,7 +118,8 @@ for (const path of ['/projects', '//evil.example/x', '/\\evil.example', '/shop/.
 - `/\evil.example`：对于 `https` 这样的地址，解析时 `\` 和 `/` 一样，所以它也是 `//evil.example`；
 - `/shop/../admin`、`/shop/%2e%2e/admin`：`..`（包括编码之后的 `%2e%2e`）会退回上一级，结果离开了 `/shop/`；
 - `/shop/https://evil.example` 只是网站中一个奇怪的路径，并不会离开这个网站。
-- 只检查“是不是以 `/` 开头”“有没有 `..`”这样的字符串规则，总会漏掉一些写法。解析之后检查 `origin` 和 `pathname`，规则就只有两条。
+
+只检查“是不是以 `/` 开头”“有没有 `..`”这样的字符串规则，总会漏掉一些写法：例如地址中的制表符、换行在解析时会被删掉，`/` 加一个制表符再加 `/evil.example` 也是 `//evil.example`。解析之后检查 `origin` 和 `pathname`，规则就只有两条。
 :::
 
 ## 部署之后自动检查
@@ -137,6 +146,7 @@ jobs:
 ```
 
 - 这个网站的仓库中就有这样一个工作流（`.github/workflows/smoke.yml`，脚本是 `scripts/smoke-live.ts`）：2026-10-21 起，每次生产部署成功之后，它检查几个页面和它们的资源、`/api/health`，以及几个应该是 404 的地址（大小写不同、结尾多了斜杠、不存在）。状态是 `pending` 的那次事件，`if` 的条件不满足，工作流被跳过；
+- 它有几个限制：`status` 事件中的 `GITHUB_SHA` 是默认分支最新的提交，不一定是这次部署的那个；`branches` 是“包含这个提交的分支”；检查的是生产环境的域名，Vercel 把域名切换到新的部署通常就在“部署成功”的时候，但这个脚本并不验证这一点（状态中的 `target_url` 是 Vercel 控制台的地址，不能直接拿来检查）。对一个冒烟测试来说，这些已经够用；
 - 这个事件只认**默认分支**上的工作流文件；
 - 冒烟测试失败时，这次运行就显示为失败；还可以在失败时发出通知，或者调用平台的回滚（i03）；
 - 不在 Vercel 上的话，也可以在部署的工作流中，部署那一步之后直接运行冒烟测试。

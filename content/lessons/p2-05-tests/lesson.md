@@ -2,7 +2,7 @@
 version: 1
 mode: react
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 项目面板的功能都有了，接下来要保证以后修改它时不会悄悄地弄坏什么。前面的每个里程碑都有平台写好的测试；这一次由你来写。测试不是越多越好：要知道每一条规则在哪一层测最合适，测试要稳定（不依赖真实的网络和时间），还要能发现真正的错误。这一课用“变异体”衡量测试写得够不够：平台准备了故意写错的实现，你的测试要把它们都找出来。最后介绍怎样用 Playwright 在真正的浏览器中走一遍主要的流程。
 objectives:
   - 按“规则、组件、流程”把测试分到单元测试、组件测试、端到端测试三层，知道每一层测什么
@@ -41,7 +41,7 @@ references:
 
 | | 单元测试 | 组件测试 | 端到端测试 |
 | --- | --- | --- | --- |
-| 测什么 | 纯函数：`summarize`、`update`、`listProjects`、`validateProject`、`request` | 页面和路由：用户看到什么、点了之后发生什么 | 整个应用：构建好的网站在真正的浏览器中 |
+| 测什么 | 纯函数：`summarize`、`update`、`listProjects`、`validateProject`；以及用模拟 fetch 测试的 `request` | 页面和路由：用户看到什么、点了之后发生什么 | 整个应用：构建好的网站在真正的浏览器中 |
 | 运行在 | Node 或浏览器，毫秒级 | jsdom 或浏览器，每个测试几百毫秒 | 一个或几个真正的浏览器，每个测试几秒 |
 | 外部依赖 | 没有 | 模拟的服务器、内存中的路由 | 模拟或真正的服务器 |
 | 数量 | 多：每条规则、每个边界 | 中：每个页面的每种状态 | 少：几条主要的流程 |
@@ -54,7 +54,9 @@ references:
 
 更直接的办法是反过来问：**如果代码写错了，测试能发现吗？** 故意把实现改错一处（把 `<` 换成 `<=`、删掉一个 `trim()`、去掉一个检查），这样的版本叫**变异体**（mutant）。运行测试：有测试失败，这个变异体就被“杀死”了；全部通过，说明测试漏掉了这种错误。
 
-这一课的两个练习就是这样判分的：你的测试先要在正确的实现上全部通过，然后平台把实现换成一个个变异体，每一个都要被至少一个测试发现。真实的项目中，[StrykerJS](https://stryker-mutator.io/docs/stryker-js/introduction/) 这样的工具会自动生成变异体（它支持 Vitest），报告有多少没有被发现。
+这一课的两个练习就是这样判分的：你的测试先要在正确的实现上全部通过，然后平台把实现换成一个个变异体，每一个都要被至少一个测试发现。真实的项目中，[StrykerJS](https://stryker-mutator.io/docs/stryker-js/introduction/) 这样的工具会自动生成变异体，报告有多少没有被发现。它支持 Vitest，但它的文档写明暂时不支持 Vitest 的浏览器模式（Browser Mode），所以要用在 jsdom 或 Node 中运行的测试上。
+
+这两个练习测的代码，p2-02、p2-04 的练习页面上都有验收测试可以查看。先自己写，写完再去对照：看看你漏掉了哪些情况，又多想到了哪些。
 
 写测试时可以先问几个问题，变异体通常就藏在这些地方：
 
@@ -104,13 +106,15 @@ async function open(path: string) {
 }
 ```
 
-- **每个测试一个新的服务器**：上一个测试添加的任务不会出现在下一个测试中，测试之间互不影响，可以按任意顺序运行。测试结束时，平台（以及配置了 `restoreMocks` 的 Vitest）会把 `fetch` 恢复原样；
+- **每个测试一个新的服务器**：上一个测试添加的任务不会出现在下一个测试中，测试之间互不影响，可以按任意顺序运行。平台在每个测试结束后把 `fetch` 恢复原样；Vitest 中可以配置 `restoreMocks`，它在每个测试开始前恢复；
 - **`server.requests`**：服务器收到的每个请求。“空的任务不发请求”“连点两次只发一个请求”都要靠它检查，界面上看不出来；
 - **`server.offline = true`**：让之后的请求连接失败，测试“加载失败时可以重试”“连接失败时恢复原来的状态”。
 
 ### 等待，而不是假设时机
 
-点击之后，界面不一定在 `user.click` 返回时就已经更新了：请求要等服务器回应；即使不需要等服务器，React Router 也在 transition 中更新状态（g13），实测在 WebKit 中，提交之后按钮变成不可用、复选框显示新的值，都比 Chromium 晚一点才渲染出来。所以：
+点击之后，界面不一定在 `user.click` 返回时就已经更新了：请求要等服务器回应；即使不需要等服务器，React Router 也在 transition 中更新状态（g13）。实测点击复选框之后立刻检查它有没有被勾选，Chromium 中 5 次都通过，WebKit 中 5 次都失败：WebKit 中乐观更新晚一点才渲染出来。所以：
+
+- 两次点击之间也要等界面更新：要测“提交期间不能再提交”，先等按钮变成不可用，再点第二次；不要用 `user.dblClick`，两次点击之间没有渲染的机会；
 
 - 等待会出现的元素用 `await screen.findBy…`；
 - 等待一个条件成立用 `await waitFor(() => { expect(…) })`：它反复运行回调，直到其中的断言都通过，或者超时（默认 1 秒）；
@@ -134,7 +138,7 @@ await waitFor(() => {
 
 ## 端到端测试
 
-组件测试中的路由、服务器都是模拟的，构建（f02、f12）、部署（i02）、真实的地址这些环节，只有在真正的浏览器中打开构建好的网站才能检查。这个网站的测试运行在浏览器中，不能再启动另一个浏览器，所以这一部分要在自己的电脑上做（f09 讲过怎样安装和运行 Playwright）。
+组件测试中的路由、服务器都是模拟的，构建（f02）、部署（p2-06）、真实的地址这些环节，只有在真正的浏览器中打开构建好的网站才能检查。这个网站的测试运行在浏览器中，不能再启动另一个浏览器，所以这一部分要在自己的电脑上做（f09 讲过怎样安装和运行 Playwright）。
 
 `playwright.config.ts` 中用 `webServer` 先构建，再用 `vite preview` 提供构建好的网站：
 
@@ -153,16 +157,22 @@ export default defineConfig({
 ```ts
 import { expect, test } from '@playwright/test';
 
-const project = { id: 'p1', name: '官网改版', owner: '小林', status: 'active', dueDate: '2026-11-15', tasks: [{ id: 't2', title: '设计稿', done: false }] };
-
 test('从列表进入详情，勾选一个任务', async ({ page }) => {
-  await page.route('**/api/projects/p1', (route) => route.fulfill({ json: project }));
-  await page.route('**/api/projects/p1/tasks/t2', (route) => route.fulfill({ json: { ...project.tasks[0], done: true } }));
+  // 一个有状态的模拟服务器：保存之后，重新加载的数据也是新的
+  let task = { id: 't2', title: '设计稿', done: false };
+  const project = () => ({ id: 'p1', name: '官网改版', owner: '小林', status: 'active', dueDate: '2026-11-15', tasks: [task] });
+  await page.route('**/api/projects/p1', (route) => route.fulfill({ json: project() }));
+  await page.route('**/api/projects/p1/tasks/t2', async (route) => {
+    task = { ...task, ...route.request().postDataJSON() };
+    await route.fulfill({ json: task });
+  });
 
   await page.goto('/projects?status=active');
-  await page.getByRole('link', { name: '官网改版' }).click();
+  await page.getByRole('list', { name: '项目列表' }).getByRole('link', { name: '官网改版' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('官网改版');
   await page.getByRole('checkbox', { name: '设计稿' }).check();
+  // 只看复选框，乐观更新时就满足了；等进度变化，才说明服务器保存了、数据也重新加载了
+  await expect(page.getByText('进度：1/1')).toBeVisible();
   await expect(page.getByRole('checkbox', { name: '设计稿' })).toBeChecked();
 });
 ```
@@ -170,7 +180,8 @@ test('从列表进入详情，勾选一个任务', async ({ page }) => {
 几点说明：
 
 - Playwright 的 `expect(locator)` 会自动重试，直到条件成立或超时（f09），所以这里不需要 `waitFor`；
-- `page.goto('/projects?status=active')` 直接打开一个深层的地址：这正是部署之后最容易出问题的地方（i02 的回退）。用 `vite preview` 时它能工作，但不代表部署之后也能工作，所以 p2-06 会在部署之后再检查一遍；
+- 链接在列表中查找：组装之后，布局的导航中也有一个叫“官网改版”的链接，Playwright 的定位器同时找到两个就会报错（严格模式）；
+- `page.goto('/projects?status=active')` 直接打开一个深层的地址：这正是部署之后最容易出问题的地方（p2-06 会讲服务器的回退）。用 `vite preview` 时它能工作，但不代表部署之后也能工作，所以 p2-06 会在部署之后再检查一遍；
 - 端到端测试慢，也更容易因为环境的原因失败。只为最重要的几条流程写，规则的细节留给单元测试。
 
 ## 编程挑战

@@ -9,7 +9,7 @@ title: GitHub Pages 的 404 跳转
    - 否则返回 `base` 加上查询参数 `p`：值是 `pathname` 去掉开头的 `base` 之后，再接上 `search` 和 `hash`。用 `URLSearchParams` 生成查询字符串，`&`、`?`、`#` 都要正确地编码；
 2. `restoredPath(current, base)`：在 `index.html` 中运行。
    - 地址中没有参数 `p`：返回 `null`（这是正常的访问）；
-   - 否则把 `base` 和 `p` 的值连起来，用 `new URL(…, current.origin)` 解析。结果和 `current` 不是同一个网站（`origin` 不同），或者 `pathname` 不以 `base` 开头：返回 `null`；
+   - 否则把 `base` 和 `p` 的值连起来，用 `new URL(…, current.origin)` 解析。解析时抛出异常（例如端口超出范围），或者结果和 `current` 不是同一个网站（`origin` 不同），或者 `pathname` 不以 `base` 开头：返回 `null`；
    - 否则返回解析结果的 `pathname + search + hash`，交给 `history.replaceState`。
 
 来回一趟（`redirectTarget` 的结果交给 `restoredPath`），应该得到和原来完全相同的地址。
@@ -77,8 +77,14 @@ export function redirectTarget(current: URL, base: string): string | null {
 export function restoredPath(current: URL, base: string): string | null {
   const rest = current.searchParams.get(PARAM);
   if (rest === null) return null;
-  // 交给 URL 解析：它会处理 ..、反斜杠、//主机名 这些写法，解析之后再检查
-  const target = new URL(base + rest, current.origin);
+  // 交给 URL 解析：它会处理 ..、反斜杠、制表符、//主机名 这些写法，解析之后再检查
+  let target: URL;
+  try {
+    target = new URL(base + rest, current.origin);
+  } catch {
+    // 例如端口超出范围：这个地址根本无法解析
+    return null;
+  }
   if (target.origin !== current.origin || !target.pathname.startsWith(base)) return null;
   return target.pathname + target.search + target.hash;
 }
@@ -161,11 +167,18 @@ describe('restoredPath：不安全的地址', () => {
   test('其他网站的地址：null', () => {
     expect(restoredPath(at('/?p=%2Fevil.example%2Fsteal'), '/'), '//evil.example 是另一个网站').toBeNull();
     expect(restoredPath(at('/?p=%5Cevil.example'), '/'), '/\\evil.example 也会被当作 //evil.example').toBeNull();
+    expect(restoredPath(at('/?p=%09%2Fevil.example'), '/'), '解析时会删掉制表符：/\\t/evil.example 就是 //evil.example').toBeNull();
   });
 
   test('离开应用所在的路径：null', () => {
     expect(restoredPath(at('/shop/?p=..%2Fadmin'), '/shop/')).toBeNull();
-    expect(restoredPath(at('/shop/?p=%2e%2e%2Fadmin'), '/shop/'), '%2e%2e 也是 ..').toBeNull();
+    expect(restoredPath(at('/shop/?p=..%5Cadmin'), '/shop/'), '..\\ 也是上一级').toBeNull();
+    // searchParams.get 先解码一次：%252e%252e 读出来是 %2e%2e，URL 解析时把它当作 ..
+    expect(restoredPath(at('/shop/?p=%252e%252e%2Fadmin'), '/shop/'), '%2e%2e 也是 ..').toBeNull();
+  });
+
+  test('无法解析的地址：null，而不是抛出异常', () => {
+    expect(restoredPath(at('/?p=%2Fevil.example%3A99999'), '/'), '端口超出范围，new URL 会抛出异常').toBeNull();
   });
 
   test('看起来像网址、其实只是应用中的一个路径：可以', () => {
@@ -180,11 +193,11 @@ describe('restoredPath：不安全的地址', () => {
 :::
 
 :::hint{level=2}
-`const target = new URL(base + rest, current.origin)`，然后检查 `target.origin === current.origin` 和 `target.pathname.startsWith(base)`，都满足时返回 `target.pathname + target.search + target.hash`。不要在解析之前检查字符串：`\`、`%2e%2e` 这样的写法要解析之后才知道它们的意思。
+`const target = new URL(base + rest, current.origin)`（放在 `try`/`catch` 中，抛出异常时返回 `null`），然后检查 `target.origin === current.origin` 和 `target.pathname.startsWith(base)`，都满足时返回 `target.pathname + target.search + target.hash`。不要在解析之前检查字符串：`\`、`%2e%2e` 这样的写法要解析之后才知道它们的意思。
 :::
 
 :::explanation
-这两个函数分别运行在两个页面中：`404.html` 只做一件事，把访问者要去的地址带到首页；首页在创建路由之前恢复地址。真实的 `404.html` 中大约是这样：
+这两个函数分别运行在两个页面中：`404.html` 只做一件事，把访问者要去的地址带到首页；首页在创建路由之前恢复地址。`404.html` 是一个独立的静态页面（放在 `public/` 中，构建时原样复制到 `dist/`），它不加载应用的脚本，所以 `redirectTarget` 要写成一段内联的脚本，大约是这样：
 
 ```html
 <script>
@@ -197,9 +210,9 @@ describe('restoredPath：不安全的地址', () => {
 
 编码要交给 `URLSearchParams`：手工拼接 `?p=` 加原来的地址，原来地址中的 `&` 会把参数拆开，`#` 之后的部分根本不会出现在查询参数中。
 
-检查要在解析之后：`restoredPath` 收到的 `p` 可以是任何人构造的。`//evil.example`、`/\evil.example` 解析出来是另一个网站，`../admin`、`%2e%2e/admin` 解析出来离开了应用的路径；用字符串规则检查，总会漏掉某一种写法（错误解 `string-check` 只检查了开头的 `/`）。让 `URL` 按浏览器的规则解析，再检查 `origin` 和 `pathname`，只有两条规则，而且它们检查的正是我们关心的东西。
+检查要在解析之后：`restoredPath` 收到的 `p` 可以是任何人构造的。`//evil.example`、`/\evil.example`、`/` 加制表符再加 `/evil.example` 解析出来是另一个网站，`../admin`、`%2e%2e/admin` 解析出来离开了应用的路径（注意 `searchParams.get` 已经解码过一次，地址中要写成 `%252e%252e` 才会读到 `%2e%2e`）；用字符串规则检查，总会漏掉某一种写法：错误解 `string-check` 只检查了开头的 `/`，`string-rules` 检查了开头的 `/`、`\` 和每一段的 `..`，仍然漏掉了制表符。解析也可能失败（例如端口超出范围），`new URL` 会抛出异常，首页的脚本就在创建路由之前中断了，所以要捕获它（错误解 `no-catch`）。让 `URL` 按浏览器的规则解析，再检查 `origin` 和 `pathname`，只有两条规则，而且它们检查的正是我们关心的东西。
 
-替代解用 `encodeURIComponent` 编码，解析时用 `try`/`catch` 防止 `URL` 抛出异常。
+替代解用 `encodeURIComponent` 编码，用 `has` 判断有没有这个参数。
 :::
 
 :::variant{kind=alt name=encode-uri-component}
@@ -226,7 +239,7 @@ export function restoredPath(current: URL, base: string): string | null {
   }
   // 解析之后才能判断：同一个网站，并且仍然在应用所在的路径之下
   const sameSite = target.origin === current.origin;
-  const insideApp = target.pathname === base || target.pathname.startsWith(base);
+  const insideApp = target.pathname.startsWith(base);
   return sameSite && insideApp ? `${target.pathname}${target.search}${target.hash}` : null;
 }
 ```
@@ -269,7 +282,6 @@ export function redirectTarget(current: URL, base: string): string | null {
 export function restoredPath(current: URL, base: string): string | null {
   const rest = current.searchParams.get(PARAM);
   if (rest === null) return null;
-  // 交给 URL 解析：它会处理 ..、反斜杠、//主机名 这些写法，解析之后再检查
   return base + rest;
 }
 ```
@@ -312,10 +324,99 @@ export function redirectTarget(current: URL, base: string): string | null {
 export function restoredPath(current: URL, base: string): string | null {
   const rest = current.searchParams.get(PARAM);
   if (rest === null) return null;
-  // 交给 URL 解析：它会处理 ..、反斜杠、//主机名 这些写法，解析之后再检查
   // 只看字符串：不以 / 开头就不会变成 //别的网站
   if (rest.startsWith('/')) return null;
   return base + rest;
+}
+```
+```ts file=main.ts
+import { redirectTarget, restoredPath } from './redirect';
+
+const origin = 'https://user.github.io';
+const base = '/shop/';
+
+// 404.html 中：访问者打开的是一个深层的地址
+const target = redirectTarget(new URL('/shop/projects/p1?status=active#tasks', origin), base);
+console.log('转到', target);
+
+// index.html 中：恢复原来的地址
+if (target !== null) console.log('恢复为', restoredPath(new URL(target, origin), base));
+console.log('别人构造的链接', restoredPath(new URL('/shop/?p=..%2F..%2Fevil', origin), base));
+```
+:::
+
+:::variant{kind=wrong name=string-rules fails=tests reason="用更多的字符串规则检查：仍然漏掉了制表符，/ 加制表符再加 /evil.example 解析出来是另一个网站"}
+```ts file=redirect.ts
+/** 查询参数的名字：404.html 把原来的地址放在这里交给 index.html */
+export const PARAM = 'p';
+
+/**
+ * 在 404.html 中运行：GitHub Pages 找不到 current 这个地址的文件。
+ * 返回要转去的地址：应用的首页 base，加上 ?p=原来的地址（相对于 base 的部分，包括查询和片段）。
+ * current 不在 base 之下时返回 null（那不是这个应用的地址，显示普通的 404）。
+ */
+export function redirectTarget(current: URL, base: string): string | null {
+  if (!current.pathname.startsWith(base)) return null;
+  const rest = current.pathname.slice(base.length) + current.search + current.hash;
+  return `${base}?${new URLSearchParams({ [PARAM]: rest })}`;
+}
+
+/**
+ * 在 index.html 中运行：如果地址是 404.html 转过来的，返回要恢复的地址（路径 + 查询 + 片段），
+ * 由调用方交给 history.replaceState；不是转过来的，或者恢复出来的地址不安全，返回 null。
+ */
+export function restoredPath(current: URL, base: string): string | null {
+  const rest = current.searchParams.get(PARAM);
+  if (rest === null) return null;
+  // 用字符串规则检查：开头不能是 / 或 \，任何一段都不能是 ..
+  if (/^[/\\]/.test(rest)) return null;
+  if (rest.split(/[/\\?#]/).some((s) => s === '..' || s.toLowerCase() === '%2e%2e')) return null;
+  return base + rest;
+}
+```
+```ts file=main.ts
+import { redirectTarget, restoredPath } from './redirect';
+
+const origin = 'https://user.github.io';
+const base = '/shop/';
+
+// 404.html 中：访问者打开的是一个深层的地址
+const target = redirectTarget(new URL('/shop/projects/p1?status=active#tasks', origin), base);
+console.log('转到', target);
+
+// index.html 中：恢复原来的地址
+if (target !== null) console.log('恢复为', restoredPath(new URL(target, origin), base));
+console.log('别人构造的链接', restoredPath(new URL('/shop/?p=..%2F..%2Fevil', origin), base));
+```
+:::
+
+:::variant{kind=wrong name=no-catch fails=tests reason="没有捕获 new URL 的异常：端口超出范围的地址让首页的脚本中断了"}
+```ts file=redirect.ts
+/** 查询参数的名字：404.html 把原来的地址放在这里交给 index.html */
+export const PARAM = 'p';
+
+/**
+ * 在 404.html 中运行：GitHub Pages 找不到 current 这个地址的文件。
+ * 返回要转去的地址：应用的首页 base，加上 ?p=原来的地址（相对于 base 的部分，包括查询和片段）。
+ * current 不在 base 之下时返回 null（那不是这个应用的地址，显示普通的 404）。
+ */
+export function redirectTarget(current: URL, base: string): string | null {
+  if (!current.pathname.startsWith(base)) return null;
+  const rest = current.pathname.slice(base.length) + current.search + current.hash;
+  return `${base}?${new URLSearchParams({ [PARAM]: rest })}`;
+}
+
+/**
+ * 在 index.html 中运行：如果地址是 404.html 转过来的，返回要恢复的地址（路径 + 查询 + 片段），
+ * 由调用方交给 history.replaceState；不是转过来的，或者恢复出来的地址不安全，返回 null。
+ */
+export function restoredPath(current: URL, base: string): string | null {
+  const rest = current.searchParams.get(PARAM);
+  if (rest === null) return null;
+  // 交给 URL 解析：它会处理 ..、反斜杠、制表符、//主机名 这些写法，解析之后再检查
+  const target = new URL(base + rest, current.origin);
+  if (target.origin !== current.origin || !target.pathname.startsWith(base)) return null;
+  return target.pathname + target.search + target.hash;
 }
 ```
 ```ts file=main.ts
@@ -357,8 +458,14 @@ export function redirectTarget(current: URL, base: string): string | null {
 export function restoredPath(current: URL, base: string): string | null {
   const rest = current.searchParams.get(PARAM);
   if (rest === null) return null;
-  // 交给 URL 解析：它会处理 ..、反斜杠、//主机名 这些写法，解析之后再检查
-  const target = new URL(base + rest, current.origin);
+  // 交给 URL 解析：它会处理 ..、反斜杠、制表符、//主机名 这些写法，解析之后再检查
+  let target: URL;
+  try {
+    target = new URL(base + rest, current.origin);
+  } catch {
+    // 例如端口超出范围：这个地址根本无法解析
+    return null;
+  }
   if (target.origin !== current.origin || !target.pathname.startsWith(base)) return null;
   return target.pathname + target.search + target.hash;
 }
@@ -402,8 +509,14 @@ export function redirectTarget(current: URL, base: string): string | null {
 export function restoredPath(current: URL, base: string): string | null {
   const rest = current.searchParams.get(PARAM);
   if (rest === null) return null;
-  // 交给 URL 解析：它会处理 ..、反斜杠、//主机名 这些写法，解析之后再检查
-  const target = new URL(base + rest, current.origin);
+  // 交给 URL 解析：它会处理 ..、反斜杠、制表符、//主机名 这些写法，解析之后再检查
+  let target: URL;
+  try {
+    target = new URL(base + rest, current.origin);
+  } catch {
+    // 例如端口超出范围：这个地址根本无法解析
+    return null;
+  }
   if (target.origin !== current.origin || !target.pathname.startsWith(base)) return null;
   return target.pathname + target.search + target.hash;
 }

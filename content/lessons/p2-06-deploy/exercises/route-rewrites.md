@@ -4,11 +4,10 @@ title: 从路由表生成改写规则
 ---
 在 `rewrites.ts` 中实现两个函数。`RouteDef` 是 React Router 路由对象中和地址有关的部分：`path`、`index`、`children`。
 
-1. `routePatterns(routes)`：路由表中所有页面的地址模式。
-   - 一个路由的完整地址是上一级的完整地址加上它的 `path`（最外层从 `/` 开始）。子路由的 `path` 是相对的；`path` 开头、结尾多余的 `/` 不影响结果。结果以 `/` 开头、不以 `/` 结尾，根是 `'/'`；
-   - 没有 `path` 的路由（`index` 路由、没有 `path` 的布局路由）的完整地址和上一级相同；
-   - **页面**是没有子路由的路由（`children` 不存在或者是空数组）；有子路由的只是布局，看它的子路由；
-   - 完整地址中带有 `*` 的路由不算，它的子路由也不算；
+1. `routePatterns(routes)`：路由表中所有页面的地址模式，规则和 React Router 实际的匹配一致。
+   - 一个路由的完整地址是上一级的完整地址加上它的 `path`（最外层从 `/` 开始）；`path` 以 `/` 开头时写的是完整的地址，直接使用。多余的 `/`（开头、结尾、连续）不影响结果；结果以 `/` 开头、不以 `/` 结尾，根是 `'/'`；
+   - 有 `path` 的路由都算页面，包括有子路由的布局（React Router 会匹配它，`<Outlet />` 是空的）；`index` 路由也算页面，地址和上一级相同；没有 `path` 的布局本身不算，它的子路由接在上一级的地址后面；
+   - `path` 只有一个 `*` 的路由（“页面不存在”）不算，它的子路由也不算；完整地址的最后一段是 `*` 时（例如 `files/*`），把这一段换成 vercel.json 的写法 `:path*`（`/files/:path*`）；
    - 按在路由表中出现的顺序，重复的只保留第一次；
 2. `vercelRewrites(routes)`：除了 `'/'`，每个页面的地址都变成一条 `{ source: 地址, destination: '/index.html' }`。
 
@@ -19,7 +18,7 @@ export type RouteDef = Readonly<{ path?: string; index?: boolean; children?: rea
 
 export type Rewrite = Readonly<{ source: string; destination: string }>;
 
-/** 路由表中所有页面的地址模式，按出现的顺序，不重复；带 * 的路由（例如“页面不存在”）不算 */
+/** 路由表中所有页面的地址模式，按出现的顺序，不重复 */
 export function routePatterns(routes: readonly RouteDef[]): string[] {
   // TODO
   return [];
@@ -57,27 +56,34 @@ export type RouteDef = Readonly<{ path?: string; index?: boolean; children?: rea
 
 export type Rewrite = Readonly<{ source: string; destination: string }>;
 
-/** 把 parent 和 path 连起来：去掉多余的斜杠，结果以 / 开头、不以 / 结尾（根是 '/'） */
-function join(parent: string, path: string | undefined): string {
-  const parts = [...parent.split('/'), ...(path ?? '').split('/')].filter((part) => part !== '');
-  return `/${parts.join('/')}`;
-}
+/** 地址按 / 分成段，去掉空的段（开头、结尾、连续的 /） */
+const segments = (path: string | undefined) => (path ?? '').split('/').filter((s) => s !== '');
 
-/** 路由表中所有页面的地址模式，按出现的顺序，不重复；带 * 的路由（例如“页面不存在”）不算 */
+/** 路由表中所有页面的地址模式，按出现的顺序，不重复 */
 export function routePatterns(routes: readonly RouteDef[]): string[] {
   const patterns: string[] = [];
-  const visit = (list: readonly RouteDef[], parent: string) => {
+  const add = (parts: readonly string[]) => {
+    const pattern = `/${parts.join('/')}`;
+    if (!patterns.includes(pattern)) patterns.push(pattern);
+  };
+  const visit = (list: readonly RouteDef[], parent: readonly string[]) => {
     for (const route of list) {
-      const full = join(parent, route.path);
-      if (full.includes('*')) continue;
-      if (route.children !== undefined && route.children.length > 0) {
-        visit(route.children, full);
-      } else if (!patterns.includes(full)) {
-        patterns.push(full);
+      const own = segments(route.path);
+      // 只有一个 * 的路由是“页面不存在”：其他所有地址都交给平台返回 404
+      if (own.length === 1 && own[0] === '*') continue;
+      // 以 / 开头的子路由写的是完整的地址
+      const full = route.path?.startsWith('/') ? own : [...parent, ...own];
+      if (full.at(-1) === '*') {
+        // files/* 匹配 /files 和它下面的任意地址：vercel.json 中写成 :path*（零段或多段，i01）
+        add([...full.slice(0, -1), ':path*']);
+        continue;
       }
+      // 有 path 的路由（包括有子路由的布局）和 index 路由都能匹配一个地址
+      if (route.index === true || route.path !== undefined) add(full);
+      if (route.children !== undefined) visit(route.children, full);
     }
   };
-  visit(routes, '/');
+  visit(routes, []);
   return patterns;
 }
 
@@ -136,16 +142,24 @@ describe('routePatterns', () => {
     expect(routePatterns([{ path: 'docs', children: [{ index: true }, { path: 'intro' }] }])).toEqual(['/docs', '/docs/intro']);
   });
 
-  test('没有 path 的布局路由：子路由直接接在上一级的地址后面', () => {
-    expect(routePatterns([{ path: '/', children: [{ children: [{ path: 'settings' }, { path: 'about' }] }] }])).toEqual(['/settings', '/about']);
+  test('有 path 的布局本身也匹配它的地址（没有 index 子路由时，Outlet 是空的）', () => {
+    expect(routePatterns([{ path: 'shop', children: [{ path: 'cart' }] }])).toEqual(['/shop', '/shop/cart']);
+  });
+
+  test('没有 path 的布局路由不匹配地址：子路由直接接在上一级的地址后面', () => {
+    expect(routePatterns([{ path: '/', children: [{ children: [{ path: 'settings' }, { path: 'about' }] }] }])).toEqual(['/', '/settings', '/about']);
   });
 
   test('结尾的 / 不影响结果', () => {
-    expect(routePatterns([{ path: '/shop/', children: [{ path: 'cart/' }, { path: 'items/:id' }] }])).toEqual(['/shop/cart', '/shop/items/:id']);
+    expect(routePatterns([{ path: '/shop/', children: [{ path: 'cart/' }, { path: 'items/:id' }] }])).toEqual(['/shop', '/shop/cart', '/shop/items/:id']);
   });
 
-  test('带 * 的路由不算页面，它的子路由也不算', () => {
-    expect(routePatterns([{ path: 'files/*' }, { path: '*', children: [{ path: 'x' }] }, { path: 'a' }])).toEqual(['/a']);
+  test('以 / 开头的子路由写的是完整的地址', () => {
+    expect(routePatterns([{ path: 'projects', children: [{ index: true }, { path: '/projects/new' }] }])).toEqual(['/projects', '/projects/new']);
+  });
+
+  test('只有 * 的路由（页面不存在）不算，它的子路由也不算；files/* 写成 /files/:path*', () => {
+    expect(routePatterns([{ path: 'files/*' }, { path: '*', children: [{ path: 'x' }] }, { path: 'a' }])).toEqual(['/files/:path*', '/a']);
   });
 
   test('重复的地址只算一次，保留第一次出现的位置', () => {
@@ -175,19 +189,19 @@ describe('vercelRewrites', () => {
 :::
 
 :::hint{level=1}
-写一个递归的函数 `visit(routes, parent)`：对每个路由，先算出完整地址；有子路由就用这个地址作为 `parent` 继续 `visit`，没有就把地址记下来。连接地址时，把两部分都按 `/` 分开，去掉空的部分，再用 `/` 连起来，前面加一个 `/`。
+写一个递归的函数 `visit(routes, parent)`，`parent` 是上一级地址的各段（字符串数组）。对每个路由：先把它的 `path` 按 `/` 分开、去掉空的段；以 `/` 开头就不接在 `parent` 后面。有 `path` 或者是 `index` 路由就记下地址；有子路由就用这个地址继续 `visit`。
 :::
 
 :::hint{level=2}
-`[...parent.split('/'), ...(route.path ?? '').split('/')].filter((part) => part !== '')`，再 `'/' + parts.join('/')`：多余的斜杠、`undefined` 的 `path` 都处理了，根正好是 `'/'`。带 `*` 的检查放在递归之前，它的子路由就自然被跳过了。
+`(route.path ?? '').split('/').filter((s) => s !== '')`：多余的斜杠、`undefined` 的 `path` 都处理了，`'/' + parts.join('/')` 在根上正好是 `'/'`。“只有一个 `*`”的检查放在最前面，`continue` 跳过之后，它的子路由自然也被跳过了。去重可以在记下地址时用 `includes` 检查。
 :::
 
 :::explanation
-路由表是一棵树：布局路由提供共同的外框，叶子才是一个个页面。地址模式就是从根走到每个叶子的路径。递归正好对应这棵树的形状：处理一个路由，就是算出它的完整地址，再交给它的子路由。
+路由表是一棵树，递归正好对应它的形状：处理一个路由，就是算出它的完整地址，再交给它的子路由。
 
-`index` 路由没有自己的 `path`，地址和父路由相同；没有 `path` 的布局路由也一样。用“去掉空的部分再连接”的方式拼地址，这两种情况和多余的斜杠都不需要特别处理。
+哪些地址要生成规则，问的是“React Router 会不会为这个地址渲染一个页面”。有 `path` 的布局会：没有 `index` 子路由时，打开 `/shop` 照样渲染布局，只是 `<Outlet />` 是空的。如果只把没有子路由的路由当作页面（错误解 `leaves-only`），刷新 `/shop` 就是 404，而在本地点链接进去却一切正常。没有 `path` 的布局不匹配任何地址，它只是把子路由包在同一个外框中。
 
-`/projects` 既是布局（有子路由），又通过它的 `index` 子路由成为一个页面；它出现在结果中，是因为那个 `index` 子路由，而不是布局本身。如果一个布局没有 `index` 子路由（例如没有 `path` 的布局），它本身就不是一个页面，错误解 `layout-as-page` 把它也算了进去。
+两种 `*` 要分开：只有一个 `*` 的路由是“页面不存在”，为它生成 `/:path*` 就等于“其他所有地址都返回 index.html”，找不到的地址全变成了 200（错误解 `keep-not-found`）；`files/*` 则是一个真正的页面，它下面的地址都由它显示，vercel.json 中要写成 `:path*`，原样写成 `/files/*` 不是 vercel.json 的写法（错误解 `literal-splat`）。
 
 替代解用生成器函数（`function*`）在递归中逐个产生地址，再用 `Set` 去重：`Set` 保持第一次插入的顺序。
 :::
@@ -201,11 +215,16 @@ export type Rewrite = Readonly<{ source: string; destination: string }>;
 
 /** 生成器：依次产生每个页面的完整地址（可能重复） */
 function* pages(routes: readonly RouteDef[], parent: string[]): Generator<string> {
-  for (const route of routes) {
-    const segments = [...parent, ...(route.path ?? '').split('/').filter(Boolean)];
-    if (segments.some((s) => s.includes('*'))) continue;
-    if (route.children?.length) yield* pages(route.children, segments);
-    else yield '/' + segments.join('/');
+  for (const { path, index, children } of routes) {
+    const own = (path ?? '').split('/').filter(Boolean);
+    if (own.join('/') === '*') continue;
+    const full = path?.startsWith('/') ? own : [...parent, ...own];
+    if (full.at(-1) === '*') {
+      yield '/' + [...full.slice(0, -1), ':path*'].join('/');
+    } else {
+      if (index || path !== undefined) yield '/' + full.join('/');
+      if (children) yield* pages(children, full);
+    }
   }
 }
 
@@ -237,33 +256,41 @@ console.log(JSON.stringify({ rewrites: vercelRewrites(routes) }, null, 2));
 ```
 :::
 
-:::variant{kind=wrong name=keep-splat fails=tests reason="没有排除带 * 的路由：“页面不存在”也得到了 index.html，找不到的地址都变成了 200"}
+:::variant{kind=wrong name=leaves-only fails=tests reason="只把没有子路由的路由当作页面：有 path 的布局也会被 React Router 匹配，刷新它的地址就是 404"}
 ```ts file=rewrites.ts
 /** React Router 路由配置中和地址有关的部分 */
 export type RouteDef = Readonly<{ path?: string; index?: boolean; children?: readonly RouteDef[] }>;
 
 export type Rewrite = Readonly<{ source: string; destination: string }>;
 
-/** 把 parent 和 path 连起来：去掉多余的斜杠，结果以 / 开头、不以 / 结尾（根是 '/'） */
-function join(parent: string, path: string | undefined): string {
-  const parts = [...parent.split('/'), ...(path ?? '').split('/')].filter((part) => part !== '');
-  return `/${parts.join('/')}`;
-}
+/** 地址按 / 分成段，去掉空的段（开头、结尾、连续的 /） */
+const segments = (path: string | undefined) => (path ?? '').split('/').filter((s) => s !== '');
 
-/** 路由表中所有页面的地址模式，按出现的顺序，不重复；带 * 的路由（例如“页面不存在”）不算 */
+/** 路由表中所有页面的地址模式，按出现的顺序，不重复 */
 export function routePatterns(routes: readonly RouteDef[]): string[] {
   const patterns: string[] = [];
-  const visit = (list: readonly RouteDef[], parent: string) => {
+  const add = (parts: readonly string[]) => {
+    const pattern = `/${parts.join('/')}`;
+    if (!patterns.includes(pattern)) patterns.push(pattern);
+  };
+  const visit = (list: readonly RouteDef[], parent: readonly string[]) => {
     for (const route of list) {
-      const full = join(parent, route.path);
-      if (route.children !== undefined && route.children.length > 0) {
-        visit(route.children, full);
-      } else if (!patterns.includes(full)) {
-        patterns.push(full);
+      const own = segments(route.path);
+      // 只有一个 * 的路由是“页面不存在”：其他所有地址都交给平台返回 404
+      if (own.length === 1 && own[0] === '*') continue;
+      // 以 / 开头的子路由写的是完整的地址
+      const full = route.path?.startsWith('/') ? own : [...parent, ...own];
+      if (full.at(-1) === '*') {
+        // files/* 匹配 /files 和它下面的任意地址：vercel.json 中写成 :path*（零段或多段，i01）
+        add([...full.slice(0, -1), ':path*']);
+        continue;
       }
+      // 有 path 的路由（包括有子路由的布局）和 index 路由都能匹配一个地址
+      if (route.children !== undefined && route.children.length > 0) visit(route.children, full);
+      else add(full);
     }
   };
-  visit(routes, '/');
+  visit(routes, []);
   return patterns;
 }
 
@@ -293,31 +320,168 @@ console.log(JSON.stringify({ rewrites: vercelRewrites(routes) }, null, 2));
 ```
 :::
 
-:::variant{kind=wrong name=layout-as-page fails=tests reason="把有子路由的布局也当作页面：没有 index 子路由的布局本身并不是一个页面"}
+:::variant{kind=wrong name=keep-not-found fails=tests reason="为“页面不存在”的 * 也生成了规则：/:path* 匹配一切，找不到的地址都变成了 200"}
 ```ts file=rewrites.ts
 /** React Router 路由配置中和地址有关的部分 */
 export type RouteDef = Readonly<{ path?: string; index?: boolean; children?: readonly RouteDef[] }>;
 
 export type Rewrite = Readonly<{ source: string; destination: string }>;
 
-/** 把 parent 和 path 连起来：去掉多余的斜杠，结果以 / 开头、不以 / 结尾（根是 '/'） */
-function join(parent: string, path: string | undefined): string {
-  const parts = [...parent.split('/'), ...(path ?? '').split('/')].filter((part) => part !== '');
-  return `/${parts.join('/')}`;
-}
+/** 地址按 / 分成段，去掉空的段（开头、结尾、连续的 /） */
+const segments = (path: string | undefined) => (path ?? '').split('/').filter((s) => s !== '');
 
-/** 路由表中所有页面的地址模式，按出现的顺序，不重复；带 * 的路由（例如“页面不存在”）不算 */
+/** 路由表中所有页面的地址模式，按出现的顺序，不重复 */
 export function routePatterns(routes: readonly RouteDef[]): string[] {
   const patterns: string[] = [];
-  const visit = (list: readonly RouteDef[], parent: string) => {
+  const add = (parts: readonly string[]) => {
+    const pattern = `/${parts.join('/')}`;
+    if (!patterns.includes(pattern)) patterns.push(pattern);
+  };
+  const visit = (list: readonly RouteDef[], parent: readonly string[]) => {
     for (const route of list) {
-      const full = join(parent, route.path);
-      if (full.includes('*')) continue;
-      if (!patterns.includes(full)) patterns.push(full);
+      const own = segments(route.path);
+      // 只有一个 * 的路由是“页面不存在”：其他所有地址都交给平台返回 404
+      // 以 / 开头的子路由写的是完整的地址
+      const full = route.path?.startsWith('/') ? own : [...parent, ...own];
+      if (full.at(-1) === '*') {
+        // files/* 匹配 /files 和它下面的任意地址：vercel.json 中写成 :path*（零段或多段，i01）
+        add([...full.slice(0, -1), ':path*']);
+        continue;
+      }
+      // 有 path 的路由（包括有子路由的布局）和 index 路由都能匹配一个地址
+      if (route.index === true || route.path !== undefined) add(full);
       if (route.children !== undefined) visit(route.children, full);
     }
   };
-  visit(routes, '/');
+  visit(routes, []);
+  return patterns;
+}
+
+/** vercel.json 的 rewrites：每个页面的地址都返回 index.html（'/' 本来就是 index.html，不需要） */
+export function vercelRewrites(routes: readonly RouteDef[]): Rewrite[] {
+  return routePatterns(routes)
+    .filter((pattern) => pattern !== '/')
+    .map((source) => ({ source, destination: '/index.html' }));
+}
+```
+```ts file=main.ts
+import { routePatterns, vercelRewrites, type RouteDef } from './rewrites';
+
+const routes: RouteDef[] = [
+  {
+    path: '/',
+    children: [
+      { index: true },
+      { path: 'projects', children: [{ index: true }, { path: 'new' }, { path: ':projectId' }, { path: ':projectId/edit' }] },
+      { path: '*' },
+    ],
+  },
+];
+
+console.log(routePatterns(routes));
+console.log(JSON.stringify({ rewrites: vercelRewrites(routes) }, null, 2));
+```
+:::
+
+:::variant{kind=wrong name=literal-splat fails=tests reason="files/* 原样写进了规则：vercel.json 中零段或多段要写成 :path*"}
+```ts file=rewrites.ts
+/** React Router 路由配置中和地址有关的部分 */
+export type RouteDef = Readonly<{ path?: string; index?: boolean; children?: readonly RouteDef[] }>;
+
+export type Rewrite = Readonly<{ source: string; destination: string }>;
+
+/** 地址按 / 分成段，去掉空的段（开头、结尾、连续的 /） */
+const segments = (path: string | undefined) => (path ?? '').split('/').filter((s) => s !== '');
+
+/** 路由表中所有页面的地址模式，按出现的顺序，不重复 */
+export function routePatterns(routes: readonly RouteDef[]): string[] {
+  const patterns: string[] = [];
+  const add = (parts: readonly string[]) => {
+    const pattern = `/${parts.join('/')}`;
+    if (!patterns.includes(pattern)) patterns.push(pattern);
+  };
+  const visit = (list: readonly RouteDef[], parent: readonly string[]) => {
+    for (const route of list) {
+      const own = segments(route.path);
+      // 只有一个 * 的路由是“页面不存在”：其他所有地址都交给平台返回 404
+      if (own.length === 1 && own[0] === '*') continue;
+      // 以 / 开头的子路由写的是完整的地址
+      const full = route.path?.startsWith('/') ? own : [...parent, ...own];
+      if (full.at(-1) === '*') {
+        // files/* 匹配 /files 和它下面的任意地址：vercel.json 中写成 :path*（零段或多段，i01）
+        add(full);
+        continue;
+      }
+      // 有 path 的路由（包括有子路由的布局）和 index 路由都能匹配一个地址
+      if (route.index === true || route.path !== undefined) add(full);
+      if (route.children !== undefined) visit(route.children, full);
+    }
+  };
+  visit(routes, []);
+  return patterns;
+}
+
+/** vercel.json 的 rewrites：每个页面的地址都返回 index.html（'/' 本来就是 index.html，不需要） */
+export function vercelRewrites(routes: readonly RouteDef[]): Rewrite[] {
+  return routePatterns(routes)
+    .filter((pattern) => pattern !== '/')
+    .map((source) => ({ source, destination: '/index.html' }));
+}
+```
+```ts file=main.ts
+import { routePatterns, vercelRewrites, type RouteDef } from './rewrites';
+
+const routes: RouteDef[] = [
+  {
+    path: '/',
+    children: [
+      { index: true },
+      { path: 'projects', children: [{ index: true }, { path: 'new' }, { path: ':projectId' }, { path: ':projectId/edit' }] },
+      { path: '*' },
+    ],
+  },
+];
+
+console.log(routePatterns(routes));
+console.log(JSON.stringify({ rewrites: vercelRewrites(routes) }, null, 2));
+```
+:::
+
+:::variant{kind=wrong name=relative-only fails=tests reason="以 / 开头的子路由也接在父路由后面：得到了 /projects/projects/new"}
+```ts file=rewrites.ts
+/** React Router 路由配置中和地址有关的部分 */
+export type RouteDef = Readonly<{ path?: string; index?: boolean; children?: readonly RouteDef[] }>;
+
+export type Rewrite = Readonly<{ source: string; destination: string }>;
+
+/** 地址按 / 分成段，去掉空的段（开头、结尾、连续的 /） */
+const segments = (path: string | undefined) => (path ?? '').split('/').filter((s) => s !== '');
+
+/** 路由表中所有页面的地址模式，按出现的顺序，不重复 */
+export function routePatterns(routes: readonly RouteDef[]): string[] {
+  const patterns: string[] = [];
+  const add = (parts: readonly string[]) => {
+    const pattern = `/${parts.join('/')}`;
+    if (!patterns.includes(pattern)) patterns.push(pattern);
+  };
+  const visit = (list: readonly RouteDef[], parent: readonly string[]) => {
+    for (const route of list) {
+      const own = segments(route.path);
+      // 只有一个 * 的路由是“页面不存在”：其他所有地址都交给平台返回 404
+      if (own.length === 1 && own[0] === '*') continue;
+      // 以 / 开头的子路由写的是完整的地址
+      const full = [...parent, ...own];
+      if (full.at(-1) === '*') {
+        // files/* 匹配 /files 和它下面的任意地址：vercel.json 中写成 :path*（零段或多段，i01）
+        add([...full.slice(0, -1), ':path*']);
+        continue;
+      }
+      // 有 path 的路由（包括有子路由的布局）和 index 路由都能匹配一个地址
+      if (route.index === true || route.path !== undefined) add(full);
+      if (route.children !== undefined) visit(route.children, full);
+    }
+  };
+  visit(routes, []);
   return patterns;
 }
 
@@ -354,27 +518,34 @@ export type RouteDef = Readonly<{ path?: string; index?: boolean; children?: rea
 
 export type Rewrite = Readonly<{ source: string; destination: string }>;
 
-/** 把 parent 和 path 连起来：去掉多余的斜杠，结果以 / 开头、不以 / 结尾（根是 '/'） */
-function join(parent: string, path: string | undefined): string {
-  const parts = [...parent.split('/'), ...(path ?? '').split('/')].filter((part) => part !== '');
-  return `/${parts.join('/')}`;
-}
+/** 地址按 / 分成段，去掉空的段（开头、结尾、连续的 /） */
+const segments = (path: string | undefined) => (path ?? '').split('/').filter((s) => s !== '');
 
-/** 路由表中所有页面的地址模式，按出现的顺序，不重复；带 * 的路由（例如“页面不存在”）不算 */
+/** 路由表中所有页面的地址模式，按出现的顺序，不重复 */
 export function routePatterns(routes: readonly RouteDef[]): string[] {
   const patterns: string[] = [];
-  const visit = (list: readonly RouteDef[], parent: string) => {
+  const add = (parts: readonly string[]) => {
+    const pattern = `/${parts.join('/')}`;
+    patterns.push(pattern);
+  };
+  const visit = (list: readonly RouteDef[], parent: readonly string[]) => {
     for (const route of list) {
-      const full = join(parent, route.path);
-      if (full.includes('*')) continue;
-      if (route.children !== undefined && route.children.length > 0) {
-        visit(route.children, full);
-      } else {
-        patterns.push(full);
+      const own = segments(route.path);
+      // 只有一个 * 的路由是“页面不存在”：其他所有地址都交给平台返回 404
+      if (own.length === 1 && own[0] === '*') continue;
+      // 以 / 开头的子路由写的是完整的地址
+      const full = route.path?.startsWith('/') ? own : [...parent, ...own];
+      if (full.at(-1) === '*') {
+        // files/* 匹配 /files 和它下面的任意地址：vercel.json 中写成 :path*（零段或多段，i01）
+        add([...full.slice(0, -1), ':path*']);
+        continue;
       }
+      // 有 path 的路由（包括有子路由的布局）和 index 路由都能匹配一个地址
+      if (route.index === true || route.path !== undefined) add(full);
+      if (route.children !== undefined) visit(route.children, full);
     }
   };
-  visit(routes, '/');
+  visit(routes, []);
   return patterns;
 }
 
@@ -411,90 +582,40 @@ export type RouteDef = Readonly<{ path?: string; index?: boolean; children?: rea
 
 export type Rewrite = Readonly<{ source: string; destination: string }>;
 
-/** 把 parent 和 path 连起来：去掉多余的斜杠，结果以 / 开头、不以 / 结尾（根是 '/'） */
-function join(parent: string, path: string | undefined): string {
-  const parts = [...parent.split('/'), ...(path ?? '').split('/')].filter((part) => part !== '');
-  return `/${parts.join('/')}`;
-}
+/** 地址按 / 分成段，去掉空的段（开头、结尾、连续的 /） */
+const segments = (path: string | undefined) => (path ?? '').split('/').filter((s) => s !== '');
 
-/** 路由表中所有页面的地址模式，按出现的顺序，不重复；带 * 的路由（例如“页面不存在”）不算 */
+/** 路由表中所有页面的地址模式，按出现的顺序，不重复 */
 export function routePatterns(routes: readonly RouteDef[]): string[] {
   const patterns: string[] = [];
-  const visit = (list: readonly RouteDef[], parent: string) => {
+  const add = (parts: readonly string[]) => {
+    const pattern = `/${parts.join('/')}`;
+    if (!patterns.includes(pattern)) patterns.push(pattern);
+  };
+  const visit = (list: readonly RouteDef[], parent: readonly string[]) => {
     for (const route of list) {
-      const full = join(parent, route.path);
-      if (full.includes('*')) continue;
-      if (route.children !== undefined && route.children.length > 0) {
-        visit(route.children, full);
-      } else if (!patterns.includes(full)) {
-        patterns.push(full);
+      const own = segments(route.path);
+      // 只有一个 * 的路由是“页面不存在”：其他所有地址都交给平台返回 404
+      if (own.length === 1 && own[0] === '*') continue;
+      // 以 / 开头的子路由写的是完整的地址
+      const full = route.path?.startsWith('/') ? own : [...parent, ...own];
+      if (full.at(-1) === '*') {
+        // files/* 匹配 /files 和它下面的任意地址：vercel.json 中写成 :path*（零段或多段，i01）
+        add([...full.slice(0, -1), ':path*']);
+        continue;
       }
+      // 有 path 的路由（包括有子路由的布局）和 index 路由都能匹配一个地址
+      if (route.index === true || route.path !== undefined) add(full);
+      if (route.children !== undefined) visit(route.children, full);
     }
   };
-  visit(routes, '/');
+  visit(routes, []);
   return patterns;
 }
 
 /** vercel.json 的 rewrites：每个页面的地址都返回 index.html（'/' 本来就是 index.html，不需要） */
 export function vercelRewrites(routes: readonly RouteDef[]): Rewrite[] {
   return routePatterns(routes)
-    .map((source) => ({ source, destination: '/index.html' }));
-}
-```
-```ts file=main.ts
-import { routePatterns, vercelRewrites, type RouteDef } from './rewrites';
-
-const routes: RouteDef[] = [
-  {
-    path: '/',
-    children: [
-      { index: true },
-      { path: 'projects', children: [{ index: true }, { path: 'new' }, { path: ':projectId' }, { path: ':projectId/edit' }] },
-      { path: '*' },
-    ],
-  },
-];
-
-console.log(routePatterns(routes));
-console.log(JSON.stringify({ rewrites: vercelRewrites(routes) }, null, 2));
-```
-:::
-
-:::variant{kind=wrong name=concat fails=tests reason="直接拼接字符串：根路由得到了 //，结尾的斜杠也留在了地址中"}
-```ts file=rewrites.ts
-/** React Router 路由配置中和地址有关的部分 */
-export type RouteDef = Readonly<{ path?: string; index?: boolean; children?: readonly RouteDef[] }>;
-
-export type Rewrite = Readonly<{ source: string; destination: string }>;
-
-/** 把 parent 和 path 连起来：去掉多余的斜杠，结果以 / 开头、不以 / 结尾（根是 '/'） */
-function join(parent: string, path: string | undefined): string {
-  if (path === undefined) return parent;
-  return parent.endsWith('/') ? parent + path : `${parent}/${path}`;
-}
-
-/** 路由表中所有页面的地址模式，按出现的顺序，不重复；带 * 的路由（例如“页面不存在”）不算 */
-export function routePatterns(routes: readonly RouteDef[]): string[] {
-  const patterns: string[] = [];
-  const visit = (list: readonly RouteDef[], parent: string) => {
-    for (const route of list) {
-      const full = join(parent, route.path);
-      if (full.includes('*')) continue;
-      if (route.children !== undefined && route.children.length > 0) {
-        visit(route.children, full);
-      } else if (!patterns.includes(full)) {
-        patterns.push(full);
-      }
-    }
-  };
-  visit(routes, '/');
-  return patterns;
-}
-
-/** vercel.json 的 rewrites：每个页面的地址都返回 index.html（'/' 本来就是 index.html，不需要） */
-export function vercelRewrites(routes: readonly RouteDef[]): Rewrite[] {
-  return routePatterns(routes)
-    .filter((pattern) => pattern !== '/')
     .map((source) => ({ source, destination: '/index.html' }));
 }
 ```

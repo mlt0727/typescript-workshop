@@ -880,7 +880,7 @@ export const routes: RouteObject[] = [
 ```
 :::
 
-:::mutant{name=not-disabled hint="提交期间“添加”按钮仍然可用：需要检查提交之后按钮的状态，或者再点一次、数一数服务器收到的请求"}
+:::mutant{name=not-disabled hint="提交期间“添加”按钮仍然可用（等按钮不可用之后再点第二次，不要用 dblClick）：需要检查提交之后按钮的状态，或者再点一次、数一数服务器收到的请求"}
 ```tsx file=routes.tsx
 import { useEffect, useRef } from 'react';
 import {

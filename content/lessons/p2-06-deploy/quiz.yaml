@@ -24,7 +24,7 @@
   type: single
   prompt: "GitHub Pages 的首页读出地址中的 `p`，直接执行 `location.replace(base + p)`。为什么这样不安全？"
   options:
-    - text: 任何人都可以构造 p，让它解析成另一个网站（例如以 / 开头时得到 //evil.example），这是开放重定向
+    - text: 任何人都可以构造 p，让它解析成另一个网站（例如应用部署在根上、base 是 / 时，p 为 /evil.example 就拼出了 //evil.example），这是开放重定向
       correct: true
       explain: 先用 URL 解析 base + p，再检查 origin 和 pathname。
     - text: location.replace 会新增一条历史记录

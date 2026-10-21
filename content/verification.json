@@ -11554,8 +11554,8 @@
       ]
     },
     "p2-05-tests": {
-      "verifiedAt": "2026-10-21T06:51:45.435Z",
-      "sourceHash": "ffbcb60934a647f2",
+      "verifiedAt": "2026-10-21T07:22:27.474Z",
+      "sourceHash": "4fa684d07ba38cdb",
       "ok": true,
       "checks": [
         {
@@ -11621,8 +11621,8 @@
       ]
     },
     "p2-06-deploy": {
-      "verifiedAt": "2026-10-21T06:32:29.877Z",
-      "sourceHash": "88f43a0a272b9fcf",
+      "verifiedAt": "2026-10-21T07:22:28.398Z",
+      "sourceHash": "148897dfc9cf333e",
       "ok": true,
       "checks": [
         {
@@ -11638,7 +11638,7 @@
         {
           "target": "exercise:route-rewrites:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(routePatterns › 项目面板的全部页面 ⟶ expect(…).toEqual([,routePatterns › index 路由的地址就是父路由的地址 ⟶ expect(…).toEqual([ '/docs', '/docs/intro' ]),routePatterns › 没有 path 的布局路由：子路由直接接在上一级的地址后面 ⟶ expect(…).toEqual([ '/settings', '/about' ]),routePatterns › 结尾的 / 不影响结果 ⟶ expect(…).toEqual([ '/shop/cart', '/shop/items/:id' ]),routePatterns › 带 * 的路由不算页面，它的子路由也不算 ⟶ expect(…).toEqual([ '/a' ]),routePatterns › 重复的地址只算一次，保留第一次出现的位置 ⟶ expect(…).toEqual([ '/a', '/b' ]),routePatterns › 没有子路由的空数组也当作页面 ⟶ expect(…).toEqual([ '/empty' ]),vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(routePatterns › 项目面板的全部页面 ⟶ expect(…).toEqual([,routePatterns › index 路由的地址就是父路由的地址 ⟶ expect(…).toEqual([ '/docs', '/docs/intro' ]),routePatterns › 有 path 的布局本身也匹配它的地址（没有 index 子路由时，Outlet 是空的） ⟶ expect(…).toEqual([ '/shop', '/shop/cart' ]),routePatterns › 没有 path 的布局路由不匹配地址：子路由直接接在上一级的地址后面 ⟶ expect(…).toEqual([ '/', '/settings', '/about' ]),routePatterns › 结尾的 / 不影响结果 ⟶ expect(…).toEqual([ '/shop', '/shop/cart', '/shop/items/:id' ]),routePatterns › 以 / 开头的子路由写的是完整的地址 ⟶ expect(…).toEqual([ '/projects', '/projects/new' ]),routePatterns › 只有 * 的路由（页面不存在）不算，它的子路由也不算；files/* 写成 /files/:path* ⟶ expect(…).toEqual([ '/files/:path*', '/a' ]),routePatterns › 重复的地址只算一次，保留第一次出现的位置 ⟶ expect(…).toEqual([ '/a', '/b' ]),routePatterns › 没有子路由的空数组也当作页面 ⟶ expect(…).toEqual([ '/empty' ]),vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:route-rewrites:solution:solution",
@@ -11651,29 +11651,34 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:route-rewrites:wrong:keep-splat",
+          "target": "exercise:route-rewrites:wrong:leaves-only",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 项目面板的全部页面 ⟶ expect(…).toEqual([,routePatterns › 带 * 的路由不算页面，它的子路由也不算 ⟶ expect(…).toEqual([ '/a' ]),vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([,vercelRewrites › 只有首页时不需要改写 ⟶ expect(…).toEqual([]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 有 path 的布局本身也匹配它的地址（没有 index 子路由时，Outlet 是空的） ⟶ expect(…).toEqual([ '/shop', '/shop/cart' ]),routePatterns › 没有 path 的布局路由不匹配地址：子路由直接接在上一级的地址后面 ⟶ expect(…).toEqual([ '/', '/settings', '/about' ]),routePatterns › 结尾的 / 不影响结果 ⟶ expect(…).toEqual([ '/shop', '/shop/cart', '/shop/items/:id' ]))"
         },
         {
-          "target": "exercise:route-rewrites:wrong:layout-as-page",
+          "target": "exercise:route-rewrites:wrong:keep-not-found",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 没有 path 的布局路由：子路由直接接在上一级的地址后面 ⟶ expect(…).toEqual([ '/settings', '/about' ]),routePatterns › 结尾的 / 不影响结果 ⟶ expect(…).toEqual([ '/shop/cart', '/shop/items/:id' ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 项目面板的全部页面 ⟶ expect(…).toEqual([,routePatterns › 只有 * 的路由（页面不存在）不算，它的子路由也不算；files/* 写成 /files/:path* ⟶ expect(…).toEqual([ '/files/:path*', '/a' ]),vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([,vercelRewrites › 只有首页时不需要改写 ⟶ expect(…).toEqual([]))"
+        },
+        {
+          "target": "exercise:route-rewrites:wrong:literal-splat",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 只有 * 的路由（页面不存在）不算，它的子路由也不算；files/* 写成 /files/:path* ⟶ expect(…).toEqual([ '/files/:path*', '/a' ]))"
+        },
+        {
+          "target": "exercise:route-rewrites:wrong:relative-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 以 / 开头的子路由写的是完整的地址 ⟶ expect(…).toEqual([ '/projects', '/projects/new' ]))"
         },
         {
           "target": "exercise:route-rewrites:wrong:no-dedupe",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 重复的地址只算一次，保留第一次出现的位置 ⟶ expect(…).toEqual([ '/a', '/b' ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 项目面板的全部页面 ⟶ expect(…).toEqual([,routePatterns › index 路由的地址就是父路由的地址 ⟶ expect(…).toEqual([ '/docs', '/docs/intro' ]),routePatterns › 以 / 开头的子路由写的是完整的地址 ⟶ expect(…).toEqual([ '/projects', '/projects/new' ]),routePatterns › 重复的地址只算一次，保留第一次出现的位置 ⟶ expect(…).toEqual([ '/a', '/b' ]),vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:route-rewrites:wrong:root-rewrite",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([,vercelRewrites › 只有首页时不需要改写 ⟶ expect(…).toEqual([]))"
-        },
-        {
-          "target": "exercise:route-rewrites:wrong:concat",
-          "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 项目面板的全部页面 ⟶ expect(…).toEqual([,routePatterns › 没有 path 的布局路由：子路由直接接在上一级的地址后面 ⟶ expect(…).toEqual([ '/settings', '/about' ]),routePatterns › 结尾的 / 不影响结果 ⟶ expect(…).toEqual([ '/shop/cart', '/shop/items/:id' ]),routePatterns › 重复的地址只算一次，保留第一次出现的位置 ⟶ expect(…).toEqual([ '/a', '/b' ]),vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([,vercelRewrites › 只有首页时不需要改写 ⟶ expect(…).toEqual([]))"
         },
         {
           "target": "exercise:pages-redirect:starter:starter",
@@ -11693,12 +11698,22 @@
         {
           "target": "exercise:pages-redirect:wrong:no-check",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(restoredPath：不安全的地址 › 其他网站的地址：null ⟶ //evil.example 是另一个网站,restoredPath：不安全的地址 › 离开应用所在的路径：null ⟶ expect(…).toBeNull())"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(restoredPath：不安全的地址 › 其他网站的地址：null ⟶ //evil.example 是另一个网站,restoredPath：不安全的地址 › 离开应用所在的路径：null ⟶ expect(…).toBeNull(),restoredPath：不安全的地址 › 无法解析的地址：null，而不是抛出异常 ⟶ 端口超出范围，new URL 会抛出异常)"
         },
         {
           "target": "exercise:pages-redirect:wrong:string-check",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(restoredPath：不安全的地址 › 其他网站的地址：null ⟶ /\\evil.example 也会被当作 //evil.example,restoredPath：不安全的地址 › 离开应用所在的路径：null ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:pages-redirect:wrong:string-rules",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(restoredPath：不安全的地址 › 其他网站的地址：null ⟶ 解析时会删掉制表符：/\\t/evil.example 就是 //evil.example)"
+        },
+        {
+          "target": "exercise:pages-redirect:wrong:no-catch",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(restoredPath：不安全的地址 › 无法解析的地址：null，而不是抛出异常 ⟶ TypeError: Failed to construct 'URL': Invalid URL)"
         },
         {
           "target": "exercise:pages-redirect:wrong:no-hash",

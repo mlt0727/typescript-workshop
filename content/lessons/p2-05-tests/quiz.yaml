@@ -19,7 +19,7 @@
     - text: 代码中没有错误了
       explain: 覆盖率不检查结果；有错误的代码也可以全部被运行一遍。
     - text: 每一种可能的输入都测试过了
-      explain: 覆盖率只关心哪些行运行过，和输入的种类无关。
+      explain: 覆盖率只关心哪些代码（行、分支）运行过，和输入的种类无关。
 - id: optimistic-test
   type: single
   prompt: 测试乐观更新时，只写了 `await waitFor(() => expect(checkbox).toBeChecked())`。这个测试有什么问题？
