@@ -149,7 +149,7 @@ stages:
       - { id: h06-server-errors, title: 服务端错误处理, status: published, prerequisites: [h05-mutations-validation] }
       - { id: h07-persistence, title: 持久化：内存、本地文件与数据库, status: published, prerequisites: [h06-server-errors] }
       - { id: h08-env-config, title: 环境变量与配置, status: draft, prerequisites: [h07-persistence, e13-env-secrets] }
-      - { id: h09-auth-boundaries, title: 认证话题的安全边界, status: planned, prerequisites: [h08-env-config] }
+      - { id: h09-auth-boundaries, title: 认证话题的安全边界, status: draft, prerequisites: [h08-env-config] }
 
   - id: I
     title: 项目与部署

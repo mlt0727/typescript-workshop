@@ -1,0 +1,44 @@
+- id: proxy-boundary
+  type: single
+  prompt: proxy.ts 的 matcher 是 `['/dashboard/:path*']`，没有登录时重定向到登录页。`/api/notes` 返回当前用户的笔记，它自己没有检查会话。没有登录的人请求 `/api/notes` 会怎样？
+  options:
+    - text: 拿到数据：这个地址不在 matcher 中，Proxy 根本没有运行
+      correct: true
+      explain: 实测如此。每个读取数据的入口都要自己验证会话，Proxy 只是第一道门。
+    - text: 被重定向到登录页
+      explain: 只有 matcher 匹配的地址才经过 Proxy。
+    - text: 401，Next.js 默认保护 /api 下的所有地址
+      explain: Next.js 不会自动保护任何地址。
+- id: cookie-defaults
+  type: single
+  prompt: "`(await cookies()).set('session', token)` 不传任何选项。设置的 cookie 有什么问题？"
+  options:
+    - text: 没有 HttpOnly、Secure、SameSite，也没有过期时间：页面中的脚本能读到它
+      correct: true
+      explain: 实测响应头只有 `Path=/`。会话 cookie 要加上 httpOnly、secure、sameSite 和 maxAge。
+    - text: 没有问题，Next.js 默认会加上 HttpOnly
+      explain: 实测的响应头中没有 HttpOnly。
+    - text: 浏览器会拒绝保存它
+      explain: 浏览器会保存它，只是它不安全。
+- id: signed-not-encrypted
+  type: single
+  prompt: 一个会话令牌是 `base64url(JSON).HMAC签名`。下面哪一种说法是对的？
+  options:
+    - text: 谁都能读出其中的内容，但改了内容之后签名就对不上了
+      correct: true
+      explain: 实测 base64 解码就读出了 userId 和 role；把 role 改成 admin、沿用原来的签名，验证失败。
+    - text: 没有密钥的人读不出其中的内容
+      explain: 签名不是加密，内容只是 base64 编码。
+    - text: 改了内容之后，服务器也能自动修正回来
+      explain: 签名只能检测出被改过，不能修正。
+- id: not-found-vs-forbidden
+  type: single
+  prompt: 一个已经登录的用户请求一个他既不是成员也不是所有者的项目。为什么接口返回 404 而不是 403？
+  options:
+    - text: 403 等于告诉他这个项目存在；404 不透露它是否存在
+      correct: true
+      explain: 攻击者可以用 403 和 404 的区别探测哪些 id 是有效的。
+    - text: 因为 403 只能在没有登录时使用
+      explain: 没有登录是 401；403 是登录了但没有权限。
+    - text: 两者没有区别，可以随便选
+      explain: 状态码会被客户端用来决定下一步怎么做，也会泄漏信息。

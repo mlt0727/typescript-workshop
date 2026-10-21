@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 120 / 规划总数 126**（草稿 1，规划中 5）
+**已发布 120 / 规划总数 126**（草稿 2，规划中 4）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -167,7 +167,7 @@
 | `h06-server-errors` 服务端错误处理 | ✅ 已发布 | `h05-mutations-validation` |
 | `h07-persistence` 持久化：内存、本地文件与数据库 | ✅ 已发布 | `h06-server-errors` |
 | `h08-env-config` 环境变量与配置 | 📝 草稿 | `h07-persistence`、`e13-env-secrets` |
-| `h09-auth-boundaries` 认证话题的安全边界 | ⬜ 规划中 | `h08-env-config` |
+| `h09-auth-boundaries` 认证话题的安全边界 | 📝 草稿 | `h08-env-config` |
 
 ## I. 项目与部署（已发布 14 / 18）
 
