@@ -6,12 +6,13 @@ title: 修改项目：ETag 和 If-Match
 
 按顺序检查，遇到第一个问题就返回（响应体都是 JSON）：
 
-1. 没有这个项目，或者已经删除：404，`{ "error": "没有这个项目" }`；
-2. **前提条件**：请求头 `If-Match` 去掉首尾的空白之后为空（包括没有这个请求头）或者是 `*`：428，`{ "error": "修改时必须带上 If-Match 请求头（项目的 ETag）" }`。它可以是用逗号分隔的几个 ETag，其中任何一个（去掉空白之后）和 `etagOf(项目的 version)` **完全相同**才算对上（`W/"v3"` 这样的弱 ETag 不算）；对不上：412，`{ "error": "项目已经被修改过，请刷新之后再试" }`；
-3. 请求体：`Content-Type` 不是 JSON 是 415，不是合法的 JSON 是 400（和练习一的信息一样）；`parseProjectPatch` 失败是 422，`{ "errors": … }`（原样使用它的 `errors`）；
-4. **业务规则**：`patch` 中有 `status`，并且和现在的状态不同时，按转换表检查，不允许时是 409，`不能从“计划中”改为“已完成”`（用 `STATUS_NAMES`）；改为 `'done'` 时，还有没有完成的任务（不算删除了的）是 409，`还有 2 个任务没有完成`；
-5. 新的项目：原来的项目合并 `patch`，`version` 加 1，`updatedAt` 是 `deps.now()`。用 `store.replace(新的项目, 原来的 version)` 写入，返回 `false` 时是 412（同样的信息），**不要**重试；
-6. 成功：200，响应体是 `toProjectDto(新的项目)`，响应头 `ETag` 是新的 ETag。
+1. `Content-Type` 不是 JSON（和练习一的规则一样）：415，`{ "error": "请求体必须是 JSON" }`；
+2. 没有这个项目，或者已经删除：404，`{ "error": "没有这个项目" }`；
+3. **前提条件**：请求头 `If-Match` 去掉首尾的空白之后为空（包括没有这个请求头）或者是 `*`：428，`{ "error": "修改时必须带上 If-Match 请求头（项目的 ETag）" }`。它可以是用逗号分隔的几个 ETag，其中任何一个（去掉空白之后）和 `etagOf(项目的 version)` **完全相同**才算对上（`W/"v3"` 这样的弱 ETag 不算）；对不上：412，`{ "error": "项目已经被修改过，请刷新之后再试" }`。（ETag 本身可以含有逗号，这里的 `etagOf` 不会产生这样的 ETag，所以可以按逗号拆开。）
+4. 请求体：不是合法的 JSON 是 400，`{ "error": "请求体不是合法的 JSON" }`；`parseProjectPatch` 失败时，整个请求体的问题（`error`）是 400，`{ "error": … }`，字段的问题（`errors`）是 422，`{ "errors": … }`，都原样使用它给出的信息；
+5. **业务规则**：`patch` 中有 `status`，并且和现在的状态不同时，按转换表检查，不允许时是 409，`不能从“计划中”改为“已完成”`（用 `STATUS_NAMES`）；改为 `'done'` 时，还有没有完成的任务（不算删除了的）是 409，`还有 2 个任务没有完成`；
+6. 新的项目：原来的项目合并 `patch`，`version` 加 1，`updatedAt` 是 `deps.now()`。用 `store.replace(新的项目, 原来的 version)` 写入，返回 `false` 时是 412（同样的信息），**不要**重试；
+7. 成功：200，响应体是 `toProjectDto(新的项目)`，响应头 `ETag` 是新的 ETag。
 
 :::files{role=support}
 ```ts file=model.ts readonly
@@ -59,7 +60,7 @@ export type StoredProject = Readonly<{
   id: string;
   name: string;
   owner: string;
-  /** 负责人的邮箱：只用来发通知，不公开 */
+  /** 负责人的邮箱：服务器根据负责人查出来，只用来发通知，不公开 */
   ownerEmail: string;
   status: ProjectStatus;
   dueDate: string | null;
@@ -133,7 +134,12 @@ import { STATUSES, type ProjectStatus } from './model';
 /** 修改一个项目时可以改的字段：没有出现的字段不改；dueDate 是 null 表示清除截止日期 */
 export type ProjectPatch = Readonly<{ name?: string; owner?: string; dueDate?: string | null; status?: ProjectStatus }>;
 
-export type PatchResult = { ok: true; patch: ProjectPatch } | { ok: false; errors: Readonly<Record<string, string>> };
+export type PatchResult =
+  | { ok: true; patch: ProjectPatch }
+  /** 整个请求体的问题：接口返回 400 */
+  | { ok: false; error: string }
+  /** 某些字段的问题：接口返回 422，客户端把信息显示在对应的输入框旁边 */
+  | { ok: false; errors: Readonly<Record<string, string>> };
 
 const ALLOWED: readonly string[] = ['name', 'owner', 'dueDate', 'status'];
 
@@ -144,22 +150,27 @@ function isDate(text: string): boolean {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
   if (match === null) return false;
   const [year = 0, month = 0, day = 0] = match.slice(1).map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
+  // 不用 Date.UTC(year, …)：它把 0 到 99 年当作 1900 到 1999 年
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
-/** 名称、负责人：去掉首尾的空白之后，1 到 max 个字符（按码位数） */
-function parseText(value: unknown, label: string, max: number): { value: string } | { error: string } {
-  if (typeof value !== 'string') return { error: `${label}必须是字符串` };
+/** 名称、负责人：去掉首尾的空白之后检查，长度按码点计算 */
+function parseText(value: unknown, messages: Readonly<{ type: string; empty: string; long: string }>, max: number): { value: string } | { error: string } {
+  if (typeof value !== 'string') return { error: messages.type };
   const text = value.trim();
-  if (text === '') return { error: `${label}不能为空` };
-  if ([...text].length > max) return { error: `${label}不能超过 ${max} 个字符` };
+  if (text === '') return { error: messages.empty };
+  if ([...text].length > max) return { error: messages.long };
   return { value: text };
 }
 
+const NAME = { type: '项目名称必须是字符串', empty: '请输入项目名称', long: '项目名称不能超过 40 个字符' };
+const OWNER = { type: '负责人必须是字符串', empty: '请输入负责人', long: '负责人不能超过 30 个字符' };
+
 /** 检查客户端发来的 PATCH 请求体：它来自网络，什么都可能有 */
 export function parseProjectPatch(body: unknown): PatchResult {
-  if (!isRecord(body)) return { ok: false, errors: { body: '请求体必须是一个 JSON 对象' } };
+  if (!isRecord(body)) return { ok: false, error: '请求体必须是一个 JSON 对象' };
   // 用 Map 收集错误：字段的名字来自客户端，可能是 __proto__
   const errors = new Map<string, string>();
   const patch: { name?: string; owner?: string; dueDate?: string | null; status?: ProjectStatus } = {};
@@ -167,22 +178,22 @@ export function parseProjectPatch(body: unknown): PatchResult {
   for (const key of Object.keys(body)) {
     if (!ALLOWED.includes(key)) errors.set(key, '不能修改这个字段');
   }
-  if (!ALLOWED.some((key) => Object.hasOwn(body, key))) errors.set('body', '没有要修改的字段');
+  if (errors.size === 0 && !ALLOWED.some((key) => Object.hasOwn(body, key))) return { ok: false, error: '没有要修改的字段' };
 
   if (Object.hasOwn(body, 'name')) {
-    const result = parseText(body['name'], '名称', 60);
+    const result = parseText(body['name'], NAME, 40);
     if ('error' in result) errors.set('name', result.error);
     else patch.name = result.value;
   }
   if (Object.hasOwn(body, 'owner')) {
-    const result = parseText(body['owner'], '负责人', 30);
+    const result = parseText(body['owner'], OWNER, 30);
     if ('error' in result) errors.set('owner', result.error);
     else patch.owner = result.value;
   }
   if (Object.hasOwn(body, 'dueDate')) {
     const value = body['dueDate'];
     if (value === null || (typeof value === 'string' && isDate(value))) patch.dueDate = value;
-    else errors.set('dueDate', '截止日期必须是 YYYY-MM-DD 格式的日期，或者 null');
+    else errors.set('dueDate', '请输入有效的日期（YYYY-MM-DD），或者 null');
   }
   if (Object.hasOwn(body, 'status')) {
     const status = STATUSES.find((s) => s === body['status']);
@@ -292,15 +303,16 @@ function matches(ifMatch: string, etag: string): boolean {
 
 /** PATCH /api/projects/:projectId：请求头 If-Match 是客户端看到的版本，请求体见 p3-01 的 parseProjectPatch */
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  // 只看请求头就能回答的问题最先检查
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   const project = await store.get(projectId);
   if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
 
-  // 先检查前提条件（RFC 9110）：版本不对时，请求体是什么都没有意义
+  // 前提条件在处理请求体之前检查（RFC 9110）：版本不对时，请求体是什么都没有意义
   const ifMatch = request.headers.get('if-match')?.trim() ?? '';
   if (ifMatch === '' || ifMatch === '*') return error(428, '修改时必须带上 If-Match 请求头（项目的 ETag）');
   if (!matches(ifMatch, etagOf(project.version))) return error(412, '项目已经被修改过，请刷新之后再试');
 
-  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = await request.json();
@@ -308,7 +320,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return error(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'error' in parsed ? error(400, parsed.error) : Response.json({ errors: parsed.errors }, { status: 422 });
   const { patch } = parsed;
 
   // 业务规则（p2-01）：改为现在的状态不算变化
@@ -424,25 +436,40 @@ describe('patchProject', () => {
     expect((await send(patch('{"name":"新"}', 'W/"v3"'))).status).toBe(412);
     expect((await send(patch('{"name":"新"}', 'v3'))).status).toBe(412);
     expect((await send(patch('{"name":"新"}', '"v2", "v3"'))).status).toBe(200);
+    expect((await send(patch('{"name":"新"}', '"v3", "v2"'))).status).toBe(200);
   });
 
-  test('先检查前提条件，再看请求体：版本不对时，格式错误的请求体也是 412', async () => {
-    expect((await send(patch('{"name":', '"v1"'))).status).toBe(412);
-    expect((await send(patch('{"name":"新"}', '"v1"', 'text/plain'))).status).toBe(412);
-  });
-
-  test('请求体：415、400、422', async () => {
+  test('Content-Type 最先检查（不用读取请求体）：415', async () => {
     expect(await send(patch('{"name":"新"}', '"v3"', 'text/plain'))).toMatchObject({ status: 415, body: { error: '请求体必须是 JSON' } });
+    expect((await send(patch('{"name":"新"}', '"v1"', 'text/plain'))).status).toBe(415);
+    expect((await send(patch('{"name":"新"}', null, 'text/plain'))).status).toBe(415);
+  });
+
+  test('请求体的内容在前提条件之后检查：版本不对时，格式错误的请求体也是 412；没有 If-Match 时是 428', async () => {
+    expect((await send(patch('{"name":', '"v1"'))).status).toBe(412);
+    expect((await send(patch('{"name":', null))).status).toBe(428);
+  });
+
+  test('请求体：400、422', async () => {
     expect(await send(patch('{"name":'))).toMatchObject({ status: 400, body: { error: '请求体不是合法的 JSON' } });
+    // parseProjectPatch 的两种错误：整个请求体的问题是 400，字段的问题是 422
+    expect(await send(patch('{}'))).toMatchObject({ status: 400, body: { error: '没有要修改的字段' } });
+    expect(await send(patch('[]'))).toMatchObject({ status: 400, body: { error: '请求体必须是一个 JSON 对象' } });
     const invalid = await send(patch('{"name":"","version":9}'));
     expect(invalid.status).toBe(422);
-    expect(invalid.body).toStrictEqual({ errors: { name: '名称不能为空', version: '不能修改这个字段' } });
+    expect(invalid.body).toStrictEqual({ errors: { name: '请输入项目名称', version: '不能修改这个字段' } });
   });
 
   test('状态的规则：409', async () => {
-    expect(await send(patch('{"status":"done"}', '"v3"'), { ...base, status: 'planning' })).toMatchObject({
+    // 任务都完成了，计划中也不能直接改为已完成；已完成也不能改回计划中
+    const tidy = [task('t1', true)];
+    expect(await send(patch('{"status":"done"}'), { ...base, status: 'planning', tasks: tidy })).toMatchObject({
       status: 409,
       body: { error: '不能从“计划中”改为“已完成”' },
+    });
+    expect(await send(patch('{"status":"planning"}'), { ...base, status: 'done', tasks: tidy })).toMatchObject({
+      status: 409,
+      body: { error: '不能从“已完成”改为“计划中”' },
     });
     // t2 没有完成；t3 没有完成，但已经删除了，不算
     expect(await send(patch('{"status":"done"}'))).toMatchObject({ status: 409, body: { error: '还有 1 个任务没有完成' } });
@@ -480,6 +507,7 @@ describe('patchProject', () => {
     store.interfere(1);
     const response = await patchProject(patch('{"name":"新名称"}'), 'p1', store, deps);
     expect(response.status).toBe(412);
+    expect(await response.json()).toStrictEqual({ error: '项目已经被修改过，请刷新之后再试' });
     expect(store.writes).toBe(1);
     expect((await store.get('p1'))?.name).toBe('官网改版*');
   });
@@ -497,7 +525,7 @@ describe('patchProject', () => {
 :::
 
 :::hint{level=1}
-`request.headers.get('if-match')` 没有这个请求头时是 `null`，用 `?.trim() ?? ''` 统一成字符串。几个 ETag 的情况：`ifMatch.split(',').some((item) => item.trim() === etag)`。前提条件放在读取请求体之前。
+`request.headers.get('if-match')` 没有这个请求头时是 `null`，用 `?.trim() ?? ''` 统一成字符串。几个 ETag 的情况：`ifMatch.split(',').some((item) => item.trim() === etag)`。前提条件放在读取请求体之前，`Content-Type` 的检查（只看请求头）放在最前面。`parseProjectPatch` 的结果用 `'error' in parsed` 区分两种错误。
 :::
 
 :::hint{level=2}
@@ -549,14 +577,16 @@ function checkStatus(project: StoredProject, wanted: ProjectStatus | undefined):
 }
 
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  const mediaType = request.headers.get('Content-Type')?.split(';', 1)[0]?.trim().toLowerCase();
+  if (mediaType !== 'application/json') return fail(415, '请求体必须是 JSON');
+
   const project = await store.get(projectId);
+  // project 是 null 时 project?.deletedAt 是 undefined，也不等于 null：两种情况都是 404
   if (project?.deletedAt !== null) return fail(404, '没有这个项目');
 
   const precondition = checkPrecondition(request.headers.get('If-Match'), project);
   if (precondition !== null) return precondition;
 
-  const mediaType = request.headers.get('Content-Type')?.split(';', 1)[0]?.trim().toLowerCase();
-  if (mediaType !== 'application/json') return fail(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = JSON.parse(await request.text());
@@ -564,7 +594,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return fail(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'errors' in parsed ? Response.json({ errors: parsed.errors }, { status: 422 }) : fail(400, parsed.error);
 
   const rule = checkStatus(project, parsed.patch.status);
   if (rule !== null) return rule;
@@ -603,10 +633,11 @@ function matches(ifMatch: string, etag: string): boolean {
 
 /** PATCH /api/projects/:projectId：请求头 If-Match 是客户端看到的版本，请求体见 p3-01 的 parseProjectPatch */
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  // 只看请求头就能回答的问题最先检查
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   const project = await store.get(projectId);
   if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
 
-  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = await request.json();
@@ -614,7 +645,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return error(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'error' in parsed ? error(400, parsed.error) : Response.json({ errors: parsed.errors }, { status: 422 });
   const { patch } = parsed;
   const ifMatch = request.headers.get('if-match')?.trim() ?? '';
   if (ifMatch === '' || ifMatch === '*') return error(428, '修改时必须带上 If-Match 请求头（项目的 ETag）');
@@ -661,15 +692,16 @@ function matches(ifMatch: string, etag: string): boolean {
 
 /** PATCH /api/projects/:projectId：请求头 If-Match 是客户端看到的版本，请求体见 p3-01 的 parseProjectPatch */
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  // 只看请求头就能回答的问题最先检查
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   const project = await store.get(projectId);
   if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
 
-  // 先检查前提条件（RFC 9110）：版本不对时，请求体是什么都没有意义
+  // 前提条件在处理请求体之前检查（RFC 9110）：版本不对时，请求体是什么都没有意义
   const ifMatch = request.headers.get('if-match')?.trim() ?? '';
   if (ifMatch === '') return error(428, '修改时必须带上 If-Match 请求头（项目的 ETag）');
   if (ifMatch !== '*' && !matches(ifMatch, etagOf(project.version))) return error(412, '项目已经被修改过，请刷新之后再试');
 
-  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = await request.json();
@@ -677,7 +709,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return error(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'error' in parsed ? error(400, parsed.error) : Response.json({ errors: parsed.errors }, { status: 422 });
   const { patch } = parsed;
 
   // 业务规则（p2-01）：改为现在的状态不算变化
@@ -721,15 +753,16 @@ function matches(ifMatch: string, etag: string): boolean {
 
 /** PATCH /api/projects/:projectId：请求头 If-Match 是客户端看到的版本，请求体见 p3-01 的 parseProjectPatch */
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  // 只看请求头就能回答的问题最先检查
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   const project = await store.get(projectId);
   if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
 
-  // 先检查前提条件（RFC 9110）：版本不对时，请求体是什么都没有意义
+  // 前提条件在处理请求体之前检查（RFC 9110）：版本不对时，请求体是什么都没有意义
   const ifMatch = request.headers.get('if-match')?.trim() ?? '';
   if (ifMatch === '' || ifMatch === '*') return error(428, '修改时必须带上 If-Match 请求头（项目的 ETag）');
   if (!matches(ifMatch, etagOf(project.version))) return error(412, '项目已经被修改过，请刷新之后再试');
 
-  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = await request.json();
@@ -737,7 +770,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return error(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'error' in parsed ? error(400, parsed.error) : Response.json({ errors: parsed.errors }, { status: 422 });
   const { patch } = parsed;
 
   // 业务规则（p2-01）：改为现在的状态不算变化
@@ -781,15 +814,16 @@ function matches(ifMatch: string, etag: string): boolean {
 
 /** PATCH /api/projects/:projectId：请求头 If-Match 是客户端看到的版本，请求体见 p3-01 的 parseProjectPatch */
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  // 只看请求头就能回答的问题最先检查
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   const project = await store.get(projectId);
   if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
 
-  // 先检查前提条件（RFC 9110）：版本不对时，请求体是什么都没有意义
+  // 前提条件在处理请求体之前检查（RFC 9110）：版本不对时，请求体是什么都没有意义
   const ifMatch = request.headers.get('if-match')?.trim() ?? '';
   if (ifMatch === '' || ifMatch === '*') return error(428, '修改时必须带上 If-Match 请求头（项目的 ETag）');
   if (!matches(ifMatch, etagOf(project.version))) return error(412, '项目已经被修改过，请刷新之后再试');
 
-  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = await request.json();
@@ -797,7 +831,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return error(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'error' in parsed ? error(400, parsed.error) : Response.json({ errors: parsed.errors }, { status: 422 });
   const { patch } = parsed;
 
   // 业务规则（p2-01）：改为现在的状态不算变化
@@ -846,15 +880,16 @@ function matches(ifMatch: string, etag: string): boolean {
 
 /** PATCH /api/projects/:projectId：请求头 If-Match 是客户端看到的版本，请求体见 p3-01 的 parseProjectPatch */
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  // 只看请求头就能回答的问题最先检查
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   const project = await store.get(projectId);
   if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
 
-  // 先检查前提条件（RFC 9110）：版本不对时，请求体是什么都没有意义
+  // 前提条件在处理请求体之前检查（RFC 9110）：版本不对时，请求体是什么都没有意义
   const ifMatch = request.headers.get('if-match')?.trim() ?? '';
   if (ifMatch === '' || ifMatch === '*') return error(428, '修改时必须带上 If-Match 请求头（项目的 ETag）');
   if (!matches(ifMatch, etagOf(project.version))) return error(412, '项目已经被修改过，请刷新之后再试');
 
-  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = await request.json();
@@ -862,7 +897,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return error(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'error' in parsed ? error(400, parsed.error) : Response.json({ errors: parsed.errors }, { status: 422 });
   const { patch } = parsed;
 
   // 业务规则（p2-01）：改为现在的状态不算变化
@@ -906,15 +941,16 @@ function matches(ifMatch: string, etag: string): boolean {
 
 /** PATCH /api/projects/:projectId：请求头 If-Match 是客户端看到的版本，请求体见 p3-01 的 parseProjectPatch */
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  // 只看请求头就能回答的问题最先检查
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   const project = await store.get(projectId);
   if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
 
-  // 先检查前提条件（RFC 9110）：版本不对时，请求体是什么都没有意义
+  // 前提条件在处理请求体之前检查（RFC 9110）：版本不对时，请求体是什么都没有意义
   const ifMatch = request.headers.get('if-match')?.trim() ?? '';
   if (ifMatch === '' || ifMatch === '*') return error(428, '修改时必须带上 If-Match 请求头（项目的 ETag）');
   if (!matches(ifMatch, etagOf(project.version))) return error(412, '项目已经被修改过，请刷新之后再试');
 
-  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = await request.json();
@@ -922,7 +958,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return error(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'error' in parsed ? error(400, parsed.error) : Response.json({ errors: parsed.errors }, { status: 422 });
   const { patch } = parsed;
 
   // 业务规则（p2-01）：改为现在的状态不算变化
@@ -963,15 +999,16 @@ function matches(ifMatch: string, etag: string): boolean {
 
 /** PATCH /api/projects/:projectId：请求头 If-Match 是客户端看到的版本，请求体见 p3-01 的 parseProjectPatch */
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  // 只看请求头就能回答的问题最先检查
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   const project = await store.get(projectId);
   if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
 
-  // 先检查前提条件（RFC 9110）：版本不对时，请求体是什么都没有意义
+  // 前提条件在处理请求体之前检查（RFC 9110）：版本不对时，请求体是什么都没有意义
   const ifMatch = request.headers.get('if-match')?.trim() ?? '';
   if (ifMatch === '' || ifMatch === '*') return error(428, '修改时必须带上 If-Match 请求头（项目的 ETag）');
   if (!matches(ifMatch, etagOf(project.version))) return error(412, '项目已经被修改过，请刷新之后再试');
 
-  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = await request.json();
@@ -979,7 +1016,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return error(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'error' in parsed ? error(400, parsed.error) : Response.json({ errors: parsed.errors }, { status: 422 });
   const { patch } = parsed;
 
   // 业务规则（p2-01）：改为现在的状态不算变化
@@ -1023,15 +1060,16 @@ function matches(ifMatch: string, etag: string): boolean {
 
 /** PATCH /api/projects/:projectId：请求头 If-Match 是客户端看到的版本，请求体见 p3-01 的 parseProjectPatch */
 export async function patchProject(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  // 只看请求头就能回答的问题最先检查
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   const project = await store.get(projectId);
   if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
 
-  // 先检查前提条件（RFC 9110）：版本不对时，请求体是什么都没有意义
+  // 前提条件在处理请求体之前检查（RFC 9110）：版本不对时，请求体是什么都没有意义
   const ifMatch = request.headers.get('if-match')?.trim() ?? '';
   if (ifMatch === '' || ifMatch === '*') return error(428, '修改时必须带上 If-Match 请求头（项目的 ETag）');
   if (!matches(ifMatch, etagOf(project.version))) return error(412, '项目已经被修改过，请刷新之后再试');
 
-  if (!isJson(request)) return error(415, '请求体必须是 JSON');
   let body: unknown;
   try {
     body = await request.json();
@@ -1039,7 +1077,7 @@ export async function patchProject(request: Request, projectId: string, store: P
     return error(400, '请求体不是合法的 JSON');
   }
   const parsed = parseProjectPatch(body);
-  if (!parsed.ok) return Response.json({ errors: parsed.errors }, { status: 422 });
+  if (!parsed.ok) return 'error' in parsed ? error(400, parsed.error) : Response.json({ errors: parsed.errors }, { status: 422 });
   const { patch } = parsed;
 
   // 业务规则（p2-01）：改为现在的状态不算变化

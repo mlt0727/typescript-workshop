@@ -6,7 +6,7 @@
       correct: true
       explain: 实测如此。412 表示“你看到的已经不是现在的版本”，服务器什么都没有改。
     - text: 200：B 的修改覆盖了 A 的
-      explain: 没有 If-Match 时就会这样，这正是要防止的“丢失的更新”。
+      explain: 服务器不检查 If-Match 时（例如 fake-server.ts）就会这样，这正是要防止的丢失更新。
     - text: 428：B 没有说明自己看到的版本
       explain: B 带了 If-Match，只是版本过时了。428 是完全没有带的时候。
 - id: server-retry

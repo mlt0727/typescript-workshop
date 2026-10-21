@@ -12908,8 +12908,8 @@
       ]
     },
     "p3-02-api-validation": {
-      "verifiedAt": "2026-10-21T17:44:39.010Z",
-      "sourceHash": "21343e92840cbd2b",
+      "verifiedAt": "2026-10-21T18:08:41.389Z",
+      "sourceHash": "95de057bd6ecbc55",
       "ok": true,
       "checks": [
         {
@@ -12925,7 +12925,7 @@
         {
           "target": "exercise:add-task:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(addTask › 请求体不是 JSON：415；Content-Type 的参数和大小写不影响 ⟶ expect(…).toMatchObject({ status: 415, body: { error: '请求体必须是 JSON' } }),addTask › JSON 的格式不对：400 ⟶ expect(…).toMatchObject({ status: 400, body: { error: '请求体不是合法的 JSON' } }),addTask › 没有这个项目，或者项目已经删除：404 ⟶ expect(…).toMatchObject({ status: 404, body: { error: '没有这个项目' } }),addTask › 和 fake-server 一样的顺序：请求体不是对象 400，项目已完成 409，标题不是字符串 400 ⟶ expect(…).toMatchObject({ status: 400, body: { error: '不支持的请求' } }),addTask › 标题的检查：422 ⟶ expect(…).toMatchObject({ status: 422, body: { errors: { title: '任务不能为空' } } }),addTask › 成功：201，响应体是新的任务，Location 指向它；项目的版本加 1 ⟶ expect(…).toBe(201),addTask › 没有任务的项目：position 是 1 ⟶ expect(…).toBe(1),addTask › 读取之后别人修改了项目：重新读取再试，别人的修改保留 ⟶ expect(…).toBe(201),addTask › 一直冲突：试 3 次之后 503，带上 Retry-After，没有写入任务 ⟶ expect(…).toBe(503),addTask › 重试时重新检查：别人在这期间把项目标记为已完成，就是 409 ⟶ expect(…).toBe(409))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(addTask › 请求体不是 JSON：415；Content-Type 的参数和大小写不影响，媒体类型要完全相同 ⟶ expect(…).toMatchObject({ status: 415, body: { error: '请求体必须是 JSON' } }),addTask › 415 在 404 之前：不用读取存储就能回答 ⟶ expect(…).toBe(415),addTask › JSON 的格式不对：400 ⟶ expect(…).toMatchObject({ status: 400, body: { error: '请求体不是合法的 JSON' } }),addTask › 没有这个项目，或者项目已经删除：404 ⟶ expect(…).toMatchObject({ status: 404, body: { error: '没有这个项目' } }),addTask › 和 fake-server 一样的顺序：请求体不是对象 400，项目已完成 409，标题不是字符串 400 ⟶ expect(…).toMatchObject({ status: 400, body: { error: '不支持的请求' } }),addTask › 标题的检查：422 ⟶ expect(…).toMatchObject({ status: 422, body: { errors: { title: '任务不能为空' } } }),addTask › 成功：201，响应体是新的任务，Location 指向它；项目的版本加 1 ⟶ expect(…).toBe(201),addTask › 没有任务的项目：position 是 1 ⟶ expect(…).toBe(1),addTask › 读取之后别人修改了项目：重新读取再试，别人的修改保留 ⟶ expect(…).toBe(201),addTask › 一直冲突：试 3 次之后 503，带上 Retry-After，没有写入任务 ⟶ expect(…).toBe(503),addTask › 重试时重新检查：别人在这期间把项目标记为已完成，就是 409 ⟶ expect(…).toBe(409),addTask › 重试时重新检查：别人在这期间加了一个同名的任务，就是 422 ⟶ expect(…).toBe(422))"
         },
         {
           "target": "exercise:add-task:solution:solution",
@@ -12940,7 +12940,7 @@
         {
           "target": "exercise:add-task:wrong:no-content-type-check",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTask › 请求体不是 JSON：415；Content-Type 的参数和大小写不影响 ⟶ expect(…).toMatchObject({ status: 415, body: { error: '请求体必须是 JSON' } }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTask › 请求体不是 JSON：415；Content-Type 的参数和大小写不影响，媒体类型要完全相同 ⟶ expect(…).toMatchObject({ status: 415, body: { error: '请求体必须是 JSON' } }),addTask › 415 在 404 之前：不用读取存储就能回答 ⟶ expect(…).toBe(415))"
         },
         {
           "target": "exercise:add-task:wrong:title-before-done",
@@ -12960,12 +12960,17 @@
         {
           "target": "exercise:add-task:wrong:no-retry",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTask › 读取之后别人修改了项目：重新读取再试，别人的修改保留 ⟶ expect(…).toBe(201),addTask › 一直冲突：试 3 次之后 503，带上 Retry-After，没有写入任务 ⟶ expect(…).toBe(3),addTask › 重试时重新检查：别人在这期间把项目标记为已完成，就是 409 ⟶ expect(…).toBe(409))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTask › 读取之后别人修改了项目：重新读取再试，别人的修改保留 ⟶ expect(…).toBe(201),addTask › 一直冲突：试 3 次之后 503，带上 Retry-After，没有写入任务 ⟶ expect(…).toBe(3),addTask › 重试时重新检查：别人在这期间把项目标记为已完成，就是 409 ⟶ expect(…).toBe(409),addTask › 重试时重新检查：别人在这期间加了一个同名的任务，就是 422 ⟶ expect(…).toBe(422))"
         },
         {
           "target": "exercise:add-task:wrong:retry-stale",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTask › 读取之后别人修改了项目：重新读取再试，别人的修改保留 ⟶ expect(…).toBe(201),addTask › 重试时重新检查：别人在这期间把项目标记为已完成，就是 409 ⟶ expect(…).toBe(409))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTask › 读取之后别人修改了项目：重新读取再试，别人的修改保留 ⟶ expect(…).toBe(201),addTask › 重试时重新检查：别人在这期间把项目标记为已完成，就是 409 ⟶ expect(…).toBe(409),addTask › 重试时重新检查：别人在这期间加了一个同名的任务，就是 422 ⟶ expect(…).toBe(422))"
+        },
+        {
+          "target": "exercise:add-task:wrong:prefix-media-type",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(addTask › 请求体不是 JSON：415；Content-Type 的参数和大小写不影响，媒体类型要完全相同 ⟶ application/json-patch+json)"
         },
         {
           "target": "exercise:add-task:wrong:no-location",
@@ -12975,7 +12980,7 @@
         {
           "target": "exercise:patch-project:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(patchProject › 没有这个项目，或者已经删除：404（不管有没有 If-Match） ⟶ expect(…).toMatchObject({ status: 404, body: { error: '没有这个项目' } }),patchProject › 没有 If-Match，或者是 *：428 ⟶ expect(…).toMatchObject({ status: 428, body: { error: '修改时必须带上 If-Match 请求头（项目的 ETag）' } }),patchProject › 版本不对：412；弱 ETag 不算；可以列出几个 ⟶ expect(…).toMatchObject({ status: 412, body: { error: '项目已经被修改过，请刷新之后再试' } }),patchProject › 先检查前提条件，再看请求体：版本不对时，格式错误的请求体也是 412 ⟶ expect(…).toBe(412),patchProject › 请求体：415、400、422 ⟶ expect(…).toMatchObject({ status: 415, body: { error: '请求体必须是 JSON' } }),patchProject › 状态的规则：409 ⟶ expect(…).toMatchObject({ status: 409, body: { error: '不能从“计划中”改为“已完成”' } }),patchProject › 成功：200，返回新的项目和新的 ETag；没有发来的字段不变 ⟶ expect(…).toBe(200),patchProject › 改为现在的状态不算变化；所有任务都完成时可以完成项目 ⟶ expect(…).toBe(200),patchProject › 读取之后别人修改了项目：412，不替客户端重试，什么都不写入 ⟶ expect(…).toBe(412),patchProject › 拿着新的 ETag 可以继续修改，旧的就不行了 ⟶ expect(…).toBe(200))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(patchProject › 没有这个项目，或者已经删除：404（不管有没有 If-Match） ⟶ expect(…).toMatchObject({ status: 404, body: { error: '没有这个项目' } }),patchProject › 没有 If-Match，或者是 *：428 ⟶ expect(…).toMatchObject({ status: 428, body: { error: '修改时必须带上 If-Match 请求头（项目的 ETag）' } }),patchProject › 版本不对：412；弱 ETag 不算；可以列出几个 ⟶ expect(…).toMatchObject({ status: 412, body: { error: '项目已经被修改过，请刷新之后再试' } }),patchProject › Content-Type 最先检查（不用读取请求体）：415 ⟶ expect(…).toMatchObject({ status: 415, body: { error: '请求体必须是 JSON' } }),patchProject › 请求体的内容在前提条件之后检查：版本不对时，格式错误的请求体也是 412；没有 If-Match 时是 428 ⟶ expect(…).toBe(412),patchProject › 请求体：400、422 ⟶ expect(…).toMatchObject({ status: 400, body: { error: '请求体不是合法的 JSON' } }),patchProject › 状态的规则：409 ⟶ expect(…).toMatchObject({ status: 409, body: { error: '不能从“计划中”改为“已完成”' } }),patchProject › 成功：200，返回新的项目和新的 ETag；没有发来的字段不变 ⟶ expect(…).toBe(200),patchProject › 改为现在的状态不算变化；所有任务都完成时可以完成项目 ⟶ expect(…).toBe(200),patchProject › 读取之后别人修改了项目：412，不替客户端重试，什么都不写入 ⟶ expect(…).toBe(412),patchProject › 拿着新的 ETag 可以继续修改，旧的就不行了 ⟶ expect(…).toBe(200))"
         },
         {
           "target": "exercise:patch-project:solution:solution",
@@ -12990,7 +12995,7 @@
         {
           "target": "exercise:patch-project:wrong:body-before-precondition",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(patchProject › 先检查前提条件，再看请求体：版本不对时，格式错误的请求体也是 412 ⟶ expect(…).toBe(412))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(patchProject › 请求体的内容在前提条件之后检查：版本不对时，格式错误的请求体也是 412；没有 If-Match 时是 428 ⟶ expect(…).toBe(412))"
         },
         {
           "target": "exercise:patch-project:wrong:star-accepted",

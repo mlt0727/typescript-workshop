@@ -2,7 +2,7 @@
 kind: task
 title: 添加任务的接口
 ---
-在 `tasks.ts` 中实现 `addTask(request, projectId, store, deps)`：`POST /api/projects/:projectId/tasks` 的处理函数，请求体是 `{ "title": "…" }`。它返回一个 `Response`；所有的响应体都是 JSON（用 `Response.json`）。`store` 和 `deps` 的类型见只读的 `store.ts`。
+在 `tasks.ts` 中实现 `addTask(request, projectId, store, deps)`：`POST /api/projects/:projectId/tasks` 的处理函数，请求体是 `{ "title": "…" }`。它返回一个 `Response`；所有的响应体都是 JSON（例如用 `Response.json`）。`store` 和 `deps` 的类型见只读的 `store.ts`。
 
 按顺序检查，遇到第一个问题就返回：
 
@@ -63,7 +63,7 @@ export type StoredProject = Readonly<{
   id: string;
   name: string;
   owner: string;
-  /** 负责人的邮箱：只用来发通知，不公开 */
+  /** 负责人的邮箱：服务器根据负责人查出来，只用来发通知，不公开 */
   ownerEmail: string;
   status: ProjectStatus;
   dueDate: string | null;
@@ -302,11 +302,12 @@ const base: StoredProject = {
   tasks: [task('t1', '设计稿', 10), task('t2', '旧的任务', 30, '2026-10-02T00:00:00.000Z')],
 };
 
+/** contentType 是 null 时不带 Content-Type：请求体用字节，因为字符串请求体会被自动加上 text/plain */
 const post = (body: string, contentType: string | null = 'application/json') =>
   new Request('https://projects.example/api/projects/p1/tasks', {
     method: 'POST',
     headers: contentType === null ? {} : { 'Content-Type': contentType },
-    body,
+    body: contentType === null ? new TextEncoder().encode(body) : body,
   });
 
 async function send(request: Request, projects: readonly StoredProject[] = [base], projectId = 'p1') {
@@ -316,11 +317,20 @@ async function send(request: Request, projects: readonly StoredProject[] = [base
 }
 
 describe('addTask', () => {
-  test('请求体不是 JSON：415；Content-Type 的参数和大小写不影响', async () => {
+  test('请求体不是 JSON：415；Content-Type 的参数和大小写不影响，媒体类型要完全相同', async () => {
     expect(await send(post('{"title":"上线"}', 'text/plain'))).toMatchObject({ status: 415, body: { error: '请求体必须是 JSON' } });
-    expect((await send(post('{"title":"上线"}', null))).status).toBe(415);
+    const bare = post('{"title":"上线"}', null);
+    expect(bare.headers.get('content-type')).toBeNull();
+    expect((await send(bare)).status).toBe(415);
+    for (const type of ['application/json-patch+json', 'text/json', 'application/x-www-form-urlencoded']) {
+      expect((await send(post('{"title":"上线"}', type))).status, type).toBe(415);
+    }
     expect((await send(post('{"title":"上线"}', 'application/json; charset=utf-8'))).status).toBe(201);
     expect((await send(post('{"title":"上线"}', 'Application/JSON'))).status).toBe(201);
+  });
+
+  test('415 在 404 之前：不用读取存储就能回答', async () => {
+    expect((await send(post('{"title":"上线"}', 'text/plain'), [base], 'p9')).status).toBe(415);
   });
 
   test('JSON 的格式不对：400', async () => {
@@ -338,6 +348,9 @@ describe('addTask', () => {
     expect((await send(post('null'))).status).toBe(400);
     const done = { ...base, status: 'done' as const };
     expect(await send(post('{"title":""}'), [done])).toMatchObject({ status: 409, body: { error: '已完成的项目不能修改任务' } });
+    // 不是对象的检查在已完成之前，已完成的检查在标题的类型之前
+    expect((await send(post('null'), [done])).status).toBe(400);
+    expect((await send(post('{}'), [done])).status).toBe(409);
     expect((await send(post('{"title":1}'))).status).toBe(400);
     expect((await send(post('{}'))).status).toBe(400);
     expect((await send(post('[]'))).status).toBe(400);
@@ -347,6 +360,8 @@ describe('addTask', () => {
     expect(await send(post('{"title":"   "}'))).toMatchObject({ status: 422, body: { errors: { title: '任务不能为空' } } });
     expect((await send(post(JSON.stringify({ title: '字'.repeat(81) })))).body).toStrictEqual({ errors: { title: '任务不能超过 80 个字符' } });
     expect((await send(post(JSON.stringify({ title: '🚀'.repeat(80) })))).status).toBe(201);
+    // 长度按去掉空白之后计算
+    expect((await send(post(JSON.stringify({ title: ` ${'字'.repeat(80)} ` })))).status).toBe(201);
     expect((await send(post('{"title":" 设计稿 "}'))).body).toStrictEqual({ errors: { title: '已经有一个叫“设计稿”的任务' } });
     // 删除了的任务不算重名
     expect((await send(post('{"title":"旧的任务"}'))).status).toBe(201);
@@ -394,16 +409,17 @@ describe('addTask', () => {
     expect((await store.get('p1'))?.tasks).toHaveLength(2);
   });
 
-  test('重试时重新检查：别人在这期间把项目标记为已完成，就是 409', async () => {
+  /** 第一次 replace 时，别人抢先把项目改成了 changed 的样子 */
+  function interruptedOnce(changed: StoredProject) {
     const projects = new Map<string, StoredProject>([['p1', base]]);
     let first = true;
-    const store = {
+    return {
       get: async (id: string) => projects.get(id) ?? null,
       list: async () => [...projects.values()],
       replace: async (next: StoredProject, expected: number) => {
         if (first) {
           first = false;
-          projects.set('p1', { ...base, status: 'done', version: base.version + 1 });
+          projects.set('p1', changed);
           return false;
         }
         if (projects.get(next.id)?.version !== expected) return false;
@@ -411,7 +427,18 @@ describe('addTask', () => {
         return true;
       },
     };
+  }
+
+  test('重试时重新检查：别人在这期间把项目标记为已完成，就是 409', async () => {
+    const store = interruptedOnce({ ...base, status: 'done', version: base.version + 1 });
     expect((await addTask(post('{"title":"上线"}'), 'p1', store, deps())).status).toBe(409);
+  });
+
+  test('重试时重新检查：别人在这期间加了一个同名的任务，就是 422', async () => {
+    const store = interruptedOnce({ ...base, tasks: [...base.tasks, task('t9', '上线', 40)], version: base.version + 1 });
+    const response = await addTask(post('{"title":"上线"}'), 'p1', store, deps());
+    expect(response.status).toBe(422);
+    expect(await response.json()).toStrictEqual({ errors: { title: '已经有一个叫“上线”的任务' } });
   });
 });
 ```
@@ -432,7 +459,7 @@ describe('addTask', () => {
 
 写入冲突时，服务器可以自己重试，因为“添加一个任务”不依赖客户端看到的是哪个版本。但每次重试都要**重新读取、重新检查**：别人可能刚刚把项目标记为完成，或者添加了一个同名的任务。重试的次数要有上限，否则一个被频繁修改的项目会让请求一直卡住；503 加上 `Retry-After` 告诉客户端过一会儿再试。
 
-替代解把“给定项目，算出新的项目或者错误的响应”写成一个不读写存储的纯函数 `plan`，循环中只做读取、`plan`、写入三件事。
+替代解把“给定项目，算出新的项目或者错误的响应”写成一个不读写存储的函数 `plan`（时间和 id 来自 `deps`），循环中只做读取、`plan`、写入三件事。
 :::
 
 :::variant{kind=alt name=pure-plan}
@@ -827,6 +854,67 @@ export async function addTask(request: Request, projectId: string, store: Projec
 
   const project = await store.get(projectId);
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
+    // 下面的顺序和 p2-04 的 fake-server.ts 一样
+    if (typeof body !== 'object' || body === null) return error(400, '不支持的请求');
+    if (project.status === 'done') return error(409, '已完成的项目不能修改任务');
+    if (!('title' in body) || typeof body.title !== 'string') return error(400, '不支持的请求');
+    const title = body.title.trim();
+    if (title === '') return invalid('任务不能为空');
+    if ([...title].length > 80) return invalid('任务不能超过 80 个字符');
+    if (project.tasks.some((task) => task.deletedAt === null && task.title === title)) return invalid(`已经有一个叫“${title}”的任务`);
+
+    const now = deps.now();
+    const task: StoredTask = {
+      id: deps.newId(),
+      title,
+      done: false,
+      // 删除的任务也占着自己的位置：新任务排在所有任务的后面
+      position: Math.max(0, ...project.tasks.map((t) => t.position)) + 1,
+      createdAt: now,
+      deletedAt: null,
+    };
+    const next: StoredProject = { ...project, tasks: [...project.tasks, task], version: project.version + 1, updatedAt: now };
+    if (await store.replace(next, project.version)) {
+      const dto: TaskDto = { id: task.id, title: task.title, done: task.done };
+      return Response.json(dto, { status: 201, headers: { Location: `/api/projects/${projectId}/tasks/${task.id}` } });
+    }
+    // 读取之后别人修改了这个项目。添加任务不依赖客户端看到的是哪个版本，重新读取、再检查一遍就行
+  }
+  return Response.json({ error: '项目正在被频繁修改，请稍后重试' }, { status: 503, headers: { 'Retry-After': '1' } });
+}
+```
+:::
+
+:::variant{kind=wrong name=prefix-media-type fails=tests reason="只看 Content-Type 是不是以 application/json 开头：application/json-patch+json 这样的其他格式也被当成了 JSON"}
+```ts file=tasks.ts
+import type { StoredProject, StoredTask, TaskDto } from './model';
+import type { Deps, ProjectStore } from './store';
+
+/** 读取和写入之间被别人修改时，最多做几次 */
+const MAX_ATTEMPTS = 3;
+
+const error = (status: number, message: string) => Response.json({ error: message }, { status });
+const invalid = (message: string) => Response.json({ errors: { title: message } }, { status: 422 });
+
+/** Content-Type 的媒体类型部分：'application/json; charset=utf-8' → 'application/json' */
+function isJson(request: Request): boolean {
+  const type = request.headers.get('content-type') ?? '';
+  return type.toLowerCase().startsWith('application/json');
+}
+
+/** POST /api/projects/:projectId/tasks，请求体是 { "title": "…" } */
+export async function addTask(request: Request, projectId: string, store: ProjectStore, deps: Deps): Promise<Response> {
+  if (!isJson(request)) return error(415, '请求体必须是 JSON');
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return error(400, '请求体不是合法的 JSON');
+  }
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    const project = await store.get(projectId);
     if (project === null || project.deletedAt !== null) return error(404, '没有这个项目');
     // 下面的顺序和 p2-04 的 fake-server.ts 一样
     if (typeof body !== 'object' || body === null) return error(400, '不支持的请求');
