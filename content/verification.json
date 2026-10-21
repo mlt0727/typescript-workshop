@@ -13028,6 +13028,108 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(patchProject › 成功：200，返回新的项目和新的 ETag；没有发来的字段不变 ⟶ expect(…).toBe('\"v4\"'),patchProject › 拿着新的 ETag 可以继续修改，旧的就不行了 ⟶ expect(…).toBe(200))"
         }
       ]
+    },
+    "p3-03-persistence": {
+      "verifiedAt": "2026-10-21T18:01:23.776Z",
+      "sourceHash": "14d694748554503a",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:checksums:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:checksums:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] ba27153c ba27153c | [log] b3230786 ae7c0272"
+        },
+        {
+          "target": "exercise:plan-migrations:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(planMigrations › 新的数据库：全部按编号的顺序执行，不管传进来的顺序 ⟶ expect(…).toStrictEqual({,planMigrations › 执行过一部分：只执行剩下的 ⟶ expect(…).toStrictEqual({,planMigrations › 编号重复：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0002_create_tasks' }),planMigrations › 数据库中有代码中没有的迁移：数据库比代码新，拒绝启动 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations › 执行过的迁移被修改了（哪怕只是空白）：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_create_tasks 在执行之后被修改过' }),planMigrations › 新加的迁移排在已经执行的前面：拒绝（例如两个分支各加了一个迁移） ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_add_owner 排在已经执行的 0002_create_tasks 前面' }),planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations › 编号按字符串比较：0010 排在 0009 后面，9 排在 10 后面 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:plan-migrations:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:plan-migrations:alt:sets",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:plan-migrations:wrong:no-checksum",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 执行过的迁移被修改了（哪怕只是空白）：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_create_tasks 在执行之后被修改过' }),planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0001_create_projects 在执行之后被修改过' }))"
+        },
+        {
+          "target": "exercise:plan-migrations:wrong:input-order",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 新的数据库：全部按编号的顺序执行，不管传进来的顺序 ⟶ expect(…).toStrictEqual({,planMigrations › 编号按字符串比较：0010 排在 0009 后面，9 排在 10 后面 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:plan-migrations:wrong:unknown-ignored",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 数据库中有代码中没有的迁移：数据库比代码新，拒绝启动 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }))"
+        },
+        {
+          "target": "exercise:plan-migrations:wrong:no-order-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 新加的迁移排在已经执行的前面：拒绝（例如两个分支各加了一个迁移） ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_add_owner 排在已经执行的 0002_create_tasks 前面' }))"
+        },
+        {
+          "target": "exercise:plan-migrations:wrong:modified-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }))"
+        },
+        {
+          "target": "exercise:plan-migrations:wrong:duplicate-ignored",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 编号重复：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0002_create_tasks' }))"
+        },
+        {
+          "target": "exercise:join-rows:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(rowsToProjects › 每个任务一行：合并成一个项目，列名换成驼峰，0 和 1 换成布尔值 ⟶ expect(…).toStrictEqual([,rowsToProjects › 没有任务的项目：LEFT JOIN 给出一行，任务的列都是 null ⟶ expect(…).toHaveLength(1),rowsToProjects › 项目按第一次出现的顺序；任务按 position 排序，不依赖行的顺序 ⟶ expect(…).toStrictEqual([ 'p2', 'p1', 'p3' ]),rowsToProjects › 数据库中的数据不对：抛出错误，信息中有项目和任务的 id ⟶ expect(…).toThrow('数据库中的数据不对：项目 p1 的 status 是 archived'),rowsToProjects › 每个项目的任务是独立的数组 ⟶ expect(…).toStrictEqual([ 't1' ]))"
+        },
+        {
+          "target": "exercise:join-rows:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:join-rows:alt:group-by",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:join-rows:wrong:done-unchecked",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(rowsToProjects › 数据库中的数据不对：抛出错误，信息中有项目和任务的 id ⟶ expect(…).toThrow('数据库中的数据不对：项目 p1 的任务 t9 的 done 是 2'))"
+        },
+        {
+          "target": "exercise:join-rows:wrong:no-sort",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(rowsToProjects › 项目按第一次出现的顺序；任务按 position 排序，不依赖行的顺序 ⟶ expect(…).toStrictEqual([ 'b', 'c', 'a' ]))"
+        },
+        {
+          "target": "exercise:join-rows:wrong:null-row-as-task",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(rowsToProjects › 没有任务的项目：LEFT JOIN 给出一行，任务的列都是 null ⟶ expect(…).toMatchObject({ id: 'p2', status: 'planning', dueDate: '2026-12-31', tasks: [] }))"
+        },
+        {
+          "target": "exercise:join-rows:wrong:status-default",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(rowsToProjects › 数据库中的数据不对：抛出错误，信息中有项目和任务的 id ⟶ expect(…).toThrow('数据库中的数据不对：项目 p1 的 status 是 archived'))"
+        },
+        {
+          "target": "exercise:join-rows:wrong:shared-tasks",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(rowsToProjects › 项目按第一次出现的顺序；任务按 position 排序，不依赖行的顺序 ⟶ expect(…).toStrictEqual([ 'b', 'c', 'a' ]),rowsToProjects › 每个项目的任务是独立的数组 ⟶ expect(…).toStrictEqual([ 't1' ]))"
+        }
+      ]
     }
   }
 }

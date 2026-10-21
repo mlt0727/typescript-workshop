@@ -1,0 +1,44 @@
+- id: two-instances
+  type: single
+  prompt: 用内存保存数据的服务器启动了两个实例。在实例 A 上修改了项目的名称，接着请求落到了实例 B 上。B 返回什么？
+  options:
+    - text: 旧的名称：两个进程各有自己的一份内存
+      correct: true
+      explain: 实测如此。要在几个实例之间共享数据，就要用它们都能访问的存储，例如同一个数据库。
+    - text: 新的名称：Next.js 会在实例之间同步内存
+      explain: Next.js 不会同步进程的内存。
+    - text: 412：B 发现了 A 的修改
+      explain: B 根本不知道 A 改过，它的内存中还是旧的版本。
+- id: edit-migration
+  type: single
+  prompt: 迁移 0001_create_projects 已经在生产环境中执行过了。现在要给 projects 表加一列 archived_at，应该怎么做？
+  options:
+    - text: 加一个新的迁移（例如 0003_add_archived_at），用 ALTER TABLE 加上这一列
+      correct: true
+      explain: 执行过的迁移不再修改。新的迁移会在每个数据库中执行一次，所有的数据库都走同样的步骤。
+    - text: 在 0001 的 CREATE TABLE 中加上这一列
+      explain: 生产环境不会再执行 0001，那里不会有这一列；新建的数据库却有，两边从此不一样。校验和会在启动时发现这个修改。
+    - text: 删掉生产环境的数据库，让所有的迁移重新执行
+      explain: 数据就没了。迁移就是为了在保留数据的同时修改表结构。
+- id: n-plus-one
+  type: single
+  prompt: 读取 500 个项目，再为每个项目查一次它的任务。为什么换成通过网络访问的数据库之后，这种写法会慢很多？
+  options:
+    - text: 一共 501 次查询，每次都要等一个网络的来回
+      correct: true
+      explain: 实测本地的 SQLite 中 N+1 约 21 毫秒、JOIN 约 3.4 毫秒；网络上的每次来回要几毫秒到几十毫秒，501 次就是几秒钟。用一条 JOIN 读出所有的数据。
+    - text: 网络上的数据库不支持索引
+      explain: 托管的数据库同样有索引，问题在于查询的次数。
+    - text: 每次查询都要重新执行迁移
+      explain: 迁移只在启动时执行。
+- id: sqlite-boolean
+  type: single
+  prompt: tasks 表中 done 列的定义是 `INTEGER NOT NULL CHECK (done IN (0, 1))`。用 node:sqlite 读出一行，row.done 是什么？
+  options:
+    - text: 数字 0 或者 1，要自己转换成布尔值
+      correct: true
+      explain: SQLite 没有布尔类型。实测 typeof row.done 是 'number'。
+    - text: true 或者 false，node:sqlite 会自动转换
+      explain: node:sqlite 不知道这一列表示布尔值，读出来的就是保存的整数。
+    - text: 字符串 '0' 或者 '1'
+      explain: INTEGER 列读出来是数字。
