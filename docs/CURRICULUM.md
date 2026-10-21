@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 109 / 规划总数 126**（草稿 1，规划中 16）
+**已发布 109 / 规划总数 126**（草稿 2，规划中 15）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -186,7 +186,7 @@
 | `p2-01-plan-and-types` 项目 2·项目面板：需求与类型模型 | ✅ 已发布 | `g08-custom-hooks` |
 | `p2-02-routes-lists` 项目 2·项目面板：路由与列表 | ✅ 已发布 | `p2-01-plan-and-types`、`g13-routing` |
 | `p2-03-forms` 项目 2·项目面板：表单与校验 | 📝 草稿 | `p2-02-routes-lists` |
-| `p2-04-data-state` 项目 2·项目面板：数据状态与错误处理 | ⬜ 规划中 | `p2-03-forms`、`g14-async-data` |
+| `p2-04-data-state` 项目 2·项目面板：数据状态与错误处理 | 📝 草稿 | `p2-03-forms`、`g14-async-data` |
 | `p2-05-tests` 项目 2·项目面板：组件测试与端到端测试 | ⬜ 规划中 | `p2-04-data-state`、`g15-a11y-component-tests` |
 | `p2-06-deploy` 项目 2·项目面板：静态部署与验证 | ⬜ 规划中 | `p2-05-tests`、`i02-deploy-static` |
 | `p3-01-plan` 项目 3·全栈扩展：需求与数据边界 | ⬜ 规划中 | `h07-persistence`、`p2-06-deploy` |

@@ -1,0 +1,187 @@
+[
+  {
+    "url": "/api/projects/p1",
+    "delayMs": 50,
+    "body": {
+      "id": "p1",
+      "name": "官网改版",
+      "owner": "小林",
+      "status": "active",
+      "dueDate": "2026-11-15",
+      "tasks": [
+        {
+          "id": "t1",
+          "title": "整理需求",
+          "done": true
+        },
+        {
+          "id": "t2",
+          "title": "设计稿",
+          "done": false
+        }
+      ]
+    }
+  },
+  {
+    "url": "/api/projects/p9",
+    "delayMs": 50,
+    "status": 404,
+    "body": {
+      "error": "没有这个项目"
+    }
+  },
+  {
+    "url": "/api/projects/broken",
+    "delayMs": 50,
+    "body": {
+      "id": "broken",
+      "name": 7,
+      "owner": "小林",
+      "status": "active",
+      "dueDate": null,
+      "tasks": []
+    }
+  },
+  {
+    "url": "/api/projects/html",
+    "delayMs": 50,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html><title>维护中</title>"
+  },
+  {
+    "url": "/api/projects/boom",
+    "delayMs": 50,
+    "status": 500,
+    "body": {
+      "error": "内部错误"
+    }
+  },
+  {
+    "url": "/api/projects/down",
+    "networkError": true
+  },
+  {
+    "url": "/api/projects/slow",
+    "delayMs": 3000,
+    "body": {
+      "id": "p1",
+      "name": "官网改版",
+      "owner": "小林",
+      "status": "active",
+      "dueDate": "2026-11-15",
+      "tasks": [
+        {
+          "id": "t1",
+          "title": "整理需求",
+          "done": true
+        },
+        {
+          "id": "t2",
+          "title": "设计稿",
+          "done": false
+        }
+      ]
+    }
+  },
+  {
+    "url": "/api/projects/p1/tasks",
+    "method": "POST",
+    "delayMs": 50,
+    "status": 201,
+    "body": {
+      "id": "t3",
+      "title": "写文案",
+      "done": false
+    }
+  },
+  {
+    "url": "/api/projects/p2/tasks",
+    "method": "POST",
+    "delayMs": 50,
+    "status": 422,
+    "body": {
+      "errors": {
+        "title": "任务不能超过 80 个字符"
+      }
+    }
+  },
+  {
+    "url": "/api/projects/p3/tasks",
+    "method": "POST",
+    "delayMs": 50,
+    "status": 409,
+    "body": {
+      "error": "已完成的项目不能修改任务"
+    }
+  },
+  {
+    "url": "/api/projects/p4/tasks",
+    "method": "POST",
+    "delayMs": 50,
+    "status": 422,
+    "body": {
+      "message": "格式不对"
+    }
+  },
+  {
+    "url": "/api/projects/p5/tasks",
+    "method": "POST",
+    "delayMs": 50,
+    "status": 409,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<h1>Conflict</h1>"
+  },
+  {
+    "url": "/api/projects/p6/tasks",
+    "method": "POST",
+    "delayMs": 50,
+    "status": 422,
+    "body": {
+      "errors": {
+        "title": 80
+      }
+    }
+  },
+  {
+    "url": "/api/projects/p1/tasks/t2",
+    "method": "PATCH",
+    "delayMs": 50,
+    "body": {
+      "id": "t2",
+      "title": "设计稿",
+      "done": true
+    }
+  },
+  {
+    "url": "/api/projects/p1/tasks/t9",
+    "method": "PATCH",
+    "delayMs": 50,
+    "status": 404,
+    "body": {
+      "error": "没有这个任务"
+    }
+  },
+  {
+    "url": "/api/projects/p1/tasks/bad",
+    "method": "PATCH",
+    "delayMs": 50,
+    "body": {
+      "id": "bad",
+      "done": "yes"
+    }
+  },
+  {
+    "url": "/api/projects/p1/tasks/teapot",
+    "method": "PATCH",
+    "delayMs": 50,
+    "status": 503,
+    "headers": {
+      "content-type": "text/plain"
+    },
+    "body": "Service Unavailable"
+  }
+]

@@ -1,0 +1,44 @@
+- id: fetch-404
+  type: single
+  prompt: "`const response = await fetch('/api/projects/p9')`，服务器返回了 404。会发生什么？"
+  options:
+    - text: fetch 正常返回一个 Response，response.ok 是 false
+      correct: true
+      explain: fetch 只在连接失败时拒绝。状态码要自己检查。
+    - text: fetch 抛出一个 TypeError
+      explain: TypeError 表示连接失败；404 是服务器正常的回应。
+    - text: response.json() 一定会抛出异常
+      explain: 404 的响应体也可以是 JSON；只有响应体不是 JSON 时 json() 才抛出异常。
+- id: conflict-or-invalid
+  type: single
+  prompt: "服务器对“在已经完成的项目中添加任务”返回 409，对“任务重名”返回 422 和 `{ errors: { title: … } }`。界面应该怎样区分？"
+  options:
+    - text: 422 的错误显示在输入框旁边并关联到输入框；409 用一条 role="alert" 的提示说明
+      correct: true
+      explain: 422 是输入的问题，用户改一下输入就行；409 和输入无关，是服务器上现在的状态不允许。
+    - text: 两者都显示在页面顶部的同一个位置
+      explain: 用户不知道是哪个输入框出了问题，屏幕阅读器的用户也很难找到。
+    - text: 两者都清空输入框，让用户重新输入
+      explain: 输入的内容应该保留：422 时用户改一下就能再提交。
+- id: optimistic
+  type: single
+  prompt: "勾选任务时，复选框显示 `fetcher.formData ? fetcher.formData.get('done') === 'true' : task.done`。服务器拒绝了这次修改，复选框会怎样？"
+  options:
+    - text: 提交结束后 formData 消失，显示的又是 loader 的数据，而数据没有变，复选框自然恢复
+      correct: true
+      explain: 不需要另外写“失败时改回去”的代码。
+    - text: 一直显示勾选的状态，直到刷新页面
+      explain: formData 只在提交期间存在。
+    - text: 抛出异常，页面显示错误边界
+      explain: action 返回的是失败的结果，不是抛出异常；错误由 fetcher.data 提供。
+- id: status-400
+  type: single
+  prompt: "为什么 action 在失败时要返回 `data({ ok: false, … }, { status: 400 })`，而不是直接返回 `{ ok: false, … }`？"
+  options:
+    - text: 状态码是 4xx、5xx 时，React Router 默认不在提交之后重新运行 loader：数据没有变，不需要重新加载
+      correct: true
+      explain: 返回 200 也能工作，只是多请求了一次数据。
+    - text: 不这样做，fetcher.data 就读不到返回的对象
+      explain: 两种写法 fetcher.data 都能读到；区别在于是否重新加载数据。
+    - text: 状态码 400 会让页面显示错误边界
+      explain: 只有抛出的错误才显示错误边界；返回的数据不会。
