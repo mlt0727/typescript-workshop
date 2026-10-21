@@ -1,0 +1,44 @@
+- id: memory-store
+  type: single
+  prompt: 一个部署在 Vercel 上的 Next.js 应用把用户的评论保存在一个模块级的数组中。会有什么问题？
+  options:
+    - text: 函数实例被回收或者重新部署时评论就没了；多个实例同时运行时，各自只看到自己的那一部分
+      correct: true
+      explain: 每个实例有自己的内存。实测在本机重启服务器之后，内存中的数据也没有了。
+    - text: 没有问题，Vercel 会把内存中的数据同步到其他实例
+      explain: 实例之间不共享内存，平台也不会同步模块中的变量。
+    - text: 只有开发服务器上有问题，生产环境中模块级的变量会被持久化
+      explain: 生产环境中同样只是进程的内存。
+- id: lost-update
+  type: single
+  prompt: 两个请求同时执行“读出 counter.json → count 加一 → 写回”。可能的结果是什么？
+  options:
+    - text: count 只增加了 1：两个请求都读到了旧值，后写的覆盖了先写的
+      correct: true
+      explain: 实测 20 次同时的修改最后只留下了 1 次。一个进程中可以排队；多个进程要用数据库。
+    - text: count 总是增加 2，因为 writeFile 是原子的
+      explain: 问题不在于一次写入是否完整，而在于两次“读出、修改、写回”交错了。
+    - text: 第二个请求会因为文件被占用而失败
+      explain: Node.js 不会自动给文件加锁，两个请求都会成功，只是结果不对。
+- id: atomic-write
+  type: single
+  prompt: 为什么要先写 `data.json.tmp`，再 `rename` 成 `data.json`？
+  options:
+    - text: 读的人看到的要么是完整的旧文件，要么是完整的新文件；写到一半出错时原来的文件也完好
+      correct: true
+      explain: 实测直接覆盖时同时的读取几乎每次都读到不完整的 JSON，改成 rename 之后一次也没有。
+    - text: 这样写入更快
+      explain: 多了一步 rename，并不会更快；它换来的是“不会被读到一半”。
+    - text: 这样可以防止两个请求同时修改时丢失更新
+      explain: 它防止的是读到写了一半的文件；丢失更新要靠排队或者数据库。
+- id: optimistic
+  type: single
+  prompt: "`UPDATE todos SET title = ?, version = version + 1 WHERE id = ? AND version = ?` 返回的 changes 是 0，id 对应的行是存在的。这说明什么？接口应该怎样响应？"
+  options:
+    - text: 这一行已经被别人改过了（版本不一致）；返回 409 和当前的数据
+      correct: true
+      explain: 实测用过期的版本修改时 changes 是 0。检查和修改在同一条语句中完成，中间不会被别的请求插入。
+    - text: 数据库出错了；返回 500
+      explain: 语句正常执行了，只是没有匹配的行。
+    - text: 修改成功了，changes 为 0 是正常的
+      explain: changes 是被修改的行数，0 表示什么也没有改。
