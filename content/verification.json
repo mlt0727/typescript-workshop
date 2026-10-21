@@ -7713,8 +7713,8 @@
       ]
     },
     "f02-vite-project": {
-      "verifiedAt": "2026-10-21T00:33:50.398Z",
-      "sourceHash": "023b9724004e988c",
+      "verifiedAt": "2026-10-21T02:15:27.434Z",
+      "sourceHash": "913c57c7230bf3f2",
       "ok": true,
       "checks": [
         {
@@ -10310,8 +10310,8 @@
       ]
     },
     "i01-static-vs-server": {
-      "verifiedAt": "2026-10-21T01:07:55.463Z",
-      "sourceHash": "13ff104ab632d572",
+      "verifiedAt": "2026-10-21T02:16:04.710Z",
+      "sourceHash": "369fce9321180dab",
       "ok": true,
       "checks": [
         {
@@ -10327,7 +10327,7 @@
         {
           "target": "exercise:match-pattern:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(matchPattern › :名字 匹配正好一段，不能为空 ⟶ expect(…).toEqual({ lessonId: 'a01-where-ts-runs' }),matchPattern › 参数不解码：%2F 只是三个普通的字符 ⟶ expect(…).toEqual({ slug: 'a%2Fb' }),matchPattern › 结尾的 :名字* 匹配零段或多段，用 / 连起来 ⟶ expect(…).toEqual({ path: 'sync' }),matchPattern › 结尾的 (.*) 匹配剩下的一切，参数名是 0 ⟶ expect(…).toEqual({ '0': '' }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(matchPattern › :名字 匹配正好一段，不能为空 ⟶ expect(…).toEqual({ lessonId: 'a01-where-ts-runs' }),matchPattern › 参数不解码：%2F 只是三个普通的字符 ⟶ expect(…).toEqual({ slug: 'a%2Fb' }),matchPattern › 结尾的 :名字* 匹配零段或多段，用 / 连起来 ⟶ expect(…).toEqual({ path: 'sync' }),matchPattern › 结尾的 (.*) 匹配剩下的一切，参数名是 0 ⟶ expect(…).toEqual({ '0': '' }),matchPattern › (.*) 前面的 / 必须存在 ⟶ expect(…).toEqual({ '0': '' }))"
         },
         {
           "target": "exercise:match-pattern:solution:solution",
@@ -10347,7 +10347,7 @@
         {
           "target": "exercise:match-pattern:wrong:trailing-slash",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchPattern › 区分大小写；结尾的 / 不能多也不能少（与本站在 Vercel 上实测的一致） ⟶ expect(…).toBeNull(),matchPattern › 结尾的 :名字* 匹配零段或多段，用 / 连起来 ⟶ expect(…).toBeNull(),matchPattern › 结尾的 (.*) 匹配剩下的一切，参数名是 0 ⟶ expect(…).toEqual({ '0': 'x/' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchPattern › 区分大小写；结尾的 / 不能多也不能少（与本站在 Vercel 上实测的一致） ⟶ expect(…).toBeNull(),matchPattern › 结尾的 :名字* 匹配零段或多段，用 / 连起来 ⟶ expect(…).toBeNull(),matchPattern › 结尾的 (.*) 匹配剩下的一切，参数名是 0 ⟶ expect(…).toEqual({ '0': 'x/' }),matchPattern › (.*) 前面的 / 必须存在 ⟶ expect(…).toEqual({ '0': '' }))"
         },
         {
           "target": "exercise:match-pattern:wrong:star-needs-one",
@@ -10357,7 +10357,7 @@
         {
           "target": "exercise:route-request:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(这个网站的部署（与 2026-10-20 在线上实际请求的结果一致） › 首页、课程页面、设置页都得到 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/index.html' }),这个网站的部署（与 2026-10-20 在线上实际请求的结果一致） › 静态文件直接返回；文件夹返回其中的 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/sandbox/index.html' }),这个网站的部署（与 2026-10-20 在线上实际请求的结果一致） › /api/… 改写到函数 /api，参数和查询都交给它 ⟶ expect(…).toEqual({ kind: 'function', path: '/api', query: { path: 'health' } }),处理的顺序 › 存在的文件优先于改写；SPA 的回退让其他地址都得到 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/index.html' }),处理的顺序 › 重定向最先处理：默认是永久（308），permanent: false 是临时（307）；参数填进目标，保留查询 ⟶ expect(…).toEqual({ kind: 'redirect', status: 308, location: '/blog/hello?ref=mail' }),处理的顺序 › 第一条匹配的改写生效；改写的目标也不存在时是 404 ⟶ expect(…).toEqual({ kind: 'file', path: '/a.html' }),处理的顺序 › :名字* 的参数填进目标中 ⟶ expect(…).toEqual({ kind: 'file', path: '/help/getting-started/install/index.html' }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(这个网站的部署（处理者与 2026-10-20 在线上实际请求的结果一致） › 首页、课程页面、设置页都得到 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/index.html' }),这个网站的部署（处理者与 2026-10-20 在线上实际请求的结果一致） › 静态文件直接返回；文件夹返回其中的 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/sandbox/index.html' }),这个网站的部署（处理者与 2026-10-20 在线上实际请求的结果一致） › /api/… 改写到函数 /api，参数和查询都交给它 ⟶ expect(…).toEqual({ kind: 'function', path: '/api', query: { path: 'health' } }),处理的顺序 › 存在的文件优先于改写；SPA 的回退让其他地址都得到 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/index.html' }),处理的顺序 › 重定向最先处理：默认是永久（308），permanent: false 是临时（307）；参数填进目标，保留查询 ⟶ expect(…).toEqual({ kind: 'redirect', status: 308, location: '/blog/hello?ref=mail' }),处理的顺序 › 重定向也先于存在的文件 ⟶ expect(…).toEqual({ kind: 'redirect', status: 308, location: '/new' }),处理的顺序 › 第一条匹配的改写生效；改写的目标也不存在时是 404 ⟶ expect(…).toEqual({ kind: 'file', path: '/a.html' }),处理的顺序 › :名字* 的参数填进目标中 ⟶ expect(…).toEqual({ kind: 'file', path: '/help/getting-started/install/index.html' }))"
         },
         {
           "target": "exercise:route-request:solution:solution",
@@ -10372,23 +10372,33 @@
         {
           "target": "exercise:route-request:wrong:rewrites-first",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(这个网站的部署（与 2026-10-20 在线上实际请求的结果一致） › /api/… 改写到函数 /api，参数和查询都交给它 ⟶ expect(…).toEqual({ kind: 'function', path: '/api', query: {} }),处理的顺序 › 存在的文件优先于改写；SPA 的回退让其他地址都得到 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/assets/app-1a2b3c4d.js' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(这个网站的部署（处理者与 2026-10-20 在线上实际请求的结果一致） › /api/… 改写到函数 /api，参数和查询都交给它 ⟶ expect(…).toEqual({ kind: 'function', path: '/api', query: {} }),处理的顺序 › 存在的文件优先于改写；SPA 的回退让其他地址都得到 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/assets/app-1a2b3c4d.js' }))"
         },
         {
           "target": "exercise:route-request:wrong:no-dir-index",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(这个网站的部署（与 2026-10-20 在线上实际请求的结果一致） › 静态文件直接返回；文件夹返回其中的 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/sandbox/index.html' }),处理的顺序 › :名字* 的参数填进目标中 ⟶ expect(…).toEqual({ kind: 'file', path: '/help/getting-started/install/index.html' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(这个网站的部署（处理者与 2026-10-20 在线上实际请求的结果一致） › 静态文件直接返回；文件夹返回其中的 index.html ⟶ expect(…).toEqual({ kind: 'file', path: '/sandbox/index.html' }),处理的顺序 › :名字* 的参数填进目标中 ⟶ expect(…).toEqual({ kind: 'file', path: '/help/getting-started/install/index.html' }))"
         },
         {
           "target": "exercise:route-request:wrong:drop-params",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(这个网站的部署（与 2026-10-20 在线上实际请求的结果一致） › /api/… 改写到函数 /api，参数和查询都交给它 ⟶ expect(…).toEqual({ kind: 'function', path: '/api', query: { path: 'health' } }),处理的顺序 › 第一条匹配的改写生效；改写的目标也不存在时是 404 ⟶ expect(…).toEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(这个网站的部署（处理者与 2026-10-20 在线上实际请求的结果一致） › /api/… 改写到函数 /api，参数和查询都交给它 ⟶ expect(…).toEqual({ kind: 'function', path: '/api', query: { path: 'health' } }),处理的顺序 › 第一条匹配的改写生效；改写的目标也不存在时是 404 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:route-request:wrong:files-before-redirects",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(处理的顺序 › 重定向也先于存在的文件 ⟶ expect(…).toEqual({ kind: 'redirect', status: 308, location: '/new' }))"
+        },
+        {
+          "target": "exercise:route-request:wrong:query-wins",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(处理的顺序 › 第一条匹配的改写生效；改写的目标也不存在时是 404 ⟶ 同名时用路径参数的值)"
         }
       ]
     },
     "i02-deploy-static": {
-      "verifiedAt": "2026-10-21T01:33:20.864Z",
-      "sourceHash": "0fa52e780f9d3ccb",
+      "verifiedAt": "2026-10-21T02:16:05.442Z",
+      "sourceHash": "4f55a9533c829aac",
       "ok": true,
       "checks": [
         {
@@ -10404,7 +10414,7 @@
         {
           "target": "exercise:asset-urls:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(assetUrls › 脚本和样式表，按出现的顺序，解析成完整的地址 ⟶ expect(…).toEqual([,assetUrls › 相对路径相对于页面的地址：深层的地址上指到了别的文件夹 ⟶ expect(…).toEqual([,assetUrls › 部署在子路径上：以 / 开头的地址从网站的根开始 ⟶ expect(…).toBe('https://user.github.io/assets/index-CMnIaEjP.js'),assetUrls › modulepreload 也是脚本；其他的 link（图标、preconnect）不算 ⟶ expect(…).toEqual([,assetUrls › 单引号也可以；没有 src 的内联脚本、data: 地址不算；去掉 #，保留查询参数，重复的只算一次 ⟶ expect(…).toEqual([)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(assetUrls › 脚本和样式表，按出现的顺序，解析成完整的地址 ⟶ expect(…).toEqual([,assetUrls › 相对路径相对于页面的地址：深层的地址上指到了别的文件夹 ⟶ expect(…).toEqual([,assetUrls › 部署在子路径上：以 / 开头的地址从网站的根开始 ⟶ expect(…).toBe('https://user.github.io/assets/index-CMnIaEjP.js'),assetUrls › modulepreload 也是脚本；其他的 link（图标、preconnect）不算 ⟶ expect(…).toEqual([,assetUrls › 单引号也可以；没有 src 的内联脚本、data: 地址不算；去掉 #，保留查询参数，重复的只算一次 ⟶ expect(…).toEqual([,assetUrls › rel 可以有多个值；属性的顺序不限；空的地址不算；不同种类的同一个地址各算一次 ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:asset-urls:solution:solution",
@@ -10432,9 +10442,14 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(assetUrls › modulepreload 也是脚本；其他的 link（图标、preconnect）不算 ⟶ expect(…).toEqual([)"
         },
         {
+          "target": "exercise:asset-urls:wrong:rel-exact",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(assetUrls › rel 可以有多个值；属性的顺序不限；空的地址不算；不同种类的同一个地址各算一次 ⟶ expect(…).toEqual([)"
+        },
+        {
           "target": "exercise:smoke-test:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(smokeTest › base 为 ./ 加上回退：深层的页面上，脚本和样式表的地址变成了 /products/assets/…，得到的是网页 ⟶ expect(…).toEqual([,smokeTest › 部署在子路径上，base 却是 /：资源 404 ⟶ expect(…).toEqual([,smokeTest › 资源被删除；页面的类型不是网页；连接不上 ⟶ expect(…).toEqual([,smokeTest › 几个页面引用同一个文件时只请求一次；页面按顺序检查 ⟶ expect(…).toEqual([)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(smokeTest › base 为 ./ 加上回退：深层的页面上，脚本和样式表的地址变成了 /products/assets/…，得到的是网页 ⟶ expect(…).toEqual([,smokeTest › 部署在子路径上，base 却是 /：资源 404 ⟶ expect(…).toEqual([,smokeTest › 资源被删除；页面的类型不是网页；连接不上 ⟶ expect(…).toEqual([,smokeTest › 资源连接不上、没有类型；有问题的页面不再检查它的资源；同一个问题只报告一次 ⟶ expect(…).toEqual([,smokeTest › 几个页面引用同一个文件时只请求一次；页面按顺序检查 ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:smoke-test:solution:solution",
@@ -10449,7 +10464,7 @@
         {
           "target": "exercise:smoke-test:wrong:status-only",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › base 为 ./ 加上回退：深层的页面上，脚本和样式表的地址变成了 /products/assets/…，得到的是网页 ⟶ expect(…).toEqual([)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › base 为 ./ 加上回退：深层的页面上，脚本和样式表的地址变成了 /products/assets/…，得到的是网页 ⟶ expect(…).toEqual([,smokeTest › 资源连接不上、没有类型；有问题的页面不再检查它的资源；同一个问题只报告一次 ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:smoke-test:wrong:from-origin",
@@ -10459,12 +10474,22 @@
         {
           "target": "exercise:smoke-test:wrong:no-dedupe",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › 几个页面引用同一个文件时只请求一次；页面按顺序检查 ⟶ expect(…).toEqual([)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › 资源连接不上、没有类型；有问题的页面不再检查它的资源；同一个问题只报告一次 ⟶ expect(…).toEqual([,smokeTest › 几个页面引用同一个文件时只请求一次；页面按顺序检查 ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:smoke-test:wrong:stop-at-first",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › 没有回退：深层的地址 404 ⟶ expect(…).toEqual([,smokeTest › 资源被删除；页面的类型不是网页；连接不上 ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:smoke-test:wrong:asset-no-catch",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › 资源连接不上、没有类型；有问题的页面不再检查它的资源；同一个问题只报告一次 ⟶ expect(…).resolves：期望 Promise 成功，但它被拒绝了：TypeError: Failed to fetch)"
+        },
+        {
+          "target": "exercise:smoke-test:wrong:check-error-page",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(smokeTest › 资源连接不上、没有类型；有问题的页面不再检查它的资源；同一个问题只报告一次 ⟶ expect(…).toEqual([)"
         }
       ]
     },

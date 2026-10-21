@@ -110,7 +110,7 @@ dist/assets/index-wktXvZw9.js    4.49 kB │ gzip: 2.02 kB
 
 `dist` 就是要部署的全部内容，它是纯静态文件，任何静态服务器都能提供。运行 `npm run preview`，Vite 用一个本地静态服务器（默认端口 4173）提供 `dist`，在部署之前检查构建的结果。
 
-注意，Vite 自己的开发服务器和 `preview` 服务器对**不存在的路径**很宽容：只要请求接受 HTML（浏览器的地址栏、默认的 `fetch` 都是这样），就返回 200 和 `index.html`。实测 `preview` 中请求 `/does-not-exist.json` 得到的是 200 和一个 HTML 页面。所以在它们之上看不到“资源 404”，下面的编程挑战会实现一个更严格的规则。
+注意，Vite 自己的开发服务器和 `preview` 服务器对**不存在的路径**很宽容：只要请求接受 HTML（浏览器的地址栏、默认的 `fetch` 都是这样），就返回 200 和 `index.html`。实测 `preview` 中请求 `/does-not-exist.json` 得到的是 200 和一个 HTML 页面。所以在它们之上，用地址栏或者 `fetch` 检查时看不到“资源 404”（浏览器为 `<script>` 发出的请求是一个例外，i02 会讲到），下面的编程挑战会实现一个更严格的规则。
 
 ## 部署到子路径：base
 

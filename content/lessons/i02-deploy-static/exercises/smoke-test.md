@@ -8,7 +8,7 @@ fixtures: deploy
 按 `routes` 的顺序**一个接一个**地检查每个页面（`new URL(路径, origin)`）：
 
 1. 请求页面。连接失败（`fetch` 拒绝）时问题是 `无法连接`；状态码不在 200–299 之间时是 `状态码 404`（换成实际的状态码）；`content-type` 不以 `text/html` 开头时是 `类型是 实际的类型，不是网页`（没有 `content-type` 时“实际的类型”写成 `（没有类型）`）。有这些问题时，这个页面就不再往下检查；
-2. 用 `assetUrls(页面的地址, 页面的 HTML)` 找出它引用的资源，按顺序请求每一个：连接失败、状态码的问题同上；脚本的 `content-type` 中要含有 `javascript`，否则是 `类型是 实际的类型，不是 JavaScript`；样式表的要含有 `text/css`，否则是 `类型是 实际的类型，不是 CSS`；
+2. 用 `assetUrls(页面的地址, 页面的 HTML)` 找出它引用的资源，检查每一个（可以同时发出请求，但问题按资源出现的顺序报告）：连接失败、状态码的问题同上；脚本的 `content-type` 中要含有 `javascript`，否则是 `类型是 实际的类型，不是 JavaScript`；样式表的要含有 `text/css`，否则是 `类型是 实际的类型，不是 CSS`；
 3. 同一个资源的地址只请求一次：前面的页面已经检查过的，后面的页面不再请求，也不再报告；
 4. 每个问题是 `{ url, problem }`，`url` 是出问题的那个地址。按发现的顺序返回所有的问题，没有问题时返回空数组。
 
@@ -22,6 +22,7 @@ fixtures: deploy
 | `user.github.io` | 应用部署在 `/shop/` 上，构建时的 `base` 却是 `/` |
 | `broken.example` | 页面在，引用的脚本被删除了（404） |
 | `down.example` | 连接不上 |
+| `mixed.example` | 首页引用了一个连接不上的 CDN 上的脚本，和一个没有 `content-type` 的样式表；`/gone` 是 404，它的错误页面也引用了一个不存在的脚本 |
 
 :::files{role=support}
 ```ts file=assets.ts readonly
@@ -202,6 +203,14 @@ describe('smokeTest', () => {
     ]);
   });
 
+  test('资源连接不上、没有类型；有问题的页面不再检查它的资源；同一个问题只报告一次', async () => {
+    await expect(smokeTest('https://mixed.example', ['/', '/about', '/gone'])).resolves.toEqual([
+      { url: 'https://cdn.down.example/lib.js', problem: '无法连接' },
+      { url: 'https://mixed.example/assets/theme.css', problem: '类型是 （没有类型），不是 CSS' },
+      { url: 'https://mixed.example/gone', problem: '状态码 404' },
+    ]);
+  });
+
   test('几个页面引用同一个文件时只请求一次；页面按顺序检查', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
     await smokeTest('https://good.example', ROUTES);
@@ -229,6 +238,8 @@ describe('smokeTest', () => {
 - **资源被删除**：例如用新的部署覆盖了旧的文件，而某个缓存中的旧页面还在引用它们。
 
 每个资源只检查一次，既是为了少发请求，也是为了报告简洁：同一个缺失的脚本被十个页面引用，应该是一个问题，而不是十个。
+
+这个版本有几处简化：`fetch` 会自动跟随重定向，看不到中间的 301、308（e05）；没有超时（e08），服务器一直不响应时会一直等下去；只检查 HTML 中直接引用的资源，脚本运行之后才加载的模块（动态 `import()`）检查不到。还要注意，`fetch` 发出的请求和浏览器加载 `<script>` 时的请求并不完全一样：在 `vite preview` 上，`fetch` 一个不存在的脚本得到 200 和网页，浏览器加载它却是 404（正文）。检查内容类型，正好能发现前一种情况。
 
 这样的脚本可以放进 CI（f12）：部署完成之后运行，有问题时让这次部署失败或者发出通知。用 Playwright（f09）在真实的浏览器中打开这些页面、检查控制台中有没有错误，是更完整的版本；这个只用 `fetch` 的版本更快，也不需要浏览器。
 :::
@@ -481,7 +492,7 @@ for (const origin of ['https://good.example', 'https://no-fallback.example', 'ht
 ```
 :::
 
-:::variant{kind=wrong name=stop-at-first fails=tests reason="第一个页面有问题时就停下了：后面的页面没有检查，一次只能发现一个问题"}
+:::variant{kind=wrong name=stop-at-first fails=tests reason="遇到第一个打不开的页面就停下了：后面的页面没有检查，一次只能发现一个问题"}
 ```ts file=smoke.ts
 import { assetUrls, type Asset } from './assets';
 
@@ -520,6 +531,139 @@ export async function smokeTest(origin: string, routes: readonly string[]): Prom
       return problems;
     }
     if (!typeOf(page).startsWith('text/html')) {
+      problems.push({ url: pageUrl, problem: `类型是 ${typeOf(page)}，不是网页` });
+      continue;
+    }
+    for (const asset of assetUrls(pageUrl, await page.text())) {
+      // 几个页面引用同一个文件时只检查一次
+      if (checked.has(asset.url)) continue;
+      checked.add(asset.url);
+      const response = await get(asset.url);
+      if (!(response instanceof Response)) problems.push(response);
+      else if (!typeOf(response).includes(EXPECTED[asset.kind].type)) {
+        problems.push({ url: asset.url, problem: `类型是 ${typeOf(response)}，不是 ${EXPECTED[asset.kind].name}` });
+      }
+    }
+  }
+  return problems;
+}
+```
+```ts file=main.ts
+import { smokeTest } from './smoke';
+
+for (const origin of ['https://good.example', 'https://no-fallback.example', 'https://relative.example']) {
+  console.log(origin, await smokeTest(origin, ['/', '/products', '/products/205']));
+}
+```
+:::
+
+:::variant{kind=wrong name=asset-no-catch fails=tests reason="请求资源时没有处理连接失败：CDN 连不上时整个冒烟测试抛出异常"}
+```ts file=smoke.ts
+import { assetUrls, type Asset } from './assets';
+
+export type Problem = { url: string; problem: string };
+
+const EXPECTED: Record<Asset['kind'], { type: string; name: string }> = {
+  script: { type: 'javascript', name: 'JavaScript' },
+  stylesheet: { type: 'text/css', name: 'CSS' },
+};
+
+/** 请求一个地址；失败（网络错误、状态码不是 2xx）时返回问题，成功时返回响应 */
+async function get(url: string): Promise<Response | Problem> {
+  let response: Response;
+  try {
+    response = await fetch(url);
+  } catch {
+    return { url, problem: '无法连接' };
+  }
+  return response.ok ? response : { url, problem: `状态码 ${response.status}` };
+}
+
+const typeOf = (response: Response) => response.headers.get('content-type') ?? '（没有类型）';
+
+/**
+ * 部署之后的冒烟测试：依次打开 routes 中的每个页面，检查它和它引用的脚本、样式表都能正确加载。
+ * 没有问题时返回空数组。
+ */
+export async function smokeTest(origin: string, routes: readonly string[]): Promise<Problem[]> {
+  const problems: Problem[] = [];
+  const checked = new Set<string>();
+  for (const route of routes) {
+    const pageUrl = new URL(route, origin).href;
+    const page = await get(pageUrl);
+    if (!(page instanceof Response)) {
+      problems.push(page);
+      continue;
+    }
+    if (!typeOf(page).startsWith('text/html')) {
+      problems.push({ url: pageUrl, problem: `类型是 ${typeOf(page)}，不是网页` });
+      continue;
+    }
+    for (const asset of assetUrls(pageUrl, await page.text())) {
+      // 几个页面引用同一个文件时只检查一次
+      if (checked.has(asset.url)) continue;
+      checked.add(asset.url);
+      const response = await fetch(asset.url).then((r): Response | Problem => (r.ok ? r : { url: asset.url, problem: `状态码 ${r.status}` }));
+      if (!(response instanceof Response)) problems.push(response);
+      else if (!typeOf(response).includes(EXPECTED[asset.kind].type)) {
+        problems.push({ url: asset.url, problem: `类型是 ${typeOf(response)}，不是 ${EXPECTED[asset.kind].name}` });
+      }
+    }
+  }
+  return problems;
+}
+```
+```ts file=main.ts
+import { smokeTest } from './smoke';
+
+for (const origin of ['https://good.example', 'https://no-fallback.example', 'https://relative.example']) {
+  console.log(origin, await smokeTest(origin, ['/', '/products', '/products/205']));
+}
+```
+:::
+
+:::variant{kind=wrong name=check-error-page fails=tests reason="页面 404 之后仍然检查它的资源：错误页面引用的文件被当成了网站的问题"}
+```ts file=smoke.ts
+import { assetUrls, type Asset } from './assets';
+
+export type Problem = { url: string; problem: string };
+
+const EXPECTED: Record<Asset['kind'], { type: string; name: string }> = {
+  script: { type: 'javascript', name: 'JavaScript' },
+  stylesheet: { type: 'text/css', name: 'CSS' },
+};
+
+/** 请求一个地址；失败（网络错误、状态码不是 2xx）时返回问题，成功时返回响应 */
+async function get(url: string): Promise<Response | Problem> {
+  let response: Response;
+  try {
+    response = await fetch(url);
+  } catch {
+    return { url, problem: '无法连接' };
+  }
+  return response.ok ? response : { url, problem: `状态码 ${response.status}` };
+}
+
+const typeOf = (response: Response) => response.headers.get('content-type') ?? '（没有类型）';
+
+/**
+ * 部署之后的冒烟测试：依次打开 routes 中的每个页面，检查它和它引用的脚本、样式表都能正确加载。
+ * 没有问题时返回空数组。
+ */
+export async function smokeTest(origin: string, routes: readonly string[]): Promise<Problem[]> {
+  const problems: Problem[] = [];
+  const checked = new Set<string>();
+  for (const route of routes) {
+    const pageUrl = new URL(route, origin).href;
+    let page: Response;
+    try {
+      page = await fetch(pageUrl);
+    } catch {
+      problems.push({ url: pageUrl, problem: '无法连接' });
+      continue;
+    }
+    if (!page.ok) problems.push({ url: pageUrl, problem: `状态码 ${page.status}` });
+    else if (!typeOf(page).startsWith('text/html')) {
       problems.push({ url: pageUrl, problem: `类型是 ${typeOf(page)}，不是网页` });
       continue;
     }

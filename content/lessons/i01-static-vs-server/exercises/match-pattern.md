@@ -7,10 +7,10 @@ title: 匹配路径模式
 1. 模式和路径都按 `/` 分成段（开头的 `/` 之后）。普通的段必须与路径中对应的段**完全相同**（区分大小写）；
 2. `:名字` 匹配正好一段，这一段不能为空，参数的值就是这一段的原文（不解码，`%2F` 就是三个字符）；
 3. 最后一段可以是 `:名字*`：匹配剩下的零段或多段，每一段都不能为空，参数的值是这些段用 `/` 连起来（零段时是空字符串）；
-4. 最后一段可以是 `(.*)`：匹配剩下的一切（可以为空，也可以含有 `/`），参数名是 `'0'`；
-5. 段的数量必须对上：结尾多一个斜杠（`/settings/` 对 `/settings`）、多一段、少一段都不匹配。模式 `/` 只匹配路径 `/`。
+4. 最后一段可以是 `(.*)`：匹配它前面那个 `/` 之后剩下的一切（可以为空，也可以含有 `/`），参数名是 `'0'`。它前面的 `/` 必须存在：`/assets/(.*)` 匹配 `/assets/`（参数是空字符串），不匹配 `/assets`；
+5. 除了第 3、4 条的结尾部分，段的数量必须对上：结尾多一个斜杠（`/settings/` 对 `/settings`）、多一段、少一段都不匹配。模式 `/` 只匹配路径 `/`。
 
-这些规则与这个网站在 Vercel 上实测的结果一致，也与 path-to-regexp 6.3.0 在 `strict: true`、`sensitive: true` 时的结果一致（它对 `:名字*` 返回数组，这里连成了字符串）。
+这些规则与这个网站在 Vercel 上实测的结果一致（例如 `/assets` 不匹配这个网站的 `/assets/(.*)` 响应头规则），也与 path-to-regexp 6.3.0 在 `strict: true`、`sensitive: true` 时的结果一致（它对 `:名字*` 返回数组，这里连成了字符串）。另外，Vercel 在匹配之前会把连续的斜杠合并：实测 `//settings` 直接返回 308，跳转到 `/settings`。这一步不在本题的范围内。
 
 :::files{role=starter}
 ```ts file=pattern.ts
@@ -57,7 +57,8 @@ export function matchPattern(pattern: string, pathname: string): Params | null {
     const last = i === parts.length - 1;
     const rest = segments.slice(i);
     if (last && part === '(.*)') {
-      // 剩下的全部（可以为空，可以含有 /）
+      // 它前面的 / 必须存在（/assets 不匹配 /assets/(.*)）；之后的全部可以为空，可以含有 /
+      if (rest.length === 0) return null;
       params['0'] = rest.join('/');
       return params;
     }
@@ -141,6 +142,12 @@ describe('matchPattern', () => {
     expect(matchPattern('/(.*)', '/x/')).toEqual({ '0': 'x/' });
     expect(matchPattern('/assets/(.*)', '/assets/index-wktXvZw9.js')).toEqual({ '0': 'index-wktXvZw9.js' });
   });
+
+  test('(.*) 前面的 / 必须存在', () => {
+    expect(matchPattern('/assets/(.*)', '/assets/')).toEqual({ '0': '' });
+    expect(matchPattern('/assets/(.*)', '/assets')).toBeNull();
+    expect(matchPattern('/sandbox/(.*)', '/sandbox')).toBeNull();
+  });
 });
 ```
 ```ts file=pattern.test-d.ts
@@ -157,7 +164,7 @@ expectTypeOf<Params>().toEqualTypeOf<Record<string, string>>();
 :::
 
 :::hint{level=2}
-“段不能为空”要在两个地方检查：`:名字` 对应的那一段，以及 `:名字*` 取出的每一段（`rest.includes('')`），这样 `/learn/`、`/api/`、`/api/a//b` 都不匹配。`(.*)` 不检查，它要能匹配 `/` 和 `x/`。模式 `/` 是一个特殊情况，单独处理最简单。
+“段不能为空”要在两个地方检查：`:名字` 对应的那一段，以及 `:名字*` 取出的每一段（`rest.includes('')`），这样 `/learn/`、`/api/`、`/api/a//b` 都不匹配。`(.*)` 不检查空段，它要能匹配 `/` 和 `x/`，但它前面的 `/` 必须存在：`segments.slice(i)` 为空数组时不匹配。模式 `/` 是一个特殊情况，单独处理最简单。
 :::
 
 :::explanation
@@ -166,9 +173,9 @@ expectTypeOf<Params>().toEqualTypeOf<Record<string, string>>();
 - **区分大小写、结尾的斜杠**：用户手动输入、或者别的网站链接过来的地址，可能是 `/Settings`、`/settings/`。实测 Vercel 对它们都返回 404。直接使用 path-to-regexp 时要注意，它的默认值是不区分大小写、允许结尾多一个斜杠（`sensitive: false`、`strict: false`），和 Vercel 不同；
 - **`:名字` 不匹配空的一段**：`/learn/` 不应该被当成 `lessonId` 为空的课程页面；
 - **`:名字*` 可以是零段**：`/api/:path*` 同时匹配 `/api` 和 `/api/sync`，所以一条规则就能把整个 `/api` 交给函数；
-- **`(.*)` 匹配一切**：单页应用的回退规则 `/(.*)` 靠它匹配所有的路径，包括 `/`。
+- **`(.*)` 匹配一切**：单页应用的回退规则 `/(.*)` 靠它匹配所有的路径，包括 `/`。但它前面的 `/` 是模式的一部分：这个网站给 `/assets/(.*)` 加了“缓存一年”的响应头，实测请求 `/assets` 时返回的 404 就没有这个响应头。
 
-参考解逐段比较，替代解把模式翻译成一个正则（`:名字` 变成 `([^/]+)`，`:名字*` 变成 `((?:/[^/]+)*)`）。这正是 path-to-regexp 的做法，它的名字就是 “path to RegExp”。两种写法都对照过 path-to-regexp 6.3.0 的结果。
+参考解逐段比较，替代解把模式翻译成一个正则（`:名字` 变成 `([^/]+)`，`:名字*` 变成 `((?:/[^/]+)*)`）。这正是 path-to-regexp 的做法，它的名字就是 “path to RegExp”。两种写法都和 path-to-regexp 6.3.0（`strict: true`、`sensitive: true`）对照过 32 组模式与路径，结果相同。
 :::
 
 :::variant{kind=alt name=compile-regexp}
@@ -246,7 +253,8 @@ export function matchPattern(pattern: string, pathname: string): Params | null {
     const last = i === parts.length - 1;
     const rest = segments.slice(i);
     if (last && part === '(.*)') {
-      // 剩下的全部（可以为空，可以含有 /）
+      // 它前面的 / 必须存在（/assets 不匹配 /assets/(.*)）；之后的全部可以为空，可以含有 /
+      if (rest.length === 0) return null;
       params['0'] = rest.join('/');
       return params;
     }
@@ -297,7 +305,8 @@ export function matchPattern(pattern: string, pathname: string): Params | null {
     const last = i === parts.length - 1;
     const rest = segments.slice(i);
     if (last && part === '(.*)') {
-      // 剩下的全部（可以为空，可以含有 /）
+      // 它前面的 / 必须存在（/assets 不匹配 /assets/(.*)）；之后的全部可以为空，可以含有 /
+      if (rest.length === 0) return null;
       params['0'] = rest.join('/');
       return params;
     }
@@ -347,7 +356,8 @@ export function matchPattern(pattern: string, pathname: string): Params | null {
     const last = i === parts.length - 1;
     const rest = segments.slice(i);
     if (last && part === '(.*)') {
-      // 剩下的全部（可以为空，可以含有 /）
+      // 它前面的 / 必须存在（/assets 不匹配 /assets/(.*)）；之后的全部可以为空，可以含有 /
+      if (rest.length === 0) return null;
       params['0'] = rest.join('/');
       return params;
     }

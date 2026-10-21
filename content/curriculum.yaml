@@ -161,8 +161,8 @@ stages:
       - { id: p1-04-filters, title: 项目 1·任务板：过滤与 URL 状态, status: published, prerequisites: [p1-03-edit-delete, e10-url-routing] }
       - { id: p1-05-persistence, title: 项目 1·任务板：持久化与数据校验, status: published, prerequisites: [p1-04-filters, e09-storage-serialization] }
       - { id: p1-06-local-project, title: 项目 1·任务板：本地工程、测试与导出, status: published, prerequisites: [p1-05-persistence, f08-dom-tests] }
-      - { id: i01-static-vs-server, title: 静态站点与服务端应用的区别, status: draft, prerequisites: [f12-build-ci] }
-      - { id: i02-deploy-static, title: 部署静态站点：构建、路由刷新与资源路径, status: draft, prerequisites: [i01-static-vs-server] }
+      - { id: i01-static-vs-server, title: 静态站点与服务端应用的区别, status: published, prerequisites: [f12-build-ci] }
+      - { id: i02-deploy-static, title: 部署静态站点：构建、路由刷新与资源路径, status: published, prerequisites: [i01-static-vs-server] }
       - { id: p2-01-plan-and-types, title: 项目 2·项目面板：需求与类型模型, status: draft, prerequisites: [g08-custom-hooks] }
       - { id: p2-02-routes-lists, title: 项目 2·项目面板：路由与列表, status: draft, prerequisites: [p2-01-plan-and-types, g13-routing] }
       - { id: p2-03-forms, title: 项目 2·项目面板：表单与校验, status: draft, prerequisites: [p2-02-routes-lists] }

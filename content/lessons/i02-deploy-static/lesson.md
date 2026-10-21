@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 网站在本机的开发服务器上一切正常，部署之后却出了问题：首页能打开，点进商品页面也没事，可是在商品页面上刷新一下就是 404；或者部署到 GitHub Pages 的子路径上，页面一片空白。这些问题都来自同一个事实：开发服务器替你做了很多事，而部署的静态服务器只会按路径找文件。这一课在本机用真实的服务器复现这些问题（所有的结果都是实际运行得到的），讲清楚刷新时的回退、资源的路径（base 与路由的 basename），最后写一个部署之后的冒烟测试，把这些问题一次查出来。
 objectives:
   - 解释单页应用在刷新深层地址时为什么会 404，在不同的静态服务器上配置回退（改写、404.html）或者改用 hash 路由
@@ -40,14 +40,14 @@ f02 讲过：`npm run build` 生成 `dist`，`npm run preview` 用一个本地�
 
 `dist` 中只有 `index.html` 和 `assets/`，并没有 `products/205` 这个文件。在页面上点击链接时，路由在浏览器中切换页面，不会向服务器请求 `/products/205`；但**直接打开或者刷新**时，浏览器向服务器请求的就是这个路径。Python 的服务器只会按路径找文件，所以是 404。
 
-`vite preview` 返回了 `index.html`，是因为它和开发服务器一样内置了**回退**（fallback）：找不到文件、并且请求接受网页（`Accept` 中有 `text/html` 或者 `*/*`）时，返回 `index.html`。实测用 `Accept: application/json` 请求同一个地址就是 404。所以在 `vite preview` 上一切正常，不代表部署之后也正常。
+`vite preview` 返回了 `index.html`，是因为它和开发服务器一样内置了**回退**（fallback）：找不到文件、并且请求可能接受网页（`Accept` 中有 `text/html` 或者 `*/*`，或者根本没有 `Accept`）时，返回 `index.html`。实测用 `Accept: application/json` 请求同一个地址就是 404。还有一个例外：浏览器为 `<script>` 发出的请求带有 `Sec-Fetch-Dest: script`，Vite 不会对它返回网页（vite 8.3 的源码），所以下面第 3 个问题中缺失的脚本是 404；而用 `fetch` 或 curl 请求同一个地址，得到的却是 200 和网页。所以在 `vite preview` 上一切正常，不代表部署之后也正常。
 
 ## 刷新之后的 404：回退
 
 单页应用要求静态服务器做一件事：**找不到文件的页面地址，返回 `index.html`**，由浏览器中的路由决定显示什么。不同的平台写法不同：
 
 - **Vercel**：在 `vercel.json` 中写改写（i01）。可以写 `{ "source": "/(.*)", "destination": "/index.html" }` 匹配一切，也可以像这个网站一样只为页面的地址写规则（`/learn/:lessonId`）。前者简单，代价是找不到的资源也得到 `index.html`（i01 的编程挑战）；
-- **GitHub Pages**：不能配置改写，只能提供一个 `404.html`：找不到文件时返回它的内容。常见的做法是把 `index.html` 复制一份成为 `404.html`。页面能显示了，但状态码仍然是 404：实测一个这样部署的网站（`spa-github-pages.rafgraph.dev`），`/` 是 200，`/example/two` 返回 404 和那个页面。搜索引擎和监控工具看到的是 404；
+- **GitHub Pages**：不能配置改写，只能提供一个 `404.html`：找不到文件时返回它的内容。常见的做法是把 `index.html` 复制一份成为 `404.html`，或者在 `404.html` 中放一段跳转回首页、再由首页恢复原来地址的脚本（p2-06）。无论哪一种，GitHub Pages 返回 `404.html` 时的状态码都是 404：实测一个用后一种做法部署单页应用的网站（`spa-github-pages.rafgraph.dev`），`/` 是 200，`/example/two` 返回 404（`Server: GitHub.com`），内容是它的 `404.html`。页面最终能显示，但搜索引擎和监控工具看到的是 404；
 - **Nginx、Caddy 这样的服务器**：配置“找不到时用 `/index.html`”（Nginx 中是 `try_files $uri $uri/ /index.html;`）；
 - **改用 hash 路由**：`createHashRouter` 的地址是 `/#/products/205`，`#` 之后的部分根本不会发给服务器，任何静态服务器都能用。代价是地址难看，而且服务器永远无法区分这些页面。这个网站的练习预览就是因为沙箱的限制而使用了它。
 
@@ -57,11 +57,11 @@ f02 讲过 `base`：部署在子路径（例如 GitHub Pages 的 `https://用户
 
 | 构建时的 `base` | `index.html` 中的脚本 |
 | --- | --- |
-| `/`（默认） | `src="/assets/index-CMnIaEjP.js"` |
-| `/shop/` | `src="/shop/assets/index-CqZqsNoX.js"` |
-| `./` | `src="./assets/index-BSa2dRPq.js"` |
+| `/`（默认） | `src="/assets/index-….js"` |
+| `/shop/` | `src="/shop/assets/index-….js"` |
+| `./` | `src="./assets/index-….js"` |
 
-文件名中的哈希随代码和 `base` 变化，所以三次构建的文件名不完全相同。浏览器按**页面的地址**解析这些地址（MDN 的 `new URL(地址, 页面的地址)` 就是这个规则）：以 `/` 开头的从网站的根开始；`./` 开头的相对于页面所在的“文件夹”。这带来了三个实测到的问题：
+文件名中的哈希（这里写成 `…`）随代码和 `base` 变化，几次构建的文件名不完全相同。浏览器按**页面的地址**解析这些地址（MDN 的 `new URL(地址, 页面的地址)` 就是这个规则）：以 `/` 开头的从网站的根开始；`./` 开头的相对于页面所在的“文件夹”。这带来了三个实测到的问题：
 
 :::playground{#resolve}
 ```ts file=main.ts
@@ -77,7 +77,7 @@ for (const page of pages) {
 - 第三列是 `./assets/app.js`（`base` 为 `./`）：在 `/products/205` 上变成了 `/products/assets/app.js`，在 `/shop/` 上反而是对的。
 :::
 
-1. **部署在 `/shop/` 上，`base` 却是 `/`**：页面请求的是 `/assets/index-CMnIaEjP.js`（缺了 `/shop`），404，页面一片空白；
+1. **部署在 `/shop/` 上，`base` 却是 `/`**：页面请求的是 `/assets/index-….js`（缺了 `/shop`），404，页面一片空白；
 2. **`base` 是 `/shop/`，路由却不知道**：资源都加载了，页面上显示的却是“页面不存在”：路由看到的地址是 `/shop/`，而路由表中只有 `/`。要告诉路由它在哪个前缀下：`createBrowserRouter(routes, { basename: '/shop' })`。用 `import.meta.env.BASE_URL` 得到 `base`，就不用在两个地方各写一遍。加上之后实测显示“首页”；
 3. **`base` 是 `./`，配合 `createBrowserRouter`**：在 `/products` 上，`./assets/…` 解析成 `/assets/…`，一切正常；在 `/products/205` 上，它被解析成 `/products/assets/…`，实测 Chromium 和 WebKit 中这个脚本都是 404，页面一片空白。相对路径只适合页面都在同一层的网站（或者 hash 路由）。
 
@@ -85,7 +85,7 @@ for (const page of pages) {
 
 上面的每个问题，都可以在部署之后用几个请求发现：打开每一种页面（首页、列表、详情），检查它的状态码和类型，再检查它引用的每个脚本和样式表能不能加载、类型对不对。这叫**冒烟测试**（smoke test）：不测功能的细节，只确认“通电之后没有冒烟”。
 
-这个网站每次部署之后也是这样检查的（i01 中的表格）。它可以是一个手动的清单，也可以是一个脚本，在 CI（f12）中部署完成之后自动运行。下面的小任务先解决其中最容易出错的一步：按页面的地址解析资源的地址；编程挑战写出完整的冒烟测试。
+i01 中的表格就是对这个网站做的一次这样的检查（手动的）。它可以是一个手动的清单，也可以是一个脚本，在 CI（f12）中部署完成之后自动运行。下面的小任务先解决其中最容易出错的一步：按页面的地址解析资源的地址；编程挑战写出完整的冒烟测试。
 
 ::exercise{#asset-urls}
 

@@ -147,5 +147,49 @@
   {
     "url": "https://down.example/*",
     "networkError": true
+  },
+  {
+    "url": "https://mixed.example/",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>商店</title>\n    <script src=\"https://cdn.down.example/lib.js\"></script>\n    <script type=\"module\" crossorigin src=\"/assets/app.js\"></script>\n    <link rel=\"stylesheet\" href=\"/assets/theme.css\">\n  </head>\n  <body></body>\n</html>\n"
+  },
+  {
+    "url": "https://mixed.example/about",
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>关于</title>\n    <script src=\"https://cdn.down.example/lib.js\"></script>\n    <script type=\"module\" crossorigin src=\"/assets/app.js\"></script>\n  </head>\n  <body></body>\n</html>\n"
+  },
+  {
+    "url": "https://mixed.example/gone",
+    "status": 404,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": "<!doctype html>\n<title>找不到</title>\n<script src=\"/assets/404-page.js\"></script>\n<h1>404</h1>\n"
+  },
+  {
+    "url": "https://mixed.example/assets/app.js",
+    "headers": {
+      "content-type": "text/javascript; charset=utf-8"
+    },
+    "body": "console.log(\"app\")"
+  },
+  {
+    "url": "https://mixed.example/assets/theme.css"
+  },
+  {
+    "url": "https://mixed.example/assets/404-page.js",
+    "status": 404,
+    "headers": {
+      "content-type": "text/plain; charset=utf-8"
+    },
+    "body": "Not Found"
+  },
+  {
+    "url": "https://cdn.down.example/*",
+    "networkError": true
   }
 ]

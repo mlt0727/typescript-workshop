@@ -13,7 +13,14 @@ title: 模拟部署平台的路由
 
 **把参数填进 `destination`**：其中的 `:名字*` 和 `:名字` 换成对应参数的值（`/help/:path*` 加上 `path` 为 `a/b` 得到 `/help/a/b`）。
 
-本题的一处简化：第一条匹配的改写决定结果，它的目标不存在时直接是 404，不再尝试后面的规则（Vercel 的文档没有说明这种情况）。测试中“这个网站的部署”一组的期望结果，都与 2026-10-20 对线上实际请求的结果一致。
+本题的几处简化：
+
+- 第一条匹配的改写决定结果，它的目标不存在时直接是 404，不再尝试后面的规则（Vercel 的文档没有说明这种情况）；
+- 改写时，匹配得到的参数全部加进 `query`（包括 `(.*)` 的 `'0'`）。Vercel 的文档只说“带名字的参数通过查询参数传递”，实际的规则更细，例如目标路径中已经用到了参数时就不再追加；
+- 不模拟 Vercel 在匹配之前的规范化：连续的斜杠会被合并，实测 `//settings` 直接返回 308，跳转到 `/settings`；
+- 函数只按完整的路径查找：线上的 `/api/` 也由函数处理（返回函数自己的 404），本题中它是 `not-found`。
+
+测试中“这个网站的部署”一组，期望的处理者（文件、函数还是 404）与 2026-10-20 对线上实际请求的结果一致；交给函数的 `query` 从外部看不到，按文档的说明建模。
 
 :::files{role=support}
 ```ts file=pattern.ts readonly
@@ -33,7 +40,8 @@ export function matchPattern(pattern: string, pathname: string): Params | null {
     const last = i === parts.length - 1;
     const rest = segments.slice(i);
     if (last && part === '(.*)') {
-      // 剩下的全部（可以为空，可以含有 /）
+      // 它前面的 / 必须存在（/assets 不匹配 /assets/(.*)）；之后的全部可以为空，可以含有 /
+      if (rest.length === 0) return null;
       params['0'] = rest.join('/');
       return params;
     }
@@ -181,9 +189,9 @@ for (const url of ['/', '/learn/a01-where-ts-runs', '/settings/', '/sandbox', '/
 import { describe, expect, test } from 'vitest';
 import { routeRequest, type Deployment } from './route';
 
-/** 这个网站自己的部署（vercel.json 中的 rewrites，dist 中的部分文件，api/index.ts） */
+/** 这个网站自己的部署（vercel.json 中的 rewrites，dist 中的部分文件，api/index.ts）；资源的文件名每次构建都会变，这里的只是示意 */
 const site: Deployment = {
-  files: new Set(['/index.html', '/favicon.svg', '/assets/index-BN902Ne_.js', '/sandbox/index.html', '/sandbox/frame.js']),
+  files: new Set(['/index.html', '/favicon.svg', '/assets/main-a1b2c3d4.js', '/sandbox/index.html', '/sandbox/frame.js']),
   functions: new Set(['/api']),
   rewrites: [
     { source: '/api/:path*', destination: '/api' },
@@ -195,7 +203,7 @@ const site: Deployment = {
 const file = (path: string) => ({ kind: 'file', path });
 const notFound = { kind: 'not-found' };
 
-describe('这个网站的部署（与 2026-10-20 在线上实际请求的结果一致）', () => {
+describe('这个网站的部署（处理者与 2026-10-20 在线上实际请求的结果一致）', () => {
   test('首页、课程页面、设置页都得到 index.html', () => {
     expect(routeRequest(site, '/')).toEqual(file('/index.html'));
     expect(routeRequest(site, '/learn/a01-where-ts-runs')).toEqual(file('/index.html'));
@@ -220,6 +228,7 @@ describe('这个网站的部署（与 2026-10-20 在线上实际请求的结果�
     expect(routeRequest(site, '/api/health')).toEqual({ kind: 'function', path: '/api', query: { path: 'health' } });
     expect(routeRequest(site, '/api/sync?since=3')).toEqual({ kind: 'function', path: '/api', query: { since: '3', path: 'sync' } });
     expect(routeRequest(site, '/api')).toEqual({ kind: 'function', path: '/api', query: {} });
+    expect(routeRequest(site, '/api?x=1'), '直接命中函数时，也要带上请求的查询参数').toEqual({ kind: 'function', path: '/api', query: { x: '1' } });
   });
 });
 
@@ -249,6 +258,17 @@ describe('处理的顺序', () => {
     };
     expect(routeRequest(moved, '/old-blog/hello?ref=mail')).toEqual({ kind: 'redirect', status: 308, location: '/blog/hello?ref=mail' });
     expect(routeRequest(moved, '/sale')).toEqual({ kind: 'redirect', status: 307, location: '/promotions/autumn' });
+    expect(routeRequest(moved, '/old-blog/hi?q=a b&x='), '查询部分原样保留').toEqual({ kind: 'redirect', status: 308, location: '/blog/hi?q=a b&x=' });
+  });
+
+  test('重定向也先于存在的文件', () => {
+    const deployment: Deployment = {
+      files: new Set(['/index.html', '/old.html']),
+      functions: new Set(),
+      redirects: [{ source: '/old.html', destination: '/new' }],
+      rewrites: [],
+    };
+    expect(routeRequest(deployment, '/old.html')).toEqual({ kind: 'redirect', status: 308, location: '/new' });
   });
 
   test('第一条匹配的改写生效；改写的目标也不存在时是 404', () => {
@@ -265,6 +285,11 @@ describe('处理的顺序', () => {
     expect(routeRequest(deployment, '/page/zzz')).toEqual(notFound);
     expect(routeRequest(deployment, '/page/x/y')).toEqual(file('/b.html'));
     expect(routeRequest(deployment, '/resize/800/600')).toEqual({ kind: 'function', path: '/api/sharp', query: { width: '800', height: '600' } });
+    expect(routeRequest(deployment, '/resize/800/600?width=1&q=80'), '同名时用路径参数的值').toEqual({
+      kind: 'function',
+      path: '/api/sharp',
+      query: { width: '800', height: '600', q: '80' },
+    });
   });
 
   test(':名字* 的参数填进目标中', () => {
@@ -292,7 +317,7 @@ describe('处理的顺序', () => {
 
 - **重定向在最前面**：它的意思是“这个地址已经搬家了”，不应该再看旧地址上还有什么；
 - **文件优先于改写**：这样单页应用的回退规则 `/(.*)` → `/index.html` 不会挡住真正的 JavaScript、CSS 和图片。但测试中也能看到它的代价：一个**不存在**的资源 `/assets/app-OLD.js` 也得到了 `index.html`，状态是 200，内容却是 HTML。浏览器把它当成 JavaScript 执行，报出语法错误，而不是一个清楚的 404。这就是为什么这个网站没有用 `/(.*)`，而是只为几个页面的地址（`/learn/:lessonId`、`/settings`）写了改写：其他找不到的地址都是真正的 404；
-- **参数作为查询参数交给函数**：`/api/:path*` → `/api` 之后，函数从查询参数 `path` 知道请求的是 `/api/sync` 还是 `/api/health`。一条改写、一个函数，就处理了全部的接口。
+- **参数通过查询参数传给目标**：按 Vercel 的文档，`/resize/:width/:height` → `/api/sharp` 之后，函数可以从查询参数 `width`、`height` 读出尺寸。这个网站的函数没有用这种方式：它直接看请求的路径（`server/handlers.ts` 中的 `new URL(request.url).pathname`），实测 `/api/health?path=sync` 返回的仍然是健康检查，可见 Vercel 交给函数的请求保留了原来的路径。一条 `/api/:path*` → `/api` 的改写、一个函数，就处理了全部的接口。
 
 测试中的第一组用的就是这个网站的 `vercel.json`。以后部署自己的网站时，可以用同样的方法检查：对线上实际请求几个地址（包括带结尾斜杠的、大小写不同的、不存在的），看看状态码和内容类型是不是你期望的。
 :::
@@ -333,11 +358,11 @@ function firstMatch<R extends Rule>(rules: readonly R[], pathname: string) {
 }
 
 export function routeRequest({ files, functions, redirects = [], rewrites = [] }: Deployment, url: string): Route {
-  // 用一个虚构的来源解析，只取路径和查询（与网站真正的域名无关）
-  const parsed = new URL(url, 'https://example.invalid');
-  const pathname = parsed.pathname;
+  // 在第一个 ? 处分开；查询部分原样保留（重定向时接在新地址后面）
+  const [pathname = '', ...rest] = url.split('?');
+  const search = rest.length > 0 ? `?${rest.join('?')}` : '';
   const query: Record<string, string> = {};
-  parsed.searchParams.forEach((value, key) => {
+  new URLSearchParams(search).forEach((value, key) => {
     query[key] = value;
   });
 
@@ -350,7 +375,7 @@ export function routeRequest({ files, functions, redirects = [], rewrites = [] }
   };
 
   const redirect = firstMatch(redirects, pathname);
-  if (redirect) return { kind: 'redirect', status: redirect.rule.permanent === false ? 307 : 308, location: redirect.target + parsed.search };
+  if (redirect) return { kind: 'redirect', status: redirect.rule.permanent === false ? 307 : 308, location: redirect.target + search };
 
   const direct = lookup(pathname, {});
   if (direct) return direct;
@@ -529,7 +554,7 @@ for (const url of ['/', '/learn/a01-where-ts-runs', '/settings/', '/sandbox', '/
 ```
 :::
 
-:::variant{kind=wrong name=drop-params fails=tests reason="改写到函数时没有把参数交给它：函数不知道请求的是 /api/sync 还是 /api/health"}
+:::variant{kind=wrong name=drop-params fails=tests reason="改写到函数时没有把参数交给它：/resize/800/600 的宽和高丢了"}
 ```ts file=route.ts
 import { matchPattern, type Params } from './pattern';
 
@@ -584,6 +609,161 @@ export function routeRequest(deployment: Deployment, url: string): Route {
   for (const rule of deployment.rewrites ?? []) {
     const params = matchPattern(rule.source, pathname);
     if (params !== null) return resolve(deployment, fill(rule.destination, params), query) ?? { kind: 'not-found' };
+  }
+  return { kind: 'not-found' };
+}
+```
+```ts file=main.ts
+import { routeRequest, type Deployment } from './route';
+
+const site: Deployment = {
+  files: new Set(['/index.html', '/favicon.svg', '/sandbox/index.html']),
+  functions: new Set(['/api']),
+  rewrites: [
+    { source: '/api/:path*', destination: '/api' },
+    { source: '/learn/:lessonId', destination: '/index.html' },
+    { source: '/settings', destination: '/index.html' },
+  ],
+};
+
+for (const url of ['/', '/learn/a01-where-ts-runs', '/settings/', '/sandbox', '/api/health?x=1', '/nope']) {
+  console.log(url.padEnd(26), routeRequest(site, url));
+}
+```
+:::
+
+:::variant{kind=wrong name=files-before-redirects fails=tests reason="先查文件再看重定向：已经搬走的地址上如果还留着文件，重定向就不起作用"}
+```ts file=route.ts
+import { matchPattern, type Params } from './pattern';
+
+export type Rule = { source: string; destination: string };
+export type Redirect = Rule & { permanent?: boolean };
+
+export type Deployment = {
+  /** 静态文件，例如 '/index.html'、'/assets/index-wktXvZw9.js' */
+  files: ReadonlySet<string>;
+  /** 函数的路径，例如 '/api'（api/index.ts） */
+  functions: ReadonlySet<string>;
+  redirects?: readonly Redirect[];
+  rewrites?: readonly Rule[];
+};
+
+export type Route =
+  | { kind: 'redirect'; status: 307 | 308; location: string }
+  | { kind: 'file'; path: string }
+  | { kind: 'function'; path: string; query: Record<string, string> }
+  | { kind: 'not-found' };
+
+/** 把 destination 中的 :名字*、:名字 换成参数的值 */
+function fill(destination: string, params: Params): string {
+  return destination.replace(/:(\w+)\*?/g, (whole, name: string) => params[name] ?? whole);
+}
+
+/** 在静态文件和函数中查找 path；找不到时返回 null */
+function resolve(deployment: Deployment, path: string, query: Record<string, string>): Route | null {
+  if (deployment.functions.has(path)) return { kind: 'function', path, query };
+  if (deployment.files.has(path)) return { kind: 'file', path };
+  // 文件夹中的 index.html：'/' → '/index.html'，'/sandbox' 和 '/sandbox/' → '/sandbox/index.html'
+  const index = `${path.endsWith('/') ? path : `${path}/`}index.html`;
+  if (deployment.files.has(index)) return { kind: 'file', path: index };
+  return null;
+}
+
+export function routeRequest(deployment: Deployment, url: string): Route {
+  const at = url.indexOf('?');
+  const pathname = at === -1 ? url : url.slice(0, at);
+  const search = at === -1 ? '' : url.slice(at);
+  const query = Object.fromEntries(new URLSearchParams(search));
+
+  // 2. 文件系统：存在的文件和函数优先于改写
+  const direct = resolve(deployment, pathname, query);
+  if (direct !== null) return direct;
+  for (const rule of deployment.redirects ?? []) {
+    const params = matchPattern(rule.source, pathname);
+    if (params !== null) return { kind: 'redirect', status: rule.permanent === false ? 307 : 308, location: fill(rule.destination, params) + search };
+  }
+  // 3. 改写：第一条匹配的规则；参数也作为查询参数交给函数
+  for (const rule of deployment.rewrites ?? []) {
+    const params = matchPattern(rule.source, pathname);
+    if (params !== null) return resolve(deployment, fill(rule.destination, params), { ...query, ...params }) ?? { kind: 'not-found' };
+  }
+  return { kind: 'not-found' };
+}
+```
+```ts file=main.ts
+import { routeRequest, type Deployment } from './route';
+
+const site: Deployment = {
+  files: new Set(['/index.html', '/favicon.svg', '/sandbox/index.html']),
+  functions: new Set(['/api']),
+  rewrites: [
+    { source: '/api/:path*', destination: '/api' },
+    { source: '/learn/:lessonId', destination: '/index.html' },
+    { source: '/settings', destination: '/index.html' },
+  ],
+};
+
+for (const url of ['/', '/learn/a01-where-ts-runs', '/settings/', '/sandbox', '/api/health?x=1', '/nope']) {
+  console.log(url.padEnd(26), routeRequest(site, url));
+}
+```
+:::
+
+:::variant{kind=wrong name=query-wins fails=tests reason="同名时用了请求的查询参数：?width=1 覆盖了路径中的 800"}
+```ts file=route.ts
+import { matchPattern, type Params } from './pattern';
+
+export type Rule = { source: string; destination: string };
+export type Redirect = Rule & { permanent?: boolean };
+
+export type Deployment = {
+  /** 静态文件，例如 '/index.html'、'/assets/index-wktXvZw9.js' */
+  files: ReadonlySet<string>;
+  /** 函数的路径，例如 '/api'（api/index.ts） */
+  functions: ReadonlySet<string>;
+  redirects?: readonly Redirect[];
+  rewrites?: readonly Rule[];
+};
+
+export type Route =
+  | { kind: 'redirect'; status: 307 | 308; location: string }
+  | { kind: 'file'; path: string }
+  | { kind: 'function'; path: string; query: Record<string, string> }
+  | { kind: 'not-found' };
+
+/** 把 destination 中的 :名字*、:名字 换成参数的值 */
+function fill(destination: string, params: Params): string {
+  return destination.replace(/:(\w+)\*?/g, (whole, name: string) => params[name] ?? whole);
+}
+
+/** 在静态文件和函数中查找 path；找不到时返回 null */
+function resolve(deployment: Deployment, path: string, query: Record<string, string>): Route | null {
+  if (deployment.functions.has(path)) return { kind: 'function', path, query };
+  if (deployment.files.has(path)) return { kind: 'file', path };
+  // 文件夹中的 index.html：'/' → '/index.html'，'/sandbox' 和 '/sandbox/' → '/sandbox/index.html'
+  const index = `${path.endsWith('/') ? path : `${path}/`}index.html`;
+  if (deployment.files.has(index)) return { kind: 'file', path: index };
+  return null;
+}
+
+export function routeRequest(deployment: Deployment, url: string): Route {
+  const at = url.indexOf('?');
+  const pathname = at === -1 ? url : url.slice(0, at);
+  const search = at === -1 ? '' : url.slice(at);
+  const query = Object.fromEntries(new URLSearchParams(search));
+
+  // 1. 重定向：在一切之前
+  for (const rule of deployment.redirects ?? []) {
+    const params = matchPattern(rule.source, pathname);
+    if (params !== null) return { kind: 'redirect', status: rule.permanent === false ? 307 : 308, location: fill(rule.destination, params) + search };
+  }
+  // 2. 文件系统：存在的文件和函数优先于改写
+  const direct = resolve(deployment, pathname, query);
+  if (direct !== null) return direct;
+  // 3. 改写：第一条匹配的规则；参数也作为查询参数交给函数
+  for (const rule of deployment.rewrites ?? []) {
+    const params = matchPattern(rule.source, pathname);
+    if (params !== null) return resolve(deployment, fill(rule.destination, params), { ...params, ...query }) ?? { kind: 'not-found' };
   }
   return { kind: 'not-found' };
 }

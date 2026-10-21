@@ -37,7 +37,7 @@
 
 ### 方式 B：本仓库作者实际使用的方式
 
-由于本次会话使用的 Vercel 连接器没有该账号团队作用域的完整权限，项目是通过 Vercel REST API 以“GitHub 源 + 指定提交”方式创建并部署的，**没有**建立自动部署的 Git 关联。要启用推送自动部署，可在 Vercel 控制台 → 项目 → Settings → Git 中连接 `mlt0727/typescript-workshop` 仓库。
+项目最初是通过 Vercel REST API 以“GitHub 源 + 指定提交”的方式创建并部署的。之后在 Vercel 控制台中连接了 `mlt0727/typescript-workshop` 仓库：现在每次推送到 `main` 都会自动部署到生产环境（2026-10-20 查看部署列表，每个部署都对应一个推送的提交）。
 
 ## 部署后如何验证
 

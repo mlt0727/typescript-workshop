@@ -89,7 +89,7 @@ for (const page of ['https://shop.example/', 'https://shop.example/products', 'h
 import { describe, expect, test } from 'vitest';
 import { assetUrls } from './assets';
 
-// vite build 实际生成的 index.html（base 为 / 和 ./ 时）
+// 和 vite build 生成的 index.html 结构相同（多了一个样式表；文件名中的哈希只是示意）
 const rootHtml = `<!doctype html>
 <html lang="zh-CN">
   <head>
@@ -141,6 +141,16 @@ describe('assetUrls', () => {
     ]);
   });
 
+  test('rel 可以有多个值；属性的顺序不限；空的地址不算；不同种类的同一个地址各算一次', () => {
+    const html = `<link href="/late.css" rel="stylesheet"><link rel="alternate stylesheet" title="大字" href="/big.css"><script src=""></script><link rel="modulepreload" href=""><script src="/shared"></script><link rel="stylesheet" href="/shared">`;
+    expect(assetUrls('https://shop.example/', html)).toEqual([
+      { kind: 'stylesheet', url: 'https://shop.example/late.css' },
+      { kind: 'stylesheet', url: 'https://shop.example/big.css' },
+      { kind: 'script', url: 'https://shop.example/shared' },
+      { kind: 'stylesheet', url: 'https://shop.example/shared' },
+    ]);
+  });
+
   test('没有引用任何资源时是空数组', () => {
     expect(assetUrls('https://shop.example/', '<p>你好</p>')).toEqual([]);
   });
@@ -164,7 +174,7 @@ expectTypeOf<Asset['kind']>().toEqualTypeOf<'script' | 'stylesheet'>();
 :::
 
 :::explanation
-这道题的核心只有一行：`new URL(地址, pageUrl)`。浏览器解析 HTML 中的每一个地址时，用的都是这个规则：
+这道题的核心只有一行：`new URL(地址, pageUrl)`。页面中没有 `<base href>` 时，浏览器解析 HTML 中的每一个地址，用的都是这个规则：
 
 - 以 `/` 开头：从网站的根开始，与页面在哪一层无关；
 - 以 `./` 开头（或者直接是 `assets/…`）：相对于页面所在的“文件夹”。`/products/205` 的文件夹是 `/products/`，`/products` 的文件夹是 `/`。所以 `base: './'` 在第一层的页面上正常，在第二层就错了；
@@ -345,6 +355,56 @@ export function assetUrls(pageUrl: string, html: string): Asset[] {
     } else {
       const rel = (attribute(tag, 'rel') ?? '').toLowerCase().split(/\s+/);
       kind = rel.includes('modulepreload') ? 'script' : 'stylesheet';
+      ref = attribute(tag, 'href');
+    }
+    if (kind === undefined || ref === undefined || ref.trim() === '') continue;
+    const url = new URL(ref.trim(), pageUrl);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') continue;
+    url.hash = '';
+    const href = url.href;
+    if (!assets.some((a) => a.kind === kind && a.url === href)) assets.push({ kind, url: href });
+  }
+  return assets;
+}
+```
+```ts file=main.ts
+import { assetUrls } from './assets';
+
+const html = '<script type="module" crossorigin src="./assets/index-BSa2dRPq.js"></script><link rel="stylesheet" href="./assets/index.css">';
+for (const page of ['https://shop.example/', 'https://shop.example/products', 'https://shop.example/products/205']) {
+  console.log(page.padEnd(34), assetUrls(page, html).map((a) => a.url));
+}
+```
+:::
+
+:::variant{kind=wrong name=rel-exact fails=tests reason="rel 只和 stylesheet 整个比较：alternate stylesheet 这样有多个值的 rel 没有找到"}
+```ts file=assets.ts
+export type Asset = { kind: 'script' | 'stylesheet'; url: string };
+
+/** 一个标签中某个属性的值（双引号或单引号） */
+function attribute(tag: string, name: string): string | undefined {
+  const match = new RegExp(`\\s${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'i').exec(tag);
+  return match === null ? undefined : (match[1] ?? match[2]);
+}
+
+/**
+ * 页面 pageUrl 的 HTML 中引用的脚本和样式表，按出现的顺序，解析成完整的地址。
+ * 只看 <script src> 和 rel 为 stylesheet、modulepreload 的 <link href>。
+ */
+export function assetUrls(pageUrl: string, html: string): Asset[] {
+  const assets: Asset[] = [];
+  for (const match of html.matchAll(/<(script|link)\b[^>]*>/gi)) {
+    const tag = match[0];
+    const name = (match[1] ?? '').toLowerCase();
+    let kind: Asset['kind'] | undefined;
+    let ref: string | undefined;
+    if (name === 'script') {
+      kind = 'script';
+      ref = attribute(tag, 'src');
+    } else {
+      const rel = (attribute(tag, 'rel') ?? '').toLowerCase();
+      if (rel === 'stylesheet') kind = 'stylesheet';
+      else if (rel === 'modulepreload') kind = 'script';
       ref = attribute(tag, 'href');
     }
     if (kind === undefined || ref === undefined || ref.trim() === '') continue;
