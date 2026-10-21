@@ -5,9 +5,9 @@ timeoutMs: 20000
 ---
 在 `json-store.ts` 中实现 `createJsonStore(fs, path, options)`：把一份数据保存在一个 JSON 文件中，适合只有一台服务器的小项目。`fs` 是注入的文件操作（真实的程序中传入 `node:fs/promises`，测试中是一个假的），失败时抛出的错误带有 `code`（例如 `'ENOENT'`）。
 
-1. `read()`：读取 `path`。文件不存在（`code` 是 `'ENOENT'`）时返回 `options.initial`；读取的其他错误原样抛出。内容不是合法的 JSON，或者 `options.parse(值)` 返回 `null` 时，抛出 `StoreCorruptError`（已经写好）：**不要**当作没有数据；
+1. `read()`：读取 `path`（不排队：写入是原子的，读到的总是完整的旧数据或者新数据）。文件不存在（`code` 是 `'ENOENT'`）时返回 `options.initial`；读取的其他错误原样抛出。内容不是合法的 JSON，或者 `options.parse(值)` 返回 `null` 时，抛出 `StoreCorruptError`（已经写好）：**不要**当作没有数据；
 2. `update(change)`：读出当前的数据（规则和 `read` 一样），用 `change` 算出新的数据，写入文件，返回新的数据；
-3. **排队**：所有的 `update` 按调用的顺序一个接一个地运行：前一个完成（不管成功还是失败）之后，后一个才开始读取。一个 `update` 失败（`change` 抛出错误、读取或写入失败）时，只有它自己的 Promise 失败，文件保持原样，后面的 `update` 照常进行；
+3. **排队**：所有的 `update` 按调用的顺序一个接一个地运行：前一个**整个**完成（包括 `rename`，不管成功还是失败）之后，后一个才开始读取。每个 `update` 都重新读取文件，不使用之前读到的数据。一个 `update` 失败（`change` 抛出错误、读取或写入失败）时，只有它自己的 Promise 失败，文件保持原样，后面的 `update` 照常进行；
 4. **原子地写入**：先把 `JSON.stringify(数据)` 写到 `path + '.tmp'`，再 `rename(path + '.tmp', path)`；不要直接写 `path`；
 5. **重试**：`rename` 失败并且 `code` 是 `'EPERM'` 或 `'EBUSY'` 时再试一次，最多一共试 4 次；其他的错误，或者 4 次都失败，把最后一次的错误交给调用方。
 
@@ -223,11 +223,11 @@ const errorWithCode = (code: string) => Object.assign(new Error(code), { code })
  * 内存中的假文件系统：每个操作都要等一会儿（像真的磁盘那样），并且记录下来。
  * fail 中可以安排某个操作在第几次调用时失败。
  */
-function fakeFs(files: Record<string, string> = {}) {
+function fakeFs(files: Record<string, string> = {}, renameDelay = 1) {
   const data = new Map(Object.entries(files));
   const log: string[] = [];
   const fail: { writeFile?: Error; rename?: Error[] } = {};
-  const tick = () => new Promise((resolve) => setTimeout(resolve, 1));
+  const tick = (ms = 1) => new Promise((resolve) => setTimeout(resolve, ms));
   const fs: FileSystem = {
     async readFile(path) {
       log.push(`read ${path}`);
@@ -244,7 +244,7 @@ function fakeFs(files: Record<string, string> = {}) {
     },
     async rename(from, to) {
       log.push(`rename ${from} -> ${to}`);
-      await tick();
+      await tick(renameDelay);
       const error = fail.rename?.shift();
       if (error !== undefined) throw error;
       const text = data.get(from);
@@ -311,6 +311,21 @@ describe('createJsonStore', () => {
     expect(data.get('data.json')).toBe('{"count":20}');
   });
 
+  test('rename 比读写慢：前一个修改 rename 完成之前，后一个修改不能开始读取', async () => {
+    const { fs, data } = fakeFs({}, 5);
+    const store = createJsonStore(fs, 'data.json', options);
+    await Promise.all(Array.from({ length: 5 }, () => store.update((c) => ({ count: c.count + 1 }))));
+    expect(data.get('data.json')).toBe('{"count":5}');
+  });
+
+  test('每次修改都重新读取文件：别的程序修改过的内容不会被旧的数据覆盖', async () => {
+    const { fs, data } = fakeFs({ 'data.json': '{"count":1}' });
+    const store = createJsonStore(fs, 'data.json', options);
+    await store.update((c) => ({ count: c.count + 1 }));
+    data.set('data.json', '{"count":100}');
+    expect(await store.update((c) => ({ count: c.count + 1 }))).toStrictEqual({ count: 101 });
+  });
+
   test('修改函数抛出错误：这次修改失败，文件不变，后面的修改照常进行', async () => {
     const { fs, data } = fakeFs({ 'data.json': '{"count":5}' });
     const store = createJsonStore(fs, 'data.json', options);
@@ -345,9 +360,11 @@ describe('createJsonStore', () => {
   test('rename 一直失败，或者是别的错误：不再重试，错误交给调用方', async () => {
     const { fs, fail, log } = fakeFs();
     const store = createJsonStore(fs, 'data.json', options);
-    fail.rename = [errorWithCode('EPERM'), errorWithCode('EPERM'), errorWithCode('EPERM'), errorWithCode('EPERM'), errorWithCode('EPERM')];
-    await expect(store.update(() => ({ count: 1 }))).rejects.toMatchObject({ code: 'EPERM' });
+    const last = errorWithCode('EPERM');
+    fail.rename = [errorWithCode('EPERM'), errorWithCode('EBUSY'), errorWithCode('EPERM'), last];
+    await expect(store.update(() => ({ count: 1 }))).rejects.toBe(last);
     expect(log.filter((line) => line.startsWith('rename'))).toHaveLength(4);
+    expect(await store.update(() => ({ count: 2 }))).toStrictEqual({ count: 2 });
 
     const other = fakeFs();
     other.fail.rename = [errorWithCode('EXDEV')];

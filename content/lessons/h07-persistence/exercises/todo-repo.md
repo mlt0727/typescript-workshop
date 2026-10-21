@@ -12,7 +12,8 @@ title: 带版本号的仓库
    - 修改之后的标题（去掉首尾的空白）和**另一条**待办重复：`{ ok: false, reason: 'duplicate' }`。版本先检查，重复后检查；
    - 否则写入：`patch` 中给出的字段替换原来的值，没有给出的不变，`version` 加一，返回新的待办；
 4. `remove(id, expectedVersion)`：和 `update` 一样检查是否存在和版本，成功时删除并返回 `{ ok: true, value: null }`；
-5. 返回的待办对象都是**冻结的**（`Object.freeze`），调用方不能通过它修改仓库中的数据；之后的修改也不能改变调用方已经拿到的对象（每个版本是一个新的对象）。`list()` 返回的数组也不是仓库内部的数组。
+5. **所有**返回的待办对象（`create`、`get`、`list`、`update` 的结果，以及冲突时的 `current`）都是**冻结的**（`Object.freeze`），调用方不能通过它修改仓库中的数据；之后的修改也不能改变调用方已经拿到的对象（每个版本是一个新的对象）。`list()` 返回的数组也不是仓库内部的数组，修改之后的待办仍然在原来的位置；
+6. 只有确定能创建时才调用 `newId()`：重复的标题不消耗 id。
 
 :::files{role=starter}
 ```ts file=todo-repo.ts
@@ -210,6 +211,41 @@ describe('createTodoRepo', () => {
     expect(repo.update('t2', 1, { title: '买牛奶' })).toMatchObject({ ok: false, reason: 'conflict' });
   });
 
+  test('比当前更新的版本也是冲突', () => {
+    const repo = setup();
+    repo.create('买牛奶');
+    expect(repo.update('t1', 5, { done: true })).toMatchObject({ ok: false, reason: 'conflict', current: { version: 1 } });
+  });
+
+  test('修改的标题也先去掉空白再检查重复；重复的标题不消耗 id', () => {
+    const repo = setup();
+    repo.create('买牛奶');
+    repo.create('写周报');
+    expect(repo.update('t2', 1, { title: ' 买牛奶 ' })).toStrictEqual({ ok: false, reason: 'duplicate' });
+    repo.create('买牛奶');
+    expect(repo.create('第三条')).toMatchObject({ ok: true, value: { id: 't3' } });
+  });
+
+  test('修改之后仍然按创建的顺序列出；删除冲突时带上当前的数据', () => {
+    const repo = setup();
+    repo.create('买牛奶');
+    repo.create('写周报');
+    repo.update('t1', 1, { done: true });
+    expect(repo.list().map((todo) => todo.id)).toStrictEqual(['t1', 't2']);
+    expect(repo.remove('t1', 1)).toStrictEqual({ ok: false, reason: 'conflict', current: { id: 't1', title: '买牛奶', done: true, version: 2 } });
+  });
+
+  test('所有返回的待办都是冻结的', () => {
+    const repo = setup();
+    const created = repo.create('买牛奶');
+    const updated = repo.update('t1', 1, { done: true });
+    const conflict = repo.update('t1', 1, { done: false });
+    expect(created.ok && Object.isFrozen(created.value)).toBe(true);
+    expect(updated.ok && Object.isFrozen(updated.value)).toBe(true);
+    expect(!conflict.ok && conflict.reason === 'conflict' && Object.isFrozen(conflict.current)).toBe(true);
+    expect(repo.list().every((todo) => Object.isFrozen(todo))).toBe(true);
+  });
+
   test('返回的对象不能用来绕过仓库修改数据', () => {
     const repo = setup();
     repo.create('买牛奶');
@@ -274,8 +310,10 @@ export function createTodoRepo(newId: () => string): TodoRepo {
 
   return {
     create(title) {
-      const row: Row = { id: newId(), title: title.trim(), done: false, version: 1 };
-      if (duplicate(row.title, undefined)) return { ok: false, reason: 'duplicate' };
+      const trimmed = title.trim();
+      if (duplicate(trimmed, undefined)) return { ok: false, reason: 'duplicate' };
+      // 确定能创建之后才取 id：重复的标题不消耗 id
+      const row: Row = { id: newId(), title: trimmed, done: false, version: 1 };
       rows.push(row);
       return { ok: true, value: snapshot(row) };
     },

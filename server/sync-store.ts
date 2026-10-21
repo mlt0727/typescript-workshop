@@ -49,11 +49,15 @@ export class FileStore implements SyncStore {
   }
 
   async get(): Promise<SyncDocument | null> {
+    let text: string;
     try {
-      return JSON.parse(await fs.readFile(this.file, 'utf8')) as SyncDocument;
-    } catch {
-      return null;
+      text = await fs.readFile(this.file, 'utf8');
+    } catch (error) {
+      // 只有“文件不存在”才是没有数据；其他错误（以及下面损坏的 JSON）抛出，不能被当成 revision 0 覆盖掉
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
+      throw error;
     }
+    return JSON.parse(text) as SyncDocument;
   }
 
   put(baseRevision: number, epoch: string, state: unknown): Promise<PutResult> {
@@ -63,7 +67,10 @@ export class FileStore implements SyncStore {
       if (baseRevision !== (current?.revision ?? 0)) return { ok: false, current };
       const doc: SyncDocument = { revision: baseRevision + 1, epoch, state, updatedAt: new Date().toISOString() };
       await fs.mkdir(path.dirname(this.file), { recursive: true });
-      await fs.writeFile(this.file, JSON.stringify(doc));
+      // 先写临时文件再 rename：读取的请求不会读到写了一半的文件（h07）
+      const temporary = `${this.file}.tmp`;
+      await fs.writeFile(temporary, JSON.stringify(doc));
+      await fs.rename(temporary, this.file);
       return { ok: true, doc };
     });
     this.queue = run.catch(() => {});

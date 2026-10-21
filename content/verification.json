@@ -10967,8 +10967,8 @@
       ]
     },
     "h07-persistence": {
-      "verifiedAt": "2026-10-21T16:34:17.850Z",
-      "sourceHash": "4b0ce1bb20c5ae42",
+      "verifiedAt": "2026-10-21T16:48:13.487Z",
+      "sourceHash": "255a91a9b4cc7d84",
       "ok": true,
       "checks": [
         {
@@ -10979,12 +10979,57 @@
         {
           "target": "playground:lost-update:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 同时修改 20 次： 3 | [log] 排队修改 20 次： 20"
+          "detail": "期望 done，实际 done；输出：[log] 同时修改 20 次： 4 | [log] 排队修改 20 次： 20"
+        },
+        {
+          "target": "exercise:todo-repo:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(createTodoRepo › 创建：版本从 1 开始，标题去掉首尾的空白，按创建的顺序列出 ⟶ expect(…).toStrictEqual({,createTodoRepo › 修改：版本一致才写入，版本加一，没有给出的字段不变 ⟶ expect(…).toStrictEqual({ ok: true, value: { id: 't1', title: '买牛奶', done: true, version: 2 } }),createTodoRepo › 两个人读到同一个版本：后提交的那个得到冲突和当前的数据，什么也没写入 ⟶ expect(…).toBe(true),createTodoRepo › 删除也要带上版本 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 标题不能重复（像 UNIQUE 约束）：创建和修改都检查，改成自己原来的标题可以 ⟶ expect(…).toStrictEqual({ ok: false, reason: 'duplicate' }),createTodoRepo › 先检查版本，再检查重复：过期的修改报告冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 比当前更新的版本也是冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict', current: { version: 1 } }),createTodoRepo › 修改的标题也先去掉空白再检查重复；重复的标题不消耗 id ⟶ expect(…).toStrictEqual({ ok: false, reason: 'duplicate' }),createTodoRepo › 修改之后仍然按创建的顺序列出；删除冲突时带上当前的数据 ⟶ expect(…).toStrictEqual([ 't1', 't2' ]),createTodoRepo › 所有返回的待办都是冻结的 ⟶ expect(…).toBe(true),createTodoRepo › 返回的对象不能用来绕过仓库修改数据 ⟶ expect(…).toHaveLength(1))"
+        },
+        {
+          "target": "exercise:todo-repo:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-repo:alt:frozen-copies",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:todo-repo:wrong:last-write-wins",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 两个人读到同一个版本：后提交的那个得到冲突和当前的数据，什么也没写入 ⟶ expect(…).toStrictEqual({,createTodoRepo › 删除也要带上版本 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 先检查版本，再检查重复：过期的修改报告冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 比当前更新的版本也是冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict', current: { version: 1 } }),createTodoRepo › 修改之后仍然按创建的顺序列出；删除冲突时带上当前的数据 ⟶ expect(…).toStrictEqual({,createTodoRepo › 所有返回的待办都是冻结的 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:todo-repo:wrong:unfrozen",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 所有返回的待办都是冻结的 ⟶ expect(…).toBe(true),createTodoRepo › 返回的对象不能用来绕过仓库修改数据 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:todo-repo:wrong:duplicate-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 先检查版本，再检查重复：过期的修改报告冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }))"
+        },
+        {
+          "target": "exercise:todo-repo:wrong:self-duplicate",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 修改：版本一致才写入，版本加一，没有给出的字段不变 ⟶ expect(…).toStrictEqual({ ok: true, value: { id: 't1', title: '买牛奶', done: true, version: 2 } }),createTodoRepo › 删除也要带上版本 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 标题不能重复（像 UNIQUE 约束）：创建和修改都检查，改成自己原来的标题可以 ⟶ expect(…).toMatchObject({ ok: true, value: { version: 2 } }),createTodoRepo › 先检查版本，再检查重复：过期的修改报告冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 修改之后仍然按创建的顺序列出；删除冲突时带上当前的数据 ⟶ expect(…).toStrictEqual({,createTodoRepo › 所有返回的待办都是冻结的 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:todo-repo:wrong:untrimmed-compare",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 标题不能重复（像 UNIQUE 约束）：创建和修改都检查，改成自己原来的标题可以 ⟶ expect(…).toStrictEqual({ ok: false, reason: 'duplicate' }))"
+        },
+        {
+          "target": "exercise:todo-repo:wrong:remove-ignores-version",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 删除也要带上版本 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 修改之后仍然按创建的顺序列出；删除冲突时带上当前的数据 ⟶ expect(…).toStrictEqual({)"
         },
         {
           "target": "exercise:json-store:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(createJsonStore › 读取：解析并校验 ⟶ expect(…).toStrictEqual({ count: 3 }),createJsonStore › 内容损坏或者不合法：StoreCorruptError，而不是当作没有数据 ⟶ {\"count\":,createJsonStore › 读取的其他错误原样抛出 ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：{ count: 0 },createJsonStore › 写入：先写临时文件 data.json.tmp，再 rename 成 data.json ⟶ expect(…).toStrictEqual([,createJsonStore › 20 次同时发出的修改：一个接一个，一次也不丢 ⟶ expect(…).toStrictEqual([,createJsonStore › 修改函数抛出错误：这次修改失败，文件不变，后面的修改照常进行 ⟶ expect(…).toStrictEqual({ count: 6 }),createJsonStore › 写临时文件失败：原来的文件完好，错误交给调用方，队列继续 ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：{ count: 1 },createJsonStore › rename 暂时失败（EPERM、EBUSY）：再试，最多一共 4 次 ⟶ expect(…).toHaveLength(4),createJsonStore › rename 一直失败，或者是别的错误：不再重试，错误交给调用方 ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：{ count: 1 },createJsonStore › 文件损坏时 update 也失败，不会用初始的内容覆盖它 ⟶ expect(…).toBeInstanceOf([class StoreCorruptError extends Error]))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(createJsonStore › 读取：解析并校验 ⟶ expect(…).toStrictEqual({ count: 3 }),createJsonStore › 内容损坏或者不合法：StoreCorruptError，而不是当作没有数据 ⟶ {\"count\":,createJsonStore › 读取的其他错误原样抛出 ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：{ count: 0 },createJsonStore › 写入：先写临时文件 data.json.tmp，再 rename 成 data.json ⟶ expect(…).toStrictEqual([,createJsonStore › 20 次同时发出的修改：一个接一个，一次也不丢 ⟶ expect(…).toStrictEqual([,createJsonStore › rename 比读写慢：前一个修改 rename 完成之前，后一个修改不能开始读取 ⟶ expect(…).toBe('{\"count\":5}'),createJsonStore › 每次修改都重新读取文件：别的程序修改过的内容不会被旧的数据覆盖 ⟶ expect(…).toStrictEqual({ count: 101 }),createJsonStore › 修改函数抛出错误：这次修改失败，文件不变，后面的修改照常进行 ⟶ expect(…).toStrictEqual({ count: 6 }),createJsonStore › 写临时文件失败：原来的文件完好，错误交给调用方，队列继续 ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：{ count: 1 },createJsonStore › rename 暂时失败（EPERM、EBUSY）：再试，最多一共 4 次 ⟶ expect(…).toHaveLength(4),createJsonStore › rename 一直失败，或者是别的错误：不再重试，错误交给调用方 ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：{ count: 1 },createJsonStore › 文件损坏时 update 也失败，不会用初始的内容覆盖它 ⟶ expect(…).toBeInstanceOf([class StoreCorruptError extends Error]))"
         },
         {
           "target": "exercise:json-store:solution:solution",
@@ -11004,12 +11049,12 @@
         {
           "target": "exercise:json-store:wrong:no-queue",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createJsonStore › 20 次同时发出的修改：一个接一个，一次也不丢 ⟶ Error: ENOENT)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createJsonStore › 20 次同时发出的修改：一个接一个，一次也不丢 ⟶ Error: ENOENT,createJsonStore › rename 比读写慢：前一个修改 rename 完成之前，后一个修改不能开始读取 ⟶ Error: ENOENT)"
         },
         {
           "target": "exercise:json-store:wrong:queue-stuck",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createJsonStore › 修改函数抛出错误：这次修改失败，文件不变，后面的修改照常进行 ⟶ Error: 不能修改,createJsonStore › 写临时文件失败：原来的文件完好，错误交给调用方，队列继续 ⟶ Error: ENOSPC)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createJsonStore › 修改函数抛出错误：这次修改失败，文件不变，后面的修改照常进行 ⟶ Error: 不能修改,createJsonStore › 写临时文件失败：原来的文件完好，错误交给调用方，队列继续 ⟶ Error: ENOSPC,createJsonStore › rename 一直失败，或者是别的错误：不再重试，错误交给调用方 ⟶ Error: EPERM)"
         },
         {
           "target": "exercise:json-store:wrong:reset-on-corrupt",
@@ -11019,7 +11064,7 @@
         {
           "target": "exercise:json-store:wrong:no-retry",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createJsonStore › rename 暂时失败（EPERM、EBUSY）：再试，最多一共 4 次 ⟶ Error: EPERM,createJsonStore › rename 一直失败，或者是别的错误：不再重试，错误交给调用方 ⟶ expect(…).toHaveLength(4))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createJsonStore › rename 暂时失败（EPERM、EBUSY）：再试，最多一共 4 次 ⟶ Error: EPERM,createJsonStore › rename 一直失败，或者是别的错误：不再重试，错误交给调用方 ⟶ expect(…).toBe(Error: EPERM { code: 'EPERM' }))"
         },
         {
           "target": "exercise:json-store:wrong:retry-everything",
@@ -11030,51 +11075,6 @@
           "target": "exercise:json-store:wrong:swallow-read-errors",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createJsonStore › 读取的其他错误原样抛出 ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：{ count: 0 })"
-        },
-        {
-          "target": "exercise:todo-repo:starter:starter",
-          "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(createTodoRepo › 创建：版本从 1 开始，标题去掉首尾的空白，按创建的顺序列出 ⟶ expect(…).toStrictEqual({,createTodoRepo › 修改：版本一致才写入，版本加一，没有给出的字段不变 ⟶ expect(…).toStrictEqual({ ok: true, value: { id: 't1', title: '买牛奶', done: true, version: 2 } }),createTodoRepo › 两个人读到同一个版本：后提交的那个得到冲突和当前的数据，什么也没写入 ⟶ expect(…).toBe(true),createTodoRepo › 删除也要带上版本 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 标题不能重复（像 UNIQUE 约束）：创建和修改都检查，改成自己原来的标题可以 ⟶ expect(…).toStrictEqual({ ok: false, reason: 'duplicate' }),createTodoRepo › 先检查版本，再检查重复：过期的修改报告冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 返回的对象不能用来绕过仓库修改数据 ⟶ expect(…).toHaveLength(1))"
-        },
-        {
-          "target": "exercise:todo-repo:solution:solution",
-          "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok"
-        },
-        {
-          "target": "exercise:todo-repo:alt:frozen-copies",
-          "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok"
-        },
-        {
-          "target": "exercise:todo-repo:wrong:last-write-wins",
-          "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 两个人读到同一个版本：后提交的那个得到冲突和当前的数据，什么也没写入 ⟶ expect(…).toStrictEqual({,createTodoRepo › 删除也要带上版本 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 先检查版本，再检查重复：过期的修改报告冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }))"
-        },
-        {
-          "target": "exercise:todo-repo:wrong:unfrozen",
-          "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 返回的对象不能用来绕过仓库修改数据 ⟶ expect(…).toBe(true))"
-        },
-        {
-          "target": "exercise:todo-repo:wrong:duplicate-first",
-          "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 先检查版本，再检查重复：过期的修改报告冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }))"
-        },
-        {
-          "target": "exercise:todo-repo:wrong:self-duplicate",
-          "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 修改：版本一致才写入，版本加一，没有给出的字段不变 ⟶ expect(…).toStrictEqual({ ok: true, value: { id: 't1', title: '买牛奶', done: true, version: 2 } }),createTodoRepo › 删除也要带上版本 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }),createTodoRepo › 标题不能重复（像 UNIQUE 约束）：创建和修改都检查，改成自己原来的标题可以 ⟶ expect(…).toMatchObject({ ok: true, value: { version: 2 } }),createTodoRepo › 先检查版本，再检查重复：过期的修改报告冲突 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }))"
-        },
-        {
-          "target": "exercise:todo-repo:wrong:untrimmed-compare",
-          "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 标题不能重复（像 UNIQUE 约束）：创建和修改都检查，改成自己原来的标题可以 ⟶ expect(…).toStrictEqual({ ok: false, reason: 'duplicate' }))"
-        },
-        {
-          "target": "exercise:todo-repo:wrong:remove-ignores-version",
-          "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createTodoRepo › 删除也要带上版本 ⟶ expect(…).toMatchObject({ ok: false, reason: 'conflict' }))"
         }
       ]
     },
