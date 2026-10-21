@@ -10838,6 +10838,88 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(无法访问存储（用户阻止了网站存储数据）：照常启动，说明原因，不再尝试保存 ⟶ SecurityError: The operation is insecure.)"
         }
       ]
+    },
+    "p1-06-local-project": {
+      "verifiedAt": "2026-10-21T00:48:31.427Z",
+      "sourceHash": "51463251ecc5a28a",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:blob:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:blob:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 237 application/json 227 | [log] true | [log] true"
+        },
+        {
+          "target": "exercise:export-markdown:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(boardToMarkdown › 示例数据：三列依次排列，标题后面是标签 ⟶ expect(…).toBe('# 任务板\\n\\n## 待办（2）\\n\\n- 写周报 #工作\\n- Read the TS Handbook #学习 #工作\\n\\n## 进行中（1）\\n\\n- 修自行车 #家\\n\\n## 已完成（1）\\n\\n- 买牛奶 #家\\n'),boardToMarkdown › 空的任务板：每一列都写出“（没有任务）” ⟶ expect(…).toBe('# 任务板\\n\\n## 待办（0）\\n\\n（没有任务）\\n\\n## 进行中（0）\\n\\n（没有任务）\\n\\n## 已完成（0）\\n\\n（没有任务）\\n'),boardToMarkdown › 只有一列有任务时，其他列仍然写出来 ⟶ expect(…).toContain('## 待办（0）\\n\\n（没有任务）\\n\\n## 进行中（0）\\n\\n（没有任务）\\n\\n## 已完成（1）\\n\\n- 收尾\\n'),boardToMarkdown › 任务的顺序与任务板上相同：按创建时间，时间相同时按编号中的数字 ⟶ expect(…).toContain('## 待办（3）\\n\\n- 先建的\\n- 同时建的\\n- 后建的\\n'),boardToMarkdown › 转义 Markdown 的特殊字符；标签保持原来的顺序 ⟶ expect(…).toContain('- \\\\*\\\\*重要\\\\*\\\\* \\\\<b\\\\> a\\\\_b \\\\[链接\\\\](x) \\\\`代码\\\\` C:\\\\\\\\temp \\\\#1 #c\\\\# #\\\\_x\\n'),boardToMarkdown › 结尾正好是一个换行 ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:export-markdown:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:export-markdown:alt:map-sections",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:export-markdown:wrong:no-escape",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(boardToMarkdown › 转义 Markdown 的特殊字符；标签保持原来的顺序 ⟶ expect(…).toContain('- \\\\*\\\\*重要\\\\*\\\\* \\\\<b\\\\> a\\\\_b \\\\[链接\\\\](x) \\\\`代码\\\\` C:\\\\\\\\temp \\\\#1 #c\\\\# #\\\\_x\\n'))"
+        },
+        {
+          "target": "exercise:export-markdown:wrong:array-order",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(boardToMarkdown › 任务的顺序与任务板上相同：按创建时间，时间相同时按编号中的数字 ⟶ expect(…).toContain('## 待办（3）\\n\\n- 先建的\\n- 同时建的\\n- 后建的\\n'))"
+        },
+        {
+          "target": "exercise:export-markdown:wrong:skip-empty",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(boardToMarkdown › 空的任务板：每一列都写出“（没有任务）” ⟶ expect(…).toBe('# 任务板\\n\\n## 待办（0）\\n\\n（没有任务）\\n\\n## 进行中（0）\\n\\n（没有任务）\\n\\n## 已完成（0）\\n\\n（没有任务）\\n'),boardToMarkdown › 只有一列有任务时，其他列仍然写出来 ⟶ expect(…).toContain('## 待办（0）\\n\\n（没有任务）\\n\\n## 进行中（0）\\n\\n（没有任务）\\n\\n## 已完成（1）\\n\\n- 收尾\\n'))"
+        },
+        {
+          "target": "exercise:import-export:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(导出 › 导出 JSON：内容、类型和文件名；状态中说明导出了几个任务 ⟶ expect(…).toEqual([ { href: 'blob:test/1', download: 'taskboard.json' } ]),导出 › 导出 Markdown：内容、类型和文件名 ⟶ expect(…).toEqual([ { href: 'blob:test/1', download: 'taskboard.md' } ]),导出 › 导出的是当前的任务板；下载之后释放 object URL ⟶ expect(…).toEqual([ '写周报', '修自行车', '买牛奶', 'Read the TS Handbook', '买面包' ]),导入 › 确认之后替换任务板并保存；状态中说明导入了几个任务 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已导入 1 个任务. This could be because the text is broken up by multiple elements. In this case, ,导入 › 旧版本的数据：转换之后导入，并说明 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已导入 1 个任务（已从旧版本的格式转换）. This could be because the text is broken up by multiple elements. In,导入 › 取消：任务板不变，也不保存 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已取消导入. This could be because the text is broken up by multiple elements. In this case, you ,导入 › 无效的文件：说明原因，不询问、不替换 ⟶ TestingLibraryElementError: Unable to find an element with the text: 导入失败：JSON 格式不正确. This could be because the text is broken up by multiple elements. In this ,导入 › 超过 1 MB 的文件不读取；正好 1 MB 可以导入 ⟶ TestingLibraryElementError: Unable to find an element with the text: 导入失败：文件太大（最多 1 MB）. This could be because the text is broken up by multiple elements. In th,导入 › 导入之后清空输入框：同一个文件可以再选一次 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已取消导入. This could be because the text is broken up by multiple elements. In this case, you )"
+        },
+        {
+          "target": "exercise:import-export:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:import-export:alt:format-table",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:import-export:wrong:skips-confirm",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导入 › 确认之后替换任务板并保存；状态中说明导入了几个任务 ⟶ expect(…).toHaveBeenCalledWith('用文件中的 1 个任务替换当前的任务板吗？'),导入 › 取消：任务板不变，也不保存 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已取消导入. This could be because the text is broken up by multiple elements. In this case, you ,导入 › 超过 1 MB 的文件不读取；正好 1 MB 可以导入 ⟶ expect(…).toHaveBeenCalledTimes(1),导入 › 导入之后清空输入框：同一个文件可以再选一次 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已取消导入. This could be because the text is broken up by multiple elements. In this case, you )"
+        },
+        {
+          "target": "exercise:import-export:wrong:no-reset",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导入 › 导入之后清空输入框：同一个文件可以再选一次 ⟶ expect(…).toHaveProperty('value', ''))"
+        },
+        {
+          "target": "exercise:import-export:wrong:reads-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导入 › 超过 1 MB 的文件不读取；正好 1 MB 可以导入 ⟶ expect(…).not.toHaveBeenCalled())"
+        },
+        {
+          "target": "exercise:import-export:wrong:boundary",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导入 › 超过 1 MB 的文件不读取；正好 1 MB 可以导入 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已导入 1 个任务. This could be because the text is broken up by multiple elements. In this case, )"
+        }
+      ]
     }
   }
 }

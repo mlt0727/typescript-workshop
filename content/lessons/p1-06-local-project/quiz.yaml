@@ -1,0 +1,44 @@
+- id: revoke
+  type: single
+  prompt: "导出时用 `URL.createObjectURL(blob)` 得到了一个 `blob:` 地址，点击链接开始下载。之后为什么还要调用 `URL.revokeObjectURL(url)`？"
+  options:
+    - text: 这个地址让 Blob 一直留在内存中，直到页面关闭；释放之后 Blob 才能被回收
+      correct: true
+      explain: 每导出一次就多一个 Blob，不释放的话它们一直占着内存。
+    - text: 不释放的话，下载的文件会损坏
+      explain: 文件的内容与是否释放无关；释放得太早（下载还没开始）反而可能让下载失败。
+    - text: 不释放的话，别的网站也能通过这个地址读取数据
+      explain: blob 地址只在创建它的页面（同一个来源）中有效，别的网站不能使用它。
+- id: accept
+  type: single
+  prompt: "导入的输入框写了 `accept=\".json,application/json\"`。关于它，下面哪个说法正确？"
+  options:
+    - text: 它只让文件选择框优先显示这些类型，用户仍然可以选择其他文件，代码中还要检查大小和内容
+      correct: true
+      explain: accept 是给文件选择框的提示，不是验证；文件的内容永远要自己检查。
+    - text: 有了它，选择的文件一定是有效的 JSON，可以直接 JSON.parse 后使用
+      explain: 文件名以 .json 结尾，不代表内容是有效的 JSON，更不代表它是任务板的数据。
+    - text: 有了它，浏览器会拒绝超过 1 MB 的文件
+      explain: accept 与文件的大小无关。
+- id: same-file
+  type: single
+  prompt: 用户选择了一个文件，在确认框中点了“取消”，然后又选择了同一个文件，却什么也没有发生。最可能的原因是什么？
+  options:
+    - text: 第一次选择之后没有清空输入框的 value，输入框的值没有变化，不会再触发 change 事件
+      correct: true
+      explain: 每次处理完之后（或者取出文件之后）把 value 设为空字符串。
+    - text: 浏览器不允许同一个文件被读取两次
+      explain: 同一个文件可以读取任意多次。
+    - text: confirm 被取消之后，页面上的所有监听器都被移除了
+      explain: confirm 的结果不会影响监听器。
+- id: confirm-order
+  type: single
+  prompt: 导入时，什么时候请用户确认最合适？
+  options:
+    - text: 文件通过验证之后、替换任务板之前，并告诉用户文件中有几个任务
+      correct: true
+      explain: 坏文件直接说明原因，不需要询问；好文件告诉用户里面有什么，用户才能判断是不是选对了。
+    - text: 用户选择文件之前，先问“确定要导入吗”
+      explain: 这时用户还不知道文件中有什么，这个问题提供不了任何信息。
+    - text: 替换之后再问“要保留这次导入吗”
+      explain: 那样就需要实现“撤销”；而且替换时已经保存，取消时还要恢复原来的数据。

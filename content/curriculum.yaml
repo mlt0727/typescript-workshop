@@ -160,7 +160,7 @@ stages:
       - { id: p1-03-edit-delete, title: 项目 1·任务板：编辑与删除（事件委托）, status: published, prerequisites: [p1-02-render-and-add] }
       - { id: p1-04-filters, title: 项目 1·任务板：过滤与 URL 状态, status: published, prerequisites: [p1-03-edit-delete, e10-url-routing] }
       - { id: p1-05-persistence, title: 项目 1·任务板：持久化与数据校验, status: published, prerequisites: [p1-04-filters, e09-storage-serialization] }
-      - { id: p1-06-local-project, title: 项目 1·任务板：本地工程、测试与导出, status: planned, prerequisites: [p1-05-persistence, f08-dom-tests] }
+      - { id: p1-06-local-project, title: 项目 1·任务板：本地工程、测试与导出, status: draft, prerequisites: [p1-05-persistence, f08-dom-tests] }
       - { id: i01-static-vs-server, title: 静态站点与服务端应用的区别, status: planned, prerequisites: [f12-build-ci] }
       - { id: i02-deploy-static, title: 部署静态站点：构建、路由刷新与资源路径, status: planned, prerequisites: [i01-static-vs-server] }
       - { id: p2-01-plan-and-types, title: 项目 2·项目面板：需求与类型模型, status: planned, prerequisites: [g08-custom-hooks] }
