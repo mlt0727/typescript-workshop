@@ -11078,6 +11078,118 @@
         }
       ]
     },
+    "h08-env-config": {
+      "verifiedAt": "2026-10-21T16:43:36.113Z",
+      "sourceHash": "cd6f02812d674f16",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:build-time-inline:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:build-time-inline:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] setup(\"hello-from-env\", undefined); | [log] false false"
+        },
+        {
+          "target": "exercise:env-files:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({,resolveEnv › 开发环境：读 .env.development，不读 .env.production ⟶ expect(…).toBe('.env.local'),resolveEnv › 测试环境：不读 .env.local，读 .env.test 和 .env.test.local ⟶ expect(…).toBe('.env.test'),resolveEnv › 解析：空行、注释、空白、不合格式的行 ⟶ expect(…).toStrictEqual({ A: '1', B: '', C: 'a=b' }),resolveEnv › 引号：双引号中的 \\n 是换行；单引号中的内容原样保留，不展开 ⟶ expect(…).toStrictEqual({,resolveEnv › 展开：$NAME 和 ${NAME}，用的是最终的值；不存在的是空字符串；\\$ 是 $ ⟶ expect(…).toStrictEqual({,resolveEnv › 展开只做一层；来自 process.env 的值原样使用 ⟶ expect(…).toStrictEqual({ A: '$C', B: '$NOT_EXPANDED', C: '$NOT_EXPANDED', D: '$B' }),resolveEnv › 只包含文件中出现过的变量 ⟶ expect(…).toStrictEqual({ A: '2' }))"
+        },
+        {
+          "target": "exercise:env-files:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:env-files:alt:first-found-wins",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:env-files:wrong:local-before-mode-local",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:env-files:wrong:local-in-test",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 测试环境：不读 .env.local，读 .env.test 和 .env.test.local ⟶ expect(…).toBe('.env.test'))"
+        },
+        {
+          "target": "exercise:env-files:wrong:files-over-process",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({,resolveEnv › 展开只做一层；来自 process.env 的值原样使用 ⟶ expect(…).toStrictEqual({ A: '$C', B: '$NOT_EXPANDED', C: '$NOT_EXPANDED', D: '$B' }),resolveEnv › 只包含文件中出现过的变量 ⟶ expect(…).toStrictEqual({ A: '2' }))"
+        },
+        {
+          "target": "exercise:env-files:wrong:expand-single-quotes",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 引号：双引号中的 \\n 是换行；单引号中的内容原样保留，不展开 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:env-files:wrong:no-escape",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({,resolveEnv › 展开：$NAME 和 ${NAME}，用的是最终的值；不存在的是空字符串；\\$ 是 $ ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:env-files:wrong:keep-inline-comment",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 引号：双引号中的 \\n 是换行；单引号中的内容原样保留，不展开 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:inline-env:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(inlinePublicEnv › 浏览器：NEXT_PUBLIC_ 换成构建时的值（JSON 字符串），其他的变量换成 undefined ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 值中的引号和换行用 JSON 的写法转义；没有设置的 NEXT_PUBLIC_ 变量是 undefined ⟶ expect(…).toBe('a(\"say \\\\\"hi\\\\\"\\\\n\"); b(undefined);'),inlinePublicEnv › 服务器：NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效），其他的变量留到运行时读取 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 字符串字面量的下标和点的写法一样 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 浏览器中只剩 process.env 本身（动态的读取、解构）：换成 ({})，并且计数 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › inlined 按名字排序，同一个变量只出现一次 ⟶ expect(…).toStrictEqual([ 'NEXT_PUBLIC_A', 'NEXT_PUBLIC_Z' ]),inlinePublicEnv › 替换之后可以继续访问属性 ⟶ expect(…).toBe('\"hello-from-env\".length'))"
+        },
+        {
+          "target": "exercise:inline-env:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:inline-env:alt:index-scan",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:inline-env:wrong:server-not-inlined",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 服务器：NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效），其他的变量留到运行时读取 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:inline-env:wrong:keep-secret-in-browser",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 浏览器：NEXT_PUBLIC_ 换成构建时的值（JSON 字符串），其他的变量换成 undefined ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 字符串字面量的下标和点的写法一样 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:inline-env:wrong:dot-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 字符串字面量的下标和点的写法一样 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 浏览器中只剩 process.env 本身（动态的读取、解构）：换成 ({})，并且计数 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:inline-env:wrong:raw-value",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 浏览器：NEXT_PUBLIC_ 换成构建时的值（JSON 字符串），其他的变量换成 undefined ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 值中的引号和换行用 JSON 的写法转义；没有设置的 NEXT_PUBLIC_ 变量是 undefined ⟶ expect(…).toBe('a(\"say \\\\\"hi\\\\\"\\\\n\"); b(undefined);'),inlinePublicEnv › 服务器：NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效），其他的变量留到运行时读取 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 字符串字面量的下标和点的写法一样 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 替换之后可以继续访问属性 ⟶ expect(…).toBe('\"hello-from-env\".length'))"
+        },
+        {
+          "target": "exercise:inline-env:wrong:no-boundary",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 只认独立的 process.env：更长的名字、对象的属性都不算 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:inline-env:wrong:bare-on-server",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 服务器：NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效），其他的变量留到运行时读取 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:inline-env:wrong:braces-without-parens",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 浏览器中只剩 process.env 本身（动态的读取、解构）：换成 ({})，并且计数 ⟶ expect(…).toStrictEqual({)"
+        }
+      ]
+    },
     "i01-static-vs-server": {
       "verifiedAt": "2026-10-21T02:16:04.710Z",
       "sourceHash": "369fce9321180dab",

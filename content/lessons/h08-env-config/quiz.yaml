@@ -1,0 +1,44 @@
+- id: load-order
+  type: single
+  prompt: "生产环境中，`API_URL` 同时写在 `.env`、`.env.local` 和 `.env.production` 中，部署平台上没有设置它。生效的是哪一个？"
+  options:
+    - text: "`.env.local`"
+      correct: true
+      explain: 顺序是 process.env、.env.production.local、.env.local、.env.production、.env；实测 .env.local 胜过 .env.production。
+    - text: "`.env.production`"
+      explain: .env.production 的优先级低于 .env.local。
+    - text: "`.env`"
+      explain: .env 的优先级最低，只是默认值。
+- id: public-runtime
+  type: single
+  prompt: "`NEXT_PUBLIC_API_URL` 在构建时是 `https://staging.example.com`。部署之后，在部署平台上把它改成 `https://api.example.com` 并重启（没有重新构建）。浏览器中的代码读到什么？"
+  options:
+    - text: "仍然是 `https://staging.example.com`：它在构建时已经写进了代码"
+      correct: true
+      explain: 实测用新的值启动构建好的服务器，浏览器和服务器的代码中读到的都还是构建时的值。要生效必须重新构建。
+    - text: "`https://api.example.com`：重启之后读取新的值"
+      explain: 浏览器中根本没有环境变量，读到的是构建时写进代码的字符串。
+    - text: "`undefined`：重启之后变量丢了"
+      explain: 构建时的值已经在代码中了，不会丢。
+- id: secret-public
+  type: single
+  prompt: 一个开发者把 Stripe 的密钥放在 `NEXT_PUBLIC_STRIPE_SECRET` 中，只在一个服务端组件中使用它。会怎样？
+  options:
+    - text: 只要有任何一处会被发给浏览器的代码读取它，它的值就在 JavaScript 中；即使现在没有，这也是一个危险的命名
+      correct: true
+      explain: NEXT_PUBLIC_ 的意思是“可以公开”。密钥用没有前缀的名字，只在服务器上读取。
+    - text: 没有问题，服务端组件的代码不会发给浏览器
+      explain: 这一处确实不会，但这个前缀让任何一个客户端组件都能把它带进浏览器的代码，而且构建时就写死了。
+    - text: Next.js 会拒绝构建
+      explain: Next.js 不知道这个值是不是密钥，不会报错。
+- id: dynamic-browser
+  type: single
+  prompt: 客户端组件中写了 `process.env[key]`，`key` 来自用户的选择。浏览器中读到什么？
+  options:
+    - text: "`undefined`：浏览器中的 process.env 是一个空对象，只有直接写出的 `process.env.NEXT_PUBLIC_X` 会被替换"
+      correct: true
+      explain: 实测 `Object.keys(process.env)` 是 `[]`，用运行时才确定的名字读不到任何值。
+    - text: 对应的 NEXT_PUBLIC_ 变量的值
+      explain: 构建时不知道 key 是什么，没有办法替换。
+    - text: 所有的环境变量都可以读到
+      explain: 如果是这样，服务器上的密钥就全部泄漏了。
