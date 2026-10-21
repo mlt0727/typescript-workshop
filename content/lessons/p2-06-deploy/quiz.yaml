@@ -1,0 +1,44 @@
+- id: which-way
+  type: single
+  prompt: 项目面板要部署到 Vercel。下面哪种做法最合适？
+  options:
+    - text: 为路由表中的每个页面写一条改写到 index.html 的规则，最好从路由表生成或者用测试检查
+      correct: true
+      explain: 页面的地址都是 200，找不到的地址仍然是 404。
+    - text: 用 404.html 跳转到首页
+      explain: 能配置改写的平台不需要这种绕路的做法：第一次的状态码是 404，还要多跳转一次。
+    - text: 写一条 /(.*) → /index.html 的规则
+      explain: 能用，但找不到的资源和拼错的地址也都变成了 200 和一个网页，问题被掩盖了。
+- id: splat
+  type: single
+  prompt: "路由表中有一个 `{ path: '*' }` 显示“页面不存在”。生成 vercel.json 的改写规则时，为什么不为它生成一条？"
+  options:
+    - text: 它代表“其他所有地址”，这些地址应该由平台返回真正的 404，而不是 200 和 index.html
+      correct: true
+      explain: 浏览器中的路由仍然会在 404 页面中显示“页面不存在”。
+    - text: vercel.json 不支持 * 这个字符
+      explain: vercel.json 有自己的写法（:path* 或 (.*)），但这不是不生成的原因。
+    - text: 生成了也没有作用，因为文件优先于改写
+      explain: “其他所有地址”大多不是文件，规则会生效，这正是问题所在。
+- id: open-redirect
+  type: single
+  prompt: "GitHub Pages 的首页读出地址中的 `p`，直接执行 `location.replace(base + p)`。为什么这样不安全？"
+  options:
+    - text: 任何人都可以构造 p，让它解析成另一个网站（例如以 / 开头时得到 //evil.example），这是开放重定向
+      correct: true
+      explain: 先用 URL 解析 base + p，再检查 origin 和 pathname。
+    - text: location.replace 会新增一条历史记录
+      explain: replace 正好不新增历史记录；问题在于目标可能是别的网站。
+    - text: p 中的中文会乱码
+      explain: URLSearchParams 会正确地编码和解码；安全问题和编码无关。
+- id: status-event
+  type: single
+  prompt: "工作流写成 `on: status`，在 Vercel 部署成功之后运行冒烟测试。这个工作流文件必须放在哪里才会被触发？"
+  options:
+    - text: 仓库默认分支上的 .github/workflows/ 中
+      correct: true
+      explain: GitHub 的文档：status 事件只认默认分支上的工作流文件。
+    - text: 任何一个分支都可以，只要那个分支被部署了
+      explain: status 事件不看被部署的分支上的工作流文件。
+    - text: Vercel 项目的设置中
+      explain: 工作流是 GitHub Actions 的，在仓库中。

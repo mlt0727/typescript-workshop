@@ -11594,6 +11594,98 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(服务器拒绝之后，复选框保持点击之后的状态 ⟶ expect(…).not.toBeChecked())"
         }
       ]
+    },
+    "p2-06-deploy": {
+      "verifiedAt": "2026-10-21T06:32:29.877Z",
+      "sourceHash": "88f43a0a272b9fcf",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:tricky-urls:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:tricky-urls:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] /projects                    同一个网站 /projects | [log] //evil.example/x             另一个网站 https://evil.example /x | [log] /\\evil.example               另一个网站 https://evil.example / | [log] /shop/../admin               同一个网站 /admin | [log] /shop/%2e%2e/admin           同一个网站 /admin | [log] /shop/https://evil.example   同一个网站 /shop/https://evil.example"
+        },
+        {
+          "target": "exercise:route-rewrites:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(routePatterns › 项目面板的全部页面 ⟶ expect(…).toEqual([,routePatterns › index 路由的地址就是父路由的地址 ⟶ expect(…).toEqual([ '/docs', '/docs/intro' ]),routePatterns › 没有 path 的布局路由：子路由直接接在上一级的地址后面 ⟶ expect(…).toEqual([ '/settings', '/about' ]),routePatterns › 结尾的 / 不影响结果 ⟶ expect(…).toEqual([ '/shop/cart', '/shop/items/:id' ]),routePatterns › 带 * 的路由不算页面，它的子路由也不算 ⟶ expect(…).toEqual([ '/a' ]),routePatterns › 重复的地址只算一次，保留第一次出现的位置 ⟶ expect(…).toEqual([ '/a', '/b' ]),routePatterns › 没有子路由的空数组也当作页面 ⟶ expect(…).toEqual([ '/empty' ]),vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:route-rewrites:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:route-rewrites:alt:generator-and-set",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:route-rewrites:wrong:keep-splat",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 项目面板的全部页面 ⟶ expect(…).toEqual([,routePatterns › 带 * 的路由不算页面，它的子路由也不算 ⟶ expect(…).toEqual([ '/a' ]),vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([,vercelRewrites › 只有首页时不需要改写 ⟶ expect(…).toEqual([]))"
+        },
+        {
+          "target": "exercise:route-rewrites:wrong:layout-as-page",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 没有 path 的布局路由：子路由直接接在上一级的地址后面 ⟶ expect(…).toEqual([ '/settings', '/about' ]),routePatterns › 结尾的 / 不影响结果 ⟶ expect(…).toEqual([ '/shop/cart', '/shop/items/:id' ]))"
+        },
+        {
+          "target": "exercise:route-rewrites:wrong:no-dedupe",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 重复的地址只算一次，保留第一次出现的位置 ⟶ expect(…).toEqual([ '/a', '/b' ]))"
+        },
+        {
+          "target": "exercise:route-rewrites:wrong:root-rewrite",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([,vercelRewrites › 只有首页时不需要改写 ⟶ expect(…).toEqual([]))"
+        },
+        {
+          "target": "exercise:route-rewrites:wrong:concat",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routePatterns › 项目面板的全部页面 ⟶ expect(…).toEqual([,routePatterns › 没有 path 的布局路由：子路由直接接在上一级的地址后面 ⟶ expect(…).toEqual([ '/settings', '/about' ]),routePatterns › 结尾的 / 不影响结果 ⟶ expect(…).toEqual([ '/shop/cart', '/shop/items/:id' ]),routePatterns › 重复的地址只算一次，保留第一次出现的位置 ⟶ expect(…).toEqual([ '/a', '/b' ]),vercelRewrites › 除了首页，每个页面都改写到 index.html ⟶ expect(…).toEqual([,vercelRewrites › 只有首页时不需要改写 ⟶ expect(…).toEqual([]))"
+        },
+        {
+          "target": "exercise:pages-redirect:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(redirectTarget：404.html 中 › 转到应用的首页，原来的地址放在查询参数 p 中 ⟶ expect(…).toBe(true),redirectTarget：404.html 中 › 查询参数和片段也一起带上，并且正确地编码 ⟶ expect(…).toBe('projects?status=active&q=a+b#list'),restoredPath：index.html 中 › 恢复路径、查询和片段 ⟶ expect(…).toBe('/shop/projects/p1?x=1#top'),restoredPath：index.html 中 › 来回一趟，地址完全不变 ⟶ /shop/projects/p1,restoredPath：不安全的地址 › 看起来像网址、其实只是应用中的一个路径：可以 ⟶ expect(…).toBe('/shop/https://evil.example'))"
+        },
+        {
+          "target": "exercise:pages-redirect:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pages-redirect:alt:encode-uri-component",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:pages-redirect:wrong:no-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(restoredPath：不安全的地址 › 其他网站的地址：null ⟶ //evil.example 是另一个网站,restoredPath：不安全的地址 › 离开应用所在的路径：null ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:pages-redirect:wrong:string-check",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(restoredPath：不安全的地址 › 其他网站的地址：null ⟶ /\\evil.example 也会被当作 //evil.example,restoredPath：不安全的地址 › 离开应用所在的路径：null ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:pages-redirect:wrong:no-hash",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(redirectTarget：404.html 中 › 查询参数和片段也一起带上，并且正确地编码 ⟶ expect(…).toBe('projects?status=active&q=a+b#list'),restoredPath：index.html 中 › 来回一趟，地址完全不变 ⟶ /shop/projects?status=active&q=a+b&sort=name#list)"
+        },
+        {
+          "target": "exercise:pages-redirect:wrong:no-encode",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(redirectTarget：404.html 中 › 查询参数和片段也一起带上，并且正确地编码 ⟶ expect(…).toBe('projects?status=active&q=a+b#list'),restoredPath：index.html 中 › 来回一趟，地址完全不变 ⟶ /shop/projects?status=active&q=a+b&sort=name#list)"
+        }
+      ]
     }
   }
 }
