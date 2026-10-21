@@ -248,7 +248,7 @@ const draft = (changes: Partial<ProjectDraft>): ProjectDraft => ({ name: '季度
 
 describe('通过校验', () => {
   test('去掉首尾空白，没有截止日期时是 null', () => {
-    expect(validateProject(draft({ name: '  季度报告 ', owner: ' 阿明 ' }), creating)).toEqual({
+    expect(validateProject(draft({ name: '  季度报告 ', owner: ' 阿明 ' }), creating)).toStrictEqual({
       ok: true,
       value: { name: '季度报告', owner: '阿明', dueDate: null },
     });
@@ -256,7 +256,7 @@ describe('通过校验', () => {
 
   test('截止日期是今天或以后', () => {
     for (const dueDate of [TODAY, '2026-10-21', '2028-02-29', '2027-01-01']) {
-      expect(validateProject(draft({ dueDate }), creating), dueDate).toEqual({ ok: true, value: { name: '季度报告', owner: '阿明', dueDate } });
+      expect(validateProject(draft({ dueDate }), creating), dueDate).toStrictEqual({ ok: true, value: { name: '季度报告', owner: '阿明', dueDate } });
     }
   });
 
@@ -267,57 +267,57 @@ describe('通过校验', () => {
 
 describe('名称和负责人', () => {
   test('没有填写：同时返回两个错误', () => {
-    expect(validateProject({ name: '', owner: '', dueDate: '' }, creating)).toEqual({
+    expect(validateProject({ name: '', owner: '', dueDate: '' }, creating)).toStrictEqual({
       ok: false,
       errors: { name: '请输入项目名称', owner: '请输入负责人' },
     });
   });
 
   test('只有空白也算没有填写', () => {
-    expect(validateProject(draft({ name: '   ', owner: '\t' }), creating)).toEqual({
+    expect(validateProject(draft({ name: '   ', owner: '\t' }), creating)).toStrictEqual({
       ok: false,
       errors: { name: '请输入项目名称', owner: '请输入负责人' },
     });
   });
 
   test('名称超过 40 个字符', () => {
-    expect(validateProject(draft({ name: '项'.repeat(41) }), creating)).toEqual({ ok: false, errors: { name: '项目名称不能超过 40 个字符' } });
+    expect(validateProject(draft({ name: '项'.repeat(41) }), creating)).toStrictEqual({ ok: false, errors: { name: '项目名称不能超过 40 个字符' } });
     expect(validateProject(draft({ name: ` ${'项'.repeat(40)} ` }), creating).ok, '先去掉首尾空白再计算长度').toBe(true);
   });
 
   test('和已有的项目重名（去掉空白，不区分大小写）', () => {
-    expect(validateProject(draft({ name: ' 数据迁移 ' }), creating)).toEqual({ ok: false, errors: { name: '已经有一个叫“数据迁移”的项目' } });
-    expect(validateProject(draft({ name: 'WEBSITE' }), creating)).toEqual({ ok: false, errors: { name: '已经有一个叫“Website”的项目' } });
+    expect(validateProject(draft({ name: ' 数据迁移 ' }), creating)).toStrictEqual({ ok: false, errors: { name: '已经有一个叫“数据迁移”的项目' } });
+    expect(validateProject(draft({ name: 'WEBSITE' }), creating)).toStrictEqual({ ok: false, errors: { name: '已经有一个叫“Website”的项目' } });
   });
 
   test('编辑时保留自己的名称不算重名，改成别的项目的名称算', () => {
     expect(validateProject(toDraft(P1), editing(P1)).ok).toBe(true);
-    expect(validateProject({ ...toDraft(P1), name: 'website' }, editing(P1))).toEqual({ ok: false, errors: { name: '已经有一个叫“Website”的项目' } });
+    expect(validateProject({ ...toDraft(P1), name: 'website' }, editing(P1))).toStrictEqual({ ok: false, errors: { name: '已经有一个叫“Website”的项目' } });
   });
 });
 
 describe('截止日期', () => {
   test('不是有效的日期', () => {
     for (const dueDate of ['2026-02-30', '2027-02-29', '2026-13-01', '2026-00-10', '2026-1-5', '2026/10/30', 'tomorrow', '2026-10-30T00:00']) {
-      expect(validateProject(draft({ dueDate }), creating), dueDate).toEqual({ ok: false, errors: { dueDate: '请输入有效的日期' } });
+      expect(validateProject(draft({ dueDate }), creating), dueDate).toStrictEqual({ ok: false, errors: { dueDate: '请输入有效的日期' } });
     }
   });
 
   test('新建时不能早于今天', () => {
-    expect(validateProject(draft({ dueDate: '2026-10-19' }), creating)).toEqual({ ok: false, errors: { dueDate: '截止日期不能早于今天' } });
+    expect(validateProject(draft({ dueDate: '2026-10-19' }), creating)).toStrictEqual({ ok: false, errors: { dueDate: '截止日期不能早于今天' } });
   });
 
   test('编辑已经过期的项目：截止日期不变可以保存；改成另一个过去的日期不行', () => {
-    expect(validateProject(toDraft(P2), editing(P2))).toEqual({ ok: true, value: { name: '数据迁移', owner: '小林', dueDate: '2026-10-12' } });
-    expect(validateProject({ ...toDraft(P2), dueDate: '2026-10-13' }, editing(P2))).toEqual({ ok: false, errors: { dueDate: '截止日期不能早于今天' } });
-    expect(validateProject({ ...toDraft(P1), dueDate: '2026-10-12' }, editing(P1)), '别的项目的过去日期也不行').toEqual({
+    expect(validateProject(toDraft(P2), editing(P2))).toStrictEqual({ ok: true, value: { name: '数据迁移', owner: '小林', dueDate: '2026-10-12' } });
+    expect(validateProject({ ...toDraft(P2), dueDate: '2026-10-13' }, editing(P2))).toStrictEqual({ ok: false, errors: { dueDate: '截止日期不能早于今天' } });
+    expect(validateProject({ ...toDraft(P1), dueDate: '2026-10-12' }, editing(P1)), '别的项目的过去日期也不行').toStrictEqual({
       ok: false,
       errors: { dueDate: '截止日期不能早于今天' },
     });
   });
 
   test('三个字段的错误同时返回', () => {
-    expect(validateProject({ name: '官网改版', owner: ' ', dueDate: '2026-09-31' }, creating)).toEqual({
+    expect(validateProject({ name: '官网改版', owner: ' ', dueDate: '2026-09-31' }, creating)).toStrictEqual({
       ok: false,
       errors: { name: '已经有一个叫“官网改版”的项目', owner: '请输入负责人', dueDate: '请输入有效的日期' },
     });
@@ -343,7 +343,7 @@ describe('截止日期', () => {
 
 `errors` 的类型 `Partial<Record<keyof ProjectDraft, string>>` 让 `errors.name = …` 这样的写入受到检查：字段名写错就是类型错误。
 
-替代解把每个字段的检查写成一个返回 `string | undefined` 的函数，最后用 `Object.entries` 和 `filter` 去掉没有错误的字段；日期用 `Date.UTC` 构造，再比较年、月、日。
+替代解把每个字段的检查写成一个返回 `string | undefined` 的函数，最后用 `Object.entries` 和 `filter` 去掉没有错误的字段；日期用 `setUTCFullYear` 设置年、月、日，再比较它们（`Date.UTC` 会把 0–99 年当作 1900 年以后）。
 :::
 
 :::variant{kind=alt name=per-field-functions}
@@ -377,12 +377,13 @@ export function toDraft(project: Project | null): ProjectDraft {
   return { name: project?.name ?? '', owner: project?.owner ?? '', dueDate: project?.dueDate ?? '' };
 }
 
-/** 用 Date.UTC 构造这一天，再比较年、月、日是否和输入的一样 */
+/** 构造这一天，再比较年、月、日是否和输入的一样（用 setUTCFullYear：Date.UTC 会把 0–99 年当作 1900 年以后） */
 function isCalendarDate(text: string): boolean {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
   if (match === null) return false;
   const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
-  const date = new Date(Date.UTC(year, month - 1, day));
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 

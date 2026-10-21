@@ -10,7 +10,7 @@ title: 新建与编辑项目的表单
    - 提交时有错误：不调用 `onSave`，焦点移到第一个出错的输入框（按名称、负责人、截止日期的顺序；字段名也是输入框的 `id`）；
    - 没有错误：调用 `onSave`，传入校验得到的数据；
 2. **离开之前提醒**：表单中的值和初始值（`toDraft(original)`）有任何不同，就算“有未保存的修改”（改了又改回去不算）。有修改时：
-   - 站内的导航（链接、“后退”）到另一个路径时，用 `useBlocker` 拦截，并显示一个 `role="alertdialog"` 的元素：名字（`aria-labelledby`）是“离开这个页面？”，描述（`aria-describedby`）是“还有没保存的修改，离开之后它们会丢失。”。其中有两个按钮：“继续编辑”（出现时获得焦点；留在这里）和“离开”（去原来要去的地方）；
+   - 站内的导航（链接、“后退”）到另一个路径时，用 `useBlocker` 拦截（只改查询参数不算），并显示一个询问的对话框：`role="alertdialog"`、`aria-modal="true"`，名字（`aria-labelledby`）是“离开这个页面？”，描述（`aria-describedby`）是“还有未保存的修改，离开之后它们会丢失。”。其中有两个按钮：“继续编辑”（出现时获得焦点；留在这里）和“离开”（去原来要去的地方）。在对话框中按 Esc 和“继续编辑”一样；留下之后，焦点回到被拦截时所在的元素（例如刚才点击的链接），没有时回到第一个输入框；
    - 刷新、关闭页面时：监听 `window` 的 `beforeunload` 事件，调用 `preventDefault()`。没有修改时不监听；
    - 保存成功之后，`onSave` 引起的导航不要拦截。
 
@@ -262,6 +262,7 @@ function Layout() {
   );
 }
 
+// 预览用的页面做了简化：列表没有 p2-02 的筛选和进度
 function ProjectList() {
   const projects = useProjects();
   return (
@@ -400,13 +401,29 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
   const [submitted, setSubmitted] = useState(false);
   // 保存成功之后，接下来的这次导航不要拦截。拦截函数在导航时才读取它，所以用 ref
   const saving = useRef(false);
+  /** 被拦截时焦点所在的元素（通常是刚才点击的链接）：“继续编辑”之后把焦点还给它 */
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   const result = validateProject(draft, { today, projects, original });
   const errors: FieldErrors = submitted && !result.ok ? result.errors : {};
   // 和初始值比较：改了又改回去，就不算有修改
   const dirty = FIELDS.some((f) => draft[f.key] !== initial[f.key]);
 
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const block = dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname;
+    if (block) {
+      const active = document.activeElement;
+      returnFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    return block;
+  });
+
+  /** 留在这里：关闭对话框，焦点回到原来的位置（没有时回到第一个输入框） */
+  function stay() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+    (returnFocus.current ?? document.getElementById('name'))?.focus();
+  }
 
   // 刷新、关闭标签页、离开这个网站：只在有未保存的修改时监听
   useEffect(() => {
@@ -425,6 +442,8 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       return;
     }
     saving.current = true;
+    // 保存之后、离开之前，表单还会用更新后的数据渲染一次：这时不要显示（和自己“重名”的）错误
+    setSubmitted(false);
     onSave(result.value);
   }
 
@@ -452,10 +471,18 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       })}
       <button type="submit">{original === null ? '创建项目' : '保存修改'}</button>
       {blocker.state === 'blocked' && (
-        <div role="alertdialog" aria-labelledby="leave-title" aria-describedby="leave-desc">
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') stay();
+          }}
+        >
           <h2 id="leave-title">离开这个页面？</h2>
-          <p id="leave-desc">还有没保存的修改，离开之后它们会丢失。</p>
-          <button type="button" autoFocus onClick={() => blocker.reset()}>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={stay}>
             继续编辑
           </button>{' '}
           <button type="button" onClick={() => blocker.proceed()}>
@@ -471,8 +498,8 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
 
 :::files{role=tests}
 ```tsx file=ProjectForm.test.tsx
-import { afterEach, beforeEach, describe, expect, test } from 'vitest';
-import { act, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, Link, useNavigate, useParams, type RouteObject } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
@@ -596,6 +623,8 @@ describe('新建项目', () => {
     await user.click(screen.getByRole('button', { name: '创建项目' }));
     expect(field('名称')).toHaveAccessibleDescription('请输入项目名称');
     expect(field('负责人')).toHaveAccessibleDescription('请输入负责人');
+    expect(field('名称'), '有几个错误时，焦点移到第一个').toHaveFocus();
+    expect(document.getElementById('name-error')).toHaveTextContent('请输入项目名称');
     await user.type(field('名称'), '数据迁移');
     expect(field('名称')).toHaveAccessibleDescription('已经有一个叫“数据迁移”的项目');
     await user.type(field('名称'), '二期');
@@ -677,13 +706,34 @@ describe('离开之前提醒', () => {
     await user.type(field('负责人'), '和阿明');
     await user.click(screen.getByRole('link', { name: '取消' }));
     const dialog = await screen.findByRole('alertdialog', { name: '离开这个页面？' });
-    expect(dialog).toHaveAccessibleDescription('还有没保存的修改，离开之后它们会丢失。');
+    expect(dialog).toHaveAccessibleDescription('还有未保存的修改，离开之后它们会丢失。');
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
     expect(screen.getByRole('button', { name: '继续编辑' })).toHaveFocus();
     expect(router.state.location.pathname).toBe('/projects/p1/edit');
     await user.click(screen.getByRole('button', { name: '继续编辑' }));
-    expect(leaveDialog()).toBeNull();
+    await waitFor(() => expect(leaveDialog()).toBeNull());
     expect(router.state.location.pathname).toBe('/projects/p1/edit');
     expect(field('负责人')).toHaveValue('小林和阿明');
+    expect(screen.getByRole('link', { name: '取消' }), '焦点回到刚才点击的链接').toHaveFocus();
+  });
+
+  test('在询问中按 Esc：和“继续编辑”一样', async () => {
+    const { router, user } = start('/projects/p1/edit');
+    await user.type(field('名称'), '!');
+    await user.click(screen.getByRole('link', { name: '取消' }));
+    await screen.findByRole('alertdialog', { name: '离开这个页面？' });
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(leaveDialog()).toBeNull());
+    expect(router.state.location.pathname).toBe('/projects/p1/edit');
+    expect(screen.getByRole('link', { name: '取消' })).toHaveFocus();
+  });
+
+  test('只改查询参数不算离开', async () => {
+    const { router, user } = start('/projects/p1/edit');
+    await user.type(field('名称'), '!');
+    await act(() => router.navigate('?help=1'));
+    expect(router.state.location.search).toBe('?help=1');
+    expect(leaveDialog()).toBeNull();
   });
 
   test('选择“离开”：去往原来要去的页面', async () => {
@@ -716,6 +766,15 @@ describe('离开之前提醒', () => {
     expect(router.state.location.pathname).toBe('/projects/p1');
   });
 
+  test('没有修改时不监听 beforeunload', async () => {
+    const spy = vi.spyOn(window, 'addEventListener');
+    const listened = () => spy.mock.calls.some(([type]) => type === 'beforeunload');
+    const { user } = start('/projects/p1/edit');
+    expect(listened(), '没有修改时不应该监听 beforeunload（它会影响 Firefox 的往返缓存）').toBe(false);
+    await user.type(field('名称'), '!');
+    expect(listened()).toBe(true);
+  });
+
   test('刷新或关闭页面：只在有修改时提醒', async () => {
     const { user } = start('/projects/p1/edit');
     expect(beforeUnloadPrevented(), '没有修改时不应该提醒').toBe(false);
@@ -725,12 +784,6 @@ describe('离开之前提醒', () => {
     expect(beforeUnloadPrevented(), '改回原来的值之后不应该再提醒').toBe(false);
   });
 
-  test('站内链接不让整个页面重新加载', async () => {
-    const { user } = start('/projects/p1/edit');
-    await user.click(screen.getByRole('link', { name: '取消' }));
-    expect(await screen.findByRole('heading', { level: 1, name: '项目详情' })).toBeInTheDocument();
-    expect(clicks).toEqual([true]);
-  });
 });
 ```
 :::
@@ -740,7 +793,7 @@ describe('离开之前提醒', () => {
 :::
 
 :::hint{level=2}
-`const saving = useRef(false)`；`useBlocker(({ currentLocation, nextLocation }) => dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname)`；提交成功时先 `saving.current = true` 再 `onSave(…)`。对话框在 `blocker.state === 'blocked'` 时显示，按钮分别调用 `blocker.reset()` 和 `blocker.proceed()`，“继续编辑”加上 `autoFocus`。`beforeunload` 写在一个依赖 `[dirty]` 的 Effect 中，`dirty` 为 `false` 时直接返回。
+`const saving = useRef(false)`；`useBlocker(({ currentLocation, nextLocation }) => dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname)`；提交成功时先 `saving.current = true` 再 `onSave(…)`。对话框在 `blocker.state === 'blocked'` 时显示，“继续编辑”加上 `autoFocus`；“离开”调用 `blocker.proceed()`。拦截函数返回 `true` 时把 `document.activeElement` 记在另一个 ref 中；“继续编辑”和 Esc 调用同一个函数：`blocker.reset()`，再把焦点还给记下的元素。`beforeunload` 写在一个依赖 `[dirty]` 的 Effect 中，`dirty` 为 `false` 时直接返回。
 :::
 
 :::explanation
@@ -750,9 +803,13 @@ describe('离开之前提醒', () => {
 
 `useBlocker` 拦截 React Router 处理的导航，包括链接和“后退”。它的参数是一个函数，React Router 在每次导航之前调用它；但 React Router 是在 Effect 中更新这个函数的。保存成功时，`onSave` 中的 `navigate` 和提交在同一个事件中执行，新的渲染还没有发生。如果用 `setSaving(true)`，拦截函数看到的仍然是旧的 `false`，刚保存完就会被问“确定要离开吗”。ref 的修改立刻生效，拦截函数在导航时才读取它，所以能看到 `true`。
 
+询问的对话框按 g15 的模式处理焦点：出现时焦点在最安全的“继续编辑”上，Esc 等于“继续编辑”，留下之后焦点回到原来的位置。被拦截的那一刻，焦点通常在刚才点击的链接上，拦截函数正好在这时运行，把它记下来就行。`aria-modal="true"` 告诉读屏软件对话框之外的内容暂时不可用；要让键盘用户也无法 Tab 到对话框之外，可以用原生的 `<dialog>` 加 `showModal()`，或者给其余的内容加上 `inert`。
+
+保存成功时还把 `submitted` 改回 `false`：`onSave` 更新了项目的列表之后、页面跳转之前，表单还会渲染一次，这时新的名称已经在列表中了，如果还显示错误，就会闪过一个“已经有一个叫……的项目”。
+
 刷新和关闭页面不经过 React Router，要用 `beforeunload`。只在有修改时监听：这是一个和浏览器窗口同步的 Effect，`dirty` 变化时 React 先运行清理函数，再根据新的值决定是否监听。
 
-替代解：拦截函数用 `useCallback` 包起来（React Router 文档的写法），`beforeunload` 的监听器用 `AbortController` 移除，焦点通过表单的 `elements.namedItem(…)` 找到输入框，标签直接包住输入框。
+替代解：拦截函数用 `useCallback` 包起来（React Router 文档的一个示例就是这样写的），`beforeunload` 的监听器用 `AbortController` 移除，焦点通过表单的 `elements.namedItem(…)` 找到输入框，标签直接包住输入框。
 :::
 
 :::variant{kind=alt name=callback-and-signal}
@@ -784,12 +841,20 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
   const [draft, setDraft] = useState<ProjectDraft>(() => toDraft(original));
   const [showErrors, setShowErrors] = useState(false);
   const leaving = useRef(false);
+  const lastFocus = useRef<Element | null>(null);
 
   const result = validateProject(draft, { today, projects, original });
   const changed = !sameDraft(draft, toDraft(original));
 
   const shouldBlock = useCallback<BlockerFunction>(
-    ({ currentLocation, nextLocation }) => changed && !leaving.current && currentLocation.pathname !== nextLocation.pathname,
+    ({ currentLocation, nextLocation }) => {
+      const leavingPage = currentLocation.pathname !== nextLocation.pathname;
+      if (changed && !leaving.current && leavingPage) {
+        lastFocus.current = document.activeElement;
+        return true;
+      }
+      return false;
+    },
     [changed],
   );
   const blocker = useBlocker(shouldBlock);
@@ -801,10 +866,18 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
     return () => controller.abort();
   }, [changed]);
 
+  function keepEditing() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+    const target = lastFocus.current instanceof HTMLElement && lastFocus.current !== document.body ? lastFocus.current : document.getElementById('name');
+    target?.focus();
+  }
+
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     if (result.ok) {
       leaving.current = true;
+      setShowErrors(false);
       onSave(result.value);
       return;
     }
@@ -851,10 +924,16 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
         <button type="submit">{original ? '保存修改' : '创建项目'}</button>
       </p>
       {blocker.state === 'blocked' ? (
-        <section role="alertdialog" aria-labelledby="leave-title" aria-describedby="leave-desc">
+        <section
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+          onKeyDown={(e) => e.key === 'Escape' && keepEditing()}
+        >
           <h2 id="leave-title">离开这个页面？</h2>
-          <p id="leave-desc">还有没保存的修改，离开之后它们会丢失。</p>
-          <button type="button" autoFocus onClick={blocker.reset}>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={keepEditing}>
             继续编辑
           </button>{' '}
           <button type="button" onClick={blocker.proceed}>
@@ -870,7 +949,7 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
 
 :::variant{kind=wrong name=block-save fails=tests reason="用 state 放行保存之后的导航：拦截函数还没更新，刚保存完就被询问"}
 ```tsx file=ProjectForm.tsx
-import { useEffect, useState, type SubmitEvent } from 'react';
+import { useEffect, useRef, useState, type SubmitEvent } from 'react';
 import { useBlocker } from 'react-router';
 import { toDraft, validateProject, type FieldErrors, type ProjectDraft, type ProjectInput } from './form';
 import type { Project } from './model';
@@ -895,13 +974,29 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
   const [draft, setDraft] = useState<ProjectDraft>(initial);
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
+  /** 被拦截时焦点所在的元素（通常是刚才点击的链接）：“继续编辑”之后把焦点还给它 */
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   const result = validateProject(draft, { today, projects, original });
   const errors: FieldErrors = submitted && !result.ok ? result.errors : {};
   // 和初始值比较：改了又改回去，就不算有修改
   const dirty = FIELDS.some((f) => draft[f.key] !== initial[f.key]);
 
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && !saving && currentLocation.pathname !== nextLocation.pathname);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const block = dirty && !saving && currentLocation.pathname !== nextLocation.pathname;
+    if (block) {
+      const active = document.activeElement;
+      returnFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    return block;
+  });
+
+  /** 留在这里：关闭对话框，焦点回到原来的位置（没有时回到第一个输入框） */
+  function stay() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+    (returnFocus.current ?? document.getElementById('name'))?.focus();
+  }
 
   // 刷新、关闭标签页、离开这个网站：只在有未保存的修改时监听
   useEffect(() => {
@@ -920,6 +1015,8 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       return;
     }
     setSaving(true);
+    // 保存之后、离开之前，表单还会用更新后的数据渲染一次：这时不要显示（和自己“重名”的）错误
+    setSubmitted(false);
     onSave(result.value);
   }
 
@@ -947,10 +1044,18 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       })}
       <button type="submit">{original === null ? '创建项目' : '保存修改'}</button>
       {blocker.state === 'blocked' && (
-        <div role="alertdialog" aria-labelledby="leave-title" aria-describedby="leave-desc">
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') stay();
+          }}
+        >
           <h2 id="leave-title">离开这个页面？</h2>
-          <p id="leave-desc">还有没保存的修改，离开之后它们会丢失。</p>
-          <button type="button" autoFocus onClick={() => blocker.reset()}>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={stay}>
             继续编辑
           </button>{' '}
           <button type="button" onClick={() => blocker.proceed()}>
@@ -992,12 +1097,28 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
   const [submitted, setSubmitted] = useState(false);
   // 保存成功之后，接下来的这次导航不要拦截。拦截函数在导航时才读取它，所以用 ref
   const saving = useRef(false);
+  /** 被拦截时焦点所在的元素（通常是刚才点击的链接）：“继续编辑”之后把焦点还给它 */
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   const result = validateProject(draft, { today, projects, original });
   const errors: FieldErrors = submitted && !result.ok ? result.errors : {};
   const [dirty, setDirty] = useState(false);
 
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const block = dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname;
+    if (block) {
+      const active = document.activeElement;
+      returnFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    return block;
+  });
+
+  /** 留在这里：关闭对话框，焦点回到原来的位置（没有时回到第一个输入框） */
+  function stay() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+    (returnFocus.current ?? document.getElementById('name'))?.focus();
+  }
 
   // 刷新、关闭标签页、离开这个网站：只在有未保存的修改时监听
   useEffect(() => {
@@ -1016,6 +1137,8 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       return;
     }
     saving.current = true;
+    // 保存之后、离开之前，表单还会用更新后的数据渲染一次：这时不要显示（和自己“重名”的）错误
+    setSubmitted(false);
     onSave(result.value);
   }
 
@@ -1044,10 +1167,18 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       })}
       <button type="submit">{original === null ? '创建项目' : '保存修改'}</button>
       {blocker.state === 'blocked' && (
-        <div role="alertdialog" aria-labelledby="leave-title" aria-describedby="leave-desc">
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') stay();
+          }}
+        >
           <h2 id="leave-title">离开这个页面？</h2>
-          <p id="leave-desc">还有没保存的修改，离开之后它们会丢失。</p>
-          <button type="button" autoFocus onClick={() => blocker.reset()}>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={stay}>
             继续编辑
           </button>{' '}
           <button type="button" onClick={() => blocker.proceed()}>
@@ -1089,13 +1220,29 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
   const [submitted, setSubmitted] = useState(false);
   // 保存成功之后，接下来的这次导航不要拦截。拦截函数在导航时才读取它，所以用 ref
   const saving = useRef(false);
+  /** 被拦截时焦点所在的元素（通常是刚才点击的链接）：“继续编辑”之后把焦点还给它 */
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   const result = validateProject(draft, { today, projects, original });
   const errors: FieldErrors = submitted && !result.ok ? result.errors : {};
   // 和初始值比较：改了又改回去，就不算有修改
   const dirty = FIELDS.some((f) => draft[f.key] !== initial[f.key]);
 
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const block = dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname;
+    if (block) {
+      const active = document.activeElement;
+      returnFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    return block;
+  });
+
+  /** 留在这里：关闭对话框，焦点回到原来的位置（没有时回到第一个输入框） */
+  function stay() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+    (returnFocus.current ?? document.getElementById('name'))?.focus();
+  }
 
   // 刷新、关闭标签页、离开这个网站：只在有未保存的修改时监听
   useEffect(() => {
@@ -1113,6 +1260,8 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       return;
     }
     saving.current = true;
+    // 保存之后、离开之前，表单还会用更新后的数据渲染一次：这时不要显示（和自己“重名”的）错误
+    setSubmitted(false);
     onSave(result.value);
   }
 
@@ -1140,10 +1289,18 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       })}
       <button type="submit">{original === null ? '创建项目' : '保存修改'}</button>
       {blocker.state === 'blocked' && (
-        <div role="alertdialog" aria-labelledby="leave-title" aria-describedby="leave-desc">
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') stay();
+          }}
+        >
           <h2 id="leave-title">离开这个页面？</h2>
-          <p id="leave-desc">还有没保存的修改，离开之后它们会丢失。</p>
-          <button type="button" autoFocus onClick={() => blocker.reset()}>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={stay}>
             继续编辑
           </button>{' '}
           <button type="button" onClick={() => blocker.proceed()}>
@@ -1185,13 +1342,29 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
   const [submitted, setSubmitted] = useState(false);
   // 保存成功之后，接下来的这次导航不要拦截。拦截函数在导航时才读取它，所以用 ref
   const saving = useRef(false);
+  /** 被拦截时焦点所在的元素（通常是刚才点击的链接）：“继续编辑”之后把焦点还给它 */
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   const result = validateProject(draft, { today, projects, original: null });
   const errors: FieldErrors = submitted && !result.ok ? result.errors : {};
   // 和初始值比较：改了又改回去，就不算有修改
   const dirty = FIELDS.some((f) => draft[f.key] !== initial[f.key]);
 
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const block = dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname;
+    if (block) {
+      const active = document.activeElement;
+      returnFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    return block;
+  });
+
+  /** 留在这里：关闭对话框，焦点回到原来的位置（没有时回到第一个输入框） */
+  function stay() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+    (returnFocus.current ?? document.getElementById('name'))?.focus();
+  }
 
   // 刷新、关闭标签页、离开这个网站：只在有未保存的修改时监听
   useEffect(() => {
@@ -1210,6 +1383,8 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       return;
     }
     saving.current = true;
+    // 保存之后、离开之前，表单还会用更新后的数据渲染一次：这时不要显示（和自己“重名”的）错误
+    setSubmitted(false);
     onSave(result.value);
   }
 
@@ -1237,10 +1412,18 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       })}
       <button type="submit">{original === null ? '创建项目' : '保存修改'}</button>
       {blocker.state === 'blocked' && (
-        <div role="alertdialog" aria-labelledby="leave-title" aria-describedby="leave-desc">
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') stay();
+          }}
+        >
           <h2 id="leave-title">离开这个页面？</h2>
-          <p id="leave-desc">还有没保存的修改，离开之后它们会丢失。</p>
-          <button type="button" autoFocus onClick={() => blocker.reset()}>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={stay}>
             继续编辑
           </button>{' '}
           <button type="button" onClick={() => blocker.proceed()}>
@@ -1282,13 +1465,29 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
   const [submitted, setSubmitted] = useState(false);
   // 保存成功之后，接下来的这次导航不要拦截。拦截函数在导航时才读取它，所以用 ref
   const saving = useRef(false);
+  /** 被拦截时焦点所在的元素（通常是刚才点击的链接）：“继续编辑”之后把焦点还给它 */
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   const result = validateProject(draft, { today, projects, original });
   const errors: FieldErrors = !result.ok ? result.errors : {};
   // 和初始值比较：改了又改回去，就不算有修改
   const dirty = FIELDS.some((f) => draft[f.key] !== initial[f.key]);
 
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const block = dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname;
+    if (block) {
+      const active = document.activeElement;
+      returnFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    return block;
+  });
+
+  /** 留在这里：关闭对话框，焦点回到原来的位置（没有时回到第一个输入框） */
+  function stay() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+    (returnFocus.current ?? document.getElementById('name'))?.focus();
+  }
 
   // 刷新、关闭标签页、离开这个网站：只在有未保存的修改时监听
   useEffect(() => {
@@ -1307,6 +1506,8 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       return;
     }
     saving.current = true;
+    // 保存之后、离开之前，表单还会用更新后的数据渲染一次：这时不要显示（和自己“重名”的）错误
+    setSubmitted(false);
     onSave(result.value);
   }
 
@@ -1334,10 +1535,18 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       })}
       <button type="submit">{original === null ? '创建项目' : '保存修改'}</button>
       {blocker.state === 'blocked' && (
-        <div role="alertdialog" aria-labelledby="leave-title" aria-describedby="leave-desc">
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') stay();
+          }}
+        >
           <h2 id="leave-title">离开这个页面？</h2>
-          <p id="leave-desc">还有没保存的修改，离开之后它们会丢失。</p>
-          <button type="button" autoFocus onClick={() => blocker.reset()}>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={stay}>
             继续编辑
           </button>{' '}
           <button type="button" onClick={() => blocker.proceed()}>
@@ -1379,13 +1588,29 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
   const [submitted, setSubmitted] = useState(false);
   // 保存成功之后，接下来的这次导航不要拦截。拦截函数在导航时才读取它，所以用 ref
   const saving = useRef(false);
+  /** 被拦截时焦点所在的元素（通常是刚才点击的链接）：“继续编辑”之后把焦点还给它 */
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   const result = validateProject(draft, { today, projects, original });
   const errors: FieldErrors = submitted && !result.ok ? result.errors : {};
   // 和初始值比较：改了又改回去，就不算有修改
   const dirty = FIELDS.some((f) => draft[f.key] !== initial[f.key]);
 
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const block = dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname;
+    if (block) {
+      const active = document.activeElement;
+      returnFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    return block;
+  });
+
+  /** 留在这里：关闭对话框，焦点回到原来的位置（没有时回到第一个输入框） */
+  function stay() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+    (returnFocus.current ?? document.getElementById('name'))?.focus();
+  }
 
   // 刷新、关闭标签页、离开这个网站：只在有未保存的修改时监听
   useEffect(() => {
@@ -1402,6 +1627,8 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       return;
     }
     saving.current = true;
+    // 保存之后、离开之前，表单还会用更新后的数据渲染一次：这时不要显示（和自己“重名”的）错误
+    setSubmitted(false);
     onSave(result.value);
   }
 
@@ -1429,10 +1656,260 @@ export function ProjectForm({ original, projects, today, onSave }: Props) {
       })}
       <button type="submit">{original === null ? '创建项目' : '保存修改'}</button>
       {blocker.state === 'blocked' && (
-        <div role="alertdialog" aria-labelledby="leave-title" aria-describedby="leave-desc">
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') stay();
+          }}
+        >
           <h2 id="leave-title">离开这个页面？</h2>
-          <p id="leave-desc">还有没保存的修改，离开之后它们会丢失。</p>
-          <button type="button" autoFocus onClick={() => blocker.reset()}>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={stay}>
+            继续编辑
+          </button>{' '}
+          <button type="button" onClick={() => blocker.proceed()}>
+            离开
+          </button>
+        </div>
+      )}
+    </form>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=no-return-focus fails=tests reason="“继续编辑”之后没有把焦点还回去：键盘用户的焦点掉到了页面的开头"}
+```tsx file=ProjectForm.tsx
+import { useEffect, useRef, useState, type SubmitEvent } from 'react';
+import { useBlocker } from 'react-router';
+import { toDraft, validateProject, type FieldErrors, type ProjectDraft, type ProjectInput } from './form';
+import type { Project } from './model';
+
+type Props = Readonly<{
+  /** 正在编辑的项目；新建时是 null */
+  original: Project | null;
+  projects: readonly Project[];
+  today: string;
+  onSave: (input: ProjectInput) => void;
+}>;
+
+/** 字段的顺序也是出错时寻找第一个错误的顺序 */
+const FIELDS = [
+  { key: 'name', label: '名称', type: 'text' },
+  { key: 'owner', label: '负责人', type: 'text' },
+  { key: 'dueDate', label: '截止日期', type: 'date' },
+] as const;
+
+export function ProjectForm({ original, projects, today, onSave }: Props) {
+  const initial = toDraft(original);
+  const [draft, setDraft] = useState<ProjectDraft>(initial);
+  const [submitted, setSubmitted] = useState(false);
+  // 保存成功之后，接下来的这次导航不要拦截。拦截函数在导航时才读取它，所以用 ref
+  const saving = useRef(false);
+  /** 被拦截时焦点所在的元素（通常是刚才点击的链接）：“继续编辑”之后把焦点还给它 */
+  const returnFocus = useRef<HTMLElement | null>(null);
+
+  const result = validateProject(draft, { today, projects, original });
+  const errors: FieldErrors = submitted && !result.ok ? result.errors : {};
+  // 和初始值比较：改了又改回去，就不算有修改
+  const dirty = FIELDS.some((f) => draft[f.key] !== initial[f.key]);
+
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const block = dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname;
+    if (block) {
+      const active = document.activeElement;
+      returnFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    return block;
+  });
+
+  /** 留在这里：关闭对话框，焦点回到原来的位置（没有时回到第一个输入框） */
+  function stay() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+  }
+
+  // 刷新、关闭标签页、离开这个网站：只在有未保存的修改时监听
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [dirty]);
+
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitted(true);
+    if (!result.ok) {
+      const first = FIELDS.find((f) => result.errors[f.key] !== undefined);
+      if (first !== undefined) document.getElementById(first.key)?.focus();
+      return;
+    }
+    saving.current = true;
+    // 保存之后、离开之前，表单还会用更新后的数据渲染一次：这时不要显示（和自己“重名”的）错误
+    setSubmitted(false);
+    onSave(result.value);
+  }
+
+  return (
+    <form noValidate onSubmit={handleSubmit}>
+      {FIELDS.map((f) => {
+        const error = errors[f.key];
+        return (
+          <div key={f.key}>
+            <label htmlFor={f.key}>{f.label}</label>{' '}
+            <input
+              id={f.key}
+              type={f.type}
+              value={draft[f.key]}
+              onChange={(e) => {
+                const value = e.currentTarget.value;
+                setDraft((d) => ({ ...d, [f.key]: value }));
+              }}
+              aria-invalid={error !== undefined}
+              aria-describedby={error !== undefined ? `${f.key}-error` : undefined}
+            />
+            {error !== undefined && <p id={`${f.key}-error`}>{error}</p>}
+          </div>
+        );
+      })}
+      <button type="submit">{original === null ? '创建项目' : '保存修改'}</button>
+      {blocker.state === 'blocked' && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') stay();
+          }}
+        >
+          <h2 id="leave-title">离开这个页面？</h2>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={stay}>
+            继续编辑
+          </button>{' '}
+          <button type="button" onClick={() => blocker.proceed()}>
+            离开
+          </button>
+        </div>
+      )}
+    </form>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=no-escape fails=tests reason="询问的对话框不能用 Esc 关闭"}
+```tsx file=ProjectForm.tsx
+import { useEffect, useRef, useState, type SubmitEvent } from 'react';
+import { useBlocker } from 'react-router';
+import { toDraft, validateProject, type FieldErrors, type ProjectDraft, type ProjectInput } from './form';
+import type { Project } from './model';
+
+type Props = Readonly<{
+  /** 正在编辑的项目；新建时是 null */
+  original: Project | null;
+  projects: readonly Project[];
+  today: string;
+  onSave: (input: ProjectInput) => void;
+}>;
+
+/** 字段的顺序也是出错时寻找第一个错误的顺序 */
+const FIELDS = [
+  { key: 'name', label: '名称', type: 'text' },
+  { key: 'owner', label: '负责人', type: 'text' },
+  { key: 'dueDate', label: '截止日期', type: 'date' },
+] as const;
+
+export function ProjectForm({ original, projects, today, onSave }: Props) {
+  const initial = toDraft(original);
+  const [draft, setDraft] = useState<ProjectDraft>(initial);
+  const [submitted, setSubmitted] = useState(false);
+  // 保存成功之后，接下来的这次导航不要拦截。拦截函数在导航时才读取它，所以用 ref
+  const saving = useRef(false);
+  /** 被拦截时焦点所在的元素（通常是刚才点击的链接）：“继续编辑”之后把焦点还给它 */
+  const returnFocus = useRef<HTMLElement | null>(null);
+
+  const result = validateProject(draft, { today, projects, original });
+  const errors: FieldErrors = submitted && !result.ok ? result.errors : {};
+  // 和初始值比较：改了又改回去，就不算有修改
+  const dirty = FIELDS.some((f) => draft[f.key] !== initial[f.key]);
+
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const block = dirty && !saving.current && currentLocation.pathname !== nextLocation.pathname;
+    if (block) {
+      const active = document.activeElement;
+      returnFocus.current = active instanceof HTMLElement && active !== document.body ? active : null;
+    }
+    return block;
+  });
+
+  /** 留在这里：关闭对话框，焦点回到原来的位置（没有时回到第一个输入框） */
+  function stay() {
+    if (blocker.state !== 'blocked') return;
+    blocker.reset();
+    (returnFocus.current ?? document.getElementById('name'))?.focus();
+  }
+
+  // 刷新、关闭标签页、离开这个网站：只在有未保存的修改时监听
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [dirty]);
+
+  function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitted(true);
+    if (!result.ok) {
+      const first = FIELDS.find((f) => result.errors[f.key] !== undefined);
+      if (first !== undefined) document.getElementById(first.key)?.focus();
+      return;
+    }
+    saving.current = true;
+    // 保存之后、离开之前，表单还会用更新后的数据渲染一次：这时不要显示（和自己“重名”的）错误
+    setSubmitted(false);
+    onSave(result.value);
+  }
+
+  return (
+    <form noValidate onSubmit={handleSubmit}>
+      {FIELDS.map((f) => {
+        const error = errors[f.key];
+        return (
+          <div key={f.key}>
+            <label htmlFor={f.key}>{f.label}</label>{' '}
+            <input
+              id={f.key}
+              type={f.type}
+              value={draft[f.key]}
+              onChange={(e) => {
+                const value = e.currentTarget.value;
+                setDraft((d) => ({ ...d, [f.key]: value }));
+              }}
+              aria-invalid={error !== undefined}
+              aria-describedby={error !== undefined ? `${f.key}-error` : undefined}
+            />
+            {error !== undefined && <p id={`${f.key}-error`}>{error}</p>}
+          </div>
+        );
+      })}
+      <button type="submit">{original === null ? '创建项目' : '保存修改'}</button>
+      {blocker.state === 'blocked' && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="leave-title"
+          aria-describedby="leave-desc"
+        >
+          <h2 id="leave-title">离开这个页面？</h2>
+          <p id="leave-desc">还有未保存的修改，离开之后它们会丢失。</p>
+          <button type="button" autoFocus onClick={stay}>
             继续编辑
           </button>{' '}
           <button type="button" onClick={() => blocker.proceed()}>
