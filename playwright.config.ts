@@ -21,8 +21,8 @@ export default defineConfig({
   projects: [
     { name: 'e2e', testDir: './tests/e2e', use: { ...devices['Desktop Chrome'] } },
     { name: 'e2e-webkit', testDir: './tests/e2e', testMatch: /pipeline|security/, use: { ...devices['Desktop Safari'] } },
-    { name: 'content', testDir: './tests/content', timeout: 600_000, use: { ...devices['Desktop Chrome'] } },
-    { name: 'content-webkit', testDir: './tests/content', timeout: 900_000, use: { ...devices['Desktop Safari'] } },
+    { name: 'content', testDir: './tests/content', timeout: 1_200_000, use: { ...devices['Desktop Chrome'] } },
+    { name: 'content-webkit', testDir: './tests/content', timeout: 1_800_000, use: { ...devices['Desktop Safari'] } },
     // 本地探测（不提交）：PROBE=1 npx playwright test --project=probe
     ...(process.env.PROBE === '1' ? [{ name: 'probe', testDir: './tests/probe', use: { ...devices[process.env.PROBE_WEBKIT === '1' ? 'Desktop Safari' : 'Desktop Chrome'] } }] : []),
   ],

@@ -18,12 +18,18 @@ test.describe('路由与生产构建资源', () => {
   });
 
   test('规划中的课时显示为不可学习，不冒充已发布', async ({ page }) => {
-    expect(PLANNED).toBeDefined();
+    test.skip(PLANNED === undefined, '课程图谱中已经没有规划中的课时');
     await page.goto(`/learn/${PLANNED?.id}`);
     await expect(page.getByText('这节课还在规划中')).toBeVisible();
     await page.goto('/');
-    await expect(page.locator('.sidebar-counts')).toContainText('已发布');
-    await expect(page.locator('.continue-card')).toContainText('规划共 126 节');
+    await expect(page.locator('.continue-card')).toContainText(`规划共 ${catalog.counts.total} 节`);
+  });
+
+  test('首页和目录如实显示已发布的数量', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.sidebar-counts')).toContainText(`已发布 ${catalog.counts.published}`);
+    const { planned, draft, total } = catalog.counts;
+    await expect(page.locator('.continue-card')).toContainText(planned || draft ? `规划共 ${total} 节` : `课程图谱中的 ${total} 节已全部发布`);
   });
 
   test('目录搜索', async ({ page }) => {

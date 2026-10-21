@@ -34,8 +34,11 @@ export function Home() {
           <p>目前还没有已发布的课程。</p>
         )}
         <p className="muted">
-          已完成 {completed} / 已发布 {catalog.counts.published} 节（规划共 {catalog.counts.total} 节，其中 {catalog.counts.planned} 节规划中
-          {catalog.counts.draft ? `、${catalog.counts.draft} 节草稿` : ''}）。
+          已完成 {completed} / 已发布 {catalog.counts.published} 节
+          {catalog.counts.planned || catalog.counts.draft
+            ? `（规划共 ${catalog.counts.total} 节，其中 ${catalog.counts.planned} 节规划中${catalog.counts.draft ? `、${catalog.counts.draft} 节草稿` : ''}）`
+            : `（课程图谱中的 ${catalog.counts.total} 节已全部发布）`}
+          。
         </p>
         <p className="storage-note">
           <Icon name="info" /> 学习进度保存在本机浏览器中。
