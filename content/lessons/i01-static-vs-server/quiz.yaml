@@ -1,0 +1,44 @@
+- id: need-server
+  type: single
+  prompt: 下面哪个功能必须有服务端（函数或者服务器）才能正确实现？
+  options:
+    - text: 用户在手机上添加的任务，在电脑上打开时也能看到
+      correct: true
+      explain: localStorage 只属于一个浏览器，跨设备共享的数据要存在服务器上。
+    - text: 把任务板保存下来，刷新页面之后恢复
+      explain: 保存在这个浏览器的 localStorage 中就可以（p1-05）。
+    - text: 调用一个公开的、不需要密钥的天气接口，显示今天的天气
+      explain: 浏览器可以直接请求公开的接口（e05），只要对方允许跨域访问。
+- id: secret-check
+  type: single
+  prompt: 一个静态站点在前端的代码中检查“输入的邀请码是不是 `TS2026`”，正确时显示隐藏的内容。这样做有什么问题？
+  options:
+    - text: 邀请码和隐藏的内容都在发给浏览器的代码中，任何人都能直接看到
+      correct: true
+      explain: 浏览器中的代码可以查看、修改。真正的检查和受保护的内容都要留在服务端。
+    - text: 没有问题，代码经过了构建和压缩，别人看不懂
+      explain: 压缩只是让代码变短，在 DevTools 中格式化之后照样能读（f04）。
+    - text: 只要把邀请码写进 VITE_ 开头的环境变量就安全了
+      explain: VITE_ 变量会被原样写进构建结果中，同样是公开的（e13）。
+- id: order
+  type: single
+  prompt: "`vercel.json` 中有改写 `{ \"source\": \"/(.*)\", \"destination\": \"/index.html\" }`，`dist` 中有 `/assets/app-1a2b3c4d.js`。请求 `/assets/app-1a2b3c4d.js` 得到什么？"
+  options:
+    - text: 这个 JavaScript 文件本身：存在的文件优先于改写
+      correct: true
+      explain: 文件系统先于改写。所以 SPA 的回退规则不会挡住真正的静态文件。
+    - text: index.html：这条规则匹配所有的路径
+      explain: 只有在没有找到文件时才会用改写。
+    - text: 404：同时匹配了文件和规则，产生冲突
+      explain: 两者有确定的先后顺序，不会冲突。
+- id: trailing-slash
+  type: single
+  prompt: 这个网站的改写规则是 `/settings` → `/index.html`。实测请求 `/settings/` 得到 404。原因是什么？
+  options:
+    - text: Vercel 的路径匹配不允许结尾多一个斜杠，`/settings/` 不匹配 `/settings`
+      correct: true
+      explain: 结尾的斜杠是路径的一部分。需要的话另写一条规则，或者用重定向统一成一种写法。
+    - text: 改写只对 GET 请求有效
+      explain: 这里本来就是 GET 请求，与方法无关。
+    - text: "`/settings/` 被当成了文件夹，而文件夹不能改写"
+      explain: 问题出在匹配本身，`dist` 中也没有 settings 这个文件夹。
