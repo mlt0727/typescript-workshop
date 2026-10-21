@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 代码不按预期工作时，在每一行加 console.log 再刷新，是最慢的排错方法。浏览器自带的开发者工具（DevTools）可以让代码停在任意一行，查看当时每个变量的值、是谁调用了这个函数；可以看到每一个网络请求的状态、请求头和响应内容。可是运行的明明是打包、压缩过的 JavaScript，DevTools 为什么能显示原来的 TypeScript？这一课学会 DevTools 中最常用的几个面板，读懂错误的堆栈，并弄清 source map 是怎样把运行的代码对应回源文件的。
 objectives:
   - 用 Console 的 table、group、count、assert 等方法输出更易读的信息，知道展开对象时看到的是哪一刻的值
@@ -106,7 +106,7 @@ module code@http://localhost:5398/src/main.js:8:13
 ```
 
 - Chromium（Chrome、Edge）：第一行是错误信息，之后每一层是 `at 函数名 (地址:行:列)`；没有名字的（模块的顶层、匿名函数）只有 `at 地址:行:列`；构造函数是 `at new Point (…)`，对象的方法是 `at Object.method (…)`；`await` 之后的那一层前面有 `async`；浏览器内置的函数是 `at Array.map (<anonymous>)`；
-- Safari：没有错误信息那一行，每一层是 `函数名@地址:行:列`；模块的顶层叫 `module code`，内置函数是 `map@[native code]`；
+- Safari：没有错误信息那一行，每一层是 `函数名@地址:行:列`；模块的顶层叫 `module code`，内置函数是 `map@[native code]`；`await` 之后的那一层前面也有 `async`（`async loadUser@…`）；
 - 两者的**列号**不同：第 2 行是 `function add(a, b) { return new Error('boom').stack; }`，Chromium 的第 29 列是 `new` 的 `n`，Safari 的第 38 列是 `Error` 后面的 `(`。行号和列号都从 1 开始。
 
 最上面一层是异常发生的地方；往下是调用它的地方。错误往往不在最上面一层，而在把错误的数据传进来的那一层。DevTools 中堆栈里的地址可以点击，直接跳到对应的源文件（如果有 source map，跳到的是 TypeScript 源文件）。
@@ -154,7 +154,7 @@ f02 讲过，开发服务器把 `counter.ts` 转换成去掉了类型的 JavaScr
 
 例如第一段 `AAAA` 就是 `[0, 0, 0, 0]`：生成的代码第 1 行第 0 列，对应 `counter.ts` 第 1 行第 0 列。下面的编程挑战实现这个解码，并根据生成代码中的位置找到源码的位置，这正是 DevTools 显示 TypeScript 源文件、把堆栈中的位置换成源文件位置时做的事。
 
-**生产构建**中，Vite 默认**不生成** source map（`build.sourcemap: false`）。设为 `true` 会生成单独的 `.map` 文件，并在 JavaScript 末尾加上指向它的注释；设为 `'hidden'` 也生成 `.map` 文件，但不加注释，浏览器不会去加载它，适合只上传给错误监控服务。注意 `sourcesContent` 中有完整的源代码，公开部署 `.map` 文件就等于公开了源代码。
+**生产构建**中，Vite 默认**不生成** source map（`build.sourcemap: false`）。设为 `true` 会生成单独的 `.map` 文件，并在 JavaScript 末尾加上指向它的注释；设为 `'hidden'` 也生成 `.map` 文件，但不加注释，浏览器不会去加载它，适合只上传给错误监控服务。注意 `.map` 文件仍然在 `dist/assets` 中：上传之后要把它们从部署的文件中删掉，否则任何人都能直接下载。注意 `sourcesContent` 中有完整的源代码，公开部署 `.map` 文件就等于公开了源代码。
 
 ## 在自己的电脑上做一遍
 
@@ -162,7 +162,7 @@ f02 讲过，开发服务器把 `counter.ts` 转换成去掉了类型的 JavaScr
 
 1. Sources 面板中按 `Ctrl+P`（macOS 上 `Cmd+P`），输入 `counter.ts` 打开它，在 `counter = count` 这一行设置断点。点击页面上的按钮：代码暂停，在 Scope 中看 `count` 和 `counter` 的值，按 `F10` 单步执行，观察 `counter` 的变化；看 Call Stack，找到点击事件的处理函数；
 2. 把断点改成条件断点 `count === 3`，连续点击按钮，确认只在第三次点击时暂停；再把它换成日志点 `'count', count`；
-3. 在 `main.ts` 末尾加一行 `fetch('/vite.svg').then((r) => console.log(r.status))`，在 Network 面板中找到这个请求，查看它的响应头和耗时；再改成一个不存在的地址，看状态码；
+3. 在 `main.ts` 末尾加一行 `fetch('/icons.svg').then((r) => console.log(r.status))`（`public` 中的文件），在 Network 面板中找到这个请求，查看它的响应头和耗时。再请求一个不存在的地址 `fetch('/missing.json')`：状态码仍然是 200，响应是 `index.html`，因为开发服务器对接受 HTML 的请求一律返回首页（f02）；加上请求头 `fetch('/missing.json', { headers: { Accept: 'application/json' } })` 才能看到 404；
 4. 运行 `npm run build`，看 `dist/assets` 中没有 `.map` 文件；在 `vite.config.ts`（没有就新建）中写 `export default { build: { sourcemap: true } }`，再构建一次，打开生成的 `.map` 文件看看它的结构。
 
 ## 编程挑战
@@ -176,5 +176,5 @@ f02 讲过，开发服务器把 `counter.ts` 转换成去掉了类型的 JavaScr
 - **只靠 `console.log` 排错**：断点能一次看到所有变量和调用栈，条件断点和日志点不用修改代码。
 - **以为展开的对象就是输出那一刻的值**：Chrome 中展开对象时读取的是当前的值。需要快照时输出 `JSON.stringify` 的结果或者一份拷贝。
 - **只看堆栈的最上面一层**：错误常常来自调用它的那一层传进来的数据。
-- **公开部署带 `sourcesContent` 的 source map 却以为源码是保密的**：任何人都能在 DevTools 中看到完整的源文件。需要时用 `'hidden'`，只把 `.map` 交给错误监控服务。
+- **公开部署带 `sourcesContent` 的 source map 却以为源码是保密的**：任何人都能在 DevTools 中看到完整的源文件。需要时用 `'hidden'`，把 `.map` 交给错误监控服务，并且不要部署它们。
 - **忘了删除 `debugger;`**：打开了 DevTools 的用户会在这里停下来。

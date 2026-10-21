@@ -2,7 +2,7 @@
 kind: task
 title: 解析 git status 的输出
 ---
-编辑器和图形界面的 Git 工具，都是先运行 `git status --porcelain`（格式稳定、给程序读的版本），再解析它的输出。在 `status.ts` 中实现：
+很多编辑器和图形界面的 Git 工具，都是运行 `git status --porcelain`（格式稳定、给程序读的版本），再解析它的输出。在 `status.ts` 中实现：
 
 **`unquote(field)`**：路径以 `"` 开头时，它是 C 语言风格的字符串：去掉两端的引号，还原转义。`\"`、`\\`、`\t`、`\n`、`\r`、`\a`、`\b`、`\f`、`\v` 是对应的字符；`\` 后面跟三个八进制数字是**一个字节**，连续的几个字节按 UTF-8 解码（`\346\227\247` 是“旧”）。其他的字符按 UTF-8 编码成字节。不以 `"` 开头的路径原样返回。
 
@@ -185,6 +185,7 @@ describe('unquote', () => {
     expect(unquote('"quote\\"d.txt"')).toBe('quote"d.txt');
     expect(unquote('"back\\\\slash.txt"')).toBe('back\\slash.txt');
     expect(unquote('"line\\nbreak"')).toBe('line\nbreak');
+    expect(unquote('"\\r\\a\\b\\f\\v"')).toBe('\r\x07\b\f\v');
   });
 });
 
@@ -220,6 +221,10 @@ describe('parseStatus', () => {
     expect(parseStatus('R  "a b.txt" -> "c d.txt"\n')).toEqual([
       { kind: 'tracked', path: 'c d.txt', from: 'a b.txt', staged: 'renamed', unstaged: null },
     ]);
+    // 原路径中有 " -> "（Git 2.45 的实际输出）：引号里面的不是分隔符
+    expect(parseStatus('RD "p -> q.txt" -> r.txt\n')).toEqual([
+      { kind: 'tracked', path: 'r.txt', from: 'p -> q.txt', staged: 'renamed', unstaged: 'deleted' },
+    ]);
   });
 
   test('未跟踪、忽略、冲突', () => {
@@ -254,7 +259,7 @@ describe('parseStatus', () => {
 两个细节容易出错：
 
 - **开头的空格**：` M b.txt` 表示“暂存区没有变化，工作区修改了”。先 `trim` 再解析，就把它和 `M  b.txt`（已经暂存）混在一起了。解析固定格式的文本时，空白往往是有意义的；
-- **字节与字符**：Git 把路径的 UTF-8 字节逐个写成 `\ooo`。“旧”是三个字节 `346 227 247`，必须先收集所有的字节，再一起解码；把每个字节当成一个字符（`String.fromCharCode(0o346)` 是 `æ`）只会得到乱码。e09 讲过字符串与编码，这里是一个真实的例子。
+- **字节与字符**：Git 把路径的 UTF-8 字节逐个写成 `\ooo`。“旧”是三个字节 `346 227 247`，必须先收集所有的字节，再一起解码；把每个字节当成一个字符（`String.fromCharCode(0o346)` 是 `æ`）只会得到乱码。a04 讲过 JavaScript 的字符串是 UTF-16，本课的示例用 `TextEncoder` 看到了 UTF-8 的字节，这里是一个真实的例子。
 
 类型上，`StatusEntry` 是一个可辨识联合：只有 `kind` 为 `'tracked'` 的条目才有 `staged`、`unstaged`、`from`，冲突的条目有 `code`。使用它的代码（例如编辑器中文件旁边的标记）用 `switch (entry.kind)` 就能安全地处理每一种情况。
 :::
@@ -685,7 +690,7 @@ export function parseStatus(output: string): StatusEntry[] {
 ```
 :::
 
-:::variant{kind=wrong name=split-arrow-anywhere fails=tests reason="按第一个 “ -> ” 拆分改名：带引号的旧路径中如果有空格，会被拆错"}
+:::variant{kind=wrong name=split-arrow-anywhere fails=tests reason="按第一个 “ -> ” 拆分改名，没有考虑引号：旧路径是 “p -> q.txt” 时，在引号里面就拆开了"}
 ```ts file=status.ts
 export type Change = 'modified' | 'type-changed' | 'added' | 'deleted' | 'renamed' | 'copied';
 
@@ -735,8 +740,9 @@ export function unquote(field: string): string {
 
 /** 改名的那一行：“原路径 -> 新路径”。含有空格的路径一定带引号，所以第一个引号外的 " -> " 就是分隔符 */
 function splitRename(rest: string): [from: string, to: string] {
-  const end = rest.indexOf(' ');
-  if (end <= 0 || !rest.startsWith(' -> ', end)) throw new Error(`无法解析改名：${rest}`);
+  // 直接找第一个 " -> "，没有考虑它是不是在引号里面
+  const end = rest.indexOf(' -> ');
+  if (end <= 0) throw new Error(`无法解析改名：${rest}`);
   return [rest.slice(0, end), rest.slice(end + 4)];
 }
 

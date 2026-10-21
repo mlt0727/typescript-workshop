@@ -138,10 +138,12 @@ export function chunk<T>(items: readonly T[], size: number): T[][] {
 :::mutant{name=mutates-input hint="把传入的数组清空了（用 splice 一组一组地取出）：需要检查调用之后原数组不变"}
 ```ts file=chunk.ts
 /** 把数组按 size 个一组分开；最后一组可以不满。不修改传入的数组 */
-export function chunk<T>(items: T[], size: number): T[][] {
+export function chunk<T>(items: readonly T[], size: number): T[][] {
   if (!Number.isInteger(size) || size < 1) throw new RangeError(`size 必须是正整数：${size}`);
   const chunks: T[][] = [];
-  while (items.length > 0) chunks.push(items.splice(0, size));
+  // 用类型断言绕过了 readonly：签名没有变，只读的参数照样能传进来
+  const mutable = items as T[];
+  while (mutable.length > 0) chunks.push(mutable.splice(0, size));
   return chunks;
 }
 ```
@@ -168,7 +170,7 @@ export function chunk<T>(items: T[], size: number): T[][] {
 
 注意“必须是正整数”这一句包含两个条件：只测试 0 的话，“只检查 `size < 1`”的实现也能通过，小数 `1.5` 才能把它区分出来。这就是“边界”与“无效输入”要分开想的原因。
 
-“不修改传入的数组”是一种“没有发生的事”，不专门检查就永远发现不了。被测的函数签名是 `readonly T[]`，在类型上已经禁止了修改；但测试检查的是运行时的行为，即使有人把签名改了，测试仍然有效。
+“不修改传入的数组”是一种“没有发生的事”，不专门检查就永远发现不了。被测的函数签名是 `readonly T[]`，在类型上已经禁止了修改；但实现可以用类型断言绕过它（mutates-input 就是这样做的，签名完全没变），而测试检查的是运行时的行为，照样能发现。
 :::
 
 :::variant{kind=alt name=table-and-loop}

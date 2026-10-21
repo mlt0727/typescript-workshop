@@ -2,12 +2,12 @@
 version: 1
 mode: dom
 estimatedMinutes: 60
-review: ai-draft
-problem: 页面上的功能，最终是由用户的点击和输入来使用的：找到“保存”按钮，在“名字”输入框中打字，看到“已保存”的提示。如果测试直接读取组件内部的变量、按 class 名去找元素，重构一次 CSS 或者换一种状态管理，测试就会大面积失败，而真正的 bug（例如按钮没有可访问的名字，读屏软件的用户找不到它）却发现不了。这一课用 Testing Library 像用户一样测试页面和 React 组件：按角色和名字查找元素，用 user-event 模拟真实的输入，用 jest-dom 的匹配器检查用户能感知到的结果。
+review: self-reviewed
+problem: 页面上的功能，最终是由用户的点击和输入来使用的：找到“保存”按钮，在“名字”输入框中打字，看到“已保存”的提示。如果测试直接读取组件内部的变量、按 class 名去找元素，重构一次 CSS 或者换一种状态管理，测试就会大面积失败，而真正的 bug（例如按钮没有可访问的名字，读屏软件的用户找不到它）却发现不了。这一课用 Testing Library 像用户一样测试页面：按角色和名字查找元素，用 user-event 模拟真实的输入，用 jest-dom 的匹配器检查用户能感知到的结果。
 objectives:
   - 按 Testing Library 推荐的优先级查找元素（getByRole 加 name、getByLabelText……），区分 getBy、queryBy、findBy
   - 用 user-event 模拟点击、输入、键盘操作，用 jest-dom 的匹配器检查文字、状态、可访问的名字与焦点
-  - 测试 React 组件的行为而不是实现细节，处理异步出现的内容
+  - 测试用户能看到的行为而不是实现细节，处理异步出现的内容
   - 在本机为 Vitest 配置 jsdom 环境和 jest-dom，运行 DOM 测试
 references:
   - title: Guiding Principles — Testing Library
@@ -134,19 +134,21 @@ button.addEventListener('click', () => {
 - 别忘了“没有输入时”的情况，以及前后的空白（` Ada `）。
 :::
 
-## React 组件的测试
+## 测试行为，而不是实现
 
-`@testing-library/react` 的 `render(<组件 />)` 把组件渲染进页面，之后的查找和操作与普通的 DOM 完全一样。测试的仍然是用户能看到的行为，而不是组件内部：
+无论页面是直接操作 DOM 写的，还是用 React 这样的框架写的（G 阶段），测试的都是用户能看到的行为：
 
-- 不要检查 state 的值、不要调用组件内部的函数；用户点了按钮之后，检查页面上出现了什么；
-- 换一种实现（`useState` 换成 `useReducer`，拆成两个子组件），行为不变，测试就应该仍然通过；
-- 异步出现的内容用 `findBy…` 或 `waitFor` 等待（g 阶段的练习中已经用过很多次）。React 的状态更新由 Testing Library 自动包在 `act` 中，通常不需要自己写 `act`。
+- 不要读取代码内部的变量、不要按 class 名去找元素；用户点了按钮之后，检查页面上出现了什么；
+- 换一种实现（用模板字符串一次生成整个列表，或者改写成 React 组件），只要页面上的角色、名字和行为不变，测试就应该仍然通过；
+- 异步出现的内容用 `findBy…` 或 `waitFor` 等待。
+
+React 组件的测试在 g15 中讲：`@testing-library/react` 的 `render(<组件 />)` 把组件渲染进页面，之后的查找和操作与本课完全一样。
 
 ## 在自己的电脑上运行
 
 Vitest 默认在 Node.js 环境中运行测试，那里没有 `document`。DOM 测试需要一个模拟的浏览器环境，最常用的是 jsdom：
 
-1. 安装：`npm install --save-dev jsdom @testing-library/dom @testing-library/user-event @testing-library/jest-dom`（React 项目再加上 `@testing-library/react`）；
+1. 安装：`npm install --save-dev jsdom @testing-library/dom @testing-library/user-event @testing-library/jest-dom`；
 2. 在项目根目录创建 `vitest.config.ts`：
 
 ```ts
@@ -162,6 +164,8 @@ export default defineConfig({
 
 3. `src/setup-tests.ts` 中只有一行：`import '@testing-library/jest-dom/vitest';`，它在每个测试文件之前运行，注册 jest-dom 的匹配器；
 4. 写一个测试（例如把上面示例的逻辑放进一个 `mountGreeting(root)` 函数，在 `beforeEach` 中设置 `document.body.innerHTML` 并调用它），运行 `npx vitest run`。
+
+这个网站上每道练习的“下载本地项目”按钮生成的就是这样配置好的项目：`setup-tests.ts` 还会在每个测试开始前把页面恢复成 `index.html` 的初始状态并重新运行 `main.ts`，和网站上一样。
 
 jsdom 是用 JavaScript 实现的浏览器 DOM，不做页面布局（元素的尺寸都是 0），也不完全支持 CSS。需要真实浏览器的行为时，Vitest 还有“浏览器模式”，或者用下一课的 Playwright。这个网站的测试运行在你的浏览器中真实的页面上，所以布局和样式都是真的。
 

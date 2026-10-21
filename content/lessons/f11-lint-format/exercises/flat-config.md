@@ -232,6 +232,14 @@ describe('computeConfig：哪些文件被检查', () => {
     expect(computeConfig([{ files: ['**/*'], rules: { curly: 'error' } }], 'README.md')).toBeNull();
     expect(computeConfig([{ files: ['**/*'], rules: { curly: 'error' } }], 'build/a.js')).toEqual({ curly: [2] });
   });
+
+  test('只有适用的配置对象的 files 才让文件需要被检查', () => {
+    // 这个对象自己的 ignores 排除了根目录的 README.md：它不适用，README.md 也就不需要检查
+    const md: ConfigObject[] = [{ files: ['**/*.md'], ignores: ['README.md'], rules: { curly: 'error' } }];
+    expect(computeConfig(md, 'README.md')).toBeNull();
+    expect(computeConfig(md, 'docs/README.md')).toEqual({ curly: [2] });
+    expect(computeConfig(md, 'a.js')).toEqual({});
+  });
 });
 ```
 :::
@@ -743,7 +751,7 @@ export function computeConfig(configs: readonly ConfigObject[], path: string): R
 ```
 :::
 
-:::variant{kind=wrong name=string-severity fails=tests reason="没有把严重程度统一成数字：输出中出现了 "warn"、"error""}
+:::variant{kind=wrong name=string-severity fails=tests reason="没有把严重程度统一成数字：输出中出现了 ‘warn’、‘error’"}
 ```ts file=flat-config.ts
 export type Severity = 'off' | 'warn' | 'error' | 0 | 1 | 2;
 export type RuleEntry = Severity | [Severity, ...unknown[]];

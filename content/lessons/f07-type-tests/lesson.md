@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: f06 的测试检查的是运行时的行为。可是对一个泛型函数或者工具类型来说，“类型对不对”本身就是功能：pick(user, ['name']) 的返回值类型应该只有 name；传入不存在的键应该在编译期报错；某次重构让返回值悄悄变成了 any，运行时的测试一个也不会失败，调用方却失去了全部检查。这一课学会写类型测试：用 expectTypeOf 断言类型完全相等，用 @ts-expect-error 断言某段代码不能通过编译，并知道这两种写法各自的陷阱。
 objectives:
   - 说明类型测试的用途：保护泛型函数、工具类型和公开 API 的类型，发现悄悄出现的 any
@@ -28,7 +28,7 @@ references:
 
 前面很多练习中都有 `*.test-d.ts` 文件，它们就是类型测试：不运行，只做类型检查。什么时候值得自己写？
 
-- **泛型函数和工具类型**：c 阶段写的 `pick`、`DistributiveOmit`、`ParamNames`，它们的“输出”就是类型，运行时的测试检查不到；
+- **泛型函数和工具类型**：例如 b15 中带 `K extends keyof T` 约束的函数，c06 的 `DistributiveOmit`，c05 从路径中取出参数名的 `Params`，它们的“输出”就是类型，运行时的测试检查不到；
 - **公开的 API**：别人会依赖你的类型。一次重构让返回值从 `User` 变成了 `User | undefined`，调用方的代码就会报错；
 - **防止 `any` 悄悄出现**（c10）：返回值变成 `any` 时，运行时什么都不会变，但调用方失去了所有检查。普通的赋值检查也发现不了它，因为 `any` 可以赋值给任何类型。
 

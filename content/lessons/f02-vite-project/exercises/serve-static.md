@@ -113,6 +113,9 @@ const dist = new Set([
   '/docs/index.html',
   '/docs/guide.html',
   '/中文 说明.txt',
+  '/notes/a..b.txt',
+  '/LICENSE',
+  '/assets/my-background.png',
 ]);
 
 const IMMUTABLE = 'public, max-age=31536000, immutable';
@@ -135,6 +138,8 @@ describe('找文件', () => {
     expect(serveStatic('/?utm_source=mail', dist)).toEqual(page('/index.html'));
     expect(serveStatic('/favicon.svg?v=3', dist)).toMatchObject({ status: 200, file: '/favicon.svg' });
     expect(serveStatic('/robots.txt#top', dist)).toMatchObject({ status: 200, file: '/robots.txt' });
+    // 先去掉查询再解码：查询中的 % 不是编码
+    expect(serveStatic('/?q=100%', dist)).toEqual(page('/index.html'));
   });
 
   test('前端路由的地址返回 /index.html', () => {
@@ -142,6 +147,8 @@ describe('找文件', () => {
     expect(serveStatic('/projects/42/?tab=files', dist)).toEqual(page('/index.html'));
     expect(serveStatic('/settings#theme', dist)).toEqual(page('/index.html'));
     expect(serveStatic('/projects/42', new Set(['/assets/index-wktXvZw9.js']))).toEqual({ status: 404 });
+    // 存在的文件优先：没有扩展名的 /LICENSE 是真实的文件，不是前端路由
+    expect(serveStatic('/LICENSE', dist)).toEqual({ status: 200, file: '/LICENSE', cacheControl: HOUR });
   });
 
   test('找不到的资源是 404，不是 index.html', () => {
@@ -156,6 +163,8 @@ describe('找文件', () => {
     expect(serveStatic('/assets/../index.html', dist)).toEqual({ status: 404 });
     expect(serveStatic('/assets/%2E%2E/index.html', dist)).toEqual({ status: 404 });
     expect(serveStatic('/docs/..%2Findex.html', dist)).toEqual({ status: 404 });
+    // 只有整段是 .. 才算：文件名中的 .. 没有问题
+    expect(serveStatic('/notes/a..b.txt', dist)).toEqual({ status: 200, file: '/notes/a..b.txt', cacheControl: HOUR });
   });
 });
 
@@ -170,6 +179,8 @@ describe('缓存头', () => {
     expect(serveStatic('/assets/logo.svg', dist)).toMatchObject({ cacheControl: HOUR });
     expect(serveStatic('/site-manifest.json', dist)).toMatchObject({ cacheControl: HOUR });
     expect(serveStatic('/favicon.svg', dist)).toMatchObject({ cacheControl: HOUR });
+    // 最后一个 - 之后不是正好 8 个字符
+    expect(serveStatic('/assets/my-background.png', dist)).toMatchObject({ cacheControl: HOUR });
   });
 });
 ```

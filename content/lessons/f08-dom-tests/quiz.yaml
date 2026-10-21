@@ -30,15 +30,15 @@
     - text: "`screen.getByRole('list')`"
       explain: 点击之后请求还没有完成，这时列表还不存在，getBy 会立即失败。
     - text: 在点击之后写 `setTimeout`，在回调中再查找
-      explain: 测试函数不会等待这个回调，失败也不会被报告；用 findBy 或 waitFor。
+      explain: 测试函数不会等待这个回调。回调中的失败不会算在这个测试上（测试显示通过，Vitest 只在最后另外报告一个未处理的错误）；用 findBy 或 waitFor。
 - id: implementation-detail
   type: single
-  prompt: 把一个 React 组件中的 useState 换成了 useReducer，界面和行为都没有变。好的组件测试应该怎样？
+  prompt: 把标签输入框的实现从“每次修改单个元素”改成“每次用模板字符串重新生成整个列表”，页面上的角色、名字和行为都没有变。好的测试应该怎样？
   options:
     - text: 全部仍然通过，因为它们检查的是用户能看到的结果
       correct: true
       explain: 测试行为而不是实现，重构时测试才是“安全网”而不是负担。
-    - text: 检查 state 的测试需要更新
-      explain: 组件测试不应该读取内部的 state；如果有这样的测试，说明它测试了实现细节。
+    - text: 读取内部变量、按 class 名查找元素的测试需要更新
+      explain: 好的测试不应该依赖这些；如果有这样的测试，说明它测试了实现细节。
     - text: 需要换成 Playwright 测试
       explain: 和工具无关，关键是测试的是什么。

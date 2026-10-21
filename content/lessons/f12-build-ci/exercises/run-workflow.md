@@ -14,7 +14,19 @@ title: 模拟一次工作流的运行结果
 3. 运行的 job，状态是 `outcomes` 中它的结果；不运行的 job 是 `'skipped'`；
 4. 返回的对象按 `jobs` 中定义的顺序列出每个 job 的状态。依赖可以定义在后面；不存在的依赖、循环依赖时抛出 `Error`。
 
-关于第 2 条中的 `success()`：GitHub 的文档只明确写了 `failure()` 检查所有祖先；`success()` 这里同样按所有祖先计算，与社区中实际遇到的“上游失败后，即使中间的 job 用 `always()` 成功了，下游仍被跳过”的情况一致。实际的工作流中，遇到这种依赖链最好显式检查 `needs.<job>.result`。
+关于第 2 条中的 `success()`：GitHub 文档的表达式一节只明确写了 `failure()` 检查所有祖先；`needs` 一节写的是，失败或跳过会影响“从失败或跳过的那一点开始的整条依赖链”（dependency chain from the point of failure or skip onwards），并且 `if` 中没有任何状态函数时会自动加上 `success()`。这个规则在 2026-10-20 用一个实验工作流实际运行过（这个仓库的临时分支，运行编号 39521401373，7 个 job）：
+
+| job | `needs` | `if` | 实际结果 |
+| --- | --- | --- | --- |
+| `a` | | | 失败（`exit 1`） |
+| `b` | `a` | `always()` | 成功 |
+| `c` | `b` | 不写 | 跳过 |
+| `g` | `b` | `success()` | 跳过 |
+| `d` | `b` | `failure()` | 运行，成功 |
+| `e` | | `failure()` | 跳过 |
+| `f` | `e` | `failure()` | 跳过 |
+
+`c` 和 `g` 的直接依赖 `b` 是成功的，它们仍然被跳过：`success()` 看的是整条依赖链（[actions/runner#491](https://github.com/actions/runner/issues/491) 中讨论的正是这种情况）。实际的工作流中，遇到这种依赖链最好显式检查 `needs.<job>.result`。
 
 :::files{role=starter}
 ```ts file=workflow.ts
@@ -163,6 +175,10 @@ describe('runWorkflow', () => {
 
   test('没有依赖的 failure() job：没有祖先失败，所以被跳过', () => {
     expect(runWorkflow({ cleanup: { if: 'failure()' }, build: {} }, {})).toEqual({ cleanup: 'skipped', build: 'success' });
+  });
+
+  test('被跳过不等于失败：上游的 failure() job 被跳过时，下游的 failure() 也不运行', () => {
+    expect(runWorkflow({ a: { if: 'failure()' }, n: { needs: 'a', if: 'failure()' } }, {})).toEqual({ a: 'skipped', n: 'skipped' });
   });
 
   test('互不依赖的 job 互不影响', () => {

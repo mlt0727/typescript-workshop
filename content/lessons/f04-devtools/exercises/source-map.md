@@ -8,9 +8,9 @@ title: 解码 source map
 
 **`decodeMappings(mappings)`**：用 `;` 分成生成代码的每一行（空字符串就是没有段的一行），每行用 `,` 分成段，每段用 `decodeVlq` 解码，必须是 1、4 或 5 个数，否则抛出 `Error`。然后把相对值换成绝对值：**生成的列号**相对于同一行中的上一段（每行从 0 开始）；**其余四个数**相对于整个 `mappings` 中上一次出现的同一个数（初始为 0，不随行重新开始）。
 
-**`originalPositionFor(map, line, column)`**：`line` 是生成代码中的行号（从 1 开始），`column` 是列号（从 0 开始，和 DevTools、`@jridgewell/trace-mapping` 的约定一样）。在这一行中找**生成的列号不超过 `column` 的最后一段**；没有这样的段、这一段只有 1 个数、行号超出范围时返回 `null`。否则返回 `{ source, line, column, name }`：`source` 是 `map.sources` 中对应的文件名，`line` 是源文件中的行号**加一**，`column` 是源文件中的列号，`name` 是 `map.names` 中的名字（这一段没有第 5 个数时为 `null`）。
+**`originalPositionFor(map, line, column)`**：`line` 是生成代码中的行号（从 1 开始），`column` 是列号（从 0 开始，和 `@jridgewell/trace-mapping`、DevTools 协议的约定一样。注意 DevTools 界面和 `error.stack` 中的列号从 1 开始，用上一题解析出的列号查找时要先减 1）。在这一行中找**生成的列号不超过 `column` 的最后一段**；没有这样的段、这一段只有 1 个数、行号超出范围时返回 `null`。否则返回 `{ source, line, column, name }`：`source` 是 `map.sources` 中对应的文件名，`line` 是源文件中的行号**加一**，`column` 是源文件中的列号，`name` 是 `map.names` 中的名字（这一段没有第 5 个数时为 `null`）。
 
-测试中的期望值都来自 npm 上的 `@jridgewell/sourcemap-codec` 和 `@jridgewell/trace-mapping`（Vite 等工具使用的库）对同样输入的实际输出。
+测试中有效输入的期望值都来自 npm 上的 `@jridgewell/sourcemap-codec` 和 `@jridgewell/trace-mapping`（Vite 等工具使用的库）对同样输入的实际输出。无效的输入是本题自己的规定：这两个库对 `g`、`AA` 这类输入并不报错，查找第 0 行时 trace-mapping 抛出异常而不是返回 `null`；几段的生成列号相同、并且正好等于 `column` 时，trace-mapping 取其中的第一段，本题取最后一段（实际的 source map 中很少出现，测试中也没有这种情况）。
 
 :::files{role=starter}
 ```ts file=sourcemap.ts

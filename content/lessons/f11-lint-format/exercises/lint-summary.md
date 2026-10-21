@@ -4,7 +4,7 @@ title: 汇总 ESLint 的检查结果
 ---
 `npx eslint src --format json` 输出一个数组，每个文件一项（类型已给出）。在 `summary.ts` 中实现三个函数，格式与 ESLint 默认的 stylish 格式一致：
 
-**`formatMessage(message)`**：`行:列`、类型、信息、规则名，用两个空格连接。类型：`fatal` 为 `true`（解析错误）或者 `severity` 为 2 时是 `error`，否则是 `warning`。信息结尾的句点去掉，除非句点前面是空格（或者整条信息只有一个字符）。`ruleId` 为 `null` 时没有规则名这一部分。（真实的 stylish 格式还会把各列对齐，这里只用两个空格。）
+**`formatMessage(message)`**：`行:列`、类型、信息、规则名，用两个空格连接。类型：`fatal` 为 `true`（解析错误）或者 `severity` 为 2 时是 `error`，否则是 `warning`（stylish 格式化器就是同时检查这两个字段的；ESLint 10.13 生成的解析错误实际上总是 `severity: 2`）。信息结尾的句点去掉，除非句点前面是空格（或者整条信息只有一个字符）。`ruleId` 为 `null` 时没有规则名这一部分。（真实的 stylish 格式还会把各列对齐，这里只用两个空格。）
 
 **`summary(results)`**：把所有文件的 `errorCount`、`warningCount` 相加。总数为 0 时返回空数组；否则第一行是 `✖ N problems (E errors, W warnings)`，数量为 1 时用单数（`1 problem`、`1 error`、`1 warning`）。可以自动修复的数量（`fixableErrorCount`、`fixableWarningCount` 之和）大于 0 时，再加一行：两个空格开头，`F errors and G warnings potentially fixable with the` 加上带反引号的 `--fix` 和 `option.`（单复数规则相同）。
 
@@ -534,7 +534,7 @@ export function countByRule(results: readonly LintResult[]): [rule: string, coun
 ```
 :::
 
-:::variant{kind=wrong name=fatal-ignored fails=tests reason="没有处理 fatal：解析错误的 severity 可能是 1，但它总是 error"}
+:::variant{kind=wrong name=fatal-ignored fails=tests reason="只看 severity、没有看 fatal：测试中有一条 severity 为 1 的 fatal 消息（ESLint 10.13 自己生成的解析错误总是 severity 2，这条是为了检查 fatal 的处理而构造的数据），它被显示成了 warning"}
 ```ts file=summary.ts
 export type LintMessage = {
   ruleId: string | null;

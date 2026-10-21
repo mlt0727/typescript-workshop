@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 用户说“购物车有时候合计不对”“列表偶尔是空的”，这样的报告往往没有错误信息，也不是每次都出现。排错的难点不在于修改代码，而在于找到是哪一行、为什么。凭感觉改一处、刷新看看，常常是修好了一个症状，又引入了另一个问题。这一课练习一套固定的排错步骤：先稳定地复现，再缩小范围，提出假设并验证，修复之后用测试把它固定下来；并认识 TypeScript/JavaScript 项目中最常见的几类 bug。
 objectives:
   - 按“复现、缩小、假设与验证、修复、回归测试”的步骤排查问题，而不是凭感觉修改
@@ -52,7 +52,7 @@ references:
 | 意外的修改 | `sort`、`reverse`、`splice` 修改原数组（a17）；两个变量指向同一个对象（a11） | 测试“传入的数组不变”；用 `toSorted` 等不修改原数组的方法；`readonly` 类型 |
 | 边界与差一错误 | 循环从 1 开始；分页的页码从 1 还是 0 开始；`<` 写成 `<=` | 测试空数组、一项、正好等于边界的情况 |
 | 数字与字符串 | `'2' + 1` 是 `'21'`；`0.1 + 0.2` 不等于 `0.3`；`12.3` 显示成了 `¥12.3` | 金额用整数的“分”计算；格式化时用 `toFixed(2)` |
-| 遗漏的 `await` | `forEach(async …)` 不会等待；忘了 `await` 的 Promise 中的错误没有被接住 | 类型（返回值是 `Promise`）；lint 规则 `no-floating-promises`（f11） |
+| 遗漏的 `await` | `forEach(async …)` 不会等待；忘了 `await` 的 Promise 中的错误没有被接住 | 类型（返回值是 `Promise`）；lint 规则 `no-misused-promises`（把 async 函数传给不等待它的 `forEach`）和 `no-floating-promises`（调用了返回 Promise 的函数却没有 `await`），见 f11 |
 | 竞态 | 先发出的请求后返回，旧的结果覆盖了新的（e08） | 在测试中控制请求完成的顺序 |
 
 `forEach(async …)` 值得单独看一下：

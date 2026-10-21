@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: “在我的电脑上是好的”：你忘了提交一个文件、本机装着别人没有的全局工具、某个测试只在你的时区通过，这些问题都要等到别人拉取代码、或者部署之后才暴露出来。持续集成（CI）让每一次推送和每一个拉取请求都在一台干净的机器上，按同样的步骤安装依赖、检查类型、运行 lint 和测试、构建，任何一步失败就不能合并。这一课把 F 阶段的工具串成一条流水线：用 GitHub Actions 为这个网站自己的仓库配置 CI 并实际运行，理解 job 之间的依赖与条件；再看构建好的网站怎样自动部署到 Vercel。
 objectives:
   - 列出发布之前要检查的事项：类型、lint、测试、构建、预览，以及 base、source map、环境变量等构建设置
@@ -102,7 +102,7 @@ jobs:
 
 - `on`：什么时候运行。这里是推送到 `main`，以及任何拉取请求；
 - `jobs`：一个或多个 job。每个 job 在一台**新的**虚拟机上运行（`runs-on: ubuntu-latest`），job 之间不共享文件；
-- `steps`：一个 job 中依次执行的步骤，任何一步失败（退出码不为 0），后面的步骤就不再执行，这个 job 失败。`run` 执行一条命令；`uses` 使用别人写好的 action：`actions/checkout` 取出代码，`actions/setup-node` 安装指定版本的 Node.js，`cache: npm` 缓存 npm 下载的包（以锁文件的内容为键），`actions/upload-artifact` 把文件保存为这次运行的**产物**，可以在网页上下载；
+- `steps`：一个 job 中依次执行的步骤，任何一步失败（退出码不为 0），这个 job 失败，后面的步骤不再执行（写了 `if: failure()`、`if: always()` 这类条件的步骤除外）。`run` 执行一条命令；`uses` 使用别人写好的 action：`actions/checkout` 取出代码，`actions/setup-node` 安装指定版本的 Node.js，`cache: npm` 缓存 npm 下载的包（以锁文件的内容为键），`actions/upload-artifact` 把文件保存为这次运行的**产物**，可以在网页上下载；
 - `@v7` 是 action 的主版本（编写本课时 checkout、setup-node、upload-artifact 的最新版本都是 v7）。写主版本可以自动得到修复，又不会遇到不兼容的修改；要求更严格时可以写完整的提交哈希。
 
 ## job 的顺序：needs 与 if
@@ -113,7 +113,7 @@ jobs:
 
 | 写法 | 什么时候运行 |
 | --- | --- |
-| 不写（相当于 `success()`） | 依赖的 job 都成功了 |
+| 不写（GitHub 自动加上 `success()`） | 依赖链上的所有 job 都成功了（依赖的依赖也算） |
 | `failure()` | 有祖先 job（依赖的依赖也算）失败了。适合“失败时发通知”“失败时上传日志” |
 | `always()` | 无论如何都运行（官方文档建议多数情况下改用 `!cancelled()`：工作流被取消时不运行） |
 

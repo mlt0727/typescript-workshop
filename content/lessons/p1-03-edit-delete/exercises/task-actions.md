@@ -753,7 +753,7 @@ boardRoot.addEventListener('click', (event) => {
 ```
 :::
 
-:::variant{kind=wrong name=silent fails=tests reason="没有在 role="status" 中说明结果"}
+:::variant{kind=wrong name=silent fails=tests reason="没有在状态区域（role 为 status）中说明结果"}
 ```ts file=main.ts
 import { reduce, type Action, type Board } from './board';
 import { parseTaskInput } from './parse';

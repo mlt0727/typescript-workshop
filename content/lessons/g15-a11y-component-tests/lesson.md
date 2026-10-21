@@ -95,6 +95,16 @@ createRoot(container).render(<App />);
 
 原生的 `<dialog>` 元素配合 `showModal()` 能自动处理其中的一部分（把对话框之外的内容变成不可交互、Esc 关闭）。但在测试中，user-event 模拟的按键不是浏览器认为“真实”的用户输入，不会触发浏览器自带的 Esc 关闭，所以下面的挑战中，组件自己处理 Esc 键。
 
+## React 组件的测试
+
+`@testing-library/react` 的 `render(<组件 />)` 把组件渲染进页面，之后用 `screen` 查找、用 user-event 操作，与 f08 完全一样。测试的仍然是用户能看到的行为，而不是组件内部：
+
+- 不要检查 state 的值、不要调用组件内部的函数；用户点了按钮之后，检查页面上出现了什么；
+- 换一种实现（`useState` 换成 `useReducer`，拆成两个子组件），行为不变，测试就应该仍然通过；
+- 异步出现的内容用 `findBy…` 或 `waitFor` 等待。React 的状态更新由 Testing Library 自动包在 `act` 中，通常不需要自己写 `act`。
+
+在自己的电脑上运行时，在 f08 的配置之外还要：安装 `@testing-library/react`（以及 `@vitejs/plugin-react`，加进 `vite.config.ts` 的 `plugins`）；在 `setup-tests.ts` 中加上 `afterEach(() => cleanup())`（`cleanup` 从 `@testing-library/react` 导入）。Testing Library 只在测试框架提供**全局的** `afterEach` 时才自动清理，而 Vitest 默认不提供全局 API（`globals` 为 `false`）：不加这一行，上一个测试渲染的组件会留在页面上，下一个测试会找到两个同样的按钮。这个网站和“下载本地项目”生成的项目都已经这样做了。
+
 ## 测试可访问性
 
 f08 已经讲过按角色和名字查找元素。检查可访问性时，再加上**状态**和**焦点**：

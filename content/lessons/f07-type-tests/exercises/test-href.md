@@ -10,7 +10,7 @@ allow: [ts-directive]
 - 类型上，`ParamNames<P>` 从路径模式中取出参数名（例子中是 `'id' | 'postId'`）。第二个参数必须**正好**包含这些参数（不能少、不能多、名字不能写错），值是字符串或数字；
 - 没有参数的路径（`href('/about')`）不需要、也不接受第二个参数；返回值的类型是 `string`。
 
-在 `href.test.ts` 中写运行时的测试，在 `href.test-d.ts` 中写类型测试。平台准备了七个错误的版本：有的错在运行时的行为，有的错在类型，你的两组测试合起来要发现每一个。
+在 `href.test.ts` 中写运行时的测试，在 `href.test-d.ts` 中写类型测试。平台准备了十个错误的版本：有的错在运行时的行为，有的错在类型，你的两组测试合起来要发现每一个。
 
 :::files{role=support}
 ```ts file=href.ts readonly
@@ -224,13 +224,19 @@ export function href(pattern: string, ...args: unknown[]): string {
 
 :::mutant{name=greedy-name hint="参数名把后面的路径也吞了进去：ParamNames 得到的是 'id/posts/:postId'。需要检查有两个参数时的参数名"}
 ```ts file=href.ts
-/** 路径模式中的参数名：'/users/:id/posts/:postId' 中是 'id' | 'postId' */
+type Names<P extends string> = P extends `${string}:${infer Name}/${infer Rest}`
+  ? Name | Names<`/${Rest}`>
+  : P extends `${string}:${infer Name}`
+    ? Name
+    : never;
+
+/** 路径模式中的参数名（写错了：第一个参数名把后面的路径也吞了进去） */
 export type ParamNames<P extends string> = P extends `${string}:${infer Name}` ? Name : never;
 
-export type Params<P extends string> = { [K in ParamNames<P>]: string | number };
+export type Params<P extends string> = { [K in Names<P>]: string | number };
 
 /** 没有参数的模式不接受第二个参数 */
-export function href<P extends string>(pattern: P, ...args: [ParamNames<P>] extends [never] ? [] : [params: Params<P>]): string;
+export function href<P extends string>(pattern: P, ...args: [Names<P>] extends [never] ? [] : [params: Params<P>]): string;
 export function href(pattern: string, ...args: unknown[]): string {
   const first = args[0];
   const params: Record<string, unknown> = typeof first === 'object' && first !== null ? { ...first } : {};
@@ -268,6 +274,81 @@ export function href(pattern: string, ...args: unknown[]): string {
 ```
 :::
 
+:::mutant{name=unknown-values hint="参数值的类型是 unknown：true、对象也能传进去。需要一个“值只能是字符串或数字”的测试"}
+```ts file=href.ts
+/** 路径模式中的参数名：'/users/:id/posts/:postId' 中是 'id' | 'postId' */
+export type ParamNames<P extends string> = P extends `${string}:${infer Name}/${infer Rest}`
+  ? Name | ParamNames<`/${Rest}`>
+  : P extends `${string}:${infer Name}`
+    ? Name
+    : never;
+
+export type Params<P extends string> = { [K in ParamNames<P>]: unknown };
+
+/** 没有参数的模式不接受第二个参数 */
+export function href<P extends string>(pattern: P, ...args: [ParamNames<P>] extends [never] ? [] : [params: Params<P>]): string;
+export function href(pattern: string, ...args: unknown[]): string {
+  const first = args[0];
+  const params: Record<string, unknown> = typeof first === 'object' && first !== null ? { ...first } : {};
+  return pattern.replace(/:(\w+)/g, (_match, name: string) => {
+    const value = params[name];
+    if (value === undefined) throw new Error(`缺少参数 ${name}`);
+    return encodeURIComponent(String(value));
+  });
+}
+```
+:::
+
+:::mutant{name=extra-keys hint="可以多传参数：第二个参数的类型是 Params<P> & Record<string, string | number>。需要一个“多了参数应该报错”的测试"}
+```ts file=href.ts
+/** 路径模式中的参数名：'/users/:id/posts/:postId' 中是 'id' | 'postId' */
+export type ParamNames<P extends string> = P extends `${string}:${infer Name}/${infer Rest}`
+  ? Name | ParamNames<`/${Rest}`>
+  : P extends `${string}:${infer Name}`
+    ? Name
+    : never;
+
+export type Params<P extends string> = { [K in ParamNames<P>]: string | number };
+
+/** 没有参数的模式不接受第二个参数 */
+export function href<P extends string>(pattern: P, ...args: [ParamNames<P>] extends [never] ? [] : [params: Params<P> & Record<string, string | number>]): string;
+export function href(pattern: string, ...args: unknown[]): string {
+  const first = args[0];
+  const params: Record<string, unknown> = typeof first === 'object' && first !== null ? { ...first } : {};
+  return pattern.replace(/:(\w+)/g, (_match, name: string) => {
+    const value = params[name];
+    if (value === undefined) throw new Error(`缺少参数 ${name}`);
+    return encodeURIComponent(String(value));
+  });
+}
+```
+:::
+
+:::mutant{name=no-params-accepts-object hint="没有参数的路径也接受第二个参数（{} 也能传进去）。需要一个“没有参数的路径不接受第二个参数”的测试"}
+```ts file=href.ts
+/** 路径模式中的参数名：'/users/:id/posts/:postId' 中是 'id' | 'postId' */
+export type ParamNames<P extends string> = P extends `${string}:${infer Name}/${infer Rest}`
+  ? Name | ParamNames<`/${Rest}`>
+  : P extends `${string}:${infer Name}`
+    ? Name
+    : never;
+
+export type Params<P extends string> = { [K in ParamNames<P>]: string | number };
+
+/** 没有参数的模式不接受第二个参数 */
+export function href<P extends string>(pattern: P, ...args: [ParamNames<P>] extends [never] ? [params?: object] : [params: Params<P>]): string;
+export function href(pattern: string, ...args: unknown[]): string {
+  const first = args[0];
+  const params: Record<string, unknown> = typeof first === 'object' && first !== null ? { ...first } : {};
+  return pattern.replace(/:(\w+)/g, (_match, name: string) => {
+    const value = params[name];
+    if (value === undefined) throw new Error(`缺少参数 ${name}`);
+    return encodeURIComponent(String(value));
+  });
+}
+```
+:::
+
 :::hint{level=1}
 先分清哪些规格只能在运行时检查（替换了每个参数、值被编码），哪些只能在类型上检查（参数不能少、不能多、名字不能错、没有参数时不接受第二个参数、返回 `string`）。运行时的测试需要一个有两个参数的路径和一个含有空格或 `/` 的值。
 :::
@@ -280,11 +361,11 @@ export function href(pattern: string, ...args: unknown[]): string {
 这道题中的错误分成两类，各自只有一种测试能发现：
 
 - **运行时的错误**（没有编码、只替换了第一个参数）：类型完全正确，只有运行时的测试能发现；
-- **类型的错误**（参数可选、参数是 `Record`、返回 `any`、参数名取错）：运行时的结果都对，只有类型测试能发现。“没有参数也要传对象”的版本比较特别：它让 `href('/about')` 不能通过编译，所以只要测试中有这样一次调用（运行时的测试中就有），类型检查就会发现它。
+- **类型的错误**（参数可选、参数是 `Record`、值是 `unknown`、可以多传参数、没有参数的路径也接受对象、返回 `any`、导出的 `ParamNames` 写错）：运行时的结果都对，只有类型测试能发现。“没有参数也要传对象”的版本比较特别：它让 `href('/about')` 不能通过编译，所以只要测试中有这样一次调用（运行时的测试中就有），类型检查就会发现它。
 
-“参数名取错”的版本（`ParamNames` 得到 `'id/posts/:postId'`）提醒我们：类型层面的逻辑和运行时的逻辑一样会写错，`ParamNames` 本身就值得测试。用 `expectTypeOf<…>()` 可以直接检查一个类型，不需要任何值。
+“参数名取错”的版本中，`href` 自己用的类型是对的，只有导出的 `ParamNames` 得到了 `'id/posts/:postId'`：所有的调用都能通过编译，只有直接检查 `ParamNames` 的类型测试能发现它。它提醒我们：类型层面的逻辑和运行时的逻辑一样会写错，导出的工具类型本身就值得测试。用 `expectTypeOf<…>()` 可以直接检查一个类型，不需要任何值。
 
-“多了一个参数”能被发现，是因为对象字面量的**多余属性检查**（b02）：参数的类型是 `{ id: string | number }` 时，`{ id: 1, page: 2 }` 报错；变成 `Record<string, …>` 之后，任何键都允许。
+“多了一个参数”能被发现，是因为对象字面量的**多余属性检查**（b02）：参数的类型是 `{ id: string | number }` 时，`{ id: 1, page: 2 }` 报错；变成 `Record<string, …>`，或者与 `Record<string, …>` 交叉之后，任何键都允许。
 
 写这类“带类型的 API”时，类型测试和运行时测试同样重要：使用者依赖的不只是返回的字符串，还有编辑器中的提示和错误。
 :::
@@ -322,11 +403,13 @@ test('调用', () => {
   href('/static', { x: 1 });
   // @ts-expect-error 写错了名字
   href('/a/:x', { X: 1 });
+  // @ts-expect-error 值只能是字符串或数字
+  href('/a/:x', { x: null });
 });
 ```
 :::
 
-:::variant{kind=wrong name=runtime-only fails=mutants misses=optional-params,record-params,returns-any reason="只写了运行时的测试：参数变成可选、参数名不检查、返回 any，运行时都发现不了"}
+:::variant{kind=wrong name=runtime-only fails=mutants misses=optional-params,record-params,greedy-name,returns-any,unknown-values,extra-keys,no-params-accepts-object reason="只写了运行时的测试：参数变成可选、参数名不检查、值是 unknown、可以多传参数、导出的 ParamNames 写错、返回 any，运行时都发现不了"}
 ```ts file=href.test.ts
 import { describe, expect, test } from 'vitest';
 import { href } from './href';

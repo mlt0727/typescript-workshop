@@ -109,8 +109,8 @@
       ]
     },
     "a02-compile-vs-runtime": {
-      "verifiedAt": "2026-10-20T17:24:42.637Z",
-      "sourceHash": "d740472dd62ea000",
+      "verifiedAt": "2026-10-21T00:33:49.254Z",
+      "sourceHash": "673bb373ab3c3a80",
       "ok": true,
       "checks": [
         {
@@ -197,6 +197,11 @@
           "target": "exercise:read-port:wrong:trust-annotation",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(readPort › 字符串形式的数字 时返回默认端口 ⟶ expect(…).toBe(3000),readPort › 小数 时返回默认端口 ⟶ expect(…).toBe(3000),readPort › 布尔值 时返回默认端口 ⟶ expect(…).toBe(3000),readPort › 返回值确实是数字 ⟶ expect(…).toBe('number'))"
+        },
+        {
+          "target": "exercise:read-port:wrong:coerce-string",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(readPort › 字符串形式的数字 时返回默认端口 ⟶ expect(…).toBe(3000),readPort › 布尔值 时返回默认端口 ⟶ expect(…).toBe(3000))"
         },
         {
           "target": "exercise:read-port:wrong:no-range",
@@ -7591,8 +7596,8 @@
       ]
     },
     "f01-node-npm": {
-      "verifiedAt": "2026-10-20T19:57:35.323Z",
-      "sourceHash": "3b078fc9f966872d",
+      "verifiedAt": "2026-10-21T00:33:50.017Z",
+      "sourceHash": "6f60cfcde41a1989",
       "ok": true,
       "checks": [
         {
@@ -7604,6 +7609,16 @@
           "target": "playground:ranges:run",
           "ok": true,
           "detail": "期望 done，实际 done；输出：[log] ^1.2.3 → >=1.2.3 <2.0.0 | [log] ^0.2.3 → >=0.2.3 <0.3.0 | [log] ^0.0.3 → >=0.0.3 <0.0.4"
+        },
+        {
+          "target": "playground:regex:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:regex:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] true false | [log] 10.20.30 10 20 0 | [log] null | [log] >= 1.2.3 | [log] false true | [log] [ '1', '22', '333' ] | [log] [ 'x:1', 'y:22' ] | [log] <b>粗</b><b>体</b> <b>粗</b>"
         },
         {
           "target": "exercise:compare-versions:starter:starter",
@@ -7634,6 +7649,11 @@
           "target": "exercise:compare-versions:wrong:numeric-ids-as-strings",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareVersions › 预发布标识符：数字按数值，字符串按编码，数字比字符串小，多的更大 ⟶ expect(…).toBe(-1),compareVersions › 可以直接用来排序（语义化版本规范中的例子） ⟶ expect(…).toEqual([)"
+        },
+        {
+          "target": "exercise:compare-versions:wrong:mixed-as-string",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(compareVersions › 预发布标识符：数字按数值，字符串按编码，数字比字符串小，多的更大 ⟶ expect(…).toBe(-1))"
         },
         {
           "target": "exercise:compare-versions:wrong:leading-zeros",
@@ -7693,8 +7713,8 @@
       ]
     },
     "f02-vite-project": {
-      "verifiedAt": "2026-10-20T22:30:54.369Z",
-      "sourceHash": "f8dbf1c28428363c",
+      "verifiedAt": "2026-10-21T00:33:50.398Z",
+      "sourceHash": "023b9724004e988c",
       "ok": true,
       "checks": [
         {
@@ -7785,8 +7805,8 @@
       ]
     },
     "f03-tsconfig": {
-      "verifiedAt": "2026-10-20T22:22:27.302Z",
-      "sourceHash": "42eb754e80fa7c1c",
+      "verifiedAt": "2026-10-21T00:33:51.151Z",
+      "sourceHash": "ec989902c16a7771",
       "ok": true,
       "checks": [
         {
@@ -7832,7 +7852,7 @@
         {
           "target": "exercise:resolve-import:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(两种模式相同的部分 › 写出 .js / .jsx 时对应到 .ts / .tsx ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),两种模式相同的部分 › . 和 .. 按文件夹移动 ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),两种模式相同的部分 › 写出 .ts / .tsx：找到了文件，但没有开启 allowTsExtensions 时是 5097 ⟶ expect(…).toEqual({ ok: false, code: 5097 }),bundler：可以省略扩展名，可以导入文件夹 › 省略扩展名 ⟶ expect(…).toEqual({ ok: true, file: 'src/view.tsx' }),bundler：可以省略扩展名，可以导入文件夹 › 导入文件夹 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib/index.ts' }),bundler：可以省略扩展名，可以导入文件夹 › 同名的文件优先于文件夹 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib/index.ts' }),nodenext：必须写出扩展名 › 省略扩展名：能猜到时是 2835 加上建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './util.js' }),nodenext：必须写出扩展名 › 猜不到（文件夹、不存在的文件）时是 2834 ⟶ ./lib,nodenext：必须写出扩展名 › 同名的文件存在时给出建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './lib.js' }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(两种模式相同的部分 › 写出 .js / .jsx 时对应到 .ts / .tsx ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),两种模式相同的部分 › .ts、.js 先找 .ts；.tsx、.jsx 先找 .tsx ⟶ expect(…).toEqual({ ok: true, file: 'src/x.ts' }),两种模式相同的部分 › . 和 .. 按文件夹移动 ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),两种模式相同的部分 › 写出 .ts / .tsx：找到了文件，但没有开启 allowTsExtensions 时是 5097 ⟶ expect(…).toEqual({ ok: false, code: 5097 }),bundler：可以省略扩展名，可以导入文件夹 › 省略扩展名 ⟶ expect(…).toEqual({ ok: true, file: 'src/view.tsx' }),bundler：可以省略扩展名，可以导入文件夹 › 导入文件夹 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib/index.ts' }),bundler：可以省略扩展名，可以导入文件夹 › 同名的文件优先于文件夹 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib/index.ts' }),nodenext：必须写出扩展名 › 省略扩展名：能猜到时是 2835 加上建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './util.js' }),nodenext：必须写出扩展名 › 猜不到（文件夹、不存在的文件）时是 2834 ⟶ ./lib,nodenext：必须写出扩展名 › 同名的文件存在时给出建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './lib.js' }))"
         },
         {
           "target": "exercise:resolve-import:solution:solution",
@@ -7852,7 +7872,7 @@
         {
           "target": "exercise:resolve-import:wrong:js-taken-literally",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(两种模式相同的部分 › 写出 .js / .jsx 时对应到 .ts / .tsx ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),两种模式相同的部分 › . 和 .. 按文件夹移动 ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),nodenext：必须写出扩展名 › 同名的文件存在时给出建议 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib.ts' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(两种模式相同的部分 › 写出 .js / .jsx 时对应到 .ts / .tsx ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),两种模式相同的部分 › .ts、.js 先找 .ts；.tsx、.jsx 先找 .tsx ⟶ expect(…).toEqual({ ok: true, file: 'src/x.ts' }),两种模式相同的部分 › . 和 .. 按文件夹移动 ⟶ expect(…).toEqual({ ok: true, file: 'src/util.ts' }),nodenext：必须写出扩展名 › 同名的文件存在时给出建议 ⟶ expect(…).toEqual({ ok: true, file: 'src/lib.ts' }))"
         },
         {
           "target": "exercise:resolve-import:wrong:index-first",
@@ -7865,9 +7885,14 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(两种模式相同的部分 › 写出 .ts / .tsx：找到了文件，但没有开启 allowTsExtensions 时是 5097 ⟶ expect(…).toEqual({ ok: false, code: 5097 }))"
         },
         {
-          "target": "exercise:resolve-import:wrong:always-suggest-js",
+          "target": "exercise:resolve-import:wrong:ts-first-always",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(nodenext：必须写出扩展名 › 省略扩展名：能猜到时是 2835 加上建议 ⟶ expect(…).toEqual({ ok: false, code: 2835, suggestion: './view.jsx' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(两种模式相同的部分 › .ts、.js 先找 .ts；.tsx、.jsx 先找 .tsx ⟶ expect(…).toEqual({ ok: true, file: 'src/x.tsx' }))"
+        },
+        {
+          "target": "exercise:resolve-import:wrong:clamp-at-root",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(两种模式相同的部分 › . 和 .. 按文件夹移动 ⟶ expect(…).toEqual({ ok: false, code: 2307 }))"
         },
         {
           "target": "exercise:resolve-import:wrong:no-dot-segments",
@@ -7877,8 +7902,8 @@
       ]
     },
     "f04-devtools": {
-      "verifiedAt": "2026-10-20T22:30:54.927Z",
-      "sourceHash": "a652c94b11d57a77",
+      "verifiedAt": "2026-10-21T00:33:52.190Z",
+      "sourceHash": "61a9f4ccc40ac058",
       "ok": true,
       "checks": [
         {
@@ -7894,7 +7919,7 @@
         {
           "target": "exercise:parse-stack:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseStackLine：Chromium › 有名字的函数 ⟶ expect(…).toEqual({,parseStackLine：Chromium › 构造函数、方法、async ⟶ expect(…).toMatchObject({ fn: 'new Point', line: 3, column: 44 }),parseStackLine：Chromium › 没有名字：只有位置 ⟶ expect(…).toEqual({,parseStackLine：Chromium › Node.js 的路径 ⟶ expect(…).toEqual({ fn: 'add', url: 'C:\\\\Users\\\\ada\\\\app\\\\math.js', line: 2, column: 29 }),parseStackLine：Chromium › 不是调用栈的一层时返回 null ⟶ \"Error: in map\",parseStackLine：Safari › 函数名@位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({,parseStackLine：Safari › 内置函数返回 null ⟶ expect(…).toBeNull(),parseStack › Chromium：跳过错误信息和内置函数 ⟶ expect(…).toEqual([,parseStack › Safari ⟶ expect(…).toEqual([)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseStackLine：Chromium › 有名字的函数 ⟶ expect(…).toEqual({,parseStackLine：Chromium › 构造函数、方法、async ⟶ expect(…).toMatchObject({ fn: 'new Point', line: 3, column: 44 }),parseStackLine：Chromium › 没有名字：只有位置 ⟶ expect(…).toEqual({,parseStackLine：Chromium › Node.js 的路径 ⟶ expect(…).toEqual({ fn: 'add', url: 'C:\\\\Users\\\\ada\\\\app\\\\math.js', line: 2, column: 29 }),parseStackLine：Chromium › 不是调用栈的一层时返回 null ⟶ \"Error: in map\",parseStackLine：Safari › 函数名@位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › await 之后的一层：去掉 async ⟶ expect(…).toEqual({,parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({,parseStackLine：Safari › 内置函数返回 null ⟶ expect(…).toBeNull(),parseStack › Chromium：跳过错误信息和内置函数 ⟶ expect(…).toEqual([,parseStack › Safari ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:parse-stack:solution:solution",
@@ -7909,17 +7934,17 @@
         {
           "target": "exercise:parse-stack:wrong:split-on-colons",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Chromium › 有名字的函数 ⟶ expect(…).toEqual({,parseStackLine：Chromium › 构造函数、方法、async ⟶ expect(…).toMatchObject({ fn: 'new Point', line: 3, column: 44 }),parseStackLine：Chromium › 没有名字：只有位置 ⟶ expect(…).toEqual({,parseStackLine：Chromium › Node.js 的路径 ⟶ expect(…).toEqual({ fn: 'add', url: 'C:\\\\Users\\\\ada\\\\app\\\\math.js', line: 2, column: 29 }),parseStackLine：Safari › 函数名@位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({,parseStack › Chromium：跳过错误信息和内置函数 ⟶ expect(…).toEqual([,parseStack › Safari ⟶ expect(…).toEqual([)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Chromium › 有名字的函数 ⟶ expect(…).toEqual({,parseStackLine：Chromium › 构造函数、方法、async ⟶ expect(…).toMatchObject({ fn: 'new Point', line: 3, column: 44 }),parseStackLine：Chromium › 没有名字：只有位置 ⟶ expect(…).toEqual({,parseStackLine：Chromium › Node.js 的路径 ⟶ expect(…).toEqual({ fn: 'add', url: 'C:\\\\Users\\\\ada\\\\app\\\\math.js', line: 2, column: 29 }),parseStackLine：Safari › 函数名@位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › await 之后的一层：去掉 async ⟶ expect(…).toEqual({,parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({,parseStack › Chromium：跳过错误信息和内置函数 ⟶ expect(…).toEqual([,parseStack › Safari ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:parse-stack:wrong:chromium-only",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Safari › 函数名@位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({,parseStack › Safari ⟶ expect(…).toEqual([)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Safari › 函数名@位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › await 之后的一层：去掉 async ⟶ expect(…).toEqual({,parseStackLine：Safari › 顶层与匿名函数没有名字 ⟶ expect(…).toEqual({,parseStackLine：Safari › 地址中的 @ ⟶ expect(…).toEqual({,parseStack › Safari ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:parse-stack:wrong:keeps-async",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Chromium › 构造函数、方法、async ⟶ expect(…).toEqual({,parseStackLine：Chromium › 没有名字：只有位置 ⟶ expect(…).toEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStackLine：Chromium › 构造函数、方法、async ⟶ expect(…).toEqual({,parseStackLine：Chromium › 没有名字：只有位置 ⟶ expect(…).toEqual({,parseStackLine：Safari › await 之后的一层：去掉 async ⟶ expect(…).toEqual({)"
         },
         {
           "target": "exercise:parse-stack:wrong:last-at",
@@ -7979,8 +8004,8 @@
       ]
     },
     "f05-debugging-practice": {
-      "verifiedAt": "2026-10-20T22:34:58.985Z",
-      "sourceHash": "577db278ef1bd2af",
+      "verifiedAt": "2026-10-21T00:33:53.221Z",
+      "sourceHash": "fc38483e929227e9",
       "ok": true,
       "checks": [
         {
@@ -7996,7 +8021,7 @@
         {
           "target": "exercise:fix-cart:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@cart.test-d.ts:5 Type 'readonly Item[]' does not satisfy the constraint '{ name?: \"Expected: never, Actual: string\" | undefined; priceCents?: \"Expected: never, Actual: number\" | undefined; quantity?: \"Expected: never, Actual: number\" | undefined; }[]'.) rules=ok tests=fail(报告 1：sortByPrice › 从贵到便宜；单价相同时保持原来的顺序 ⟶ expect(…).toEqual([ '钢笔', '笔记本', '尺子', '橡皮' ]),报告 2：totalCents › 一件、多件、没有 ⟶ expect(…).toBe(1230),报告 3：分页 › pageCount：正好整除时没有多余的空页，没有商品时是 1 页 ⟶ expect(…).toBe(2),报告 3：分页 › page：页码从 1 开始 ⟶ expect(…).toEqual([ '笔记本', '钢笔', '尺子' ]),报告 3：分页 › page：页码不是从 1 开始的整数时抛出 RangeError ⟶ expect(…).toThrow([Function: RangeError]),报告 4：formatYuan › 固定两位小数 ⟶ expect(…).toBe('¥12.30'),报告 4：formatYuan › 负数：负号在 ¥ 前面 ⟶ expect(…).toBe('-¥5.00'))"
+          "detail": "起始代码未通过（符合预期）；types=fail(TS2344@cart.test-d.ts:5 Type 'readonly Item[]' does not satisfy the constraint '{ name?: \"Expected: never, Actual: string\" | undefined; priceCents?: \"Expected: never, Actual: number\" | undefined; quantity?: \"Expected: never, Actual: number\" | undefined; }[]'.) rules=ok tests=fail(报告 1：sortByPrice › 从贵到便宜；单价相同时保持原来的顺序 ⟶ expect(…).toEqual([ '钢笔', '笔记本', '尺子', '橡皮' ]),报告 1：sortByPrice › 不修改传入的数组 ⟶ expect(…).toEqual([ '笔记本', '钢笔', '尺子', '橡皮' ]),报告 2：totalCents › 一件、多件、没有 ⟶ expect(…).toBe(1230),报告 3：分页 › pageCount：正好整除时没有多余的空页，没有商品时是 1 页 ⟶ expect(…).toBe(2),报告 3：分页 › page：页码从 1 开始 ⟶ expect(…).toEqual([ '笔记本', '钢笔', '尺子' ]),报告 3：分页 › page：页码不是从 1 开始的整数时抛出 RangeError ⟶ expect(…).toThrow([Function: RangeError]),报告 4：formatYuan › 固定两位小数 ⟶ expect(…).toBe('¥12.30'),报告 4：formatYuan › 负数：负号在 ¥ 前面 ⟶ expect(…).toBe('-¥5.00'))"
         },
         {
           "target": "exercise:fix-cart:solution:solution",
@@ -8011,7 +8036,7 @@
         {
           "target": "exercise:fix-cart:wrong:mutating-sort",
           "ok": true,
-          "detail": "被拒绝（types）；types=fail(TS2344@cart.test-d.ts:5 Type 'readonly Item[]' does not satisfy the constraint '{ name?: \"Expected: never, Actual: string\" | undefined; priceCents?: \"Expected: never, Actual: number\" | undefined; quantity?: \"Expected: never, Actual: number\" | undefined; }[]'.) rules=ok tests=fail(报告 2：totalCents › 一件、多件、没有 ⟶ expect(…).toBe(1230),报告 3：分页 › page：页码从 1 开始 ⟶ expect(…).toEqual([ '笔记本', '钢笔', '尺子' ]))"
+          "detail": "被拒绝（types）；types=fail(TS2344@cart.test-d.ts:5 Type 'readonly Item[]' does not satisfy the constraint '{ name?: \"Expected: never, Actual: string\" | undefined; priceCents?: \"Expected: never, Actual: number\" | undefined; quantity?: \"Expected: never, Actual: number\" | undefined; }[]'.) rules=ok tests=fail(报告 1：sortByPrice › 不修改传入的数组 ⟶ expect(…).toEqual([ '笔记本', '钢笔', '尺子', '橡皮' ]))"
         },
         {
           "target": "exercise:fix-cart:wrong:still-ascending",
@@ -8036,7 +8061,7 @@
         {
           "target": "exercise:fix-loader:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(loadUsers › 按 ids 的顺序返回，即使后面的先完成 ⟶ expect(…).toEqual([,loadUsers › 一个失败时，以那个错误拒绝（而不是悄悄地少了一个用户） ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：[ { id: 'u1', name: '用户 u1' } ],createSearch › 先发出的搜索后返回时，不能覆盖新的结果 ⟶ expect(…).toEqual([ [ 'ts 的结果' ] ]),createSearch › 同一个搜索词输入了两次：只显示最后一次请求的结果 ⟶ expect(…).toEqual([ [ '第三次' ] ]))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(loadUsers › 按 ids 的顺序返回，即使后面的先完成 ⟶ expect(…).toEqual([,loadUsers › 一个失败时，以那个错误拒绝（而不是悄悄地少了一个用户） ⟶ expect(…).rejects：期望 Promise 被拒绝，但它成功了，值为：[ { id: 'u1', name: '用户 u1' } ],createSearch › 先发出的搜索后返回时，不能覆盖新的结果 ⟶ expect(…).toEqual([ [ 'ts 的结果' ] ]),createSearch › 同一个搜索词输入了两次：只显示最后一次请求的结果 ⟶ expect(…).toEqual([ [ '第三次' ] ]),createSearch › 旧的搜索先返回：新的搜索还在等待时，也不显示旧的结果 ⟶ expect(…).toEqual([]))"
         },
         {
           "target": "exercise:fix-loader:solution:solution",
@@ -8071,13 +8096,13 @@
         {
           "target": "exercise:fix-loader:wrong:no-race-guard",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSearch › 先发出的搜索后返回时，不能覆盖新的结果 ⟶ expect(…).toEqual([ [ 'ts 的结果' ] ]),createSearch › 同一个搜索词输入了两次：只显示最后一次请求的结果 ⟶ expect(…).toEqual([ [ '第三次' ] ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSearch › 先发出的搜索后返回时，不能覆盖新的结果 ⟶ expect(…).toEqual([ [ 'ts 的结果' ] ]),createSearch › 同一个搜索词输入了两次：只显示最后一次请求的结果 ⟶ expect(…).toEqual([ [ '第三次' ] ]),createSearch › 旧的搜索先返回：新的搜索还在等待时，也不显示旧的结果 ⟶ expect(…).toEqual([]))"
         }
       ]
     },
     "f06-unit-tests": {
-      "verifiedAt": "2026-10-20T22:41:03.636Z",
-      "sourceHash": "b70ef32c3812ec41",
+      "verifiedAt": "2026-10-21T00:40:00.389Z",
+      "sourceHash": "db44114ac732e363",
       "ok": true,
       "checks": [
         {
@@ -8133,22 +8158,22 @@
         {
           "target": "exercise:test-debounce:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-reset:missed,first-args:missed,leading:missed,late:caught(tests),cancel-noop:missed,flush-twice:missed,stale-pending:missed"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-reset:missed,first-args:missed,leading:missed,late:caught(tests),cancel-noop:missed,flush-twice:missed,stale-pending:missed,pending-always-false:missed,flush-without-pending:missed,cancel-keeps-timer:missed"
         },
         {
           "target": "exercise:test-debounce:solution:solution",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=no-reset:caught(tests),first-args:caught(tests),leading:caught(tests),late:caught(tests),cancel-noop:caught(tests),flush-twice:caught(tests),stale-pending:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-reset:caught(tests),first-args:caught(tests),leading:caught(tests),late:caught(tests),cancel-noop:caught(tests),flush-twice:caught(tests),stale-pending:caught(tests),pending-always-false:caught(tests),flush-without-pending:caught(tests),cancel-keeps-timer:caught(tests)"
         },
         {
           "target": "exercise:test-debounce:alt:shared-setup",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=no-reset:caught(tests),first-args:caught(tests),leading:caught(tests),late:caught(tests),cancel-noop:caught(tests),flush-twice:caught(tests),stale-pending:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-reset:caught(tests),first-args:caught(tests),leading:caught(tests),late:caught(tests),cancel-noop:caught(tests),flush-twice:caught(tests),stale-pending:caught(tests),pending-always-false:caught(tests),flush-without-pending:caught(tests),cancel-keeps-timer:caught(tests)"
         },
         {
           "target": "exercise:test-debounce:wrong:only-final-count",
           "ok": true,
-          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-reset:missed,first-args:missed,leading:caught(tests),late:caught(tests),cancel-noop:caught(tests),flush-twice:caught(tests),stale-pending:caught(tests)"
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-reset:missed,first-args:missed,leading:caught(tests),late:caught(tests),cancel-noop:caught(tests),flush-twice:caught(tests),stale-pending:caught(tests),pending-always-false:missed,flush-without-pending:missed,cancel-keeps-timer:missed"
         },
         {
           "target": "exercise:test-debounce:wrong:expects-immediate",
@@ -8158,8 +8183,8 @@
       ]
     },
     "f07-type-tests": {
-      "verifiedAt": "2026-10-20T22:47:09.318Z",
-      "sourceHash": "e6142d6994839d4b",
+      "verifiedAt": "2026-10-21T00:40:02.371Z",
+      "sourceHash": "7b8dbf2dab087350",
       "ok": true,
       "checks": [
         {
@@ -8175,27 +8200,27 @@
         {
           "target": "exercise:test-pick-types:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=n/a mutants=returns-any:missed,returns-partial:caught(types),returns-whole:missed,loose-keys:missed,any-input:missed,required-optional:missed"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=n/a mutants=returns-any:missed,returns-partial:caught(types),returns-whole:missed,loose-keys:missed,any-input:missed,required-optional:missed,mutable-keys:missed"
         },
         {
           "target": "exercise:test-pick-types:solution:solution",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=n/a mutants=returns-any:caught(types),returns-partial:caught(types),returns-whole:caught(types),loose-keys:caught(types),any-input:caught(types),required-optional:caught(types)"
+          "detail": "通过；types=ok rules=ok tests=n/a mutants=returns-any:caught(types),returns-partial:caught(types),returns-whole:caught(types),loose-keys:caught(types),any-input:caught(types),required-optional:caught(types),mutable-keys:caught(types)"
         },
         {
           "target": "exercise:test-pick-types:alt:describe-blocks",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=n/a mutants=returns-any:caught(types),returns-partial:caught(types),returns-whole:caught(types),loose-keys:caught(types),any-input:caught(types),required-optional:caught(types)"
+          "detail": "通过；types=ok rules=ok tests=n/a mutants=returns-any:caught(types),returns-partial:caught(types),returns-whole:caught(types),loose-keys:caught(types),any-input:caught(types),required-optional:caught(types),mutable-keys:caught(types)"
         },
         {
           "target": "exercise:test-pick-types:wrong:uses-toextend",
           "ok": true,
-          "detail": "被拒绝（mutants）；types=ok rules=ok tests=n/a mutants=returns-any:missed,returns-partial:caught(types),returns-whole:missed,loose-keys:caught(types),any-input:caught(types),required-optional:missed"
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=n/a mutants=returns-any:missed,returns-partial:caught(types),returns-whole:missed,loose-keys:caught(types),any-input:caught(types),required-optional:missed,mutable-keys:caught(types)"
         },
         {
           "target": "exercise:test-pick-types:wrong:ts-ignore",
           "ok": true,
-          "detail": "被拒绝（mutants）；types=ok rules=ok tests=n/a mutants=returns-any:caught(types),returns-partial:caught(types),returns-whole:caught(types),loose-keys:missed,any-input:missed,required-optional:caught(types)"
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=n/a mutants=returns-any:caught(types),returns-partial:caught(types),returns-whole:caught(types),loose-keys:missed,any-input:missed,required-optional:caught(types),mutable-keys:caught(types)"
         },
         {
           "target": "exercise:test-pick-types:wrong:wrong-expectation",
@@ -8205,27 +8230,27 @@
         {
           "target": "exercise:test-href:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-encoding:missed,first-only:missed,optional-params:missed,record-params:missed,always-params:missed,greedy-name:missed,returns-any:missed"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=no-encoding:missed,first-only:missed,optional-params:missed,record-params:missed,always-params:missed,greedy-name:missed,returns-any:missed,unknown-values:missed,extra-keys:missed,no-params-accepts-object:missed"
         },
         {
           "target": "exercise:test-href:solution:solution",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=no-encoding:caught(tests),first-only:caught(tests),optional-params:caught(types),record-params:caught(types),always-params:caught(types),greedy-name:caught(types),returns-any:caught(types)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-encoding:caught(tests),first-only:caught(tests),optional-params:caught(types),record-params:caught(types),always-params:caught(types),greedy-name:caught(types),returns-any:caught(types),unknown-values:caught(types),extra-keys:caught(types),no-params-accepts-object:caught(types)"
         },
         {
           "target": "exercise:test-href:alt:table-and-describe",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=no-encoding:caught(tests),first-only:caught(tests),optional-params:caught(types),record-params:caught(types),always-params:caught(types),greedy-name:caught(types),returns-any:caught(types)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=no-encoding:caught(tests),first-only:caught(tests),optional-params:caught(types),record-params:caught(types),always-params:caught(types),greedy-name:caught(types),returns-any:caught(types),unknown-values:caught(types),extra-keys:caught(types),no-params-accepts-object:caught(types)"
         },
         {
           "target": "exercise:test-href:wrong:runtime-only",
           "ok": true,
-          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-encoding:caught(tests),first-only:caught(tests),optional-params:missed,record-params:missed,always-params:caught(types),greedy-name:caught(types),returns-any:missed"
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-encoding:caught(tests),first-only:caught(tests),optional-params:missed,record-params:missed,always-params:caught(types),greedy-name:missed,returns-any:missed,unknown-values:missed,extra-keys:missed,no-params-accepts-object:missed"
         },
         {
           "target": "exercise:test-href:wrong:types-only",
           "ok": true,
-          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-encoding:missed,first-only:missed,optional-params:caught(types),record-params:caught(types),always-params:caught(types),greedy-name:caught(types),returns-any:caught(types)"
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=no-encoding:missed,first-only:missed,optional-params:caught(types),record-params:caught(types),always-params:caught(types),greedy-name:caught(types),returns-any:caught(types),unknown-values:caught(types),extra-keys:caught(types),no-params-accepts-object:caught(types)"
         },
         {
           "target": "exercise:test-href:wrong:unencoded-expectation",
@@ -8235,8 +8260,8 @@
       ]
     },
     "f08-dom-tests": {
-      "verifiedAt": "2026-10-20T22:53:37.176Z",
-      "sourceHash": "381f521649a38a62",
+      "verifiedAt": "2026-10-21T00:34:22.147Z",
+      "sourceHash": "3298ef82da499d59",
       "ok": true,
       "checks": [
         {
@@ -8252,22 +8277,22 @@
         {
           "target": "exercise:test-char-counter:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=off-by-one:missed,allows-over-limit:missed,allows-blank:missed,not-cleared:missed,no-aria-invalid:missed,label-not-linked:caught(tests),focus-lost:missed"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=off-by-one:missed,allows-over-limit:missed,allows-blank:missed,not-cleared:missed,no-aria-invalid:missed,label-not-linked:caught(tests),focus-lost:missed,no-trim:missed,no-status:missed,never-submits:caught(tests)"
         },
         {
           "target": "exercise:test-char-counter:solution:solution",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=off-by-one:caught(tests),allows-over-limit:caught(tests),allows-blank:caught(tests),not-cleared:caught(tests),no-aria-invalid:caught(tests),label-not-linked:caught(tests),focus-lost:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=off-by-one:caught(tests),allows-over-limit:caught(tests),allows-blank:caught(tests),not-cleared:caught(tests),no-aria-invalid:caught(tests),label-not-linked:caught(tests),focus-lost:caught(tests),no-trim:caught(tests),no-status:caught(tests),never-submits:caught(tests)"
         },
         {
           "target": "exercise:test-char-counter:alt:label-and-keyboard",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=off-by-one:caught(tests),allows-over-limit:caught(tests),allows-blank:caught(tests),not-cleared:caught(tests),no-aria-invalid:caught(tests),label-not-linked:caught(tests),focus-lost:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=off-by-one:caught(tests),allows-over-limit:caught(tests),allows-blank:caught(tests),not-cleared:caught(tests),no-aria-invalid:caught(tests),label-not-linked:caught(tests),focus-lost:caught(tests),no-trim:caught(tests),no-status:caught(tests),never-submits:caught(tests)"
         },
         {
           "target": "exercise:test-char-counter:wrong:happy-path-only",
           "ok": true,
-          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=off-by-one:caught(tests),allows-over-limit:missed,allows-blank:missed,not-cleared:missed,no-aria-invalid:missed,label-not-linked:caught(tests),focus-lost:missed"
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=off-by-one:caught(tests),allows-over-limit:missed,allows-blank:missed,not-cleared:missed,no-aria-invalid:missed,label-not-linked:caught(tests),focus-lost:missed,no-trim:missed,no-status:missed,never-submits:caught(tests)"
         },
         {
           "target": "exercise:test-char-counter:wrong:getby-for-absence",
@@ -8277,22 +8302,22 @@
         {
           "target": "exercise:test-tag-input:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=case-sensitive:missed,no-trim:missed,backspace-always:missed,removes-last:missed,unnamed-remove:missed,no-max:missed,keeps-draft:missed"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=case-sensitive:missed,no-trim:missed,adds-blank:missed,backspace-always:missed,removes-last:missed,remove-no-onchange:missed,unnamed-remove:missed,duplicate-no-message:missed,duplicate-clears:missed,no-max:missed,keeps-draft:missed"
         },
         {
           "target": "exercise:test-tag-input:solution:solution",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=case-sensitive:caught(tests),no-trim:caught(tests),backspace-always:caught(tests),removes-last:caught(tests),unnamed-remove:caught(tests),no-max:caught(tests),keeps-draft:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=case-sensitive:caught(tests),no-trim:caught(tests),adds-blank:caught(tests),backspace-always:caught(tests),removes-last:caught(tests),remove-no-onchange:caught(tests),unnamed-remove:caught(tests),duplicate-no-message:caught(tests),duplicate-clears:caught(tests),no-max:caught(tests),keeps-draft:caught(tests)"
         },
         {
           "target": "exercise:test-tag-input:alt:setup-helper",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=case-sensitive:caught(tests),no-trim:caught(tests),backspace-always:caught(tests),removes-last:caught(tests),unnamed-remove:caught(tests),no-max:caught(tests),keeps-draft:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=case-sensitive:caught(tests),no-trim:caught(tests),adds-blank:caught(tests),backspace-always:caught(tests),removes-last:caught(tests),remove-no-onchange:caught(tests),unnamed-remove:caught(tests),duplicate-no-message:caught(tests),duplicate-clears:caught(tests),no-max:caught(tests),keeps-draft:caught(tests)"
         },
         {
           "target": "exercise:test-tag-input:wrong:visible-paths-only",
           "ok": true,
-          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=case-sensitive:missed,no-trim:missed,backspace-always:missed,removes-last:caught(tests),unnamed-remove:caught(tests),no-max:caught(tests),keeps-draft:missed"
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=case-sensitive:missed,no-trim:missed,adds-blank:missed,backspace-always:missed,removes-last:caught(tests),remove-no-onchange:missed,unnamed-remove:caught(tests),duplicate-no-message:missed,duplicate-clears:missed,no-max:caught(tests),keeps-draft:missed"
         },
         {
           "target": "exercise:test-tag-input:wrong:wrong-backspace-expectation",
@@ -8302,8 +8327,8 @@
       ]
     },
     "f09-e2e": {
-      "verifiedAt": "2026-10-20T23:01:17.042Z",
-      "sourceHash": "eeb8a705caafa881",
+      "verifiedAt": "2026-10-21T00:34:44.326Z",
+      "sourceHash": "4bb10e5cca7f7934",
       "ok": true,
       "checks": [
         {
@@ -8319,22 +8344,22 @@
         {
           "target": "exercise:test-signup-flow:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=skips-validation:missed,forgets-email:missed,forgets-plan:missed,summary-plan:missed,focus-not-moved:missed"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=ok mutants=skips-validation:missed,forgets-email:missed,forgets-plan:missed,summary-plan:missed,focus-not-moved:missed,result-wrong-plan:missed"
         },
         {
           "target": "exercise:test-signup-flow:solution:solution",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=skips-validation:caught(tests),forgets-email:caught(tests),forgets-plan:caught(tests),summary-plan:caught(tests),focus-not-moved:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=skips-validation:caught(tests),forgets-email:caught(tests),forgets-plan:caught(tests),summary-plan:caught(tests),focus-not-moved:caught(tests),result-wrong-plan:caught(tests)"
         },
         {
           "target": "exercise:test-signup-flow:alt:helper-and-roundtrip",
           "ok": true,
-          "detail": "通过；types=ok rules=ok tests=ok mutants=skips-validation:caught(tests),forgets-email:caught(tests),forgets-plan:caught(tests),summary-plan:caught(tests),focus-not-moved:caught(tests)"
+          "detail": "通过；types=ok rules=ok tests=ok mutants=skips-validation:caught(tests),forgets-email:caught(tests),forgets-plan:caught(tests),summary-plan:caught(tests),focus-not-moved:caught(tests),result-wrong-plan:caught(tests)"
         },
         {
           "target": "exercise:test-signup-flow:wrong:straight-through",
           "ok": true,
-          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=skips-validation:missed,forgets-email:missed,forgets-plan:missed,summary-plan:missed,focus-not-moved:missed"
+          "detail": "被拒绝（mutants）；types=ok rules=ok tests=ok mutants=skips-validation:missed,forgets-email:missed,forgets-plan:missed,summary-plan:missed,focus-not-moved:missed,result-wrong-plan:missed"
         },
         {
           "target": "exercise:test-signup-flow:wrong:sync-after-action",
@@ -8369,7 +8394,7 @@
         {
           "target": "exercise:poll:wrong:overlapping",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 第一次就成功时立即完成，而且是立刻尝试的 ⟶ expect(…).toEqual([ 1792537273471 ]),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
         },
         {
           "target": "exercise:poll:wrong:generic-timeout-error",
@@ -8379,13 +8404,13 @@
         {
           "target": "exercise:poll:wrong:sleep-first",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 第一次就成功时立即完成，而且是立刻尝试的 ⟶ expect(…).toEqual([ 1792537273874 ]),poll › 每隔 interval 重试，直到成功 ⟶ TimeoutError: 测试 超过 3000 ms 仍未完成：可能有 Promise 永远不会 resolve，或忘记 await。,poll › 超时后以最后一次的错误拒绝；最后一次尝试正好在截止时间 ⟶ expect(…).toMatchObject({ message: '第 21 次失败' }),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 第一次就成功时立即完成，而且是立刻尝试的 ⟶ expect(…).toEqual([ 1792542880825 ]),poll › 每隔 interval 重试，直到成功 ⟶ TimeoutError: 测试 超过 3000 ms 仍未完成：可能有 Promise 永远不会 resolve，或忘记 await。,poll › 超时后以最后一次的错误拒绝；最后一次尝试正好在截止时间 ⟶ expect(…).toMatchObject({ message: '第 21 次失败' }),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
         }
       ]
     },
     "f10-git": {
-      "verifiedAt": "2026-10-20T23:08:41.879Z",
-      "sourceHash": "cccfa0e0b1d0c5bb",
+      "verifiedAt": "2026-10-21T00:34:45.275Z",
+      "sourceHash": "acba1efc30fb59b8",
       "ok": true,
       "checks": [
         {
@@ -8436,12 +8461,12 @@
         {
           "target": "exercise:parse-status:wrong:split-arrow-anywhere",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStatus › 带引号的改名（Git 2.45 的实际输出） ⟶ Error: 无法解析改名：\"a b.txt\" -> \"c d.txt\")"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseStatus › 带引号的改名（Git 2.45 的实际输出） ⟶ expect(…).toEqual([)"
         },
         {
           "target": "exercise:gitignore:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"*.log\" ⟶ SyntaxError: Invalid regular expression: /*.log/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"*.log\\n!important.log\" ⟶ SyntaxError: Invalid regular expression: /*.log/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"build/**\\n!build/keep.txt\" ⟶ SyntaxError: Invalid regular expression: /build/**/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"/dist\" ⟶ dist/a.js 应该被忽略,isIgnored：与真实的 Git 对照 › \"doc/*.txt\" ⟶ doc/a.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"**/temp\" ⟶ SyntaxError: Invalid regular expression: /**/temp/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"a/**/b.txt\" ⟶ SyntaxError: Invalid regular expression: /a/**/b.txt/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"node_modules\\n.env\\n.env.*\\n!.env.example\" ⟶ .env.example 应该被跟踪,isIgnored：与真实的 Git 对照 › \"file?.txt\" ⟶ file1.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"[ab]*.md\\n!b*.md\" ⟶ b1.md 应该被跟踪,isIgnored：与真实的 Git 对照 › \"data/[!x]*.csv\" ⟶ data/a.csv 应该被忽略,isIgnored：与真实的 Git 对照 › \"# 注释\\n\\n*.tmp   \\n  \" ⟶ SyntaxError: Invalid regular expression: /*.tmp   /: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"src/\\n!src/\" ⟶ src/a.ts 应该被跟踪,isIgnored：与真实的 Git 对照 › \"*.js\\n!lib/*.js\" ⟶ SyntaxError: Invalid regular expression: /*.js/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"dir/sub/\" ⟶ x/dir/sub/a 应该被跟踪,isIgnored：与真实的 Git 对照 › \"**/*.snap\" ⟶ SyntaxError: Invalid regular expression: /**/*.snap/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"cache/**/\" ⟶ SyntaxError: Invalid regular expression: /cache/**//: Nothing to repeat,文件夹 › 结尾的 / 只匹配文件夹 ⟶ expect(…).toBe(true),文件夹 › 结尾的 /** 匹配里面的内容，不匹配文件夹本身 ⟶ SyntaxError: Invalid regular expression: /build/**/: Nothing to repeat,parseGitignore › 跳过空行和注释，识别 !、结尾的 /、是否从根目录匹配 ⟶ SyntaxError: Invalid regular expression: /*.log/: Nothing to repeat)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"*.log\" ⟶ SyntaxError: Invalid regular expression: /*.log/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"*.log\\n!important.log\" ⟶ SyntaxError: Invalid regular expression: /*.log/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"build/**\\n!build/keep.txt\" ⟶ SyntaxError: Invalid regular expression: /build/**/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"/dist\" ⟶ dist/a.js 应该被忽略,isIgnored：与真实的 Git 对照 › \"doc/*.txt\" ⟶ doc/a.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"**/temp\" ⟶ SyntaxError: Invalid regular expression: /**/temp/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"a/**/b.txt\" ⟶ SyntaxError: Invalid regular expression: /a/**/b.txt/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"node_modules\\n.env\\n.env.*\\n!.env.example\" ⟶ .env.example 应该被跟踪,isIgnored：与真实的 Git 对照 › \"file?.txt\" ⟶ file1.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"doc/a?b.txt\" ⟶ doc/axb.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"[ab]*.md\\n!b*.md\" ⟶ b1.md 应该被跟踪,isIgnored：与真实的 Git 对照 › \"data/[!x]*.csv\" ⟶ data/a.csv 应该被忽略,isIgnored：与真实的 Git 对照 › \"# 注释\\n\\n*.tmp   \\n  \" ⟶ SyntaxError: Invalid regular expression: /*.tmp   /: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"src/\\n!src/\" ⟶ src/a.ts 应该被跟踪,isIgnored：与真实的 Git 对照 › \"*.js\\n!lib/*.js\" ⟶ SyntaxError: Invalid regular expression: /*.js/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"dir/sub/\" ⟶ x/dir/sub/a 应该被跟踪,isIgnored：与真实的 Git 对照 › \"**/*.snap\" ⟶ SyntaxError: Invalid regular expression: /**/*.snap/: Nothing to repeat,isIgnored：与真实的 Git 对照 › \"cache/**/\" ⟶ SyntaxError: Invalid regular expression: /cache/**//: Nothing to repeat,文件夹 › 结尾的 / 只匹配文件夹 ⟶ expect(…).toBe(true),文件夹 › 结尾的 /** 匹配里面的内容，不匹配文件夹本身 ⟶ SyntaxError: Invalid regular expression: /build/**/: Nothing to repeat,parseGitignore › 跳过空行和注释，识别 !、结尾的 /、是否从根目录匹配 ⟶ SyntaxError: Invalid regular expression: /*.log/: Nothing to repeat)"
         },
         {
           "target": "exercise:gitignore:solution:solution",
@@ -8471,7 +8496,7 @@
         {
           "target": "exercise:gitignore:wrong:never-anchored",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"build/**\\n!build/keep.txt\" ⟶ build/a.js 应该被忽略,isIgnored：与真实的 Git 对照 › \"/dist\" ⟶ src/dist/a.js 应该被跟踪,isIgnored：与真实的 Git 对照 › \"doc/*.txt\" ⟶ doc/a.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"a/**/b.txt\" ⟶ a/b.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"data/[!x]*.csv\" ⟶ data/a.csv 应该被忽略,isIgnored：与真实的 Git 对照 › \"*.js\\n!lib/*.js\" ⟶ lib/a.js 应该被跟踪,isIgnored：与真实的 Git 对照 › \"dir/sub/\" ⟶ dir/sub/a 应该被忽略,isIgnored：与真实的 Git 对照 › \"cache/**/\" ⟶ cache/a/b.txt 应该被忽略,文件夹 › 结尾的 /** 匹配里面的内容，不匹配文件夹本身 ⟶ expect(…).toBe(true))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(isIgnored：与真实的 Git 对照 › \"build/**\\n!build/keep.txt\" ⟶ build/a.js 应该被忽略,isIgnored：与真实的 Git 对照 › \"/dist\" ⟶ src/dist/a.js 应该被跟踪,isIgnored：与真实的 Git 对照 › \"doc/*.txt\" ⟶ doc/a.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"a/**/b.txt\" ⟶ a/b.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"doc/a?b.txt\" ⟶ doc/axb.txt 应该被忽略,isIgnored：与真实的 Git 对照 › \"data/[!x]*.csv\" ⟶ data/a.csv 应该被忽略,isIgnored：与真实的 Git 对照 › \"*.js\\n!lib/*.js\" ⟶ lib/a.js 应该被跟踪,isIgnored：与真实的 Git 对照 › \"dir/sub/\" ⟶ dir/sub/a 应该被忽略,isIgnored：与真实的 Git 对照 › \"cache/**/\" ⟶ cache/a/b.txt 应该被忽略,文件夹 › 结尾的 /** 匹配里面的内容，不匹配文件夹本身 ⟶ expect(…).toBe(true))"
         },
         {
           "target": "exercise:gitignore:wrong:dir-only-matches-files",
@@ -8486,8 +8511,8 @@
       ]
     },
     "f11-lint-format": {
-      "verifiedAt": "2026-10-20T23:16:07.525Z",
-      "sourceHash": "2c34519e4c723dfb",
+      "verifiedAt": "2026-10-21T00:34:46.156Z",
+      "sourceHash": "effb16dd6794e8bd",
       "ok": true,
       "checks": [
         {
@@ -8543,7 +8568,7 @@
         {
           "target": "exercise:flat-config:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(matchGlob › * 与 ? 不跨越 /，** 匹配任意层 ⟶ expect(…).toBe(true),matchGlob › {a,b} ⟶ expect(…).toBe(true),computeConfig：规则的合并 › 没有 files 的配置适用于所有文件 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 2 ] }),computeConfig：规则的合并 › 只写严重程度时保留之前的选项；写了选项时替换 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 后面的配置覆盖前面的：src/** 写在 *.test.ts 之后 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 配置对象自己的 ignores 只让这个对象不适用 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 模式从根目录开始匹配；数字的严重程度；[1] 也只是严重程度 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 0 ] }),computeConfig：哪些文件被检查 › 全局忽略 ⟶ expect(…).toBeNull(),computeConfig：哪些文件被检查 › 不是 .js / .mjs / .cjs、也没有被 files 匹配的文件不检查 ⟶ expect(…).toBeNull(),computeConfig：哪些文件被检查 › .cjs、.mjs 默认就检查；files 中具体的模式让其他文件也被检查 ⟶ expect(…).toEqual({ curly: [ 2 ] }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(matchGlob › * 与 ? 不跨越 /，** 匹配任意层 ⟶ expect(…).toBe(true),matchGlob › {a,b} ⟶ expect(…).toBe(true),computeConfig：规则的合并 › 没有 files 的配置适用于所有文件 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 2 ] }),computeConfig：规则的合并 › 只写严重程度时保留之前的选项；写了选项时替换 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 后面的配置覆盖前面的：src/** 写在 *.test.ts 之后 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 配置对象自己的 ignores 只让这个对象不适用 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 模式从根目录开始匹配；数字的严重程度；[1] 也只是严重程度 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 0 ] }),computeConfig：哪些文件被检查 › 全局忽略 ⟶ expect(…).toBeNull(),computeConfig：哪些文件被检查 › 不是 .js / .mjs / .cjs、也没有被 files 匹配的文件不检查 ⟶ expect(…).toBeNull(),computeConfig：哪些文件被检查 › .cjs、.mjs 默认就检查；files 中具体的模式让其他文件也被检查 ⟶ expect(…).toEqual({ curly: [ 2 ] }),computeConfig：哪些文件被检查 › 只有适用的配置对象的 files 才让文件需要被检查 ⟶ expect(…).toBeNull())"
         },
         {
           "target": "exercise:flat-config:solution:solution",
@@ -8579,12 +8604,17 @@
           "target": "exercise:flat-config:wrong:universal-patterns-lint",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(computeConfig：哪些文件被检查 › 不是 .js / .mjs / .cjs、也没有被 files 匹配的文件不检查 ⟶ expect(…).toBeNull(),computeConfig：哪些文件被检查 › .cjs、.mjs 默认就检查；files 中具体的模式让其他文件也被检查 ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:flat-config:wrong:string-severity",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(computeConfig：规则的合并 › 没有 files 的配置适用于所有文件 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 2 ] }),computeConfig：规则的合并 › 只写严重程度时保留之前的选项；写了选项时替换 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 后面的配置覆盖前面的：src/** 写在 *.test.ts 之后 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 配置对象自己的 ignores 只让这个对象不适用 ⟶ expect(…).toEqual({,computeConfig：规则的合并 › 模式从根目录开始匹配；数字的严重程度；[1] 也只是严重程度 ⟶ expect(…).toEqual({ eqeqeq: [ 2, 'smart' ], 'no-console': [ 1 ], curly: [ 0 ] }),computeConfig：哪些文件被检查 › .cjs、.mjs 默认就检查；files 中具体的模式让其他文件也被检查 ⟶ expect(…).toEqual({ curly: [ 2 ] }),computeConfig：哪些文件被检查 › 只有适用的配置对象的 files 才让文件需要被检查 ⟶ expect(…).toEqual({ curly: [ 2 ] }))"
         }
       ]
     },
     "f12-build-ci": {
-      "verifiedAt": "2026-10-20T23:22:59.319Z",
-      "sourceHash": "9c250f3bb722ff2e",
+      "verifiedAt": "2026-10-21T00:34:46.915Z",
+      "sourceHash": "17390357c8b1016d",
       "ok": true,
       "checks": [
         {
@@ -8640,7 +8670,7 @@
         {
           "target": "exercise:run-workflow:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(runWorkflow › 全部成功：failure() 的 job 被跳过 ⟶ expect(…).toEqual({,runWorkflow › 失败沿着依赖传播：依赖失败或被跳过的 job 被跳过 ⟶ expect(…).toEqual({,runWorkflow › failure() 看的是所有祖先：notify 的直接依赖 deploy 是被跳过，而不是失败 ⟶ expect(…).toMatchObject({,runWorkflow › 没有依赖的 failure() job：没有祖先失败，所以被跳过 ⟶ expect(…).toEqual({ cleanup: 'skipped', build: 'success' }),runWorkflow › success() 看的也是所有祖先：中间的 always() 成功了，下游仍然被跳过 ⟶ expect(…).toEqual({ a: 'failure', b: 'success', c: 'skipped' }),runWorkflow › 被跳过的祖先同样让下游跳过 ⟶ expect(…).toEqual({ check: 'skipped', after: 'skipped', last: 'success' }),runWorkflow › 依赖可以定义在后面；不存在的依赖和循环依赖抛出错误 ⟶ expect(…).toEqual({ deploy: 'skipped', build: 'failure' }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(runWorkflow › 全部成功：failure() 的 job 被跳过 ⟶ expect(…).toEqual({,runWorkflow › 失败沿着依赖传播：依赖失败或被跳过的 job 被跳过 ⟶ expect(…).toEqual({,runWorkflow › failure() 看的是所有祖先：notify 的直接依赖 deploy 是被跳过，而不是失败 ⟶ expect(…).toMatchObject({,runWorkflow › 没有依赖的 failure() job：没有祖先失败，所以被跳过 ⟶ expect(…).toEqual({ cleanup: 'skipped', build: 'success' }),runWorkflow › 被跳过不等于失败：上游的 failure() job 被跳过时，下游的 failure() 也不运行 ⟶ expect(…).toEqual({ a: 'skipped', n: 'skipped' }),runWorkflow › success() 看的也是所有祖先：中间的 always() 成功了，下游仍然被跳过 ⟶ expect(…).toEqual({ a: 'failure', b: 'success', c: 'skipped' }),runWorkflow › 被跳过的祖先同样让下游跳过 ⟶ expect(…).toEqual({ check: 'skipped', after: 'skipped', last: 'success' }),runWorkflow › 依赖可以定义在后面；不存在的依赖和循环依赖抛出错误 ⟶ expect(…).toEqual({ deploy: 'skipped', build: 'failure' }))"
         },
         {
           "target": "exercise:run-workflow:solution:solution",
@@ -10198,8 +10228,8 @@
       ]
     },
     "g15-a11y-component-tests": {
-      "verifiedAt": "2026-10-20T23:39:39.128Z",
-      "sourceHash": "d1d1a192b169cd55",
+      "verifiedAt": "2026-10-21T00:40:13.683Z",
+      "sourceHash": "094f921d34ad18d7",
       "ok": true,
       "checks": [
         {
@@ -10479,8 +10509,8 @@
       ]
     },
     "p1-03-edit-delete": {
-      "verifiedAt": "2026-10-20T18:21:51.862Z",
-      "sourceHash": "a3a11ce0ae4594d0",
+      "verifiedAt": "2026-10-21T00:35:06.065Z",
+      "sourceHash": "84398ba21ad54376",
       "ok": true,
       "checks": [
         {
@@ -10517,6 +10547,11 @@
           "target": "exercise:task-actions:wrong:focus-lost",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(右移：任务移到下一列，焦点留在它的“右移”按钮上，播报结果 ⟶ expect(…).toHaveFocus(),移到最右边之后，焦点落在“左移”上；用键盘继续操作 ⟶ expect(…).toEqual([ '写周报', '买牛奶' ]),删除：任务消失，焦点移到这一列的标题上，播报结果 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:task-actions:wrong:silent",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(右移：任务移到下一列，焦点留在它的“右移”按钮上，播报结果 ⟶ expect(…).toHaveTextContent('已移到“进行中”：写周报'),移到最右边之后，焦点落在“左移”上；用键盘继续操作 ⟶ expect(…).toHaveTextContent('已移到“进行中”：写周报'),删除：任务消失，焦点移到这一列的标题上，播报结果 ⟶ expect(…).toHaveTextContent('已删除：修自行车'))"
         },
         {
           "target": "exercise:task-actions:wrong:per-button-listeners",

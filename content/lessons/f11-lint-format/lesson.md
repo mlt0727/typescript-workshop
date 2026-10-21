@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 代码审查时，一半的意见是“这里少了分号”“缩进不对”“引号统一一下”，真正的问题反而被淹没了；有些 bug 编译器不报错，人也很难一眼看出，例如忘了 await 的 Promise、forEach 中的 async 回调。格式化工具和静态检查工具把这两类事情交给机器：Prettier 统一代码的格式，不再需要讨论；ESLint 按规则找出可能有问题的写法，加上 typescript-eslint 之后还能利用类型信息。这一课在本机配置并运行它们，读懂它们的输出，知道 create-vite 模板中默认的 Oxlint 与 ESLint 的区别；在这个网站上，用代码实现 ESLint 输出的汇总，以及 flat config 的合并规则。
 objectives:
   - 区分格式化（Prettier）与静态检查（ESLint、Oxlint）各自负责的事情
@@ -77,13 +77,19 @@ export default defineConfig(
       parserOptions: { projectService: true },
     },
   },
+  {
+    // eslint.config.js 这样的 .js 文件不在 tsconfig.json 中，不做需要类型信息的检查
+    files: ['**/*.js'],
+    extends: [tseslint.configs.disableTypeChecked],
+  },
 );
 ```
 
 - `js.configs.recommended`：ESLint 自带的推荐规则；`tseslint.configs.recommendedTypeChecked`：typescript-eslint 的推荐规则，包括需要类型信息的规则；
-- `projectService: true`：让 typescript-eslint 读取 `tsconfig.json`，用和编辑器一样的方式得到类型信息。
+- `projectService: true`：让 typescript-eslint 读取 `tsconfig.json`，用和编辑器一样的方式得到类型信息；
+- 最后一项：`eslint .` 也会检查 `eslint.config.js` 本身，而它不在 `tsconfig.json` 的范围内，需要类型信息的规则无法运行。不加这一项时，实测 `eslint .` 报告 `Parsing error: …eslint.config.js was not found by the project service`。`disableTypeChecked` 让这些 `.js` 文件只做不需要类型信息的检查。
 
-3. 对下面这个文件运行 `npx eslint src`（编写本课时使用 ESLint 10.13、typescript-eslint 8.72）：
+3. 在 `package.json` 的 `scripts` 中加上 `"lint": "eslint ."`。对下面这个文件运行 `npm run lint`（编写本课时使用 ESLint 10.13、typescript-eslint 8.72）：
 
 ```ts
 type User = { id: string; name: string };
@@ -108,7 +114,7 @@ export function save(user: User) {
 }
 ```
 
-实际的输出（路径已省略）：
+实际的输出（文件的路径和 npm 自己输出的两行已省略）：
 
 ```text
   10:15  error  Promise returned in function argument where a void return was expected  @typescript-eslint/no-misused-promises

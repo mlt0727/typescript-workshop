@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 89 / 规划总数 126**（草稿 15，规划中 22）
+**已发布 101 / 规划总数 126**（草稿 3，规划中 22）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -112,24 +112,24 @@
 | `d09-form-validation` 类型安全的表单输入与验证 | ✅ 已发布 | `d08-bubbling-delegation`、`d02-html-forms` |
 | `d10-state-and-render` 状态与渲染：从数据到界面 | ✅ 已发布 | `d09-form-validation`、`b09-discriminated-unions` |
 
-## F. 工程化、测试与调试（已发布 0 / 12）
+## F. 工程化、测试与调试（已发布 12 / 12）
 
 在本机搭建真实项目：npm、Vite、tsconfig、调试、测试、Git、构建与 CI。
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `f01-node-npm` Node.js、npm、package.json 与锁文件 | 📝 草稿 | `a19-modules` |
-| `f02-vite-project` 用 Vite 创建 TypeScript 项目 | 📝 草稿 | `f01-node-npm`、`d06-dom-create-update` |
-| `f03-tsconfig` tsconfig、ESM 与模块解析 | 📝 草稿 | `f02-vite-project` |
-| `f04-devtools` DevTools、断点、source map 与网络面板 | 📝 草稿 | `f02-vite-project` |
-| `f05-debugging-practice` 实际排错练习 | 📝 草稿 | `f04-devtools` |
-| `f06-unit-tests` 用 Vitest 写单元测试 | 📝 草稿 | `f03-tsconfig` |
-| `f07-type-tests` 类型测试 | 📝 草稿 | `f06-unit-tests`、`b14-generics` |
-| `f08-dom-tests` DOM 与组件测试 | 📝 草稿 | `f06-unit-tests`、`d08-bubbling-delegation` |
-| `f09-e2e` 用 Playwright 做端到端测试 | 📝 草稿 | `f08-dom-tests` |
-| `f10-git` Git 基础工作流 | 📝 草稿 | `f01-node-npm` |
-| `f11-lint-format` 格式化与静态检查 | 📝 草稿 | `f03-tsconfig` |
-| `f12-build-ci` 生产构建与 CI | 📝 草稿 | `f11-lint-format`、`f10-git` |
+| `f01-node-npm` Node.js、npm、package.json 与锁文件 | ✅ 已发布 | `a19-modules`、`b05-intersection-tuple`、`b08-type-guards` |
+| `f02-vite-project` 用 Vite 创建 TypeScript 项目 | ✅ 已发布 | `f01-node-npm`、`d06-dom-create-update` |
+| `f03-tsconfig` tsconfig、ESM 与模块解析 | ✅ 已发布 | `f02-vite-project` |
+| `f04-devtools` DevTools、断点、source map 与网络面板 | ✅ 已发布 | `f02-vite-project` |
+| `f05-debugging-practice` 实际排错练习 | ✅ 已发布 | `f04-devtools` |
+| `f06-unit-tests` 用 Vitest 写单元测试 | ✅ 已发布 | `f03-tsconfig` |
+| `f07-type-tests` 类型测试 | ✅ 已发布 | `f06-unit-tests`、`b14-generics` |
+| `f08-dom-tests` DOM 与组件测试 | ✅ 已发布 | `f06-unit-tests`、`d08-bubbling-delegation` |
+| `f09-e2e` 用 Playwright 做端到端测试 | ✅ 已发布 | `f08-dom-tests` |
+| `f10-git` Git 基础工作流 | ✅ 已发布 | `f01-node-npm` |
+| `f11-lint-format` 格式化与静态检查 | ✅ 已发布 | `f03-tsconfig` |
+| `f12-build-ci` 生产构建与 CI | ✅ 已发布 | `f11-lint-format`、`f10-git`、`f09-e2e` |
 
 ## G. React + TypeScript（已发布 14 / 15）
 

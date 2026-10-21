@@ -137,7 +137,8 @@ console.log(formatYuan(1230), formatYuan(-500));
 import { describe, expect, test } from 'vitest';
 import { formatYuan, page, pageCount, sortByPrice, totalCents, type Item } from './cart';
 
-const cart: Item[] = [
+/** 每个测试使用自己的一份数据：一个测试中被修改的数组不会影响其他测试 */
+const makeCart = (): Item[] => [
   { name: '笔记本', priceCents: 1230, quantity: 1 },
   { name: '钢笔', priceCents: 4500, quantity: 2 },
   { name: '尺子', priceCents: 1230, quantity: 1 },
@@ -146,10 +147,12 @@ const cart: Item[] = [
 
 describe('报告 1：sortByPrice', () => {
   test('从贵到便宜；单价相同时保持原来的顺序', () => {
+    const cart = makeCart();
     expect(sortByPrice(cart).map((item) => item.name)).toEqual(['钢笔', '笔记本', '尺子', '橡皮']);
   });
 
   test('不修改传入的数组', () => {
+    const cart = makeCart();
     const before = cart.map((item) => item.name);
     sortByPrice(cart);
     expect(cart.map((item) => item.name)).toEqual(before);
@@ -158,6 +161,7 @@ describe('报告 1：sortByPrice', () => {
 
 describe('报告 2：totalCents', () => {
   test('一件、多件、没有', () => {
+    const cart = makeCart();
     expect(totalCents(cart.slice(0, 1))).toBe(1230);
     expect(totalCents(cart)).toBe(1230 + 9000 + 1230 + 450);
     expect(totalCents([])).toBe(0);
@@ -173,6 +177,7 @@ describe('报告 3：分页', () => {
   });
 
   test('page：页码从 1 开始', () => {
+    const cart = makeCart();
     expect(page(cart, 1, 3).map((item) => item.name)).toEqual(['笔记本', '钢笔', '尺子']);
     expect(page(cart, 2, 3).map((item) => item.name)).toEqual(['橡皮']);
     expect(page(cart, 3, 3)).toEqual([]);
@@ -180,6 +185,7 @@ describe('报告 3：分页', () => {
   });
 
   test('page：页码不是从 1 开始的整数时抛出 RangeError', () => {
+    const cart = makeCart();
     expect(() => page(cart, 0, 3)).toThrow(RangeError);
     expect(() => page(cart, -1, 3)).toThrow(RangeError);
     expect(() => page(cart, 1.5, 3)).toThrow(RangeError);

@@ -16,7 +16,7 @@ title: 判断版本是否满足范围
 
 `version` 不是有效的版本，或者 `range` 中任何一部分写得不正确（空的组、不认识的条件、不完整的版本）时，抛出 `Error`。整个范围要先全部检查：不能因为前面的组已经满足，就不管后面写错的组。
 
-测试中的期望结果都与 npm 使用的 node-semver（7.8.5）一致；只有无效的输入例外，node-semver 对它们的处理方式各不相同，这里统一抛出错误。
+测试中 `satisfies` 返回 `true`/`false` 的结果都与 npm 使用的 node-semver（7.8.5）一致。抛出错误的输入分两种：真正无效的写法（`latest`、`>>1.2.3`），以及 node-semver 能处理、但本练习不支持的写法（`v1.2.3`、`^1.2`、`1.x`、`>= 1.2.3`、`1.2.3 - 2.0.0`，node-semver 甚至把 `^1.0.0 ||` 当成 `*`）。本题对这两种都统一抛出错误。
 
 :::files{role=starter}
 ```ts file=ranges.ts
@@ -317,6 +317,8 @@ describe('预发布版本', () => {
     yes('1.2.3-beta.2', '>1.2.3-beta.1');
     no('1.2.3-beta.1', '>1.2.3-beta.1');
     yes('1.4.0-rc.1', '>=1.4.0-rc.0 <1.5.0');
+    // 写出预发布版本的条件不一定是这一组的第一个
+    yes('1.4.0-rc.1', '<1.5.0 >=1.4.0-rc.0');
     no('1.4.1-rc.1', '>=1.4.0-rc.0 <1.5.0');
     yes('2.0.0-rc.1', '<=2.0.0-rc.1');
     no('2.0.0-rc.2', '<=2.0.0-rc.1');
@@ -846,7 +848,7 @@ function allowsPrerelease(comparators: Comparator[], version: Version): boolean 
 
 export function satisfies(version: string, range: string): boolean {
   const target = mustParse(version);
-  // 先完整解析整个范围：任何一部分写错都抛出错误
+  // 边检查边解析：前面的组满足之后，后面的组不再解析，写错了也发现不了
   const parts = range.trim() === '' ? ['*'] : range.split('||');
   return parts.some((part) => {
     const comparators = parseSet(part, range);

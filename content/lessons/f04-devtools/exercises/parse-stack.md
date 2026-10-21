@@ -9,7 +9,7 @@ title: 解析错误的堆栈
 1. **Chromium 格式**，以 `at ` 开头：
    - 去掉 `at ` 之后，如果开头是 `async `，也去掉；
    - 形如 `名字 (位置)` 时，`fn` 是括号前面的全部文字（例如 `new Point`、`Object.method`）；否则整个就是位置，`fn` 是 `null`；
-2. **Safari 格式**，含有 `@`：第一个 `@` 前面是名字，后面是位置（地址中也可能有 `@`，例如 Vite 的 `/@vite/client`）。名字为空、或者是 `module code`、`global code`（Safari 用它们表示顶层）时，`fn` 是 `null`；
+2. **Safari 格式**，含有 `@`：第一个 `@` 前面是名字，后面是位置（地址中也可能有 `@`，例如 Vite 的 `/@vite/client`）。名字开头的 `async ` 也去掉（Safari 中 `await` 之后的那一层同样带 `async `）。名字为空、或者是 `module code`、`global code`（Safari 用它们表示顶层）时，`fn` 是 `null`；
 3. **位置**的格式是 `地址:行:列`，行和列是末尾的两个数字（地址中也有冒号，例如 `http://`、`C:\`）。位置不是这种格式（`<anonymous>`、`[native code]`）时整行返回 `null`；
 4. 两种格式都不是（错误信息那一行、空行）时返回 `null`。
 
@@ -74,7 +74,7 @@ export function parseStackLine(text: string): StackFrame | null {
   // Safari：函数名@位置。位置中也可能有 @（例如 Vite 的 /@vite/client），所以按第一个 @ 分开
   const at = line.indexOf('@');
   if (at === -1) return null;
-  const name = line.slice(0, at);
+  const name = line.slice(0, at).replace(/^async /, '');
   const location = parseLocation(line.slice(at + 1));
   return location && { fn: TOP_LEVEL.has(name) ? null : name, ...location };
 }
@@ -150,6 +150,10 @@ describe('parseStackLine：Safari', () => {
     expect(parseStackLine('Point@http://localhost:5398/src/main.js:3:53')).toMatchObject({ fn: 'Point', line: 3 });
   });
 
+  test('await 之后的一层：去掉 async', () => {
+    expect(parseStackLine('async loadUser@http://localhost:5398/src/main.js:4:40')).toEqual({ fn: 'loadUser', url: 'http://localhost:5398/src/main.js', line: 4, column: 40 });
+  });
+
   test('顶层与匿名函数没有名字', () => {
     expect(parseStackLine('module code@http://localhost:5398/src/main.js:8:13')).toEqual({ fn: null, url: 'http://localhost:5398/src/main.js', line: 8, column: 13 });
     expect(parseStackLine('global code@http://localhost:5398/legacy.js:1:7')).toMatchObject({ fn: null, line: 1 });
@@ -214,7 +218,7 @@ Chromium 的 `名字 (位置)` 可以用 `/^(.*) \((.*)\)$/` 判断；不匹配�
 export type StackFrame = { fn: string | null; url: string; line: number; column: number };
 
 const CHROMIUM = /^at (?:async )?(?:(.*) \((.+):(\d+):(\d+)\)|(.+):(\d+):(\d+))$/;
-const SAFARI = /^([^@]*)@(.+):(\d+):(\d+)$/;
+const SAFARI = /^(?:async )?([^@]*)@(.+):(\d+):(\d+)$/;
 
 function frame(fn: string | undefined, url: string | undefined, line: string | undefined, column: string | undefined): StackFrame | null {
   if (url === undefined || line === undefined || column === undefined) return null;
@@ -271,7 +275,7 @@ export function parseStackLine(text: string): StackFrame | null {
   // Safari：函数名@位置。位置中也可能有 @（例如 Vite 的 /@vite/client），所以按第一个 @ 分开
   const at = line.indexOf('@');
   if (at === -1) return null;
-  const name = line.slice(0, at);
+  const name = line.slice(0, at).replace(/^async /, '');
   const location = parseLocation(line.slice(at + 1));
   return location && { fn: TOP_LEVEL.has(name) ? null : name, ...location };
 }
@@ -398,7 +402,7 @@ export function parseStackLine(text: string): StackFrame | null {
   // Safari：函数名@位置。位置中也可能有 @（例如 Vite 的 /@vite/client），所以按第一个 @ 分开
   const at = line.lastIndexOf('@');
   if (at === -1) return null;
-  const name = line.slice(0, at);
+  const name = line.slice(0, at).replace(/^async /, '');
   const location = parseLocation(line.slice(at + 1));
   return location && { fn: TOP_LEVEL.has(name) ? null : name, ...location };
 }
@@ -442,7 +446,7 @@ export function parseStackLine(text: string): StackFrame | null {
   // Safari：函数名@位置。位置中也可能有 @（例如 Vite 的 /@vite/client），所以按第一个 @ 分开
   const at = line.indexOf('@');
   if (at === -1) return null;
-  const name = line.slice(0, at);
+  const name = line.slice(0, at).replace(/^async /, '');
   const location = parseLocation(line.slice(at + 1));
   return location && { fn: TOP_LEVEL.has(name) ? null : name, ...location };
 }

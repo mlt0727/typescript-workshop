@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 同一段 TypeScript，在 Vite 项目里能运行，放进 Node.js 项目就报“找不到模块”；import 一个类型，构建后浏览器却报“没有导出名为 User 的成员”；tsconfig.json 里十几个选项，复制来复制去，不知道哪些是必要的。这一课逐项读懂 Vite 模板的 tsconfig.json，讲清 verbatimModuleSyntax 与 import type 在运行时的区别，以及 moduleResolution 为 bundler 和 nodenext 时，import 路径的写法为什么不同。
 objectives:
   - 读懂 tsconfig.json 的结构（include、compilerOptions），说出 lib、types、module、moduleResolution、noEmit 等选项的作用
@@ -38,7 +38,7 @@ references:
 - `include`：哪些文件属于这个项目（`src` 表示 `src` 文件夹下的所有 `.ts`/`.tsx` 文件）；
 - `compilerOptions`：怎样检查、要不要输出、输出成什么样。
 
-没有写的选项取默认值，而默认值会随 TypeScript 版本变化（c11 讲过，6.0 起 `strict` 默认开启）。想看实际生效的完整配置，运行 `npx tsc --showConfig`。
+没有写的选项取默认值，而默认值会随 TypeScript 版本变化（c11 讲过，6.0 起 `strict` 默认开启）。运行 `npx tsc --showConfig` 可以看到合并之后的配置（包括 `extends` 进来的选项，以及由其他选项推导出来的选项，例如 `verbatimModuleSyntax` 推导出的 `isolatedModules`）；但纯粹的默认值（例如 `strict`）不会列出。
 
 ## 逐项读 Vite 模板的配置
 
@@ -74,14 +74,14 @@ f02 用 create-vite 创建的项目中，`tsconfig.json` 是这样的（create-v
 | `lib` | 代码中可以使用哪些**内置 API 的类型**。`ES2023` 有 `toSorted`，没有 ES2024 的 `Promise.withResolvers`（用了会报 TS2550，并提示把 `lib` 改成 `es2024`）；`DOM` 提供 `document`、`window`，连 `console` 也在其中。`lib` 只影响类型检查，不会给旧浏览器补上这些 API |
 | `types` | 自动包含哪些全局类型包。TypeScript 6.0 起默认是 `[]`（什么都不自动包含）；这里只包含 `vite/client`（f02 讲过，让 `import './style.css'` 能通过检查）。即使装了 `@types/node`，浏览器代码中的 `process` 也会报错，这正是想要的 |
 | `module`、`moduleResolution` | 输出什么样的模块、怎样根据 `import` 的路径找到文件。`bundler` 表示“由打包工具负责”，规则见下文 |
-| `allowImportingTsExtensions` | 允许 `import './counter.ts'` 这样写出 `.ts` 扩展名（模板的 `main.ts` 就是这样写的）；只能和 `noEmit` 一起用 |
+| `allowImportingTsExtensions` | 允许 `import './counter.ts'` 这样写出 `.ts` 扩展名（模板的 `main.ts` 就是这样写的）。必须同时开启 `noEmit`（不输出 JS）、`emitDeclarationOnly`（只输出 `.d.ts`）或 `rewriteRelativeImportExtensions`（输出时把 `.ts` 改写成 `.js`）三者之一，否则报 TS5096 |
 | `verbatimModuleSyntax` | 每个 `import`/`export` 原样保留到输出中，只有标记了 `type` 的才去掉（见下一节）。它同时隐含了 `isolatedModules`：每个文件都必须能单独转译 |
 | `erasableSyntaxOnly` | 只允许“去掉类型就是 JavaScript”的语法，禁止 `enum`、`namespace`、参数属性（b17） |
 | `moduleDetection: "force"` | 每个文件都当作模块，即使里面没有 `import`/`export` |
-| `skipLibCheck` | 不检查 `node_modules` 中的 `.d.ts` 文件（它们之间的冲突不是你的问题，还能加快检查） |
+| `skipLibCheck` | 不检查所有的 `.d.ts` 文件（`node_modules` 中的和项目自己写的都不检查；第三方声明之间的冲突往往不是你能修的，还能加快检查） |
 | `noUnusedLocals` 等 | 类似 lint 的检查：未使用的变量和参数、`switch` 中漏写的 `break` |
 
-`strict` 没有写：TypeScript 6.0 起默认就是开启的。这个网站的练习使用的配置与这份模板大体一致，区别是：`lib` 是 `ES2025`；额外开启了 `noUncheckedIndexedAccess`（c11）；没有开启 `noUnusedLocals`、`noUnusedParameters`，因为教学示例中常常有暂时没用到的变量。
+`strict` 没有写：TypeScript 6.0 起默认就是开启的。这个网站的练习使用的配置与这份模板大体一致，区别是：`target` 和 `lib` 是 `ES2025`（纯 TS 的练习运行在 Web Worker 中，`lib` 是 `ES2025` 和 `WebWorker`，没有 `DOM`）；`types` 是 `[]`，不包含 `vite/client`；额外开启了 `noUncheckedIndexedAccess`（c11）；没有开启 `noUnusedLocals`、`noUnusedParameters`，因为教学示例中常常有暂时没用到的变量。
 
 ## verbatimModuleSyntax 与 import type
 
@@ -139,15 +139,15 @@ console.log(greet(ada));
 | `'./lib/index.js'` | ✅ | ✅ |
 | `'./missing.js'` | ❌ TS2307：找不到模块 | ❌ TS2307 |
 
-为什么在 `nodenext` 中要写 `.js`，而文件明明是 `.ts`？因为 TypeScript **不改写** `import` 中的路径：`tsc` 把 `main.ts` 编译成 `main.js` 时，`import './util.js'` 原样保留，运行时 Node.js 找的是编译出的 `util.js`。所以在源代码中就写运行时的路径，TypeScript 检查时再把 `.js` 对应回 `util.ts`。
+为什么在 `nodenext` 中要写 `.js`，而文件明明是 `.ts`？因为 TypeScript 默认**不改写** `import` 中的路径（只有开启 `rewriteRelativeImportExtensions` 时，才把相对路径中的 `.ts` 改写成 `.js`）：`tsc` 把 `main.ts` 编译成 `main.js` 时，`import './util.js'` 原样保留，运行时 Node.js 找的是编译出的 `util.js`。所以在源代码中就写运行时的路径，TypeScript 检查时再把 `.js` 对应回 `util.ts`。
 
-还有一种情况：Node.js 现在可以**直接运行 `.ts` 文件**（只去掉类型，不做检查）。编写本课时使用的 Node.js 24.13 中，`node main.ts` 直接就能运行；这时运行时找的是 `.ts` 文件，`import './math.js'` 反而会报 `ERR_MODULE_NOT_FOUND`，必须写 `import './math.ts'`。TypeScript 中对应的配置是 `"module": "nodenext"`、`"allowImportingTsExtensions": true`、`"noEmit": true`，再加上 `"erasableSyntaxOnly": true`：Node.js 只会去掉类型，遇到 `enum` 时报 `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX`。
+还有一种情况：Node.js 现在可以**直接运行 `.ts` 文件**（只去掉类型，不做检查）。编写本课时使用的 Node.js 24.13 中，`node main.ts` 直接就能运行；这时运行时找的是 `.ts` 文件，`import './math.js'` 反而会报 `ERR_MODULE_NOT_FOUND`，必须写 `import './math.ts'`。TypeScript 中对应的配置是 `"module": "nodenext"`、`"allowImportingTsExtensions": true`、`"noEmit": true`，再加上 `"erasableSyntaxOnly": true`（Node.js 只会去掉类型，遇到 `enum` 时报 `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX`）和 `"verbatimModuleSyntax": true`（只用于类型的导入不写 `type` 时，Node.js 去掉类型之后这个导入仍然留着，运行时报 `does not provide an export named …`）。
 
 选择的原则：**谁运行代码，就按谁的规则配置**。浏览器项目（经过 Vite）用 `bundler`；直接用 Node.js 运行或者发布给 Node.js 使用的包，用 `nodenext`。
 
 ## 在自己的电脑上做一遍
 
-1. 在 f02 创建的 `my-app` 中运行 `npx tsc --showConfig`，看看哪些选项是默认值填进去的；
+1. 在 f02 创建的 `my-app` 中运行 `npx tsc --showConfig`，看看合并之后的配置中多了哪些推导出来的选项（`strict` 这样的默认值不会出现）；
 2. 在 `main.ts` 中写一行 `Promise.withResolvers<number>()`，运行 `npx tsc`：报 TS2550。把 `lib` 中的 `ES2023` 改成 `ES2024`，错误消失；
 3. 新建一个文件夹，`npm init -y` 之后把 `package.json` 中的 `"type"` 改成 `"module"`。写 `math.ts`（导出一个带类型注解的 `add`）和 `main.ts`（`import { add } from './math.ts'`），运行 `node main.ts`；再把导入改成 `'./math.js'` 或 `'./math'`，看 Node.js 报出的错误；
 4. 在这个文件夹中 `npm install --save-dev typescript@6.0.3`，写一个 `tsconfig.json`：`module` 为 `nodenext`，打开 `allowImportingTsExtensions`、`noEmit`、`erasableSyntaxOnly`、`verbatimModuleSyntax`，运行 `npx tsc` 检查。

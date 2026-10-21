@@ -104,18 +104,18 @@ stages:
     title: 工程化、测试与调试
     summary: 在本机搭建真实项目：npm、Vite、tsconfig、调试、测试、Git、构建与 CI。
     lessons:
-      - { id: f01-node-npm, title: Node.js、npm、package.json 与锁文件, status: draft, prerequisites: [a19-modules] }
-      - { id: f02-vite-project, title: 用 Vite 创建 TypeScript 项目, status: draft, prerequisites: [f01-node-npm, d06-dom-create-update] }
-      - { id: f03-tsconfig, title: tsconfig、ESM 与模块解析, status: draft, prerequisites: [f02-vite-project] }
-      - { id: f04-devtools, title: DevTools、断点、source map 与网络面板, status: draft, prerequisites: [f02-vite-project] }
-      - { id: f05-debugging-practice, title: 实际排错练习, status: draft, prerequisites: [f04-devtools] }
-      - { id: f06-unit-tests, title: 用 Vitest 写单元测试, status: draft, prerequisites: [f03-tsconfig] }
-      - { id: f07-type-tests, title: 类型测试, status: draft, prerequisites: [f06-unit-tests, b14-generics] }
-      - { id: f08-dom-tests, title: DOM 与组件测试, status: draft, prerequisites: [f06-unit-tests, d08-bubbling-delegation] }
-      - { id: f09-e2e, title: 用 Playwright 做端到端测试, status: draft, prerequisites: [f08-dom-tests] }
-      - { id: f10-git, title: Git 基础工作流, status: draft, prerequisites: [f01-node-npm] }
-      - { id: f11-lint-format, title: 格式化与静态检查, status: draft, prerequisites: [f03-tsconfig] }
-      - { id: f12-build-ci, title: 生产构建与 CI, status: draft, prerequisites: [f11-lint-format, f10-git] }
+      - { id: f01-node-npm, title: Node.js、npm、package.json 与锁文件, status: published, prerequisites: [a19-modules, b05-intersection-tuple, b08-type-guards] }
+      - { id: f02-vite-project, title: 用 Vite 创建 TypeScript 项目, status: published, prerequisites: [f01-node-npm, d06-dom-create-update] }
+      - { id: f03-tsconfig, title: tsconfig、ESM 与模块解析, status: published, prerequisites: [f02-vite-project] }
+      - { id: f04-devtools, title: DevTools、断点、source map 与网络面板, status: published, prerequisites: [f02-vite-project] }
+      - { id: f05-debugging-practice, title: 实际排错练习, status: published, prerequisites: [f04-devtools] }
+      - { id: f06-unit-tests, title: 用 Vitest 写单元测试, status: published, prerequisites: [f03-tsconfig] }
+      - { id: f07-type-tests, title: 类型测试, status: published, prerequisites: [f06-unit-tests, b14-generics] }
+      - { id: f08-dom-tests, title: DOM 与组件测试, status: published, prerequisites: [f06-unit-tests, d08-bubbling-delegation] }
+      - { id: f09-e2e, title: 用 Playwright 做端到端测试, status: published, prerequisites: [f08-dom-tests] }
+      - { id: f10-git, title: Git 基础工作流, status: published, prerequisites: [f01-node-npm] }
+      - { id: f11-lint-format, title: 格式化与静态检查, status: published, prerequisites: [f03-tsconfig] }
+      - { id: f12-build-ci, title: 生产构建与 CI, status: published, prerequisites: [f11-lint-format, f10-git, f09-e2e] }
 
   - id: G
     title: React + TypeScript

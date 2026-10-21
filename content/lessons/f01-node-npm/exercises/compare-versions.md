@@ -173,6 +173,8 @@ describe('parseVersion', () => {
     expect(parseVersion('1.0.0-0a.10')).toEqual({ major: 1, minor: 0, patch: 0, prerelease: ['0a', 10] });
     expect(parseVersion('1.0.0-x-y-z.--')).toEqual({ major: 1, minor: 0, patch: 0, prerelease: ['x-y-z', '--'] });
     expect(parseVersion('2.0.0-0')).toEqual({ major: 2, minor: 0, patch: 0, prerelease: [0] });
+    // 只有十进制数字组成的才是数字标识符：0x1、1e3 都是字符串
+    expect(parseVersion('1.0.0-0x1.1e3')).toEqual({ major: 1, minor: 0, patch: 0, prerelease: ['0x1', '1e3'] });
   });
 
   test('构建信息被丢弃', () => {
@@ -216,6 +218,9 @@ describe('compareVersions', () => {
     expect(compareVersions(v('1.0.0-B'), v('1.0.0-a'))).toBe(-1);
     expect(compareVersions(v('1.0.0-alpha.1'), v('1.0.0-alpha.beta'))).toBe(-1);
     expect(compareVersions(v('1.0.0-0a'), v('1.0.0-0'))).toBe(1);
+    // 数字总比字符串小，即使按字符串比较结果相反（'1' > '0a'、'999' > '-'）
+    expect(compareVersions(v('1.0.0-1'), v('1.0.0-0a'))).toBe(-1);
+    expect(compareVersions(v('1.0.0-999'), v('1.0.0--'))).toBe(-1);
     expect(compareVersions(v('1.0.0-alpha'), v('1.0.0-alpha.1'))).toBe(-1);
     expect(compareVersions(v('1.0.0-x.1.0'), v('1.0.0-x.1'))).toBe(1);
     expect(compareVersions(v('1.0.0-alpha'), v('1.0.0-alpha-1'))).toBe(-1);
@@ -268,7 +273,7 @@ expectTypeOf<Version['prerelease']>().toEqualTypeOf<(string | number)[]>();
 
 返回类型写成 `-1 | 0 | 1` 而不是 `number`，调用方就知道只有三种结果；`sign` 函数的返回类型保证了这一点，`a || b || c` 的类型也仍然是 `-1 | 0 | 1`。
 
-真实的项目中直接用 npm 自己使用的 [`semver`](https://github.com/npm/node-semver) 包（`semver.compare`、`semver.valid`），这个练习的规则与它一致。
+真实的项目中直接用 npm 自己使用的 [`semver`](https://github.com/npm/node-semver) 包（`semver.compare`、`semver.valid`）。这个练习的**比较**规则与它一致；解析时 node-semver 更宽松：它接受开头的 `v`、去掉首尾的空白（`semver.valid('v1.2.3')` 得到 `'1.2.3'`），而本题要求这两种都返回 `null`。
 :::
 
 :::variant{kind=alt name=regex-and-loop}
@@ -490,6 +495,71 @@ export function compareVersions(a: Version, b: Version): -1 | 0 | 1 {
   for (const [i, id] of pa.entries()) {
     const other = pb[i];
     if (other === undefined) return 1;
+    const x = String(id);
+    const y = String(other);
+    if (x !== y) return x < y ? -1 : 1;
+  }
+  return pa.length < pb.length ? -1 : 0;
+}
+```
+:::
+
+:::variant{kind=wrong name=mixed-as-string fails=tests reason="一个是数字、一个是字符串时也按字符串比较：1.0.0-1 被排在了 1.0.0-0a 后面（数字应该总比字符串小）"}
+```ts file=semver.ts
+export type Identifier = string | number;
+
+export type Version = {
+  major: number;
+  minor: number;
+  patch: number;
+  prerelease: Identifier[];
+};
+
+const NUMERIC = /^(?:0|[1-9]\d*)$/;
+const IDENTIFIER = /^[0-9A-Za-z-]+$/;
+
+function identifiers(text: string): string[] | null {
+  const ids = text.split('.');
+  return ids.every((id) => IDENTIFIER.test(id)) ? ids : null;
+}
+
+export function parseVersion(text: string): Version | null {
+  const plus = text.indexOf('+');
+  if (plus !== -1 && identifiers(text.slice(plus + 1)) === null) return null;
+  const main = plus === -1 ? text : text.slice(0, plus);
+  const dash = main.indexOf('-');
+  const core = dash === -1 ? main : main.slice(0, dash);
+  const pre = dash === -1 ? [] : identifiers(main.slice(dash + 1));
+  if (pre === null) return null;
+  const numbers = core.split('.');
+  if (numbers.length !== 3 || !numbers.every((n) => NUMERIC.test(n))) return null;
+  const [major = 0, minor = 0, patch = 0] = numbers.map(Number);
+  const prerelease: Identifier[] = [];
+  for (const id of pre) {
+    if (!/^\d+$/.test(id)) prerelease.push(id);
+    else if (NUMERIC.test(id)) prerelease.push(Number(id));
+    else return null;
+  }
+  return { major, minor, patch, prerelease };
+}
+
+const sign = (n: number): -1 | 0 | 1 => (n < 0 ? -1 : n > 0 ? 1 : 0);
+
+export function compareVersions(a: Version, b: Version): -1 | 0 | 1 {
+  const core = sign(a.major - b.major) || sign(a.minor - b.minor) || sign(a.patch - b.patch);
+  if (core !== 0) return core;
+  const pa = a.prerelease;
+  const pb = b.prerelease;
+  if (pa.length === 0 && pb.length === 0) return 0;
+  if (pa.length === 0) return 1;
+  if (pb.length === 0) return -1;
+  for (const [i, id] of pa.entries()) {
+    const other = pb[i];
+    if (other === undefined) return 1;
+    if (typeof id === 'number' && typeof other === 'number') {
+      if (id !== other) return id < other ? -1 : 1;
+      continue;
+    }
     const x = String(id);
     const y = String(other);
     if (x !== y) return x < y ? -1 : 1;

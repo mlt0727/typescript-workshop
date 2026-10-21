@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 到目前为止，所有代码都运行在这个网站的沙箱里。真实的项目在你自己的电脑上：用 Node.js 运行构建工具和测试，用 npm 安装别人写好的包。打开一个项目，最先看到的就是 package.json 和 package-lock.json，它们决定了项目依赖哪些包、能接受哪些版本、npm run dev 实际执行什么。这一课讲清楚 Node.js 和浏览器的区别、package.json 中常用的字段、语义化版本与 ^、~ 这些范围的准确含义，以及锁文件为什么要提交、npm install 和 npm ci 有什么不同。最后在自己的电脑上做一遍。
 objectives:
   - 说明 Node.js 与浏览器作为 JavaScript 运行环境的区别，知道为什么前端项目也需要 Node.js
@@ -66,7 +66,7 @@ Node.js 有“长期支持”（LTS）版本，适合大多数项目。本课程
 | 字段 | 含义 |
 | --- | --- |
 | `name`、`version` | 包的名字和版本。发布到 npm 时必需；`"private": true` 防止误发布 |
-| `type` | `"module"`：项目中的 `.js` 文件按 ES 模块（`import`/`export`，a19）处理；`"commonjs"`：按 CommonJS（`require`）处理。不写时也按 CommonJS 处理，只是 Node.js 22 起遇到含有 `import`/`export` 的文件会改按 ES 模块重新解析并给出警告，所以最好明确写出 |
+| `type` | `"module"`：项目中的 `.js` 文件按 ES 模块（`import`/`export`，a19）处理；`"commonjs"`：按 CommonJS（`require`）处理。不写时也按 CommonJS 处理，只是 Node.js 22.7（以及 20.19）起遇到含有 `import`/`export` 的文件会改按 ES 模块重新解析并给出警告，所以最好明确写出 |
 | `scripts` | 命令的别名：`npm run build` 执行 `tsc && vite build`。运行时 `node_modules/.bin` 会被加入 `PATH`，所以能直接写 `vite`、`tsc` |
 | `dependencies` | 运行时需要的包（例如 React） |
 | `devDependencies` | 只在开发、构建、测试时需要的包（例如 TypeScript、Vite、Vitest） |
@@ -148,6 +148,40 @@ for (const base of ['1.2.3', '0.2.3', '0.0.3']) {
 5. 在 `package.json` 的 `scripts` 中加一行 `"check": "tsc --version"`，然后 `npm run check`；
 6. 删除 `node_modules`，运行 `npm ci`：它按锁文件重新安装了同样的版本。
 
+## 练习之前：JavaScript 的正则表达式
+
+F 阶段的几个练习要解析版本号、地址、错误信息这类文本，会用到正则表达式。语法和 Python 的 `re`、Java 的 `Pattern` 基本相同，这里只列出 JavaScript 中的写法和 TypeScript 中需要注意的地方：
+
+:::playground{#regex}
+```ts file=main.ts
+const VERSION = /^(\d+)\.(\d+)\.(\d+)$/;
+
+console.log(VERSION.test('1.2.3'), VERSION.test('v1.2.3'));
+
+const m = VERSION.exec('10.20.30');
+if (m !== null) {
+  const [, major, minor] = m;
+  console.log(m[0], major, minor, m.index);
+}
+console.log(VERSION.exec('1.2'));
+
+const named = /^(?<op>>=|<=|>|<|=)?(?<version>.+)$/.exec('>=1.2.3');
+console.log(named?.groups?.['op'], named?.groups?.['version']);
+
+console.log(/^(?:0|[1-9]\d*)$/.test('01'), /^[a-z]+$/i.test('Beta'));
+console.log('a1b22c333'.match(/\d+/g));
+console.log([...'x=1, y=22'.matchAll(/(\w)=(\d+)/g)].map((r) => `${r[1]}:${r[2]}`));
+console.log('<b>粗</b><b>体</b>'.match(/<b>.*<\/b>/)?.[0], '<b>粗</b><b>体</b>'.match(/<b>.*?<\/b>/)?.[0]);
+console.log('2026-10-20'.replace(/(\d+)-(\d+)-(\d+)/, '$3/$2/$1'));
+```
+- 正则写在两个 `/` 之间，后面可以跟标志：`i` 不区分大小写，`g` 找出所有匹配（`match` 返回所有匹配的字符串，`matchAll` 逐个返回带分组的结果）。`^`、`$` 是开头和结尾：不写它们时，`/\d+/` 在 `'v1.2.3'` 中也能找到；
+- `re.test(s)` 只回答“有没有匹配”；`re.exec(s)` 没有匹配时返回 **`null`**，有匹配时返回一个数组：`[0]` 是整个匹配，`[1]`、`[2]`…… 是各个分组，`index` 是匹配开始的位置。所以第 5 行的结果要先和 `null` 比较；
+- 开启 `noUncheckedIndexedAccess`（本课程的配置）时，`m[1]` 和解构出来的 `major` 的类型是 `string | undefined`，用之前还要处理 `undefined`（只有 `m[0]` 是 `string`）；
+- `(?:…)` 只分组、不捕获；`(?<名字>…)` 是命名分组，结果在 `groups` 中（第 12 行）；
+- `*`、`+` 默认是贪婪的，尽量多匹配；后面加 `?`（`.*?`）变成尽量少匹配，第 18 行的两个结果说明了区别；
+- `replace` 的替换文字中，`$1`、`$2` 是对应的分组。正则中的 `/` 要写成 `\/`。
+:::
+
 ::exercise{#compare-versions}
 
 ## 编程挑战
@@ -160,6 +194,6 @@ for (const base of ['1.2.3', '0.2.3', '0.0.3']) {
 
 - **把 `node_modules` 提交到 Git**：又大又和平台有关。提交 `package.json` 和锁文件，`node_modules` 写进 `.gitignore`。
 - **不提交锁文件**：每个人、每次部署装到的版本都可能不同，“我这里没问题”就无从谈起。
-- **以为 `^0.2.3` 允许升级到 `0.3.0`**：主版本是 0 时，`^` 只允许修订号变化。
+- **以为 `^0.2.3` 允许升级到 `0.3.0`**：`^` 不改变最左边非零的那一位。`^0.2.3` 只允许修订号变化（小于 `0.3.0`），`^0.0.3` 连修订号也不能变（小于 `0.0.4`）。
 - **在持续集成中用 `npm install`**：它可能修改锁文件、装到别的版本。用 `npm ci`。
 - **用字符串比较版本号**：`'1.10.0' < '1.9.0'` 是 `true`。要按数字逐段比较。

@@ -2,7 +2,7 @@
 version: 1
 mode: dom
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 单元测试和组件测试都通过了，部署之后用户却打不开页面：构建配置错了，路由刷新返回 404，接口地址写错了，Safari 中某个 API 不支持。这些问题只有在真实的浏览器中、对真实构建出的网站走一遍完整的流程才能发现。端到端测试就是做这件事的：启动网站，打开浏览器，像用户一样点击、输入，检查看到的结果。这一课在本机用 Playwright 为 f02 的项目写端到端测试，理解“自动等待”为什么让测试既稳定又不需要 sleep；在这个网站上，用同样的思路为一个多步骤的流程写测试，并实现一个“自动重试直到成功”的等待函数。
 objectives:
   - 说明单元测试、组件测试与端到端测试各自能发现的问题，以及端到端测试的成本
@@ -56,7 +56,7 @@ export default defineConfig({
   testDir: './e2e',
   use: {
     baseURL: 'http://localhost:5173',
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
@@ -89,7 +89,7 @@ test('点击按钮，计数加一', async ({ page }) => {
 });
 ```
 
-4. `npx playwright test`：两个浏览器中各运行一遍，实际输出是 `4 passed (3.7s)`（还有一个检查标题的测试）。
+4. `npx playwright test`：两个浏览器中各运行一遍，实际输出是 `4 passed (3.8s)`（还有一个检查标题的测试）。
 
 ## 定位器与自动等待
 
@@ -159,14 +159,14 @@ console.log('只检查一次：', status.textContent === '已保存');
 console.log('重试直到成功：', await eventually(() => status.textContent === '已保存'));
 ```
 - 第 23 行在点击之后立刻检查，这时文字还是“保存中…”。
-- `eventually` 每 50 毫秒检查一次，大约第三次时文字已经变成了“已保存”。Playwright 的断言、Testing Library 的 `findBy…` 和 `waitFor` 都是这样工作的。下面的编程挑战会把它写成一个完整的函数。
+- `eventually` 每 50 毫秒检查一次，第 4 次检查（也就是第 3 次重试）时文字已经变成了“已保存”。Playwright 的断言、Testing Library 的 `findBy…` 和 `waitFor` 都是这样工作的。下面的编程挑战会把它写成一个完整的函数。
 :::
 
 ## 排查失败的测试与模拟网络
 
 - `npx playwright test --ui`：UI 模式，可以单独运行某个测试，逐步查看每一个操作前后的页面；
 - `npx playwright test --headed`：显示浏览器窗口；`--debug` 逐步执行；
-- **trace**：配置中的 `trace: 'on-first-retry'` 让失败后重试时记录完整的过程（每一步的截图、DOM、网络请求、控制台）。`npx playwright show-report` 打开报告，点开 trace 就能“回放”失败的那一次；
+- **trace**：配置中的 `trace: 'retain-on-failure'` 为每个测试记录完整的过程（每一步的截图、DOM、网络请求、控制台），只保留失败的那些。`npx playwright show-report` 打开报告，点开 trace 就能“回放”失败的那一次。`npm init playwright` 生成的模板用的是 `trace: 'on-first-retry'` 加上 `retries: process.env.CI ? 2 : 0`：只在重试时记录，所以本机（不重试）不会生成 trace，要么加上 `--retries=1`，要么像这里一样用 `retain-on-failure`；
 - **模拟网络**：测试不应该依赖真实的后端是否正常。`page.route` 拦截请求并返回准备好的数据：
 
 ```ts

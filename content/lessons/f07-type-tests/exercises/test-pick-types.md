@@ -4,14 +4,14 @@ title: 为 pick 写类型测试
 grading: tests
 allow: [ts-directive]
 ---
-`pick.ts`（只读）中是 c06 见过的 `pick(obj, keys)`：从对象中取出指定的键组成新对象。它的**类型**规格是：
+`pick.ts`（只读）中是 `pick(obj, keys)`：从对象中取出指定的键组成新对象。它的返回类型是 c06 的 `Pick<T, K>`，`K extends keyof T` 的写法在 b15 讲过。它的**类型**规格是：
 
 1. 返回值的类型正好是选出的那几个键（`pick(user, ['id', 'name'])` 是 `{ id: number; name: string }`），不是 `any`，也没有别的属性；
 2. 原来可选的属性仍然是可选的；
 3. `keys` 可以是只读数组（例如 `as const` 得到的）；
 4. `keys` 中只能是 `obj` 的键，否则编译错误；`obj` 必须是对象，否则编译错误。
 
-在 `pick.test-d.ts` 中写类型测试。平台准备了六个“类型写错了”的 `pick.ts`（运行时的行为都一样），你的测试要发现每一个：要么某个 `expectTypeOf` 报错，要么某个 `@ts-expect-error` 下面没有了错误。
+在 `pick.test-d.ts` 中写类型测试。平台准备了七个“类型写错了”的 `pick.ts`（运行时的行为都一样），你的测试要发现每一个：要么某个 `expectTypeOf` 报错，要么某个 `@ts-expect-error` 下面没有了错误。
 
 :::files{role=support}
 ```ts file=pick.ts readonly
@@ -126,6 +126,17 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: readonly
 ```
 :::
 
+:::mutant{name=mutable-keys hint="keys 的类型是 K[]（可变的数组）：as const 得到的只读数组传不进去。需要一个用只读数组调用的测试"}
+```ts file=pick.ts
+/** 从对象中取出指定的键，组成一个新对象 */
+export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+  const result: Partial<Pick<T, K>> = {};
+  for (const key of keys) result[key] = obj[key];
+  return result as Pick<T, K>;
+}
+```
+:::
+
 :::hint{level=1}
 起始代码用的是 `toExtend`：它只检查“能不能赋值”，`any` 和多出属性的对象都能通过。把它换成 `toEqualTypeOf`，再按规格逐条补上：一个有可选属性的类型（可以用 `declare const profile: { nickname: string; bio?: string }` 得到一个这种类型的值，不需要真的创建它）、一个 `as const` 的键数组。
 :::
@@ -167,6 +178,11 @@ describe('pick 的类型', () => {
     expectTypeOf(pick(book, ['isbn'])).toEqualTypeOf<Pick<Book, 'isbn'>>();
   });
 
+  test('键可以是只读的数组', () => {
+    const fields = ['year', 'title'] as const;
+    expectTypeOf(pick(book, fields)).toEqualTypeOf<Pick<Book, 'year' | 'title'>>();
+  });
+
   test('不允许的调用', () => {
     // @ts-expect-error 不存在的键
     pick(book, ['author']);
@@ -188,6 +204,8 @@ declare const profile: Profile;
 
 expectTypeOf(pick(user, ['id', 'name'])).toExtend<{ id: number; name: string }>();
 expectTypeOf(pick(profile, ['bio'])).toExtend<{ bio?: string }>();
+const keys = ['admin'] as const;
+expectTypeOf(pick(user, keys)).toExtend<{ admin: boolean }>();
 
 // @ts-expect-error 没有这个键
 pick(user, ['email']);
@@ -207,6 +225,8 @@ declare const profile: Profile;
 
 expectTypeOf(pick(user, ['id', 'name'])).toEqualTypeOf<{ id: number; name: string }>();
 expectTypeOf(pick(profile, ['bio'])).toEqualTypeOf<{ bio?: string }>();
+const keys = ['admin'] as const;
+expectTypeOf(pick(user, keys)).toEqualTypeOf<{ admin: boolean }>();
 
 // @ts-ignore 没有这个键
 pick(user, ['email']);

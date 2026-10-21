@@ -2,7 +2,7 @@
 kind: challenge
 title: 模拟 TypeScript 的模块解析
 ---
-在 `resolve.ts` 中实现 `resolveImport(from, specifier, files, options)`，模拟 TypeScript 6.0 对**相对导入**的解析，结果与正文表格中实际运行 `tsc` 得到的一致：
+在 `resolve.ts` 中实现 `resolveImport(from, specifier, files, options)`，模拟 TypeScript 6.0 对**相对导入**的解析，结果与正文表格中实际运行 `tsc` 得到的一致（`jsx` 不设置或者设置为 `react-jsx`；有一处简化，见规则 4）：
 
 - `from` 是导入方文件的路径（例如 `src/main.ts`，以项目根目录为起点，用 `/` 分隔）；
 - `specifier` 是说明符，一定以 `./` 或 `../` 开头（不会只是 `./` 或 `../` 本身）；
@@ -12,11 +12,11 @@ title: 模拟 TypeScript 的模块解析
 **规则**：
 
 1. 从 `from` 所在的文件夹出发，按说明符的每一段移动：`.` 不动，`..` 回到上一级，退到项目根目录之外时返回 2307。说明符以 `/` 结尾表示“一个文件夹”；
-2. 说明符的最后一段以 `.ts` 或 `.tsx` 结尾：把扩展名换成 `.ts`、`.tsx` 依次查找。找到了文件、但没有开启 `allowTsExtensions` 时返回 5097（实测 `tsc` 是先找文件再检查扩展名，所以找不到时仍然是 2307）；
-3. 以 `.js` 或 `.jsx` 结尾：把扩展名换成 `.ts`、`.tsx` 依次查找（两种模式都一样）；
+2. 说明符的最后一段以 `.ts`、`.tsx`、`.js` 或 `.jsx` 结尾：去掉扩展名，以 `.ts` 或 `.js` 结尾时依次查找 `.ts`、`.tsx`，以 `.tsx` 或 `.jsx` 结尾时依次查找 `.tsx`、`.ts`（两种模式都一样）；
+3. 写出的是 `.ts` 或 `.tsx`：找到了文件、但没有开启 `allowTsExtensions` 时返回 5097（实测 `tsc` 是先找文件再检查扩展名，所以找不到时仍然是 2307）；
 4. 没有这四种扩展名（或者以 `/` 结尾）时，两种模式不同：
    - `bundler`：依次查找 `路径.ts`、`路径.tsx`、`路径/index.ts`、`路径/index.tsx`（以 `/` 结尾时只找后两个）；
-   - `nodenext`：不查找。`路径.ts` 存在时返回 2835，建议在说明符后面加上 `.js`；`路径.tsx` 存在时返回 2835，建议加上 `.jsx`；其他情况（包括以 `/` 结尾）返回 2834；
+   - `nodenext`：不查找。`路径.ts` 或 `路径.tsx` 存在时返回 2835，建议在说明符后面加上 `.js`（只有 `jsx` 为 `preserve`、并且只有 `.tsx` 存在时，`tsc` 才建议 `.jsx`，本题不考虑）；其他情况（包括以 `/` 结尾）返回 2834。简化：以 `/` 结尾而 `路径.ts` 存在时（例如 `./lib/` 和 `lib.ts`），实测 `tsc` 给出 2835 和一个没有意义的建议 `./lib/.js`，本题按 2834 处理；
 5. 要查找的文件都不存在时返回 2307。
 
 返回值的类型已经给出：只有 2835 带有 `suggestion`。
@@ -82,9 +82,9 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
 
   const ext = isDir ? null : /\.(ts|tsx|js|jsx)$/.exec(target);
   if (ext !== null) {
-    // 写出的扩展名（.js、.jsx 或者 .ts、.tsx）都对应到源文件 .ts、.tsx
+    // 写出的扩展名对应到源文件：.ts、.js 先找 .ts 再找 .tsx；.tsx、.jsx 先找 .tsx 再找 .ts
     const stem = target.slice(0, ext.index);
-    const result = firstExisting([`${stem}.ts`, `${stem}.tsx`]);
+    const result = firstExisting(ext[1] === 'tsx' || ext[1] === 'jsx' ? [`${stem}.tsx`, `${stem}.ts`] : [`${stem}.ts`, `${stem}.tsx`]);
     // 找到了文件，才检查写出 .ts、.tsx 是否被允许
     if (result.ok && (ext[1] === 'ts' || ext[1] === 'tsx') && !options.allowTsExtensions) return { ok: false, code: 5097 };
     return result;
@@ -96,8 +96,7 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
     return firstExisting(isDir ? index : [`${target}.ts`, `${target}.tsx`, ...index]);
   }
   // nodenext：不补扩展名，也不找 index；能猜到时给出建议
-  if (!isDir && files.has(`${target}.ts`)) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
-  if (!isDir && files.has(`${target}.tsx`)) return { ok: false, code: 2835, suggestion: `${specifier}.jsx` };
+  if (!isDir && (files.has(`${target}.ts`) || files.has(`${target}.tsx`))) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
   return { ok: false, code: 2834 };
 }
 ```
@@ -135,6 +134,8 @@ const node: ResolveOptions = { mode: 'nodenext', allowTsExtensions: false };
 const nodeTs: ResolveOptions = { mode: 'nodenext', allowTsExtensions: true };
 
 const found = (file: string) => ({ ok: true, file });
+// x.ts 和 x.tsx 同时存在
+const twins = new Set([...files, 'src/x.ts', 'src/x.tsx']);
 const missing = { ok: false, code: 2307 };
 
 describe('两种模式相同的部分', () => {
@@ -147,12 +148,28 @@ describe('两种模式相同的部分', () => {
     }
   });
 
+  test('.ts、.js 先找 .ts；.tsx、.jsx 先找 .tsx', () => {
+    for (const options of [bundler, node]) {
+      expect(resolveImport('src/main.ts', './x.js', twins, options)).toEqual(found('src/x.ts'));
+      expect(resolveImport('src/main.ts', './x.jsx', twins, options)).toEqual(found('src/x.tsx'));
+    }
+    for (const options of [bundlerTs, nodeTs]) {
+      expect(resolveImport('src/main.ts', './x.ts', twins, options)).toEqual(found('src/x.ts'));
+      expect(resolveImport('src/main.ts', './x.tsx', twins, options)).toEqual(found('src/x.tsx'));
+    }
+  });
+
   test('. 和 .. 按文件夹移动', () => {
     for (const options of [bundler, node]) {
       expect(resolveImport('src/sub/deep.ts', '../util.js', files, options)).toEqual(found('src/util.ts'));
       expect(resolveImport('src/main.ts', '../src/util.js', files, options)).toEqual(found('src/util.ts'));
       expect(resolveImport('src/sub/deep.ts', '../sub/./index.js', files, options)).toEqual(found('src/sub/index.ts'));
       expect(resolveImport('src/main.ts', '../../outside.js', files, options)).toEqual(missing);
+      // 根目录中有 outside.ts：../ 找到它，../../ 已经在项目之外
+      const withOutside = new Set([...files, 'outside.ts']);
+      expect(resolveImport('src/main.ts', '../outside.js', withOutside, options)).toEqual(found('outside.ts'));
+      expect(resolveImport('src/main.ts', '../../outside.js', withOutside, options)).toEqual(missing);
+      expect(resolveImport('src/sub/deep.ts', '../../../outside.js', withOutside, options)).toEqual(missing);
     }
   });
 
@@ -205,7 +222,8 @@ describe('bundler：可以省略扩展名，可以导入文件夹', () => {
 describe('nodenext：必须写出扩展名', () => {
   test('省略扩展名：能猜到时是 2835 加上建议', () => {
     expect(resolveImport('src/main.ts', './util', files, node)).toEqual({ ok: false, code: 2835, suggestion: './util.js' });
-    expect(resolveImport('src/main.ts', './view', files, node)).toEqual({ ok: false, code: 2835, suggestion: './view.jsx' });
+    expect(resolveImport('src/main.ts', './view', files, node)).toEqual({ ok: false, code: 2835, suggestion: './view.js' });
+    expect(resolveImport('src/main.ts', './x', twins, node)).toEqual({ ok: false, code: 2835, suggestion: './x.js' });
     expect(resolveImport('src/main.ts', './lib/index', files, node)).toEqual({ ok: false, code: 2835, suggestion: './lib/index.js' });
     expect(resolveImport('src/sub/deep.ts', '../util', files, nodeTs)).toEqual({ ok: false, code: 2835, suggestion: '../util.js' });
   });
@@ -220,6 +238,8 @@ describe('nodenext：必须写出扩展名', () => {
     const both = new Set([...files, 'src/lib.ts']);
     expect(resolveImport('src/main.ts', './lib', both, node)).toEqual({ ok: false, code: 2835, suggestion: './lib.js' });
     expect(resolveImport('src/main.ts', './lib.js', both, node)).toEqual(found('src/lib.ts'));
+    // 以 / 结尾：本题按 2834 处理（见规则 4 的简化）
+    expect(resolveImport('src/main.ts', './lib/', both, node)).toEqual({ ok: false, code: 2834 });
   });
 });
 ```
@@ -254,7 +274,7 @@ resolveImport('src/main.ts', './util', new Set(), { mode: 'node10', allowTsExten
 - 打包工具（`bundler`）在构建时能看到所有文件，可以替你补上扩展名、找到文件夹中的 `index`，所以 TypeScript 按同样宽容的规则检查；
 - Node.js 的 ES 模块（`nodenext`）在运行时按写出的路径加载，不会尝试别的可能，所以 TypeScript 要求写出扩展名。2835 中的建议是 `.js` 而不是 `.ts`：`tsc` 不改写导入路径，编译之后 Node.js 找的是 `util.js`。
 
-规则 2、3 说明了另一件事：在 TypeScript 看来，`.js` 和 `.ts` 指向的是同一个源文件。写 `.js` 是“运行时的路径”，写 `.ts` 是“源代码的路径”（需要 `allowImportingTsExtensions`，只用于不经过 `tsc` 输出的场合：打包工具，或者 Node.js 直接运行 `.ts` 文件）。
+规则 2、3 说明了另一件事：在 TypeScript 看来，`.js` 和 `.ts` 指向的是同一个源文件（`.jsx` 和 `.tsx` 也一样，所以写出带 `x` 的扩展名时先找 `.tsx`）。写 `.js` 是“运行时的路径”，写 `.ts` 是“源代码的路径”（需要 `allowImportingTsExtensions`，只用于不经过 `tsc` 输出的场合：打包工具，或者 Node.js 直接运行 `.ts` 文件）。
 
 为什么同名的文件优先于文件夹（`lib.ts` 优先于 `lib/index.ts`）？这与 Node.js 的 CommonJS 和打包工具的传统规则一致：先把说明符当作文件，补扩展名，找不到才当作文件夹。
 
@@ -288,13 +308,12 @@ function candidatesFor(target: string, specifier: string, files: ReadonlySet<str
   const dirOnly = specifier.endsWith('/');
   const match = dirOnly ? null : target.match(/^(.*)\.(js|jsx|ts|tsx)$/);
   if (match) {
-    const [, stem = ''] = match;
-    return [stem + '.ts', stem + '.tsx'];
+    const [, stem = '', ext = ''] = match;
+    return ext.endsWith('x') ? [stem + '.tsx', stem + '.ts'] : [stem + '.ts', stem + '.tsx'];
   }
   if (options.mode === 'nodenext') {
     if (dirOnly) return { ok: false, code: 2834 };
-    if (files.has(target + '.ts')) return { ok: false, code: 2835, suggestion: specifier + '.js' };
-    if (files.has(target + '.tsx')) return { ok: false, code: 2835, suggestion: specifier + '.jsx' };
+    if (files.has(target + '.ts') || files.has(target + '.tsx')) return { ok: false, code: 2835, suggestion: specifier + '.js' };
     return { ok: false, code: 2834 };
   }
   const asDir = [target + '/index.ts', target + '/index.tsx'];
@@ -348,9 +367,9 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
 
   const ext = isDir ? null : /\.(ts|tsx|js|jsx)$/.exec(target);
   if (ext !== null) {
-    // 写出的扩展名（.js、.jsx 或者 .ts、.tsx）都对应到源文件 .ts、.tsx
+    // 写出的扩展名对应到源文件：.ts、.js 先找 .ts 再找 .tsx；.tsx、.jsx 先找 .tsx 再找 .ts
     const stem = target.slice(0, ext.index);
-    const result = firstExisting([`${stem}.ts`, `${stem}.tsx`]);
+    const result = firstExisting(ext[1] === 'tsx' || ext[1] === 'jsx' ? [`${stem}.tsx`, `${stem}.ts`] : [`${stem}.ts`, `${stem}.tsx`]);
     // 找到了文件，才检查写出 .ts、.tsx 是否被允许
     if (result.ok && (ext[1] === 'ts' || ext[1] === 'tsx') && !options.allowTsExtensions) return { ok: false, code: 5097 };
     return result;
@@ -395,9 +414,9 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
 
   const ext = isDir ? null : /\.(ts|tsx|js|jsx)$/.exec(target);
   if (ext !== null) {
-    // 写出的扩展名（.js、.jsx 或者 .ts、.tsx）都对应到源文件 .ts、.tsx
+    // 写出的扩展名对应到源文件：.ts、.js 先找 .ts 再找 .tsx；.tsx、.jsx 先找 .tsx 再找 .ts
     const stem = target.slice(0, ext.index);
-    const result = ext[1] === 'js' || ext[1] === 'jsx' ? firstExisting([target]) : firstExisting([`${stem}.ts`, `${stem}.tsx`]);
+    const result = ext[1] === 'js' || ext[1] === 'jsx' ? firstExisting([target]) : firstExisting(ext[1] === 'tsx' ? [`${stem}.tsx`, `${stem}.ts`] : [`${stem}.ts`, `${stem}.tsx`]);
     // 找到了文件，才检查写出 .ts、.tsx 是否被允许
     if (result.ok && (ext[1] === 'ts' || ext[1] === 'tsx') && !options.allowTsExtensions) return { ok: false, code: 5097 };
     return result;
@@ -409,8 +428,7 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
     return firstExisting(isDir ? index : [`${target}.ts`, `${target}.tsx`, ...index]);
   }
   // nodenext：不补扩展名，也不找 index；能猜到时给出建议
-  if (!isDir && files.has(`${target}.ts`)) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
-  if (!isDir && files.has(`${target}.tsx`)) return { ok: false, code: 2835, suggestion: `${specifier}.jsx` };
+  if (!isDir && (files.has(`${target}.ts`) || files.has(`${target}.tsx`))) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
   return { ok: false, code: 2834 };
 }
 ```
@@ -449,9 +467,9 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
 
   const ext = isDir ? null : /\.(ts|tsx|js|jsx)$/.exec(target);
   if (ext !== null) {
-    // 写出的扩展名（.js、.jsx 或者 .ts、.tsx）都对应到源文件 .ts、.tsx
+    // 写出的扩展名对应到源文件：.ts、.js 先找 .ts 再找 .tsx；.tsx、.jsx 先找 .tsx 再找 .ts
     const stem = target.slice(0, ext.index);
-    const result = firstExisting([`${stem}.ts`, `${stem}.tsx`]);
+    const result = firstExisting(ext[1] === 'tsx' || ext[1] === 'jsx' ? [`${stem}.tsx`, `${stem}.ts`] : [`${stem}.ts`, `${stem}.tsx`]);
     // 找到了文件，才检查写出 .ts、.tsx 是否被允许
     if (result.ok && (ext[1] === 'ts' || ext[1] === 'tsx') && !options.allowTsExtensions) return { ok: false, code: 5097 };
     return result;
@@ -463,8 +481,7 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
     return firstExisting(isDir ? index : [...index, `${target}.ts`, `${target}.tsx`]);
   }
   // nodenext：不补扩展名，也不找 index；能猜到时给出建议
-  if (!isDir && files.has(`${target}.ts`)) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
-  if (!isDir && files.has(`${target}.tsx`)) return { ok: false, code: 2835, suggestion: `${specifier}.jsx` };
+  if (!isDir && (files.has(`${target}.ts`) || files.has(`${target}.tsx`))) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
   return { ok: false, code: 2834 };
 }
 ```
@@ -503,9 +520,9 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
 
   const ext = isDir ? null : /\.(ts|tsx|js|jsx)$/.exec(target);
   if (ext !== null) {
-    // 写出的扩展名（.js、.jsx 或者 .ts、.tsx）都对应到源文件 .ts、.tsx
+    // 写出的扩展名对应到源文件：.ts、.js 先找 .ts 再找 .tsx；.tsx、.jsx 先找 .tsx 再找 .ts
     const stem = target.slice(0, ext.index);
-    const result = firstExisting([`${stem}.ts`, `${stem}.tsx`]);
+    const result = firstExisting(ext[1] === 'tsx' || ext[1] === 'jsx' ? [`${stem}.tsx`, `${stem}.ts`] : [`${stem}.ts`, `${stem}.tsx`]);
     // 找到了文件，才检查写出 .ts、.tsx 是否被允许
     return result;
   }
@@ -516,14 +533,13 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
     return firstExisting(isDir ? index : [`${target}.ts`, `${target}.tsx`, ...index]);
   }
   // nodenext：不补扩展名，也不找 index；能猜到时给出建议
-  if (!isDir && files.has(`${target}.ts`)) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
-  if (!isDir && files.has(`${target}.tsx`)) return { ok: false, code: 2835, suggestion: `${specifier}.jsx` };
+  if (!isDir && (files.has(`${target}.ts`) || files.has(`${target}.tsx`))) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
   return { ok: false, code: 2834 };
 }
 ```
 :::
 
-:::variant{kind=wrong name=always-suggest-js fails=tests reason="建议总是加 .js：对应 view.tsx 的建议应该是 ./view.jsx"}
+:::variant{kind=wrong name=ts-first-always fails=tests reason="写出 .tsx、.jsx 时也先找 .ts：x.ts 和 x.tsx 都存在时，./x.jsx 应该解析到 x.tsx"}
 ```ts file=resolve.ts
 export type Mode = 'bundler' | 'nodenext';
 export type ResolveOptions = { mode: Mode; allowTsExtensions: boolean };
@@ -576,6 +592,58 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
 ```
 :::
 
+:::variant{kind=wrong name=clamp-at-root fails=tests reason="退到项目根目录之外时停在了根目录（空数组的 pop() 什么也不做）：../../outside.js 找到了根目录中的 outside.ts，tsc 报告的是 2307"}
+```ts file=resolve.ts
+export type Mode = 'bundler' | 'nodenext';
+export type ResolveOptions = { mode: Mode; allowTsExtensions: boolean };
+export type Resolution =
+  | { ok: true; file: string }
+  | { ok: false; code: 2307 | 2834 | 5097 }
+  | { ok: false; code: 2835; suggestion: string };
+
+/** 从导入方所在的文件夹出发，按说明符的每一段移动 */
+function join(from: string, specifier: string): string | null {
+  const parts = from.split('/').slice(0, -1);
+  for (const segment of specifier.split('/')) {
+    if (segment === '' || segment === '.') continue;
+    if (segment !== '..') parts.push(segment);
+    else parts.pop();
+  }
+  return parts.join('/');
+}
+
+export function resolveImport(from: string, specifier: string, files: ReadonlySet<string>, options: ResolveOptions): Resolution {
+  const target = join(from, specifier);
+  if (target === null) return { ok: false, code: 2307 };
+  const isDir = specifier.endsWith('/');
+
+  const firstExisting = (candidates: string[]): Resolution => {
+    const file = candidates.find((candidate) => files.has(candidate));
+    return file === undefined ? { ok: false, code: 2307 } : { ok: true, file };
+  };
+
+  const ext = isDir ? null : /\.(ts|tsx|js|jsx)$/.exec(target);
+  if (ext !== null) {
+    // 写出的扩展名对应到源文件：.ts、.js 先找 .ts 再找 .tsx；.tsx、.jsx 先找 .tsx 再找 .ts
+    const stem = target.slice(0, ext.index);
+    const result = firstExisting(ext[1] === 'tsx' || ext[1] === 'jsx' ? [`${stem}.tsx`, `${stem}.ts`] : [`${stem}.ts`, `${stem}.tsx`]);
+    // 找到了文件，才检查写出 .ts、.tsx 是否被允许
+    if (result.ok && (ext[1] === 'ts' || ext[1] === 'tsx') && !options.allowTsExtensions) return { ok: false, code: 5097 };
+    return result;
+  }
+
+  const index = [`${target}/index.ts`, `${target}/index.tsx`];
+  if (options.mode === 'bundler') {
+    // 打包工具：先补扩展名，再找文件夹中的 index
+    return firstExisting(isDir ? index : [`${target}.ts`, `${target}.tsx`, ...index]);
+  }
+  // nodenext：不补扩展名，也不找 index；能猜到时给出建议
+  if (!isDir && (files.has(`${target}.ts`) || files.has(`${target}.tsx`))) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
+  return { ok: false, code: 2834 };
+}
+```
+:::
+
 :::variant{kind=wrong name=no-dot-segments fails=tests reason="只去掉了开头的 ./，没有处理 ..：../util.js 拼成了 src/sub/../util.js"}
 ```ts file=resolve.ts
 export type Mode = 'bundler' | 'nodenext';
@@ -604,9 +672,9 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
 
   const ext = isDir ? null : /\.(ts|tsx|js|jsx)$/.exec(target);
   if (ext !== null) {
-    // 写出的扩展名（.js、.jsx 或者 .ts、.tsx）都对应到源文件 .ts、.tsx
+    // 写出的扩展名对应到源文件：.ts、.js 先找 .ts 再找 .tsx；.tsx、.jsx 先找 .tsx 再找 .ts
     const stem = target.slice(0, ext.index);
-    const result = firstExisting([`${stem}.ts`, `${stem}.tsx`]);
+    const result = firstExisting(ext[1] === 'tsx' || ext[1] === 'jsx' ? [`${stem}.tsx`, `${stem}.ts`] : [`${stem}.ts`, `${stem}.tsx`]);
     // 找到了文件，才检查写出 .ts、.tsx 是否被允许
     if (result.ok && (ext[1] === 'ts' || ext[1] === 'tsx') && !options.allowTsExtensions) return { ok: false, code: 5097 };
     return result;
@@ -618,8 +686,7 @@ export function resolveImport(from: string, specifier: string, files: ReadonlySe
     return firstExisting(isDir ? index : [`${target}.ts`, `${target}.tsx`, ...index]);
   }
   // nodenext：不补扩展名，也不找 index；能猜到时给出建议
-  if (!isDir && files.has(`${target}.ts`)) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
-  if (!isDir && files.has(`${target}.tsx`)) return { ok: false, code: 2835, suggestion: `${specifier}.jsx` };
+  if (!isDir && (files.has(`${target}.ts`) || files.has(`${target}.tsx`))) return { ok: false, code: 2835, suggestion: `${specifier}.js` };
   return { ok: false, code: 2834 };
 }
 ```

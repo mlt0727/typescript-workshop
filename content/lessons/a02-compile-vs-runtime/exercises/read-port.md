@@ -125,7 +125,7 @@ export function readPort(json: string): number {
 ```
 :::
 
-:::variant{kind=wrong name=coerce-string fails=tests reason="用 Number() 把字符串 \"8080\" 也转换成了端口"}
+:::variant{kind=wrong name=coerce-string fails=tests reason="用 Number() 把字符串 ‘8080’ 也转换成了端口"}
 ```ts file=config.ts
 export function readPort(json: string): number {
   const port = Number(JSON.parse(json).port);

@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 改坏了想回到昨天的版本、两个人同时改了同一个文件、上线之后发现 bug 想知道是哪一次修改引入的，这些都需要版本控制。Git 是现在几乎所有项目使用的版本控制工具，也是 GitHub、持续集成（f12）和部署平台（Vercel 等）的基础。这一课建立 Git 的基本模型（工作区、暂存区、提交、分支），在本机走一遍提交、分支、合并、解决冲突、推送的完整流程，学会安全地撤销修改；并用代码解析 git status 的输出、实现 .gitignore 的匹配规则，把“Git 认为哪些文件变了、哪些文件被忽略”弄清楚。
 objectives:
   - 说出工作区、暂存区、提交、分支、HEAD 的含义，用 status、add、commit、log、diff 完成日常的提交
@@ -43,7 +43,8 @@ Git 管理的是项目在一个个时刻的**快照**：
 
 1. `git config --global user.name "你的名字"`、`git config --global user.email "你的邮箱"`；
 2. `git config --global init.defaultBranch main`：新仓库的默认分支叫 `main`；
-3. Windows 上还建议 `git config --global core.quotepath false`，否则 `git status` 中的中文文件名会显示成 `"\346\227\247.txt"` 这样的转义（下面的小任务会处理这种格式）。
+3. 建议 `git config --global core.quotepath false`：这个选项在所有系统上默认都是 `true`，`git status` 中的中文文件名会显示成 `"\346\227\247.txt"` 这样的转义（下面的小任务会处理这种格式）；
+4. `git config --global pull.rebase false`：本地和远程都有了新的提交时，`git pull` 用合并的方式把它们合在一起。不设置的话，Git 2.45（编写本课时使用的版本）在这种情况下直接报错 `fatal: Need to specify how to reconcile divergent branches.`，要你先选择合并还是变基（本课只讲合并）。
 
 用 f02 的 `my-app` 练习（它已经有 `.gitignore`）：
 
@@ -139,7 +140,7 @@ Automatic merge failed; fix conflicts and then commit the result.
 
 - `git remote add origin 仓库的地址`：记住远程仓库，名字叫 `origin`；
 - `git push -u origin main`：把本地的 `main` 推送上去，`-u` 让以后直接 `git push` 就行；
-- `git pull`：取回远程的新提交并合并到当前分支（相当于 `git fetch` 加 `git merge`）。
+- `git pull`：取回远程的新提交并合并到当前分支（设置了 `pull.rebase false` 时，相当于 `git fetch` 加 `git merge`，见上面的第 4 步）。
 
 团队协作时通常不直接推送到 `main`：在分支上提交，推送分支，在 GitHub 上创建**拉取请求**（pull request，PR），别人审查代码、持续集成运行测试（f12）都通过之后再合并。
 

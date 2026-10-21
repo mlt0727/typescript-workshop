@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 50
-review: ai-draft
+review: self-reviewed
 problem: 浏览器不认识 .ts 文件，也不知道 import x from 'react' 中的 react 在哪里；写了几十个模块的网站，也不应该让用户的浏览器发几十个请求。构建工具解决这些问题：开发时把 TypeScript 即时转换成浏览器能运行的 JavaScript，发布前把整个项目打包成几个带哈希的静态文件。这一课用 Vite 在自己的电脑上创建一个 TypeScript 项目，看清项目中每个文件的作用、开发服务器做了什么、为什么 Vite 不检查类型、构建出的 dist 里有什么，以及部署到子路径时资源地址为什么会出错。
 objectives:
   - 用 create-vite 创建 vanilla-ts 项目，说出 index.html、src、public、tsconfig.json 各自的作用
@@ -110,13 +110,15 @@ dist/assets/index-wktXvZw9.js    4.49 kB │ gzip: 2.02 kB
 
 `dist` 就是要部署的全部内容，它是纯静态文件，任何静态服务器都能提供。运行 `npm run preview`，Vite 用一个本地静态服务器（默认端口 4173）提供 `dist`，在部署之前检查构建的结果。
 
+注意，Vite 自己的开发服务器和 `preview` 服务器对**不存在的路径**很宽容：只要请求接受 HTML（浏览器的地址栏、默认的 `fetch` 都是这样），就返回 200 和 `index.html`。实测 `preview` 中请求 `/does-not-exist.json` 得到的是 200 和一个 HTML 页面。所以在它们之上看不到“资源 404”，下面的编程挑战会实现一个更严格的规则。
+
 ## 部署到子路径：base
 
-如果网站不在域名的根路径下，例如 GitHub Pages 上的 `https://用户名.github.io/my-app/`，`/assets/index-wktXvZw9.js` 这样的地址就错了，应该是 `/my-app/assets/…`。这时设置 Vite 的 `base` 选项（在 `vite.config.ts` 中，或者 `vite build --base=/my-app/`）。
+如果网站不在域名的根路径下，例如 GitHub Pages 上的 `https://用户名.github.io/my-app/`，`/assets/index-wktXvZw9.js` 这样的地址就错了，应该是 `/my-app/assets/…`。这时设置 Vite 的 `base` 选项（在 `vite.config.ts` 中，或者 `vite build --base=/my-app/`）。在 Windows 的 Git Bash 中运行后一种写法要小心：Git Bash 会把以 `/` 开头的参数当成路径改写，实测 `--base=/repo/` 变成了 `/Program Files/Git/repo/`。写进 `vite.config.ts`、改用 PowerShell，或者在命令前加上 `MSYS_NO_PATHCONV=1` 都可以避免。
 
 Vite 会自动改写它**知道**的地址：`index.html` 中的 `<script>`、`<link>`，导入的资源（`import viteLogo from …`），CSS 中的 `url()`。但它不会改写你写在字符串里的地址。模板的 `main.ts` 中就有这样的地址：`<use href="/icons.svg#github-icon">`。实际用 `--base=/repo/` 构建，`index.html` 中变成了 `/repo/favicon.svg`、`/repo/assets/index-…js`，导入的图片变成了 `/repo/assets/hero-…png`，而 JavaScript 中仍然是 `"/icons.svg#github-icon"`，部署之后这些图标都会显示不出来。
 
-需要在代码中拼接地址时，用 Vite 注入的 `import.meta.env.BASE_URL`：它在构建时被替换成 `base` 的值。实测几种写法下它的值：
+需要在代码中拼接地址时，用 Vite 注入的 `import.meta.env.BASE_URL`：它在构建时被替换成 `base` 的值。实测几种写法下，**构建结果中**它的值：
 
 | `base` | `import.meta.env.BASE_URL` |
 | --- | --- |
@@ -125,7 +127,7 @@ Vite 会自动改写它**知道**的地址：`index.html` 中的 `<script>`、`<
 | `/repo`（漏写了结尾的 `/`） | `/repo` |
 | `./`（相对路径，部署位置事先不知道时用） | `./` |
 
-注意第三行：`BASE_URL` 不一定以 `/` 结尾，直接 `BASE_URL + 'icons.svg'` 可能得到 `/repoicons.svg`。下面的示例写一个拼接函数（这个网站上没有 `import.meta.env`，所以把 `base` 作为参数传入）：
+开发服务器中略有不同：`./` 在开发时是 `/`（相对路径只对构建结果有意义）；配置中写 `base: ''` 时，构建结果中也是 `./`。注意第三行：`BASE_URL` 不一定以 `/` 结尾，直接 `BASE_URL + 'icons.svg'` 可能得到 `/repoicons.svg`。下面的示例写一个拼接函数（这个网站上没有 `import.meta.env`，所以把 `base` 作为参数传入）：
 
 :::playground{#base-url}
 ```ts file=main.ts

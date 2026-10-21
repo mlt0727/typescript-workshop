@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 60
-review: ai-draft
+review: self-reviewed
 problem: 到目前为止，每个练习的测试都是别人写好的，你只负责让它们通过。真实的项目中，测试要自己写：写什么输入、期望什么结果、怎样知道测试本身写得够不够。一组好的测试能在你修改代码时立刻指出哪里坏了；一组差的测试即使全部通过，也什么都不能保证。这一课在本机装上 Vitest 并运行它，学会 describe、test、expect 和常用的匹配器，用 vi.fn 和假计时器测试回调与延时；这一课的练习反过来：代码是写好的，由你来写测试，平台会用故意写错的几个版本检查你的测试能不能发现它们。
 objectives:
   - 在项目中安装并运行 Vitest，读懂失败时的输出，知道监视模式与 vitest run 的区别
@@ -120,9 +120,9 @@ console.log('0 与 -0：', Object.is(0, -0), 0 === -0);
 - 第 4、5 行是 `Object.is` 与 `===` 仅有的两处区别：`Object.is(NaN, NaN)` 为真，`Object.is(0, -0)` 为假。所以 `expect(NaN).toBe(NaN)` 能通过（`toBeNaN()` 更清楚）。第 4 行的 TS2845 是 TypeScript 在提醒：和 `NaN` 用 `===` 比较永远是 `false`，判断 `NaN` 要用 `Number.isNaN`。
 :::
 
-**异步**：测试函数可以是 `async` 的。`await expect(promise).resolves.toEqual(…)`、`await expect(promise).rejects.toThrow('…')`。**一定要 `await`**，否则测试函数在 Promise 完成之前就结束了，失败也不会被报告。
+**异步**：测试函数可以是 `async` 的。`await expect(promise).resolves.toEqual(…)`、`await expect(promise).rejects.toThrow('…')`。**一定要 `await`**：不 `await` 的话，测试函数在 Promise 完成之前就结束了，断言不一定来得及执行。Vitest 5 会发现这种写法：测试结束时它等待还没完成的 `resolves`、`rejects` 断言，然后让这个测试失败，提示断言没有被 `await`（即使断言本身成立）。这个网站的测试运行器也是这样做的。
 
-**一组输入**：`test.each` 用同一段代码测试多组输入，名字中的 `%s` 依次被参数替换：
+**一组输入**：`test.each` 用同一段代码测试多组输入，名字中的 `%s`（字符串）、`%j`（JSON 格式，空字符串、前后的空格都看得出来）依次被参数替换：
 
 ```ts
 test.each([
@@ -231,7 +231,7 @@ for (const [label, chunk] of [['正确的实现', correct], ['丢掉最后一组
 
 - **用 `toBe` 比较对象和数组**：比较的是“是不是同一个”。比较内容用 `toEqual` 或 `toStrictEqual`。
 - **`expect(fn()).toThrow()`**：`fn()` 在 `expect` 之前就抛出了，测试直接失败。要传函数：`expect(() => fn()).toThrow()`。
-- **异步的断言没有 `await`**：`expect(p).rejects.toThrow()` 不 `await` 时，测试在它完成之前就结束了。
+- **异步的断言没有 `await`**：`expect(p).rejects.toThrow()` 不 `await` 时，测试在它完成之前就结束了。Vitest 5 会因此让测试失败；在不检查这一点的测试工具中，这个断言的失败可能完全不被报告。
 - **测试之间互相依赖**：一个测试修改了共享的数据，另一个测试的结果取决于运行顺序。每个测试自己准备数据，假计时器在 `afterEach` 中恢复。
 - **只测试正常值**：大部分 bug 在边界和无效输入上（f05）。
 - **测试实现细节而不是行为**：检查“调用了几次内部的辅助函数”，重构时测试就会无故失败。检查输入和输出，以及规格中说明的副作用。

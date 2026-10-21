@@ -19,7 +19,7 @@
     - text: "`import { add } from './util';`"
       explain: TS2835。Node.js 的 ES 模块不会补扩展名，TypeScript 按这个规则检查。
     - text: "`import { add } from './util.ts';`"
-      explain: TS5097，需要 allowImportingTsExtensions（只能和 noEmit 一起用）；而且编译后的代码会去找 util.ts，而 tsc 输出的是 util.js。
+      explain: TS5097，需要 allowImportingTsExtensions（它还要求 noEmit 等选项之一）；不开启 rewriteRelativeImportExtensions 时，编译后的代码会去找 util.ts，而 tsc 输出的是 util.js。
 - id: lib-option
   type: single
   prompt: tsconfig 中 lib 是 ["ES2023", "DOM"]，代码中用了 ES2024 的 `Promise.withResolvers`。下面哪个说法正确？

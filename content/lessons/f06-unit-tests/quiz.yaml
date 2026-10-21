@@ -19,7 +19,7 @@
     - text: "`expect(chunk([1], 0)).toThrow(RangeError)`"
       explain: chunk 在 expect 之前就被调用并抛出了异常，测试直接失败，toThrow 根本没有机会执行。
     - text: "`expect(chunk).toThrow(RangeError)`"
-      explain: 这样 chunk 会在没有参数的情况下被调用，测试的不是你想测的输入。
+      explain: 这样 chunk 会在没有参数的情况下被调用。这个断言碰巧能通过（size 是 undefined，chunk 也抛出 RangeError），但测的不是你想测的输入 chunk([1], 0)。
 - id: fake-timers
   type: single
   prompt: 被测的函数在 300 毫秒之后保存草稿。为什么测试中用 vi.useFakeTimers() 和 vi.advanceTimersByTime(300)，而不是真的等待 300 毫秒？

@@ -165,6 +165,19 @@ function playgroundCompiler(base: CompilerSettings | undefined, options: string 
 const isDirective = (n: RootContent): n is ContainerDirective | LeafDirective =>
   n.type === 'containerDirective' || n.type === 'leafDirective';
 
+/**
+ * 写错的指令（例如属性值中有未转义的双引号）不会被识别成指令，而是变成以 ::: 或 :: 开头的普通段落：
+ * 其中的代码（mutant、错误解……）会原样显示在课文或题目中。这样的段落直接报错。
+ */
+function checkUnparsedDirective(node: RootContent, where: string): void {
+  if (node.type !== 'paragraph') return;
+  const first = node.children[0];
+  if (first?.type === 'text' && /^::[:a-z]/.test(first.value)) {
+    const line = first.value.split('\n')[0] ?? '';
+    fail(where, `无法解析的指令：${line.slice(0, 80)}（属性值中不能有双引号）`);
+  }
+}
+
 function defaultEntry(files: SourceFile[], mode: RunMode): string {
   const names = files.map((f) => f.path);
   for (const candidate of mode === 'react' ? ['main.tsx', 'App.tsx'] : ['main.ts', 'index.html']) {
@@ -202,6 +215,7 @@ function buildExercise(lessonId: string, lessonDir: string, exId: string, lesson
 
   for (const node of tree.children) {
     if (node.type !== 'containerDirective') {
+      checkUnparsedDirective(node, where);
       promptNodes.push(node);
       continue;
     }
@@ -442,6 +456,7 @@ async function main() {
 
     for (const node of tree.children) {
       if (!isDirective(node)) {
+        checkUnparsedDirective(node, where);
         prose.push(node);
         continue;
       }

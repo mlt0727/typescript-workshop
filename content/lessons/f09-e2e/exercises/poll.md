@@ -314,10 +314,16 @@ export function poll<T>(check: () => T | Promise<T>, { timeout = 1000, interval 
   const deadline = Date.now() + timeout;
   return new Promise<T>((resolve, reject) => {
     let done = false;
+    // 和正确的版本一样，每次尝试都同步地调用 check（第一次在 poll 被调用时）
+    const run = (): Promise<T> => {
+      try {
+        return Promise.resolve(check());
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    };
     const attempt = () => {
-      Promise.resolve()
-        .then(check)
-        .then(
+      run().then(
           (value) => {
             if (done) return;
             done = true;

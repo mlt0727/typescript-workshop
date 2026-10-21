@@ -209,6 +209,27 @@ describe('createSearch', () => {
     await Promise.all(done);
     expect(shown).toEqual([['第三次']]);
   });
+
+  test('旧的搜索先返回：新的搜索还在等待时，也不显示旧的结果', async () => {
+    const calls: ReturnType<typeof deferred<string[]>>[] = [];
+    const shown: string[][] = [];
+    const search = createSearch(
+      () => {
+        const d = deferred<string[]>();
+        calls.push(d);
+        return d.promise;
+      },
+      (r) => shown.push(r),
+    );
+    const first = search('a');
+    const second = search('ab');
+    calls[0]!.resolve(['a 的结果']);
+    await first;
+    expect(shown).toEqual([]);
+    calls[1]!.resolve(['ab 的结果']);
+    await second;
+    expect(shown).toEqual([['ab 的结果']]);
+  });
 });
 ```
 :::
@@ -230,7 +251,7 @@ describe('createSearch', () => {
 
 `Promise.all(ids.map(fetchUser))` 一行同时满足了三条规格：`map` 同步地发出所有请求，`Promise.all` 按输入的顺序收集结果，任何一个拒绝时以那个错误拒绝。
 
-测试中的 `deferred()` 是复现异步 bug 的关键工具：真实的网络中，完成的顺序取决于时机，bug 时有时无；在测试中手动决定每个 Promise 何时完成，就能每次都复现“后发出的先返回”。替代解把所有请求先发出，再依次 `await`，结果也正确：请求在 `map` 时已经同时发出了，依次等待并不会让它们变慢。
+测试中的 `deferred()` 是复现异步 bug 的关键工具：真实的网络中，完成的顺序取决于时机，bug 时有时无；在测试中手动决定每个 Promise 何时完成，就能每次都复现“后发出的先返回”。替代解把所有请求先发出，再依次 `await`，也能通过测试：请求在 `map` 时已经同时发出了，依次等待并不会让它们变慢。但它有两个小问题，所以 `Promise.all` 仍然更好：排在后面的请求先失败时，在 `await` 到它之前，这个拒绝暂时没有人处理，浏览器会报告“未处理的 Promise 拒绝”；有几个请求失败时，得到的是数组中排在前面的那个错误，而不是最先发生的那个。
 :::
 
 :::variant{kind=alt name=await-in-order}

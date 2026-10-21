@@ -158,7 +158,7 @@ import { isIgnored, parseGitignore } from './gitignore';
 
 // 每一组的结果都与 Git 2.45 一致：在临时仓库中写入 .gitignore 和这些文件，用 git ls-files --others --ignored --exclude-standard 得到
 const cases: [rules: string, files: [path: string, ignored: boolean][]][] = [
-  ['*.log', [['app.log', true], ['logs/app.log', true], ['app.log.txt', false], ['a/b/c.log', true], ['log', false]]],
+  ['*.log', [['app.log', true], ['logs/app.log', true], ['app.log.txt', false], ['a/b/c.log', true], ['log', false], ['catalog', false]]],
   ['*.log\n!important.log', [['app.log', true], ['important.log', false], ['sub/important.log', false]]],
   ['logs/', [['logs/a.txt', true], ['src/logs/a.txt', true], ['logs.txt', false], ['logsx/a.txt', false]]],
   ['logs/\n!logs/keep.txt', [['logs/keep.txt', true], ['logs/a.txt', true]]],
@@ -167,8 +167,9 @@ const cases: [rules: string, files: [path: string, ignored: boolean][]][] = [
   ['doc/*.txt', [['doc/a.txt', true], ['doc/sub/a.txt', false], ['x/doc/a.txt', false]]],
   ['**/temp', [['temp/a', true], ['a/temp/b', true], ['a/b/temp/c', true], ['temporary/a', false]]],
   ['a/**/b.txt', [['a/b.txt', true], ['a/x/b.txt', true], ['a/x/y/b.txt', true], ['x/a/b.txt', false]]],
-  ['node_modules\n.env\n.env.*\n!.env.example', [['node_modules/react/index.js', true], ['pkg/node_modules/x.js', true], ['.env', true], ['.env.local', true], ['.env.example', false], ['src/.env', true]]],
+  ['node_modules\n.env\n.env.*\n!.env.example', [['node_modules/react/index.js', true], ['pkg/node_modules/x.js', true], ['.env', true], ['.env.local', true], ['.env.example', false], ['src/.env', true], ['xenv', false]]],
   ['file?.txt', [['file1.txt', true], ['file10.txt', false], ['file.txt', false]]],
+  ['doc/a?b.txt', [['doc/axb.txt', true], ['doc/a/b.txt', false]]],
   ['[ab]*.md\n!b*.md', [['a1.md', true], ['b1.md', false], ['c1.md', false]]],
   ['data/[!x]*.csv', [['data/a.csv', true], ['data/x.csv', false]]],
   ['# 注释\n\n*.tmp   \n  ', [['a.tmp', true], ['b.txt', false]]],
@@ -227,7 +228,7 @@ describe('parseGitignore', () => {
 2. **谁说了算**：最后一条匹配的规则。所以 `*.log` 之后的 `!important.log` 能把一个文件“救回来”，顺序反过来就不行了；
 3. **文件夹被忽略了，里面的一切都被忽略**：Git 遇到被忽略的文件夹时，根本不会进入它，里面的 `!` 规则也就没有机会生效。这就是 `logs/` 加 `!logs/keep.txt` 不起作用、而 `logs/*` 加 `!logs/keep.txt` 有效的原因：后者忽略的是文件夹**中的**每一项，而不是文件夹本身。项目中常见的“保留空文件夹”写法 `logs/*` 加 `!logs/.gitkeep` 正是利用了这一点。
 
-把 glob 转换成正则，是处理这类“小语言”的常见方法（f01 的版本范围、f02 的路径也是）。`*` 不跨越 `/` 这一点很重要：它让 `doc/*.txt` 只匹配一层，而 `**` 专门用来表示“任意多层”。
+把 glob 转换成正则，是处理这类“小语言”的常见方法：把它翻译成一种已经有现成工具的形式（f01 把版本范围翻译成一组比较，也是同样的思路）。`*` 不跨越 `/` 这一点很重要：它让 `doc/*.txt` 只匹配一层，而 `**` 专门用来表示“任意多层”。
 
 真实的 Git 还支持更多细节：每个文件夹中都可以有自己的 `.gitignore`（规则相对于它所在的文件夹）、`\` 转义（例如以 `#` 开头的文件名写成 `\#file`）、全局的忽略文件（`core.excludesFile`）。想知道某个文件为什么被忽略，运行 `git check-ignore -v 文件`，它会输出起作用的那条规则和它所在的行。
 :::

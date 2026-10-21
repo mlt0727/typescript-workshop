@@ -104,7 +104,7 @@ pipeline(['shout']);
 :::explanation
 两个 TS1484 的原因相同：`verbatimModuleSyntax` 要求只用于类型的导入写出 `type`，这样转译工具不需要看其他文件，就知道哪些导入可以去掉。
 
-`registry.ts` 的那一行怎么写都可以，因为 `format` 本身就让这个模块一定会被加载。`plugins.ts` 的那一行才是关键：`app.ts` 只用到了它的**类型**，却依赖它的**副作用**（加载时注册格式化函数）。
+`registry.ts` 中的 `Formatter` 用哪一种 `type` 写法都可以（`import { format, type Formatter }`，或者另写一行 `import type { Formatter }`），因为 `format` 本身就让这个模块一定会被加载；但 `format` 是值，不能放进 `import type { … }` 中（TS1361）。`plugins.ts` 的那一行才是关键：`app.ts` 只用到了它的**类型**，却依赖它的**副作用**（加载时注册格式化函数）。
 
 - `import type { PluginName } from './plugins'`：类型检查通过，但这一行在输出中完全消失，`plugins.ts` 不会被加载，运行时 `format('upper', …)` 抛出“没有注册格式化函数”；
 - `import { type PluginName } from './plugins'`：输出中留下 `import {} from './plugins'`，模块被加载，副作用发生。

@@ -10,7 +10,7 @@ grading: tests
 3. `debounced.flush()` 立即执行等待中的调用（之后不会再执行一次）；没有等待中的调用时什么也不做；
 4. `debounced.pending()` 返回是否有等待中的调用；执行、取消之后都是 `false`。
 
-在 `debounce.test.ts` 中为它写测试，用假计时器控制时间（起始代码已经在 `beforeEach`、`afterEach` 中打开和恢复了假计时器）。平台准备了七个故意写错的版本，你的测试要发现每一个。
+在 `debounce.test.ts` 中为它写测试，用假计时器控制时间（起始代码已经在 `beforeEach`、`afterEach` 中打开和恢复了假计时器）。平台准备了十个故意写错的版本，你的测试要发现每一个。
 
 :::files{role=support}
 ```ts file=debounce.ts readonly
@@ -480,6 +480,146 @@ export function debounce<A extends unknown[]>(fn: (...args: A) => void, ms: numb
 ```
 :::
 
+:::mutant{name=pending-always-false hint="等待期间 pending() 也是 false：需要在调用之后、执行之前检查 pending() 是 true"}
+```ts file=debounce.ts
+export type Debounced<A extends unknown[]> = {
+  (...args: A): void;
+  /** 取消等待中的调用 */
+  cancel(): void;
+  /** 立即执行等待中的调用；没有等待中的调用时什么也不做 */
+  flush(): void;
+  /** 是否有等待中的调用 */
+  pending(): boolean;
+};
+
+export function debounce<A extends unknown[]>(fn: (...args: A) => void, ms: number): Debounced<A> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let lastArgs: A | undefined;
+
+  const clear = () => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = undefined;
+  };
+  const invoke = () => {
+    const args = lastArgs;
+    clear();
+    lastArgs = undefined;
+    if (args !== undefined) fn(...args);
+  };
+
+  const debounced = (...args: A) => {
+    lastArgs = args;
+    clear();
+    timer = setTimeout(invoke, ms);
+  };
+  return Object.assign(debounced, {
+    cancel() {
+      clear();
+      lastArgs = undefined;
+    },
+    flush() {
+      if (timer !== undefined) invoke();
+    },
+    pending: () => false,
+  });
+}
+```
+:::
+
+:::mutant{name=flush-without-pending hint="没有等待中的调用时，flush 也执行了 fn（没有参数）：需要在没有调用过、或者已经执行完之后调用 flush，检查 fn 没有被调用"}
+```ts file=debounce.ts
+export type Debounced<A extends unknown[]> = {
+  (...args: A): void;
+  /** 取消等待中的调用 */
+  cancel(): void;
+  /** 立即执行等待中的调用；没有等待中的调用时什么也不做 */
+  flush(): void;
+  /** 是否有等待中的调用 */
+  pending(): boolean;
+};
+
+export function debounce<A extends unknown[]>(fn: (...args: A) => void, ms: number): Debounced<A> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let lastArgs: A | undefined;
+
+  const clear = () => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = undefined;
+  };
+  const invoke = () => {
+    const args = lastArgs;
+    clear();
+    lastArgs = undefined;
+    if (args !== undefined) fn(...args);
+  };
+
+  const debounced = (...args: A) => {
+    lastArgs = args;
+    clear();
+    timer = setTimeout(invoke, ms);
+  };
+  return Object.assign(debounced, {
+    cancel() {
+      clear();
+      lastArgs = undefined;
+    },
+    flush() {
+      const args = lastArgs;
+      clear();
+      lastArgs = undefined;
+      fn(...((args ?? []) as A));
+    },
+    pending: () => timer !== undefined,
+  });
+}
+```
+:::
+
+:::mutant{name=cancel-keeps-timer hint="cancel 只丢掉了参数，没有清除计时器：fn 不会被调用，但 cancel 之后 pending() 仍然是 true。需要在 cancel 之后检查 pending()"}
+```ts file=debounce.ts
+export type Debounced<A extends unknown[]> = {
+  (...args: A): void;
+  /** 取消等待中的调用 */
+  cancel(): void;
+  /** 立即执行等待中的调用；没有等待中的调用时什么也不做 */
+  flush(): void;
+  /** 是否有等待中的调用 */
+  pending(): boolean;
+};
+
+export function debounce<A extends unknown[]>(fn: (...args: A) => void, ms: number): Debounced<A> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let lastArgs: A | undefined;
+
+  const clear = () => {
+    if (timer !== undefined) clearTimeout(timer);
+    timer = undefined;
+  };
+  const invoke = () => {
+    const args = lastArgs;
+    clear();
+    lastArgs = undefined;
+    if (args !== undefined) fn(...args);
+  };
+
+  const debounced = (...args: A) => {
+    lastArgs = args;
+    clear();
+    timer = setTimeout(invoke, ms);
+  };
+  return Object.assign(debounced, {
+    cancel() {
+      lastArgs = undefined;
+    },
+    flush() {
+      if (timer !== undefined) invoke();
+    },
+    pending: () => timer !== undefined,
+  });
+}
+```
+:::
+
 :::hint{level=1}
 起始代码中的测试只检查了“最后被调用了，参数是 `a`”。想一想还有哪些事“不应该发生”：时间到之前不应该调用（用 `advanceTimersByTime(299)` 再检查 `not.toHaveBeenCalled()`）；等待期间再调用一次，不应该按第一次的时间执行；`cancel`、`flush` 之后不应该再执行。
 :::
@@ -540,6 +680,13 @@ test('时间到之前没有调用，到点立即调用', () => {
   expect(fn).toHaveBeenCalledTimes(1);
 });
 
+test('等待中、cancel 之后的 pending()', () => {
+  saved('x');
+  expect(saved.pending()).toBe(true);
+  saved.cancel();
+  expect(saved.pending()).toBe(false);
+});
+
 test('cancel 与 flush', () => {
   saved('x');
   saved.cancel();
@@ -555,7 +702,7 @@ test('cancel 与 flush', () => {
 ```
 :::
 
-:::variant{kind=wrong name=only-final-count fails=mutants misses=no-reset,first-args reason="每个测试中只调用了一次 debounced：等待期间没有再调用，发现不了“没有重新计时”和“用了第一次的参数”"}
+:::variant{kind=wrong name=only-final-count fails=mutants misses=no-reset,first-args,pending-always-false,flush-without-pending,cancel-keeps-timer reason="每个测试中只调用了一次 debounced，只数了 fn 被调用的次数：发现不了“没有重新计时”“用了第一次的参数”，也没有检查等待中和 cancel 之后的 pending()、没有等待时的 flush"}
 ```ts file=debounce.test.ts
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { debounce } from './debounce';
