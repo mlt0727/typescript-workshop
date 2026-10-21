@@ -39,6 +39,6 @@
       correct: true
       explain: JSON.stringify 丢掉值为 undefined 的字段。没有截止日期要明确写成 null。
     - text: 客户端读到 undefined，当作没有截止日期
-      explain: JSON 中没有 undefined，这个字段根本不会出现。
+      explain: 客户端读到的确实是 undefined，但 parseProject 只接受 null 或者字符串，所以判为格式不对。
     - text: JSON.stringify 抛出错误，接口返回 500
       explain: JSON.stringify 不会因为 undefined 报错，它只是悄悄地丢掉这个字段。

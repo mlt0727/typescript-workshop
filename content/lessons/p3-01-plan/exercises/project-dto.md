@@ -48,7 +48,7 @@ export type StoredProject = Readonly<{
   id: string;
   name: string;
   owner: string;
-  /** 负责人的邮箱：只用来发通知，不公开 */
+  /** 负责人的邮箱：服务器根据负责人查出来，只用来发通知，不公开 */
   ownerEmail: string;
   status: ProjectStatus;
   dueDate: string | null;

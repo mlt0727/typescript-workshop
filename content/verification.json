@@ -12771,8 +12771,8 @@
       ]
     },
     "p3-01-plan": {
-      "verifiedAt": "2026-10-21T17:33:53.116Z",
-      "sourceHash": "b4565bdc38a12319",
+      "verifiedAt": "2026-10-21T17:50:09.991Z",
+      "sourceHash": "3f8aa0723e266dc4",
       "ok": true,
       "checks": [
         {
@@ -12798,7 +12798,7 @@
         {
           "target": "exercise:parse-patch:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseProjectPatch › 请求体不是对象 ⟶ null,parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { name: '官网改版（二期）', status: 'active' } }),parseProjectPatch › dueDate 是 null：清除截止日期 ⟶ expect(…).toStrictEqual({ ok: true, patch: { dueDate: null } }),parseProjectPatch › 名称和负责人：必须是字符串，不能为空，长度按字符数 ⟶ expect(…).toStrictEqual({ ok: false, errors: { name: '名称必须是字符串' } }),parseProjectPatch › 截止日期：YYYY-MM-DD，并且日历上有这一天 ⟶ 2026-2-3,parseProjectPatch › 状态：只能是三种之一（状态能不能这样变，p3-02 再检查） ⟶ archived,parseProjectPatch › 不能修改的字段：每一个都报错，即使其他的字段都合法 ⟶ expect(…).toStrictEqual({,parseProjectPatch › 字段的名字是 __proto__ 或者 constructor 时也一样 ⟶ expect(…).toBe(false),parseProjectPatch › 所有的错误一起报告 ⟶ expect(…).toStrictEqual({,parseProjectPatch › 没有要修改的字段 ⟶ expect(…).toStrictEqual({ ok: false, errors: { body: '没有要修改的字段' } }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseProjectPatch › 请求体不是对象：整个请求体的错误 ⟶ null,parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { name: '官网改版（二期）', status: 'active' } }),parseProjectPatch › dueDate 是 null：清除截止日期 ⟶ expect(…).toStrictEqual({ ok: true, patch: { dueDate: null } }),parseProjectPatch › 名称和负责人：必须是字符串，不能为空 ⟶ expect(…).toStrictEqual({ ok: false, errors: { name: '项目名称必须是字符串' } }),parseProjectPatch › 长度：去掉空白之后按码点计算，名称最多 40 个，负责人最多 30 个 ⟶ expect(…).toStrictEqual({ ok: false, errors: { name: '项目名称不能超过 40 个字符' } }),parseProjectPatch › 截止日期：YYYY-MM-DD，并且日历上有这一天 ⟶ 2026-2-3,parseProjectPatch › 状态：只能是三种之一，不去掉空白（状态能不能这样变，p3-02 再检查） ⟶ archived,parseProjectPatch › 不能修改的字段：每一个都报错，即使其他的字段都合法 ⟶ expect(…).toStrictEqual({,parseProjectPatch › 字段的名字是 __proto__ 或者 constructor 时也一样；errors 是普通的对象 ⟶ expect(…).toBe(false),parseProjectPatch › 所有字段的错误一起报告 ⟶ expect(…).toStrictEqual({,parseProjectPatch › 没有要修改的字段：整个请求体的错误 ⟶ expect(…).toStrictEqual({ ok: false, error: '没有要修改的字段' }))"
         },
         {
           "target": "exercise:parse-patch:solution:solution",
@@ -12813,27 +12813,47 @@
         {
           "target": "exercise:parse-patch:wrong:ignore-unknown",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 不能修改的字段：每一个都报错，即使其他的字段都合法 ⟶ expect(…).toStrictEqual({,parseProjectPatch › 字段的名字是 __proto__ 或者 constructor 时也一样 ⟶ expect(…).toBe(false),parseProjectPatch › 没有要修改的字段 ⟶ expect(…).toStrictEqual({ ok: false, errors: { id: '不能修改这个字段', body: '没有要修改的字段' } }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 不能修改的字段：每一个都报错，即使其他的字段都合法 ⟶ expect(…).toStrictEqual({,parseProjectPatch › 字段的名字是 __proto__ 或者 constructor 时也一样；errors 是普通的对象 ⟶ expect(…).toBe(false))"
         },
         {
           "target": "exercise:parse-patch:wrong:plain-object-errors",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 字段的名字是 __proto__ 或者 constructor 时也一样 ⟶ expect(…).toStrictEqual([ '__proto__', 'constructor' ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 字段的名字是 __proto__ 或者 constructor 时也一样；errors 是普通的对象 ⟶ expect(…).toStrictEqual([ '__proto__', 'constructor' ]))"
         },
         {
           "target": "exercise:parse-patch:wrong:no-trim",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { name: '官网改版（二期）', status: 'active' } }),parseProjectPatch › 名称和负责人：必须是字符串，不能为空，长度按字符数 ⟶ expect(…).toStrictEqual({ ok: false, errors: { name: '名称不能为空' } }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { name: '官网改版（二期）', status: 'active' } }),parseProjectPatch › 名称和负责人：必须是字符串，不能为空 ⟶ expect(…).toStrictEqual({ ok: false, errors: { name: '请输入项目名称' } }),parseProjectPatch › 长度：去掉空白之后按码点计算，名称最多 40 个，负责人最多 30 个 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:trim-ascii-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { owner: '李雷', dueDate: '2026-12-31' } }),parseProjectPatch › 名称和负责人：必须是字符串，不能为空 ⟶ expect(…).toStrictEqual({ ok: false, errors: { owner: '请输入负责人' } }))"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:length-before-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 长度：去掉空白之后按码点计算，名称最多 40 个，负责人最多 30 个 ⟶ expect(…).toStrictEqual({)"
         },
         {
           "target": "exercise:parse-patch:wrong:utf16-length",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 名称和负责人：必须是字符串，不能为空，长度按字符数 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 长度：去掉空白之后按码点计算，名称最多 40 个，负责人最多 30 个 ⟶ expect(…).toBe(true))"
         },
         {
           "target": "exercise:parse-patch:wrong:format-only-date",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 截止日期：YYYY-MM-DD，并且日历上有这一天 ⟶ 2026-02-30)"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:naive-calendar",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 截止日期：YYYY-MM-DD，并且日历上有这一天 ⟶ 2026-04-31)"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:date-utc",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 截止日期：YYYY-MM-DD，并且日历上有这一天 ⟶ 0099-12-31)"
         },
         {
           "target": "exercise:parse-patch:wrong:null-rejected",
@@ -12843,7 +12863,7 @@
         {
           "target": "exercise:parse-patch:wrong:undefined-field",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { name: '官网改版（二期）', status: 'active' } }),parseProjectPatch › 名称和负责人：必须是字符串，不能为空，长度按字符数 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { name: '官网改版（二期）', status: 'active' } }),parseProjectPatch › 长度：去掉空白之后按码点计算，名称最多 40 个，负责人最多 30 个 ⟶ expect(…).toStrictEqual({)"
         },
         {
           "target": "exercise:project-dto:starter:starter",
