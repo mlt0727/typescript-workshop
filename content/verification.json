@@ -11079,6 +11079,98 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(导入 › 超过 1 MB 的文件不读取；正好 1 MB 可以导入 ⟶ TestingLibraryElementError: Unable to find an element with the text: 已导入 1 个任务. This could be because the text is broken up by multiple elements. In this case, )"
         }
       ]
+    },
+    "p2-01-plan-and-types": {
+      "verifiedAt": "2026-10-21T01:39:52.084Z",
+      "sourceHash": "a3694671eec6b191",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:days-between:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:days-between:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 26 | [log] 3 | [log] 2 1 | [log] -2 | [log] true true"
+        },
+        {
+          "target": "exercise:project-summary:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(summarize › 完成的数量、总数和百分比（向下取整） ⟶ expect(…).toMatchObject({ done: 1, total: 3, percent: 33 }),summarize › 还有几天：当天是 0，过期是负数，没有截止日期是 null ⟶ expect(…).toBe(26),summarize › 跨月、跨年、闰年都按日历计算 ⟶ expect(…).toBe(3),summarize › 过期：没有完成，并且截止日期在今天之前（当天不算） ⟶ expect(…).toBe(true))"
+        },
+        {
+          "target": "exercise:project-summary:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-summary:alt:date-parse",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-summary:wrong:rounded",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summarize › 完成的数量、总数和百分比（向下取整） ⟶ expect(…).toMatchObject({ percent: 66 }))"
+        },
+        {
+          "target": "exercise:project-summary:wrong:due-today-overdue",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summarize › 过期：没有完成，并且截止日期在今天之前（当天不算） ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:project-summary:wrong:done-overdue",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summarize › 过期：没有完成，并且截止日期在今天之前（当天不算） ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:project-summary:wrong:nan-percent",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(summarize › 没有任务时百分比是 0 ⟶ expect(…).toMatchObject({ done: 0, total: 0, percent: 0 }))"
+        },
+        {
+          "target": "exercise:project-reducer:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(名称与截止日期 › 改名：去掉首尾空白，1 到 60 个字符 ⟶ expect(…).toBe('新官网'),名称与截止日期 › 截止日期：YYYY-MM-DD 并且真实存在，可以清除 ⟶ expect(…).toBe('2028-02-29'),名称与截止日期 › 已完成的项目也可以改名、改截止日期 ⟶ expect(…).toBeNull(),任务 › 添加：去掉空白，没有完成，放在最后；不修改原来的项目 ⟶ expect(…).toEqual([,任务 › 添加时的检查 ⟶ expect(…).toEqual({ ok: false, error: '任务不能为空' }),任务 › 切换完成状态、删除；找不到时失败 ⟶ expect(…).toEqual([,任务 › 已完成的项目不能修改任务 ⟶ addTask,状态 › 允许的变化：计划中 ⇄ 进行中，进行中 → 已完成，已完成 → 进行中 ⟶ expect(…).toBe('active'),状态 › 不允许的变化 ⟶ expect(…).toEqual({ ok: false, error: '不能从“计划中”改为“已完成”' }),状态 › 还有没完成的任务时不能完成项目 ⟶ expect(…).toEqual({ ok: false, error: '还有 1 个任务没有完成' }),没有变化时返回原来的对象 › 同样的名称、日期、状态 ⟶ rename)"
+        },
+        {
+          "target": "exercise:project-reducer:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-reducer:alt:if-chains",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-reducer:wrong:mutate",
+          "ok": true,
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@55) tests=fail(任务 › 添加：去掉空白，没有完成，放在最后；不修改原来的项目 ⟶ expect(…).toEqual([,任务 › 切换完成状态、删除；找不到时失败 ⟶ expect(…).toEqual([,状态 › 还有没完成的任务时不能完成项目 ⟶ expect(…).toEqual({ ok: false, error: '还有 1 个任务没有完成' }))"
+        },
+        {
+          "target": "exercise:project-reducer:wrong:ignore-open-tasks",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(状态 › 还有没完成的任务时不能完成项目 ⟶ expect(…).toEqual({ ok: false, error: '还有 1 个任务没有完成' }))"
+        },
+        {
+          "target": "exercise:project-reducer:wrong:any-transition",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(状态 › 不允许的变化 ⟶ expect(…).toEqual({ ok: false, error: '不能从“计划中”改为“已完成”' }))"
+        },
+        {
+          "target": "exercise:project-reducer:wrong:done-unlocked",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(任务 › 已完成的项目不能修改任务 ⟶ addTask)"
+        },
+        {
+          "target": "exercise:project-reducer:wrong:always-new",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(没有变化时返回原来的对象 › 同样的名称、日期、状态 ⟶ rename)"
+        }
+      ]
     }
   }
 }

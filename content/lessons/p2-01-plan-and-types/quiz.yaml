@@ -1,0 +1,44 @@
+- id: date-type
+  type: single
+  prompt: 项目的截止日期为什么用 `'2026-11-15'` 这样的字符串，而不是 `Date` 对象？
+  options:
+    - text: 截止日期是日历上的一天，与时区无关；Date 表示的是一个时间点，换一个时区可能变成另一天
+      correct: true
+      explain: YYYY-MM-DD 字符串还可以直接比较先后、原样保存进 JSON。
+    - text: 字符串比 Date 对象占用的内存少
+      explain: 这不是选择的理由；关键是“日期”和“时间点”是两种不同的东西。
+    - text: TypeScript 不能给 Date 对象写类型
+      explain: Date 是一个普通的内置类型，可以写在类型中。
+- id: dst
+  type: single
+  prompt: "`(new Date(2026, 10, 2) - new Date(2026, 9, 31)) / 86400000` 在某些地区不是 2，而是 2.04。为什么？"
+  options:
+    - text: 这两个是本地时间的零点，中间经过了夏令时的切换，那一天有 25 个小时
+      correct: true
+      explain: 按 UTC 计算（Date.UTC），每天都正好 24 小时。
+    - text: 浏览器的计时器不够精确
+      explain: 这里没有计时，只是两个确定的时间点相减。
+    - text: 10 月有 31 天，月份从 0 开始算错了
+      explain: 月份写法是对的（9 是 10 月），差别来自夏令时。
+- id: result
+  type: single
+  prompt: 用户要把一个还有任务没完成的项目标记为已完成。状态更新函数应该怎样处理？
+  options:
+    - text: "返回 `{ ok: false, error: '还有 2 个任务没有完成' }`，由界面显示这个原因"
+      correct: true
+      explain: 这是用户会遇到的正常情况，返回原因比抛出异常更容易处理，也不会被忘记。
+    - text: 抛出 Error，让调用方用 try/catch 处理
+      explain: 每个调用方都要记得 try/catch，忘了就是一个崩溃的页面。
+    - text: 把剩下的任务也自动标记为完成
+      explain: 悄悄修改用户的数据违反了需求；应该说明原因，由用户决定。
+- id: transitions
+  type: single
+  prompt: "状态的转换表写成 `Record<ProjectStatus, readonly ProjectStatus[]>` 有什么好处？"
+  options:
+    - text: 以后给 ProjectStatus 加一种状态时，编译器会提醒你在表中补上它的一行
+      correct: true
+      explain: Record 要求每个键都有值，漏写一种状态是类型错误。
+    - text: 转换表在运行时会自动检查状态的变化
+      explain: 检查的代码仍然要自己写；类型保证的是表是完整的。
+    - text: 它让状态的变化不需要测试
+      explain: 规则本身对不对，仍然要用测试检查。
