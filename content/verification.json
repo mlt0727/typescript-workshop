@@ -2,7 +2,7 @@
   "tsVersion": "6.0.3",
   "lessons": {
     "a01-where-ts-runs": {
-      "verifiedAt": "2026-10-20T17:24:42.218Z",
+      "verifiedAt": "2026-10-21T18:22:33.000Z",
       "sourceHash": "96f2639660bdcf67",
       "ok": true,
       "checks": [
@@ -109,7 +109,7 @@
       ]
     },
     "a02-compile-vs-runtime": {
-      "verifiedAt": "2026-10-21T00:33:49.254Z",
+      "verifiedAt": "2026-10-21T18:22:33.382Z",
       "sourceHash": "673bb373ab3c3a80",
       "ok": true,
       "checks": [
@@ -211,7 +211,7 @@
       ]
     },
     "a03-let-const-inference": {
-      "verifiedAt": "2026-10-20T17:24:43.165Z",
+      "verifiedAt": "2026-10-21T18:22:33.785Z",
       "sourceHash": "08c74ac95adc45b5",
       "ok": true,
       "checks": [
@@ -328,7 +328,7 @@
       ]
     },
     "a04-primitives-strings": {
-      "verifiedAt": "2026-10-20T17:24:43.650Z",
+      "verifiedAt": "2026-10-21T18:22:34.187Z",
       "sourceHash": "d4e98392db010a70",
       "ok": true,
       "checks": [
@@ -440,7 +440,7 @@
       ]
     },
     "a05-null-undefined": {
-      "verifiedAt": "2026-10-20T17:24:44.166Z",
+      "verifiedAt": "2026-10-21T18:22:34.600Z",
       "sourceHash": "f5b91e119d9913ae",
       "ok": true,
       "checks": [
@@ -552,7 +552,7 @@
       ]
     },
     "a06-operators-equality": {
-      "verifiedAt": "2026-10-20T17:24:44.580Z",
+      "verifiedAt": "2026-10-21T18:22:34.985Z",
       "sourceHash": "e4efaae6b72a7c46",
       "ok": true,
       "checks": [
@@ -659,7 +659,7 @@
       ]
     },
     "a07-truthy-falsy": {
-      "verifiedAt": "2026-10-20T17:24:45.026Z",
+      "verifiedAt": "2026-10-21T18:22:35.399Z",
       "sourceHash": "ce981082c8a7ab3f",
       "ok": true,
       "checks": [
@@ -766,7 +766,7 @@
       ]
     },
     "a08-optional-chaining-nullish": {
-      "verifiedAt": "2026-10-20T17:24:45.623Z",
+      "verifiedAt": "2026-10-21T18:22:35.947Z",
       "sourceHash": "7d438c40c3026e6d",
       "ok": true,
       "checks": [
@@ -918,7 +918,7 @@
       ]
     },
     "a09-control-flow": {
-      "verifiedAt": "2026-10-20T17:24:46.051Z",
+      "verifiedAt": "2026-10-21T18:22:36.339Z",
       "sourceHash": "d0adb89f20612ea7",
       "ok": true,
       "checks": [
@@ -1025,7 +1025,7 @@
       ]
     },
     "a10-arrays": {
-      "verifiedAt": "2026-10-20T17:24:46.462Z",
+      "verifiedAt": "2026-10-21T18:22:36.729Z",
       "sourceHash": "cb81fe04cae4ff08",
       "ok": true,
       "checks": [
@@ -1127,7 +1127,7 @@
       ]
     },
     "a11-objects-references": {
-      "verifiedAt": "2026-10-20T17:24:46.888Z",
+      "verifiedAt": "2026-10-21T18:22:37.130Z",
       "sourceHash": "9c6e39e4993e3a91",
       "ok": true,
       "checks": [
@@ -1229,7 +1229,7 @@
       ]
     },
     "a12-destructuring-spread": {
-      "verifiedAt": "2026-10-20T17:24:47.391Z",
+      "verifiedAt": "2026-10-21T18:22:37.528Z",
       "sourceHash": "2920a1138db44b85",
       "ok": true,
       "checks": [
@@ -1336,7 +1336,7 @@
       ]
     },
     "a13-functions": {
-      "verifiedAt": "2026-10-20T17:24:47.960Z",
+      "verifiedAt": "2026-10-21T18:22:37.976Z",
       "sourceHash": "c030cb3dec600d6e",
       "ok": true,
       "checks": [
@@ -1453,7 +1453,7 @@
       ]
     },
     "a14-scope-closures": {
-      "verifiedAt": "2026-10-20T17:24:48.494Z",
+      "verifiedAt": "2026-10-21T18:22:38.453Z",
       "sourceHash": "2ae5b2e3638a5b49",
       "ok": true,
       "checks": [
@@ -1575,7 +1575,7 @@
       ]
     },
     "a15-this": {
-      "verifiedAt": "2026-10-20T17:24:48.836Z",
+      "verifiedAt": "2026-10-21T18:22:38.741Z",
       "sourceHash": "a880078bef84a31e",
       "ok": true,
       "checks": [
@@ -1677,7 +1677,7 @@
       ]
     },
     "a16-array-methods": {
-      "verifiedAt": "2026-10-20T17:24:49.356Z",
+      "verifiedAt": "2026-10-21T18:22:39.215Z",
       "sourceHash": "9011a3f39f0b8a88",
       "ok": true,
       "checks": [
@@ -1799,7 +1799,7 @@
       ]
     },
     "a17-sort-and-mutation": {
-      "verifiedAt": "2026-10-20T17:24:49.816Z",
+      "verifiedAt": "2026-10-21T18:22:39.635Z",
       "sourceHash": "e93fd6b7286514ce",
       "ok": true,
       "checks": [
@@ -1911,7 +1911,7 @@
       ]
     },
     "a18-map-set": {
-      "verifiedAt": "2026-10-20T17:24:50.338Z",
+      "verifiedAt": "2026-10-21T18:22:40.132Z",
       "sourceHash": "4394bd40180ec60d",
       "ok": true,
       "checks": [
@@ -2028,7 +2028,7 @@
       ]
     },
     "a19-modules": {
-      "verifiedAt": "2026-10-20T17:24:50.723Z",
+      "verifiedAt": "2026-10-21T18:22:40.489Z",
       "sourceHash": "d867938cbbec323c",
       "ok": true,
       "checks": [
@@ -2135,7 +2135,7 @@
       ]
     },
     "a20-errors": {
-      "verifiedAt": "2026-10-20T17:24:51.287Z",
+      "verifiedAt": "2026-10-21T18:22:40.889Z",
       "sourceHash": "23006d6d51a93994",
       "ok": true,
       "checks": [
@@ -2237,7 +2237,7 @@
       ]
     },
     "b01-type-alias-interface": {
-      "verifiedAt": "2026-10-20T17:24:51.853Z",
+      "verifiedAt": "2026-10-21T18:22:41.327Z",
       "sourceHash": "a2ba11985f662cf0",
       "ok": true,
       "checks": [
@@ -2344,7 +2344,7 @@
       ]
     },
     "b02-structural-typing": {
-      "verifiedAt": "2026-10-20T17:24:52.285Z",
+      "verifiedAt": "2026-10-21T18:22:41.673Z",
       "sourceHash": "e3b05a429f1ffaa8",
       "ok": true,
       "checks": [
@@ -2436,7 +2436,7 @@
       ]
     },
     "b03-optional-readonly": {
-      "verifiedAt": "2026-10-20T17:24:52.716Z",
+      "verifiedAt": "2026-10-21T18:22:42.073Z",
       "sourceHash": "88f063b369af4012",
       "ok": true,
       "checks": [
@@ -2543,7 +2543,7 @@
       ]
     },
     "b04-union-literal": {
-      "verifiedAt": "2026-10-20T17:24:53.224Z",
+      "verifiedAt": "2026-10-21T18:22:42.521Z",
       "sourceHash": "16d820d8c2581d32",
       "ok": true,
       "checks": [
@@ -2645,7 +2645,7 @@
       ]
     },
     "b05-intersection-tuple": {
-      "verifiedAt": "2026-10-20T17:24:53.735Z",
+      "verifiedAt": "2026-10-21T18:22:43.001Z",
       "sourceHash": "4142cea7107ead35",
       "ok": true,
       "checks": [
@@ -2752,7 +2752,7 @@
       ]
     },
     "b06-any-unknown-never-void": {
-      "verifiedAt": "2026-10-20T17:24:54.177Z",
+      "verifiedAt": "2026-10-21T18:22:43.397Z",
       "sourceHash": "cc371768db05441b",
       "ok": true,
       "checks": [
@@ -2859,7 +2859,7 @@
       ]
     },
     "b07-narrowing": {
-      "verifiedAt": "2026-10-20T17:24:54.666Z",
+      "verifiedAt": "2026-10-21T18:22:43.813Z",
       "sourceHash": "11b9c7c5911ecd78",
       "ok": true,
       "checks": [
@@ -2971,7 +2971,7 @@
       ]
     },
     "b08-type-guards": {
-      "verifiedAt": "2026-10-20T17:24:55.159Z",
+      "verifiedAt": "2026-10-21T18:22:44.206Z",
       "sourceHash": "60f6d3b91e78c8b3",
       "ok": true,
       "checks": [
@@ -3068,7 +3068,7 @@
       ]
     },
     "b09-discriminated-unions": {
-      "verifiedAt": "2026-10-20T17:24:55.698Z",
+      "verifiedAt": "2026-10-21T18:22:44.643Z",
       "sourceHash": "49752a141ce3f081",
       "ok": true,
       "checks": [
@@ -3175,7 +3175,7 @@
       ]
     },
     "b10-function-types": {
-      "verifiedAt": "2026-10-20T17:24:56.263Z",
+      "verifiedAt": "2026-10-21T18:22:45.111Z",
       "sourceHash": "ae90adddb616d52c",
       "ok": true,
       "checks": [
@@ -3287,7 +3287,7 @@
       ]
     },
     "b11-overloads": {
-      "verifiedAt": "2026-10-20T17:24:56.700Z",
+      "verifiedAt": "2026-10-21T18:22:45.509Z",
       "sourceHash": "2dfe447caed64048",
       "ok": true,
       "checks": [
@@ -3319,7 +3319,7 @@
         {
           "target": "playground:prefer-union:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 2 3 | [log] 2"
+          "detail": "期望 done，实际 done；输出：[log] 2 3 | [log] 3"
         },
         {
           "target": "exercise:first-item:starter:starter",
@@ -3389,7 +3389,7 @@
       ]
     },
     "b12-classes": {
-      "verifiedAt": "2026-10-20T17:24:57.202Z",
+      "verifiedAt": "2026-10-21T18:22:45.970Z",
       "sourceHash": "245eb61998874571",
       "ok": true,
       "checks": [
@@ -3516,7 +3516,7 @@
       ]
     },
     "b13-inheritance-implements": {
-      "verifiedAt": "2026-10-20T17:24:57.634Z",
+      "verifiedAt": "2026-10-21T18:22:46.370Z",
       "sourceHash": "652eb5e170b7822f",
       "ok": true,
       "checks": [
@@ -3623,7 +3623,7 @@
       ]
     },
     "b14-generics": {
-      "verifiedAt": "2026-10-20T17:24:58.599Z",
+      "verifiedAt": "2026-10-21T18:22:47.149Z",
       "sourceHash": "138f1f959f851ed4",
       "ok": true,
       "checks": [
@@ -3725,7 +3725,7 @@
       ]
     },
     "b15-generic-constraints": {
-      "verifiedAt": "2026-10-20T17:24:59.191Z",
+      "verifiedAt": "2026-10-21T18:22:47.616Z",
       "sourceHash": "528259f2d604df0a",
       "ok": true,
       "checks": [
@@ -3832,7 +3832,7 @@
       ]
     },
     "b16-assertions-as-const-satisfies": {
-      "verifiedAt": "2026-10-20T17:24:59.661Z",
+      "verifiedAt": "2026-10-21T18:22:48.003Z",
       "sourceHash": "dcf8757a3213b05e",
       "ok": true,
       "checks": [
@@ -3929,7 +3929,7 @@
       ]
     },
     "b17-enums-and-alternatives": {
-      "verifiedAt": "2026-10-20T17:25:00.044Z",
+      "verifiedAt": "2026-10-21T18:22:48.334Z",
       "sourceHash": "66c70085712d293e",
       "ok": true,
       "checks": [
@@ -4016,7 +4016,7 @@
       ]
     },
     "c01-keyof-typeof-indexed": {
-      "verifiedAt": "2026-10-20T19:58:58.993Z",
+      "verifiedAt": "2026-10-21T18:22:48.988Z",
       "sourceHash": "c94d3b65688e89ce",
       "ok": true,
       "checks": [
@@ -4113,7 +4113,7 @@
       ]
     },
     "c02-mapped-types": {
-      "verifiedAt": "2026-10-20T19:58:59.474Z",
+      "verifiedAt": "2026-10-21T18:22:49.426Z",
       "sourceHash": "3e331f9035244218",
       "ok": true,
       "checks": [
@@ -4210,7 +4210,7 @@
       ]
     },
     "c03-conditional-infer": {
-      "verifiedAt": "2026-10-20T19:59:00.193Z",
+      "verifiedAt": "2026-10-21T18:22:49.861Z",
       "sourceHash": "d6fbae4eb6cd79cf",
       "ok": true,
       "checks": [
@@ -4307,7 +4307,7 @@
       ]
     },
     "c04-distributive-conditional": {
-      "verifiedAt": "2026-10-20T19:59:01.126Z",
+      "verifiedAt": "2026-10-21T18:22:50.272Z",
       "sourceHash": "7fddb18d8c0e99d8",
       "ok": true,
       "checks": [
@@ -4399,7 +4399,7 @@
       ]
     },
     "c05-template-literal-types": {
-      "verifiedAt": "2026-10-20T19:59:01.935Z",
+      "verifiedAt": "2026-10-21T18:22:50.662Z",
       "sourceHash": "1052f6b29027f6a9",
       "ok": true,
       "checks": [
@@ -4491,7 +4491,7 @@
       ]
     },
     "c06-utility-types": {
-      "verifiedAt": "2026-10-20T19:59:02.754Z",
+      "verifiedAt": "2026-10-21T18:22:51.066Z",
       "sourceHash": "d3b81e1964ee6f29",
       "ok": true,
       "checks": [
@@ -4578,7 +4578,7 @@
       ]
     },
     "c07-function-utility-types": {
-      "verifiedAt": "2026-10-20T19:59:04.117Z",
+      "verifiedAt": "2026-10-21T18:22:51.667Z",
       "sourceHash": "33baa1e8834acf80",
       "ok": true,
       "checks": [
@@ -4680,7 +4680,7 @@
       ]
     },
     "c08-generic-api-design": {
-      "verifiedAt": "2026-10-20T19:59:05.086Z",
+      "verifiedAt": "2026-10-21T18:22:52.090Z",
       "sourceHash": "1a7a384ba34a441e",
       "ok": true,
       "checks": [
@@ -4767,7 +4767,7 @@
       ]
     },
     "c09-boundary-modeling": {
-      "verifiedAt": "2026-10-20T19:59:06.004Z",
+      "verifiedAt": "2026-10-21T18:22:52.491Z",
       "sourceHash": "9a1e12943d295d36",
       "ok": true,
       "checks": [
@@ -4854,7 +4854,7 @@
       ]
     },
     "c10-avoid-any": {
-      "verifiedAt": "2026-10-20T19:59:06.816Z",
+      "verifiedAt": "2026-10-21T18:22:52.830Z",
       "sourceHash": "0a1ae841429a8b8c",
       "ok": true,
       "checks": [
@@ -4941,7 +4941,7 @@
       ]
     },
     "c11-strict-options": {
-      "verifiedAt": "2026-10-20T19:59:07.643Z",
+      "verifiedAt": "2026-10-21T18:22:53.191Z",
       "sourceHash": "a5898858c07bb390",
       "ok": true,
       "checks": [
@@ -5038,7 +5038,7 @@
       ]
     },
     "c12-modules-dts": {
-      "verifiedAt": "2026-10-21T00:59:47.282Z",
+      "verifiedAt": "2026-10-21T18:22:53.553Z",
       "sourceHash": "980a4970a5bd5ebd",
       "ok": true,
       "checks": [
@@ -5125,7 +5125,7 @@
       ]
     },
     "d01-html-semantics": {
-      "verifiedAt": "2026-10-20T17:25:01.990Z",
+      "verifiedAt": "2026-10-21T18:22:55.306Z",
       "sourceHash": "35c36f09a41f3c03",
       "ok": true,
       "checks": [
@@ -5232,7 +5232,7 @@
       ]
     },
     "d02-html-forms": {
-      "verifiedAt": "2026-10-20T17:25:07.783Z",
+      "verifiedAt": "2026-10-21T18:23:00.886Z",
       "sourceHash": "31169b0fc9ebd3f0",
       "ok": true,
       "checks": [
@@ -5344,7 +5344,7 @@
       ]
     },
     "d03-css-layout": {
-      "verifiedAt": "2026-10-20T17:25:09.508Z",
+      "verifiedAt": "2026-10-21T18:23:02.542Z",
       "sourceHash": "da6de6699f6b7807",
       "ok": true,
       "checks": [
@@ -5451,7 +5451,7 @@
       ]
     },
     "d04-responsive-a11y": {
-      "verifiedAt": "2026-10-20T17:25:11.583Z",
+      "verifiedAt": "2026-10-21T18:23:04.395Z",
       "sourceHash": "d5c55e9c8683225e",
       "ok": true,
       "checks": [
@@ -5563,7 +5563,7 @@
       ]
     },
     "d05-dom-query": {
-      "verifiedAt": "2026-10-20T17:25:14.288Z",
+      "verifiedAt": "2026-10-21T18:23:07.043Z",
       "sourceHash": "b7b85ddfec4b1f46",
       "ok": true,
       "checks": [
@@ -5670,7 +5670,7 @@
       ]
     },
     "d06-dom-create-update": {
-      "verifiedAt": "2026-10-20T17:25:17.293Z",
+      "verifiedAt": "2026-10-21T18:23:09.687Z",
       "sourceHash": "ebe5cad9ffb7f976",
       "ok": true,
       "checks": [
@@ -5792,7 +5792,7 @@
       ]
     },
     "d07-events": {
-      "verifiedAt": "2026-10-20T17:25:22.762Z",
+      "verifiedAt": "2026-10-21T18:23:15.157Z",
       "sourceHash": "5fb16b205d4ef535",
       "ok": true,
       "checks": [
@@ -5899,7 +5899,7 @@
       ]
     },
     "d08-bubbling-delegation": {
-      "verifiedAt": "2026-10-20T17:25:26.977Z",
+      "verifiedAt": "2026-10-21T18:23:19.313Z",
       "sourceHash": "845d7d4b1dee89fc",
       "ok": true,
       "checks": [
@@ -6006,7 +6006,7 @@
       ]
     },
     "d09-form-validation": {
-      "verifiedAt": "2026-10-20T17:25:33.472Z",
+      "verifiedAt": "2026-10-21T18:23:25.728Z",
       "sourceHash": "01065e1fc63010b6",
       "ok": true,
       "checks": [
@@ -6098,7 +6098,7 @@
       ]
     },
     "d10-state-and-render": {
-      "verifiedAt": "2026-10-20T17:25:35.534Z",
+      "verifiedAt": "2026-10-21T18:23:27.738Z",
       "sourceHash": "470022db270eeb23",
       "ok": true,
       "checks": [
@@ -6190,7 +6190,7 @@
       ]
     },
     "e01-event-loop": {
-      "verifiedAt": "2026-10-20T17:25:36.364Z",
+      "verifiedAt": "2026-10-21T18:23:28.544Z",
       "sourceHash": "883cb12fb24c3566",
       "ok": true,
       "checks": [
@@ -6287,7 +6287,7 @@
       ]
     },
     "e02-promises": {
-      "verifiedAt": "2026-10-20T17:25:37.068Z",
+      "verifiedAt": "2026-10-21T18:23:29.205Z",
       "sourceHash": "8f3e67a17837ffc3",
       "ok": true,
       "checks": [
@@ -6404,7 +6404,7 @@
       ]
     },
     "e03-async-await": {
-      "verifiedAt": "2026-10-20T17:25:41.229Z",
+      "verifiedAt": "2026-10-21T18:23:33.173Z",
       "sourceHash": "1b2f511ac620deb4",
       "ok": true,
       "checks": [
@@ -6551,7 +6551,7 @@
       ]
     },
     "e04-promise-combinators": {
-      "verifiedAt": "2026-10-20T17:25:42.520Z",
+      "verifiedAt": "2026-10-21T18:23:34.332Z",
       "sourceHash": "e48032b238bce25f",
       "ok": true,
       "checks": [
@@ -6673,7 +6673,7 @@
       ]
     },
     "e05-fetch-json": {
-      "verifiedAt": "2026-10-20T17:25:46.510Z",
+      "verifiedAt": "2026-10-21T18:23:38.214Z",
       "sourceHash": "211dbf9d411ce153",
       "ok": true,
       "checks": [
@@ -6790,7 +6790,7 @@
       ]
     },
     "e06-runtime-validation": {
-      "verifiedAt": "2026-10-20T17:25:46.951Z",
+      "verifiedAt": "2026-10-21T18:23:38.585Z",
       "sourceHash": "f26e78e8606f3117",
       "ok": true,
       "checks": [
@@ -6887,7 +6887,7 @@
       ]
     },
     "e07-loading-states": {
-      "verifiedAt": "2026-10-20T17:26:15.958Z",
+      "verifiedAt": "2026-10-21T18:24:07.512Z",
       "sourceHash": "88e28d8c7211e9c1",
       "ok": true,
       "checks": [
@@ -6984,7 +6984,7 @@
       ]
     },
     "e08-abort-races": {
-      "verifiedAt": "2026-10-20T17:26:27.177Z",
+      "verifiedAt": "2026-10-21T18:24:18.776Z",
       "sourceHash": "0f3928890be14e34",
       "ok": true,
       "checks": [
@@ -7101,7 +7101,7 @@
       ]
     },
     "e09-storage-serialization": {
-      "verifiedAt": "2026-10-20T17:26:28.638Z",
+      "verifiedAt": "2026-10-21T18:24:20.172Z",
       "sourceHash": "237ffd886ed726ca",
       "ok": true,
       "checks": [
@@ -7193,7 +7193,7 @@
       ]
     },
     "e10-url-routing": {
-      "verifiedAt": "2026-10-20T17:26:33.689Z",
+      "verifiedAt": "2026-10-21T18:24:25.066Z",
       "sourceHash": "34a7b0289d2c3a57",
       "ok": true,
       "checks": [
@@ -7310,7 +7310,7 @@
       ]
     },
     "e11-cors": {
-      "verifiedAt": "2026-10-20T17:26:34.008Z",
+      "verifiedAt": "2026-10-21T18:24:25.361Z",
       "sourceHash": "ceca70dde8708dad",
       "ok": true,
       "checks": [
@@ -7392,7 +7392,7 @@
       ]
     },
     "e12-xss": {
-      "verifiedAt": "2026-10-20T17:26:35.437Z",
+      "verifiedAt": "2026-10-21T18:24:26.716Z",
       "sourceHash": "6289c56e8d06b561",
       "ok": true,
       "checks": [
@@ -7404,7 +7404,7 @@
         {
           "target": "playground:inner-html:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] innerHTML：页面上多了一个 img 吗？ true | [log] 它带着 onerror 吗？ console.log('攻击者的代码运行了') | [log] textContent：页面上有 img 吗？ false | [log] CSP 拦下了： script-src-attr"
+          "detail": "期望 done，实际 done；输出：[log] innerHTML：页面上多了一个 img 吗？ true | [log] 它带着 onerror 吗？ console.log('攻击者的代码运行了') | [log] textContent：页面上有 img 吗？ false | [log] CSP 拦下了： script-src-attr | [log] CSP 拦下了： script-src-attr"
         },
         {
           "target": "playground:safe-url:types",
@@ -7499,7 +7499,7 @@
       ]
     },
     "e13-env-secrets": {
-      "verifiedAt": "2026-10-21T00:59:47.767Z",
+      "verifiedAt": "2026-10-21T18:24:27.106Z",
       "sourceHash": "e99b89a0e95eda8f",
       "ok": true,
       "checks": [
@@ -7596,7 +7596,7 @@
       ]
     },
     "f01-node-npm": {
-      "verifiedAt": "2026-10-21T00:57:42.024Z",
+      "verifiedAt": "2026-10-21T18:24:27.698Z",
       "sourceHash": "e98e748be682d1ae",
       "ok": true,
       "checks": [
@@ -7713,7 +7713,7 @@
       ]
     },
     "f02-vite-project": {
-      "verifiedAt": "2026-10-21T02:15:27.434Z",
+      "verifiedAt": "2026-10-21T18:24:28.036Z",
       "sourceHash": "913c57c7230bf3f2",
       "ok": true,
       "checks": [
@@ -7805,7 +7805,7 @@
       ]
     },
     "f03-tsconfig": {
-      "verifiedAt": "2026-10-21T00:33:51.151Z",
+      "verifiedAt": "2026-10-21T18:24:28.458Z",
       "sourceHash": "ec989902c16a7771",
       "ok": true,
       "checks": [
@@ -7902,7 +7902,7 @@
       ]
     },
     "f04-devtools": {
-      "verifiedAt": "2026-10-21T00:33:52.190Z",
+      "verifiedAt": "2026-10-21T18:24:28.922Z",
       "sourceHash": "61a9f4ccc40ac058",
       "ok": true,
       "checks": [
@@ -8004,7 +8004,7 @@
       ]
     },
     "f05-debugging-practice": {
-      "verifiedAt": "2026-10-21T00:33:53.221Z",
+      "verifiedAt": "2026-10-21T18:24:29.450Z",
       "sourceHash": "fc38483e929227e9",
       "ok": true,
       "checks": [
@@ -8101,7 +8101,7 @@
       ]
     },
     "f06-unit-tests": {
-      "verifiedAt": "2026-10-21T00:40:00.389Z",
+      "verifiedAt": "2026-10-21T18:24:30.567Z",
       "sourceHash": "db44114ac732e363",
       "ok": true,
       "checks": [
@@ -8183,7 +8183,7 @@
       ]
     },
     "f07-type-tests": {
-      "verifiedAt": "2026-10-21T00:40:02.371Z",
+      "verifiedAt": "2026-10-21T18:24:31.421Z",
       "sourceHash": "7b8dbf2dab087350",
       "ok": true,
       "checks": [
@@ -8260,7 +8260,7 @@
       ]
     },
     "f08-dom-tests": {
-      "verifiedAt": "2026-10-21T00:34:22.147Z",
+      "verifiedAt": "2026-10-21T18:24:43.455Z",
       "sourceHash": "3298ef82da499d59",
       "ok": true,
       "checks": [
@@ -8327,7 +8327,7 @@
       ]
     },
     "f09-e2e": {
-      "verifiedAt": "2026-10-21T00:34:44.326Z",
+      "verifiedAt": "2026-10-21T18:24:54.928Z",
       "sourceHash": "4bb10e5cca7f7934",
       "ok": true,
       "checks": [
@@ -8404,12 +8404,12 @@
         {
           "target": "exercise:poll:wrong:sleep-first",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 第一次就成功时立即完成，而且是立刻尝试的 ⟶ expect(…).toEqual([ 1792542880825 ]),poll › 每隔 interval 重试，直到成功 ⟶ TimeoutError: 测试 超过 3000 ms 仍未完成：可能有 Promise 永远不会 resolve，或忘记 await。,poll › 超时后以最后一次的错误拒绝；最后一次尝试正好在截止时间 ⟶ expect(…).toMatchObject({ message: '第 21 次失败' }),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 第一次就成功时立即完成，而且是立刻尝试的 ⟶ expect(…).toEqual([ 1792607091748 ]),poll › 每隔 interval 重试，直到成功 ⟶ TimeoutError: 测试 超过 3000 ms 仍未完成：可能有 Promise 永远不会 resolve，或忘记 await。,poll › 超时后以最后一次的错误拒绝；最后一次尝试正好在截止时间 ⟶ expect(…).toMatchObject({ message: '第 21 次失败' }),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
         }
       ]
     },
     "f10-git": {
-      "verifiedAt": "2026-10-21T00:57:42.869Z",
+      "verifiedAt": "2026-10-21T18:24:55.349Z",
       "sourceHash": "f092527e90c1b536",
       "ok": true,
       "checks": [
@@ -8511,7 +8511,7 @@
       ]
     },
     "f11-lint-format": {
-      "verifiedAt": "2026-10-21T00:34:46.156Z",
+      "verifiedAt": "2026-10-21T18:24:55.762Z",
       "sourceHash": "effb16dd6794e8bd",
       "ok": true,
       "checks": [
@@ -8613,7 +8613,7 @@
       ]
     },
     "f12-build-ci": {
-      "verifiedAt": "2026-10-21T00:34:46.915Z",
+      "verifiedAt": "2026-10-21T18:24:56.109Z",
       "sourceHash": "17390357c8b1016d",
       "ok": true,
       "checks": [
@@ -8710,7 +8710,7 @@
       ]
     },
     "g01-jsx-components": {
-      "verifiedAt": "2026-10-20T17:26:38.168Z",
+      "verifiedAt": "2026-10-21T18:24:58.459Z",
       "sourceHash": "5d8c2030fa5446fd",
       "ok": true,
       "checks": [
@@ -8812,7 +8812,7 @@
       ]
     },
     "g02-props": {
-      "verifiedAt": "2026-10-20T17:26:40.965Z",
+      "verifiedAt": "2026-10-21T18:25:00.773Z",
       "sourceHash": "853cbe3532944ac6",
       "ok": true,
       "checks": [
@@ -8914,7 +8914,7 @@
       ]
     },
     "g03-events-state": {
-      "verifiedAt": "2026-10-20T17:26:44.219Z",
+      "verifiedAt": "2026-10-21T18:25:03.669Z",
       "sourceHash": "0a98baee8e519cd3",
       "ok": true,
       "checks": [
@@ -9006,7 +9006,7 @@
       ]
     },
     "g04-immutable-updates": {
-      "verifiedAt": "2026-10-20T17:26:47.964Z",
+      "verifiedAt": "2026-10-21T18:25:07.261Z",
       "sourceHash": "189224b1be89db30",
       "ok": true,
       "checks": [
@@ -9108,7 +9108,7 @@
       ]
     },
     "g05-lists-keys": {
-      "verifiedAt": "2026-10-20T17:26:51.758Z",
+      "verifiedAt": "2026-10-21T18:25:10.654Z",
       "sourceHash": "43cb5b39f6d96bea",
       "ok": true,
       "checks": [
@@ -9210,7 +9210,7 @@
       ]
     },
     "g06-controlled-forms": {
-      "verifiedAt": "2026-10-20T17:27:03.065Z",
+      "verifiedAt": "2026-10-21T18:25:21.468Z",
       "sourceHash": "da7f9a37b76fb57a",
       "ok": true,
       "checks": [
@@ -9327,7 +9327,7 @@
       ]
     },
     "g07-lifting-state": {
-      "verifiedAt": "2026-10-20T17:27:07.470Z",
+      "verifiedAt": "2026-10-21T18:25:25.476Z",
       "sourceHash": "ae3e7ea05ac3dd88",
       "ok": true,
       "checks": [
@@ -9444,7 +9444,7 @@
       ]
     },
     "g08-custom-hooks": {
-      "verifiedAt": "2026-10-20T17:27:10.207Z",
+      "verifiedAt": "2026-10-21T18:25:28.045Z",
       "sourceHash": "c95260d1b89831e9",
       "ok": true,
       "checks": [
@@ -9556,7 +9556,7 @@
       ]
     },
     "g09-refs": {
-      "verifiedAt": "2026-10-20T17:27:16.537Z",
+      "verifiedAt": "2026-10-21T18:25:33.913Z",
       "sourceHash": "9c6fe568c2cc6506",
       "ok": true,
       "checks": [
@@ -9653,7 +9653,7 @@
       ]
     },
     "g10-context": {
-      "verifiedAt": "2026-10-20T17:27:20.348Z",
+      "verifiedAt": "2026-10-21T18:25:37.583Z",
       "sourceHash": "cbfb66a1a083c9bf",
       "ok": true,
       "checks": [
@@ -9755,7 +9755,7 @@
       ]
     },
     "g11-effects": {
-      "verifiedAt": "2026-10-20T17:27:59.202Z",
+      "verifiedAt": "2026-10-21T18:26:16.250Z",
       "sourceHash": "d2ae4e6d97bb6588",
       "ok": true,
       "checks": [
@@ -9867,7 +9867,7 @@
       ]
     },
     "g12-effect-pitfalls": {
-      "verifiedAt": "2026-10-20T17:28:05.748Z",
+      "verifiedAt": "2026-10-21T18:26:22.511Z",
       "sourceHash": "b55f6bd650208eaf",
       "ok": true,
       "checks": [
@@ -9989,7 +9989,7 @@
       ]
     },
     "g13-routing": {
-      "verifiedAt": "2026-10-21T00:05:10.787Z",
+      "verifiedAt": "2026-10-21T18:26:28.609Z",
       "sourceHash": "f75220ce94f23502",
       "ok": true,
       "checks": [
@@ -10106,7 +10106,7 @@
       ]
     },
     "g14-async-data": {
-      "verifiedAt": "2026-10-20T17:29:06.797Z",
+      "verifiedAt": "2026-10-21T18:27:23.264Z",
       "sourceHash": "648b42b191539ad3",
       "ok": true,
       "checks": [
@@ -10228,7 +10228,7 @@
       ]
     },
     "g15-a11y-component-tests": {
-      "verifiedAt": "2026-10-21T01:00:02.099Z",
+      "verifiedAt": "2026-10-21T18:27:30.264Z",
       "sourceHash": "854e4057fa6d3ab5",
       "ok": true,
       "checks": [
@@ -10310,7 +10310,7 @@
       ]
     },
     "h01-next-overview": {
-      "verifiedAt": "2026-10-21T08:28:55.603Z",
+      "verifiedAt": "2026-10-21T18:27:30.690Z",
       "sourceHash": "d8fd365d41d13d75",
       "ok": true,
       "checks": [
@@ -10407,7 +10407,7 @@
       ]
     },
     "h02-app-router-layouts": {
-      "verifiedAt": "2026-10-21T08:28:56.134Z",
+      "verifiedAt": "2026-10-21T18:27:31.131Z",
       "sourceHash": "89811f8a94016aff",
       "ok": true,
       "checks": [
@@ -10524,7 +10524,7 @@
       ]
     },
     "h03-server-client-components": {
-      "verifiedAt": "2026-10-21T08:46:04.595Z",
+      "verifiedAt": "2026-10-21T18:27:31.639Z",
       "sourceHash": "6ab664f82671c963",
       "ok": true,
       "checks": [
@@ -10641,7 +10641,7 @@
       ]
     },
     "h04-data-reading": {
-      "verifiedAt": "2026-10-21T16:13:21.455Z",
+      "verifiedAt": "2026-10-21T18:27:45.173Z",
       "sourceHash": "42f0264391ac5a91",
       "ok": true,
       "checks": [
@@ -10743,7 +10743,7 @@
       ]
     },
     "h05-mutations-validation": {
-      "verifiedAt": "2026-10-21T16:19:29.284Z",
+      "verifiedAt": "2026-10-21T18:28:06.060Z",
       "sourceHash": "f1c4be91a3ff5003",
       "ok": true,
       "checks": [
@@ -10860,7 +10860,7 @@
       ]
     },
     "h06-server-errors": {
-      "verifiedAt": "2026-10-21T16:26:08.867Z",
+      "verifiedAt": "2026-10-21T18:28:06.630Z",
       "sourceHash": "1c497d35da29b0a3",
       "ok": true,
       "checks": [
@@ -10967,7 +10967,7 @@
       ]
     },
     "h07-persistence": {
-      "verifiedAt": "2026-10-21T16:48:13.487Z",
+      "verifiedAt": "2026-10-21T18:28:12.063Z",
       "sourceHash": "255a91a9b4cc7d84",
       "ok": true,
       "checks": [
@@ -10979,7 +10979,7 @@
         {
           "target": "playground:lost-update:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 同时修改 20 次： 4 | [log] 排队修改 20 次： 20"
+          "detail": "期望 done，实际 done；输出：[log] 同时修改 20 次： 2 | [log] 排队修改 20 次： 20"
         },
         {
           "target": "exercise:todo-repo:starter:starter",
@@ -11079,7 +11079,7 @@
       ]
     },
     "h08-env-config": {
-      "verifiedAt": "2026-10-21T17:18:09.330Z",
+      "verifiedAt": "2026-10-21T18:28:12.594Z",
       "sourceHash": "272bed04f3b6c469",
       "ok": true,
       "checks": [
@@ -11211,7 +11211,7 @@
       ]
     },
     "h09-auth-boundaries": {
-      "verifiedAt": "2026-10-21T17:23:04.816Z",
+      "verifiedAt": "2026-10-21T18:28:13.287Z",
       "sourceHash": "a20485cf0cf58409",
       "ok": true,
       "checks": [
@@ -11353,7 +11353,7 @@
       ]
     },
     "i01-static-vs-server": {
-      "verifiedAt": "2026-10-21T02:16:04.710Z",
+      "verifiedAt": "2026-10-21T18:28:13.686Z",
       "sourceHash": "369fce9321180dab",
       "ok": true,
       "checks": [
@@ -11440,7 +11440,7 @@
       ]
     },
     "i02-deploy-static": {
-      "verifiedAt": "2026-10-21T02:16:05.442Z",
+      "verifiedAt": "2026-10-21T18:28:14.100Z",
       "sourceHash": "4f55a9533c829aac",
       "ok": true,
       "checks": [
@@ -11537,8 +11537,8 @@
       ]
     },
     "i03-deploy-server": {
-      "verifiedAt": "2026-10-21T18:20:00.475Z",
-      "sourceHash": "0bf9e59c7f7c3042",
+      "verifiedAt": "2026-10-21T18:48:43.146Z",
+      "sourceHash": "0fbffeb426d5d2ed",
       "ok": true,
       "checks": [
         {
@@ -11554,7 +11554,7 @@
         {
           "target": "exercise:log-line:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(formatLog › fields 不能覆盖 time、level、message ⟶ expect(…).toStrictEqual({,formatLog › 名字像密码、令牌的字段：值换成 [REDACTED]，包括嵌套的对象和数组中的 ⟶ expect(…).toStrictEqual({,formatLog › 密钥的值出现在任何字符串中都被替换：信息、字段、错误的信息 ⟶ expect(…).toBe(false),formatLog › 少于 8 个字符的“密钥”不替换（否则 a、the 这样的词都没了）；长的先替换 ⟶ expect(…).toMatchObject({ message: 'abc value [REDACTED] [REDACTED]' }),formatLog › 错误：只有 name、message 和 cause（没有 stack） ⟶ expect(…).toStrictEqual({,formatLog › 太长的字符串：按码点截断到 500 个，后面注明原来的长度 ⟶ expect(…).toMatchObject({,formatLog › 先替换密钥再截断：密钥跨过截断的位置时也不会漏出一部分 ⟶ expect(…).toBe(false),formatLog › 其他的值：Date 是 ISO 字符串，bigint 是字符串，undefined 和函数去掉，数组中的 undefined 是 null ⟶ TypeError: Do not know how to serialize a BigInt,formatLog › 循环引用：换成 [Circular]，不抛出错误；同一个对象出现两次不算循环 ⟶ TypeError: Converting circular structure to JSON)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(formatLog › fields 不能覆盖 time、level、message ⟶ expect(…).toStrictEqual({,formatLog › 名字像密码、令牌的字段：值换成 [REDACTED]，包括嵌套的对象和数组中的 ⟶ expect(…).toStrictEqual({,formatLog › 密钥的值出现在任何字符串中都被替换：信息、字段、错误的信息 ⟶ expect(…).toBe(false),formatLog › 少于 8 个字符的“密钥”不替换（否则 a、the 这样的词都没了）；长的先替换 ⟶ expect(…).toMatchObject({ message: 'abc value [REDACTED] [REDACTED]' }),formatLog › 错误：只有 name、message 和 cause（没有 stack） ⟶ expect(…).toStrictEqual({,formatLog › 太长的字符串：按码点截断到 500 个，后面注明原来的长度 ⟶ expect(…).toMatchObject({,formatLog › 先替换密钥再截断：密钥跨过截断的位置时也不会漏出一部分 ⟶ expect(…).toBe(false),formatLog › 其他的值：Date 是 ISO 字符串，bigint 是字符串，undefined 和函数去掉，数组中的 undefined 是 null ⟶ TypeError: Do not know how to serialize a BigInt,formatLog › 循环引用：换成 [Circular]，不抛出错误；同一个对象出现两次不算循环 ⟶ TypeError: Converting circular structure to JSON,formatLog：更多的输入 › 互相引用、数组包含自己：[Circular]；同一个错误出现两次不算循环 ⟶ TypeError: Converting circular structure to JSON,formatLog：更多的输入 › 截断按码点：600 个 🚀 留下 500 个，注明共 600 个字符 ⟶ expect(…).toMatchObject({,formatLog：更多的输入 › 正好 8 个字符的密钥要替换，7 个的不替换 ⟶ expect(…).toMatchObject({ message: '[REDACTED] b1234567x' }),formatLog：更多的输入 › 错误的 name、字段的名字中的密钥也要替换 ⟶ expect(…).toBe(false),formatLog：更多的输入 › symbol：对象中的去掉，数组中的变成 null；cause 是 0 也要写出来 ⟶ expect(…).toStrictEqual({,formatLog：更多的输入 › 更多名字像密钥的字段：x-api-key、sessionId ⟶ expect(…).toMatchObject({,formatLog：更多的输入 › 读取时抛出错误的对象：[Unreadable]，不影响其他的字段 ⟶ Error: getter failed,formatLog：更多的输入 › 嵌套得很深：不抛出错误，深处换成 [Too deep] ⟶ expect(…).toBe(true),formatLog：更多的输入 › 很大的数组和对象：只留前 50 项，注明一共有多少 ⟶ expect(…).toMatchObject({)"
         },
         {
           "target": "exercise:log-line:solution:solution",
@@ -11569,12 +11569,17 @@
         {
           "target": "exercise:log-line:wrong:no-key-redaction",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 名字像密码、令牌的字段：值换成 [REDACTED]，包括嵌套的对象和数组中的 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 名字像密码、令牌的字段：值换成 [REDACTED]，包括嵌套的对象和数组中的 ⟶ expect(…).toStrictEqual({,formatLog：更多的输入 › 更多名字像密钥的字段：x-api-key、sessionId ⟶ expect(…).toMatchObject({)"
+        },
+        {
+          "target": "exercise:log-line:wrong:dash-keys",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 名字像密码、令牌的字段：值换成 [REDACTED]，包括嵌套的对象和数组中的 ⟶ expect(…).toStrictEqual({,formatLog：更多的输入 › 更多名字像密钥的字段：x-api-key、sessionId ⟶ expect(…).toMatchObject({)"
         },
         {
           "target": "exercise:log-line:wrong:short-secrets",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 少于 8 个字符的“密钥”不替换（否则 a、the 这样的词都没了）；长的先替换 ⟶ expect(…).toMatchObject({ message: 'abc value [REDACTED] [REDACTED]' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 少于 8 个字符的“密钥”不替换（否则 a、the 这样的词都没了）；长的先替换 ⟶ expect(…).toMatchObject({ message: 'abc value [REDACTED] [REDACTED]' }),formatLog：更多的输入 › 正好 8 个字符的密钥要替换，7 个的不替换 ⟶ expect(…).toMatchObject({ message: '[REDACTED] b1234567x' }))"
         },
         {
           "target": "exercise:log-line:wrong:short-first",
@@ -11587,14 +11592,29 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 先替换密钥再截断：密钥跨过截断的位置时也不会漏出一部分 ⟶ expect(…).toBe(false))"
         },
         {
+          "target": "exercise:log-line:wrong:keys-kept",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog：更多的输入 › 错误的 name、字段的名字中的密钥也要替换 ⟶ expect(…).toBe(false))"
+        },
+        {
           "target": "exercise:log-line:wrong:no-cycle-check",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 循环引用：换成 [Circular]，不抛出错误；同一个对象出现两次不算循环 ⟶ RangeError: Maximum call stack size exceeded)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 循环引用：换成 [Circular]，不抛出错误；同一个对象出现两次不算循环 ⟶ expect(…).toStrictEqual({,formatLog：更多的输入 › 互相引用、数组包含自己：[Circular]；同一个错误出现两次不算循环 ⟶ expect(…).toMatchObject({)"
         },
         {
           "target": "exercise:log-line:wrong:seen-not-path",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 循环引用：换成 [Circular]，不抛出错误；同一个对象出现两次不算循环 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 循环引用：换成 [Circular]，不抛出错误；同一个对象出现两次不算循环 ⟶ expect(…).toStrictEqual({,formatLog：更多的输入 › 互相引用、数组包含自己：[Circular]；同一个错误出现两次不算循环 ⟶ expect(…).toMatchObject({)"
+        },
+        {
+          "target": "exercise:log-line:wrong:no-guard",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog：更多的输入 › 读取时抛出错误的对象：[Unreadable]，不影响其他的字段 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:log-line:wrong:no-entry-limit",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog：更多的输入 › 很大的数组和对象：只留前 50 项，注明一共有多少 ⟶ expect(…).toMatchObject({)"
         },
         {
           "target": "exercise:log-line:wrong:fields-override",
@@ -11602,59 +11622,54 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › fields 不能覆盖 time、level、message ⟶ expect(…).toStrictEqual({)"
         },
         {
-          "target": "exercise:log-line:wrong:assign-line",
+          "target": "exercise:rollback-target:starter:starter",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(formatLog › 字段名是 __proto__ 时也照样写出来 ⟶ expect(…).toBe('{\"time\":\"2026-10-21T10:00:00.000Z\",\"level\":\"info\",\"message\":\"m\",\"__proto__\":{\"isAdmin\":true}}'))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(checkSchema › 代码中没有的迁移都是兼容的：可以运行，每个都给出一条警告 ⟶ expect(…).toStrictEqual({,checkSchema › 有一个不兼容的：不能运行，报告编号最前面的那个 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有不兼容的迁移：0004_drop_owner' }),pickRollbackTarget › 回滚到上一个生产部署；数据库多出来的兼容迁移变成警告 ⟶ expect(…).toStrictEqual({,pickRollbackTarget › 跳过失败的、取消的、预览的部署，以及比现在的部署更新的部署 ⟶ expect(…).toMatchObject({ ok: true, target: { id: 'dpl_2' } }),pickRollbackTarget › 传进来的顺序不影响结果：按创建的时间从新到旧找 ⟶ expect(…).toMatchObject({ ok: true, target: { id: 'dpl_2' } }),pickRollbackTarget › 上一个部署不能在现在的数据库上运行时，继续往前找；都不行就只能向前修复 ⟶ expect(…).toStrictEqual({,pickRollbackTarget › 只有更旧的部署能运行时，选它 ⟶ expect(…).toMatchObject({ ok: true, target: { id: 'dpl_m4' }, warnings: [] }),pickRollbackTarget › 没有更早的生产部署；没有这个部署 ⟶ expect(…).toStrictEqual({ ok: false, reason: '没有可以回滚到的生产部署' }))"
         },
         {
-          "target": "exercise:request-log:starter:starter",
-          "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(withRequestLog › 每个请求一行日志：方法、路径、状态码、花的时间 ⟶ expect(…).toHaveLength(1),withRequestLog › 响应带上 x-request-id；请求中带着格式正确的 id 时沿用它 ⟶ expect(…).toBe('req-000001'),withRequestLog › 格式不对的 id 不沿用：太短、太长、有别的字符（可能是想往日志里注入内容） ⟶ short,withRequestLog › 4xx 是 warn，5xx 是 error ⟶ expect(…).toMatchObject([,withRequestLog › 处理函数抛出错误：返回 500 和 requestId；日志中有错误，但没有密钥 ⟶ Error: database refused: sk-live-0123456789abcdef,withRequestLog › 响应头不可修改时（Response.redirect）也能加上 x-request-id ⟶ expect(…).toBe('req-000001'))"
-        },
-        {
-          "target": "exercise:request-log:solution:solution",
+          "target": "exercise:rollback-target:solution:solution",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:request-log:alt:then-outcome",
+          "target": "exercise:rollback-target:alt:sorted-scan",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:request-log:wrong:query-logged",
+          "target": "exercise:rollback-target:wrong:strict-unknown",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 每个请求一行日志：方法、路径、状态码、花的时间 ⟶ expect(…).toStrictEqual({,withRequestLog › 查询参数不进日志 ⟶ expect(…).toBe(false))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkSchema › 代码中没有的迁移都是兼容的：可以运行，每个都给出一条警告 ⟶ expect(…).toStrictEqual({,checkSchema › 有一个不兼容的：不能运行，报告编号最前面的那个 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有不兼容的迁移：0004_drop_owner' }),pickRollbackTarget › 回滚到上一个生产部署；数据库多出来的兼容迁移变成警告 ⟶ expect(…).toStrictEqual({)"
         },
         {
-          "target": "exercise:request-log:wrong:trust-any-id",
+          "target": "exercise:rollback-target:wrong:ignore-unknown",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 格式不对的 id 不沿用：太短、太长、有别的字符（可能是想往日志里注入内容） ⟶ short)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(checkSchema › 有一个不兼容的：不能运行，报告编号最前面的那个 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有不兼容的迁移：0004_drop_owner' }),pickRollbackTarget › 上一个部署不能在现在的数据库上运行时，继续往前找；都不行就只能向前修复 ⟶ expect(…).toStrictEqual({,pickRollbackTarget › 只有更旧的部署能运行时，选它 ⟶ expect(…).toMatchObject({ ok: true, target: { id: 'dpl_m4' }, warnings: [] }))"
         },
         {
-          "target": "exercise:request-log:wrong:mutate-headers",
+          "target": "exercise:rollback-target:wrong:include-preview",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 响应头不可修改时（Response.redirect）也能加上 x-request-id ⟶ TypeError: Failed to execute 'set' on 'Headers': Headers are immutable)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(pickRollbackTarget › 跳过失败的、取消的、预览的部署，以及比现在的部署更新的部署 ⟶ expect(…).toMatchObject({ ok: true, target: { id: 'dpl_2' } }))"
         },
         {
-          "target": "exercise:request-log:wrong:error-not-logged",
+          "target": "exercise:rollback-target:wrong:include-failed",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 处理函数抛出错误：返回 500 和 requestId；日志中有错误，但没有密钥 ⟶ expect(…).toMatchObject({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(pickRollbackTarget › 跳过失败的、取消的、预览的部署，以及比现在的部署更新的部署 ⟶ expect(…).toMatchObject({ ok: true, target: { id: 'dpl_2' } }))"
         },
         {
-          "target": "exercise:request-log:wrong:always-info",
+          "target": "exercise:rollback-target:wrong:oldest-first",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 4xx 是 warn，5xx 是 error ⟶ expect(…).toMatchObject([,withRequestLog › 处理函数抛出错误：返回 500 和 requestId；日志中有错误，但没有密钥 ⟶ expect(…).toMatchObject({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(pickRollbackTarget › 跳过失败的、取消的、预览的部署，以及比现在的部署更新的部署 ⟶ expect(…).toMatchObject({ ok: true, target: { id: 'dpl_2' } }),pickRollbackTarget › 传进来的顺序不影响结果：按创建的时间从新到旧找 ⟶ expect(…).toMatchObject({ ok: true, target: { id: 'dpl_2' } }))"
         },
         {
-          "target": "exercise:request-log:wrong:rethrow",
+          "target": "exercise:rollback-target:wrong:only-previous",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withRequestLog › 处理函数抛出错误：返回 500 和 requestId；日志中有错误，但没有密钥 ⟶ Error: database refused: sk-live-0123456789abcdef)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(pickRollbackTarget › 只有更旧的部署能运行时，选它 ⟶ expect(…).toMatchObject({ ok: true, target: { id: 'dpl_m4' }, warnings: [] }))"
         }
       ]
     },
     "p1-01-plan-and-model": {
-      "verifiedAt": "2026-10-20T18:21:38.286Z",
+      "verifiedAt": "2026-10-21T18:28:15.089Z",
       "sourceHash": "c8c207d111027106",
       "ok": true,
       "checks": [
@@ -11751,8 +11766,8 @@
       ]
     },
     "p1-02-render-and-add": {
-      "verifiedAt": "2026-10-20T18:21:42.686Z",
-      "sourceHash": "4c90715c2861ec0b",
+      "verifiedAt": "2026-10-21T18:48:47.248Z",
+      "sourceHash": "504e512aeb36386e",
       "ok": true,
       "checks": [
         {
@@ -11853,7 +11868,7 @@
       ]
     },
     "p1-03-edit-delete": {
-      "verifiedAt": "2026-10-21T00:35:06.065Z",
+      "verifiedAt": "2026-10-21T18:28:28.305Z",
       "sourceHash": "84398ba21ad54376",
       "ok": true,
       "checks": [
@@ -11960,7 +11975,7 @@
       ]
     },
     "p1-04-filters": {
-      "verifiedAt": "2026-10-20T18:22:02.289Z",
+      "verifiedAt": "2026-10-21T18:28:38.471Z",
       "sourceHash": "6cbda18b79dd0ca0",
       "ok": true,
       "checks": [
@@ -12067,7 +12082,7 @@
       ]
     },
     "p1-05-persistence": {
-      "verifiedAt": "2026-10-21T01:14:54.866Z",
+      "verifiedAt": "2026-10-21T18:28:49.256Z",
       "sourceHash": "eab4fe6387b226b4",
       "ok": true,
       "checks": [
@@ -12184,7 +12199,7 @@
       ]
     },
     "p1-06-local-project": {
-      "verifiedAt": "2026-10-21T01:17:29.579Z",
+      "verifiedAt": "2026-10-21T18:29:03.879Z",
       "sourceHash": "ae4bbeb31178e043",
       "ok": true,
       "checks": [
@@ -12266,7 +12281,7 @@
       ]
     },
     "p2-01-plan-and-types": {
-      "verifiedAt": "2026-10-21T06:48:19.505Z",
+      "verifiedAt": "2026-10-21T18:29:04.327Z",
       "sourceHash": "a96ef6e2a65a24ec",
       "ok": true,
       "checks": [
@@ -12358,7 +12373,7 @@
       ]
     },
     "p2-02-routes-lists": {
-      "verifiedAt": "2026-10-21T06:48:30.357Z",
+      "verifiedAt": "2026-10-21T18:29:10.204Z",
       "sourceHash": "20bb3266144ec2b2",
       "ok": true,
       "checks": [
@@ -12485,7 +12500,7 @@
       ]
     },
     "p2-03-forms": {
-      "verifiedAt": "2026-10-21T06:49:04.618Z",
+      "verifiedAt": "2026-10-21T18:29:29.375Z",
       "sourceHash": "49b51f13c3e22b36",
       "ok": true,
       "checks": [
@@ -12597,7 +12612,7 @@
       ]
     },
     "p2-04-data-state": {
-      "verifiedAt": "2026-10-21T07:05:42.641Z",
+      "verifiedAt": "2026-10-21T18:31:00.189Z",
       "sourceHash": "877c7001dda0695b",
       "ok": true,
       "checks": [
@@ -12714,7 +12729,7 @@
       ]
     },
     "p2-05-tests": {
-      "verifiedAt": "2026-10-21T07:22:27.474Z",
+      "verifiedAt": "2026-10-21T18:31:58.093Z",
       "sourceHash": "4fa684d07ba38cdb",
       "ok": true,
       "checks": [
@@ -12781,7 +12796,7 @@
       ]
     },
     "p2-06-deploy": {
-      "verifiedAt": "2026-10-21T07:22:28.398Z",
+      "verifiedAt": "2026-10-21T18:31:58.517Z",
       "sourceHash": "148897dfc9cf333e",
       "ok": true,
       "checks": [
@@ -12888,7 +12903,7 @@
       ]
     },
     "p3-01-plan": {
-      "verifiedAt": "2026-10-21T17:50:09.991Z",
+      "verifiedAt": "2026-10-21T18:31:59.103Z",
       "sourceHash": "3f8aa0723e266dc4",
       "ok": true,
       "checks": [
@@ -13025,7 +13040,7 @@
       ]
     },
     "p3-02-api-validation": {
-      "verifiedAt": "2026-10-21T18:08:41.389Z",
+      "verifiedAt": "2026-10-21T18:31:59.853Z",
       "sourceHash": "95de057bd6ecbc55",
       "ok": true,
       "checks": [
@@ -13152,8 +13167,8 @@
       ]
     },
     "p3-03-persistence": {
-      "verifiedAt": "2026-10-21T18:01:23.776Z",
-      "sourceHash": "14d694748554503a",
+      "verifiedAt": "2026-10-21T18:48:47.737Z",
+      "sourceHash": "2365b63c286469f9",
       "ok": true,
       "checks": [
         {
@@ -13169,7 +13184,7 @@
         {
           "target": "exercise:plan-migrations:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(planMigrations › 新的数据库：全部按编号的顺序执行，不管传进来的顺序 ⟶ expect(…).toStrictEqual({,planMigrations › 执行过一部分：只执行剩下的 ⟶ expect(…).toStrictEqual({,planMigrations › 编号重复：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0002_create_tasks' }),planMigrations › 数据库中有代码中没有的迁移：数据库比代码新，拒绝启动 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations › 执行过的迁移被修改了（哪怕只是空白）：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_create_tasks 在执行之后被修改过' }),planMigrations › 新加的迁移排在已经执行的前面：拒绝（例如两个分支各加了一个迁移） ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_add_owner 排在已经执行的 0002_create_tasks 前面' }),planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations › 编号按字符串比较：0010 排在 0009 后面，9 排在 10 后面 ⟶ expect(…).toStrictEqual({)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(planMigrations › 新的数据库：全部按编号的顺序执行，不管传进来的顺序 ⟶ expect(…).toStrictEqual({,planMigrations › 执行过一部分：只执行剩下的 ⟶ expect(…).toStrictEqual({,planMigrations › 编号重复：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0002_create_tasks' }),planMigrations › 数据库中有代码中没有的迁移：数据库比代码新，拒绝启动 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations › 执行过的迁移被修改了（哪怕只是空白）：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_create_tasks 在执行之后被修改过' }),planMigrations › 新加的迁移排在已经执行的前面：拒绝（例如两个分支各加了一个迁移） ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_add_owner 排在已经执行的 0002_create_tasks 前面' }),planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations › 编号按字符串比较：0010 排在 0009 后面，9 排在 10 后面 ⟶ expect(…).toStrictEqual({,planMigrations：更多的情况 › 数据库中的记录不一定是排好序的（SELECT 没有 ORDER BY 时） ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_add_owner 排在已经执行的 0002_create_tasks 前面' }),planMigrations：更多的情况 › 同一种问题有几个：报告编号最前面的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0002_create_tasks' }),planMigrations：更多的情况 › 检查的顺序：重复先于多出来的，修改过的先于排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0001_create_projects' }))"
         },
         {
           "target": "exercise:plan-migrations:solution:solution",
@@ -13184,22 +13199,22 @@
         {
           "target": "exercise:plan-migrations:wrong:no-checksum",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 执行过的迁移被修改了（哪怕只是空白）：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_create_tasks 在执行之后被修改过' }),planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0001_create_projects 在执行之后被修改过' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 执行过的迁移被修改了（哪怕只是空白）：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_create_tasks 在执行之后被修改过' }),planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0001_create_projects 在执行之后被修改过' }),planMigrations：更多的情况 › 检查的顺序：重复先于多出来的，修改过的先于排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_create_tasks 在执行之后被修改过' }))"
         },
         {
           "target": "exercise:plan-migrations:wrong:input-order",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 新的数据库：全部按编号的顺序执行，不管传进来的顺序 ⟶ expect(…).toStrictEqual({,planMigrations › 编号按字符串比较：0010 排在 0009 后面，9 排在 10 后面 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 新的数据库：全部按编号的顺序执行，不管传进来的顺序 ⟶ expect(…).toStrictEqual({,planMigrations › 编号按字符串比较：0010 排在 0009 后面，9 排在 10 后面 ⟶ expect(…).toStrictEqual({,planMigrations：更多的情况 › 同一种问题有几个：报告编号最前面的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0001_b 排在已经执行的 0002_create_tasks 前面' }))"
         },
         {
           "target": "exercise:plan-migrations:wrong:unknown-ignored",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 数据库中有代码中没有的迁移：数据库比代码新，拒绝启动 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 数据库中有代码中没有的迁移：数据库比代码新，拒绝启动 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations › 有几个问题时，报告按编号排在最前面的那个；顺序是：重复、多出来的、修改过的、排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0003_add_due_date' }),planMigrations：更多的情况 › 数据库中的记录不一定是排好序的（SELECT 没有 ORDER BY 时） ⟶ expect(…).toStrictEqual({ ok: false, error: '数据库中有代码中没有的迁移：0002_create_tasks' }))"
         },
         {
           "target": "exercise:plan-migrations:wrong:no-order-check",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 新加的迁移排在已经执行的前面：拒绝（例如两个分支各加了一个迁移） ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_add_owner 排在已经执行的 0002_create_tasks 前面' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 新加的迁移排在已经执行的前面：拒绝（例如两个分支各加了一个迁移） ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_add_owner 排在已经执行的 0002_create_tasks 前面' }),planMigrations：更多的情况 › 数据库中的记录不一定是排好序的（SELECT 没有 ORDER BY 时） ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0002_add_owner 排在已经执行的 0002_create_tasks 前面' }),planMigrations：更多的情况 › 同一种问题有几个：报告编号最前面的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移 0001_b 排在已经执行的 0002_create_tasks 前面' }))"
         },
         {
           "target": "exercise:plan-migrations:wrong:modified-first",
@@ -13209,12 +13224,12 @@
         {
           "target": "exercise:plan-migrations:wrong:duplicate-ignored",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 编号重复：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0002_create_tasks' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(planMigrations › 编号重复：拒绝 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0002_create_tasks' }),planMigrations：更多的情况 › 同一种问题有几个：报告编号最前面的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0002_create_tasks' }),planMigrations：更多的情况 › 检查的顺序：重复先于多出来的，修改过的先于排错位置的 ⟶ expect(…).toStrictEqual({ ok: false, error: '迁移的编号重复：0001_create_projects' }))"
         },
         {
           "target": "exercise:join-rows:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(rowsToProjects › 每个任务一行：合并成一个项目，列名换成驼峰，0 和 1 换成布尔值 ⟶ expect(…).toStrictEqual([,rowsToProjects › 没有任务的项目：LEFT JOIN 给出一行，任务的列都是 null ⟶ expect(…).toHaveLength(1),rowsToProjects › 项目按第一次出现的顺序；任务按 position 排序，不依赖行的顺序 ⟶ expect(…).toStrictEqual([ 'p2', 'p1', 'p3' ]),rowsToProjects › 数据库中的数据不对：抛出错误，信息中有项目和任务的 id ⟶ expect(…).toThrow('数据库中的数据不对：项目 p1 的 status 是 archived'),rowsToProjects › 每个项目的任务是独立的数组 ⟶ expect(…).toStrictEqual([ 't1' ]))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(rowsToProjects › 每个任务一行：合并成一个项目，列名换成驼峰，0 和 1 换成布尔值 ⟶ expect(…).toStrictEqual([,rowsToProjects › 没有任务的项目：LEFT JOIN 给出一行，任务的列都是 null ⟶ expect(…).toHaveLength(1),rowsToProjects › 项目按第一次出现的顺序；任务按 position 排序，不依赖行的顺序 ⟶ expect(…).toStrictEqual([ 'p2', 'p1', 'p3' ]),rowsToProjects › 数据库中的数据不对：抛出错误，信息中有项目和任务的 id ⟶ expect(…).toThrow('数据库中的数据不对：项目 p1 的 status 是 archived'),rowsToProjects › 每个项目的任务是独立的数组 ⟶ expect(…).toStrictEqual([ 't1' ]),rowsToProjects：更多的情况 › 项目和任务各自的时间：created_at、updated_at、deleted_at 不会混在一起 ⟶ expect(…).toMatchObject({,rowsToProjects：更多的情况 › 按第一次出现的顺序，而不是按创建的时间 ⟶ expect(…).toStrictEqual([ 'p2', 'p1' ]),rowsToProjects：更多的情况 › 缺少 position 或者 created_at 也是缺少字段；done 是 -1 也不对 ⟶ expect(…).toThrow('数据库中的数据不对：项目 p1 的任务 t9 缺少字段'))"
         },
         {
           "target": "exercise:join-rows:solution:solution",
@@ -13229,7 +13244,7 @@
         {
           "target": "exercise:join-rows:wrong:done-unchecked",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(rowsToProjects › 数据库中的数据不对：抛出错误，信息中有项目和任务的 id ⟶ expect(…).toThrow('数据库中的数据不对：项目 p1 的任务 t9 的 done 是 2'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(rowsToProjects › 数据库中的数据不对：抛出错误，信息中有项目和任务的 id ⟶ expect(…).toThrow('数据库中的数据不对：项目 p1 的任务 t9 的 done 是 2'),rowsToProjects：更多的情况 › 缺少 position 或者 created_at 也是缺少字段；done 是 -1 也不对 ⟶ expect(…).toThrow('数据库中的数据不对：项目 p1 的任务 t9 的 done 是 -1'))"
         },
         {
           "target": "exercise:join-rows:wrong:no-sort",

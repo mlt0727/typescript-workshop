@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 124 / 规划总数 126**（草稿 2，规划中 0）
+**已发布 126 / 规划总数 126**（草稿 0，规划中 0）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -169,7 +169,7 @@
 | `h08-env-config` 环境变量与配置 | ✅ 已发布 | `h07-persistence`、`e13-env-secrets` |
 | `h09-auth-boundaries` 认证话题的安全边界 | ✅ 已发布 | `h08-env-config` |
 
-## I. 项目与部署（已发布 16 / 18）
+## I. 项目与部署（已发布 18 / 18）
 
 三个层层递进的项目，每个拆成独立里程碑；以及静态与服务端部署。
 
@@ -191,5 +191,5 @@
 | `p2-06-deploy` 项目 2·项目面板：静态部署与验证 | ✅ 已发布 | `p2-05-tests`、`i02-deploy-static` |
 | `p3-01-plan` 项目 3·全栈扩展：需求与数据边界 | ✅ 已发布 | `h07-persistence`、`p2-06-deploy` |
 | `p3-02-api-validation` 项目 3·全栈扩展：服务端读写与校验 | ✅ 已发布 | `p3-01-plan` |
-| `p3-03-persistence` 项目 3·全栈扩展：持久化与测试 | 📝 草稿 | `p3-02-api-validation` |
-| `i03-deploy-server` 部署服务端应用：环境变量、日志与回滚 | 📝 草稿 | `p3-03-persistence`、`h08-env-config` |
+| `p3-03-persistence` 项目 3·全栈扩展：持久化与测试 | ✅ 已发布 | `p3-02-api-validation` |
+| `i03-deploy-server` 部署服务端应用：环境变量、日志与回滚 | ✅ 已发布 | `p3-03-persistence`、`h08-env-config` |

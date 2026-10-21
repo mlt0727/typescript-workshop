@@ -17,11 +17,11 @@ references:
     url: https://developer.mozilla.org/zh-CN/docs/Web/API/Element/replaceChildren
     checked: 2026-10-20
   - title: aria-invalid — MDN
-    url: https://developer.mozilla.org/zh-CN/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-invalid
-    checked: 2026-10-20
+    url: https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-invalid
+    checked: 2026-10-21
   - title: Region role — MDN
-    url: https://developer.mozilla.org/zh-CN/docs/Web/Accessibility/ARIA/Reference/Roles/region_role
-    checked: 2026-10-20
+    url: https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/region_role
+    checked: 2026-10-21
 ---
 
 ## 从状态渲染
