@@ -165,7 +165,7 @@ stages:
       - { id: i02-deploy-static, title: 部署静态站点：构建、路由刷新与资源路径, status: draft, prerequisites: [i01-static-vs-server] }
       - { id: p2-01-plan-and-types, title: 项目 2·项目面板：需求与类型模型, status: draft, prerequisites: [g08-custom-hooks] }
       - { id: p2-02-routes-lists, title: 项目 2·项目面板：路由与列表, status: draft, prerequisites: [p2-01-plan-and-types, g13-routing] }
-      - { id: p2-03-forms, title: 项目 2·项目面板：表单与校验, status: planned, prerequisites: [p2-02-routes-lists] }
+      - { id: p2-03-forms, title: 项目 2·项目面板：表单与校验, status: draft, prerequisites: [p2-02-routes-lists] }
       - { id: p2-04-data-state, title: 项目 2·项目面板：数据状态与错误处理, status: planned, prerequisites: [p2-03-forms, g14-async-data] }
       - { id: p2-05-tests, title: 项目 2·项目面板：组件测试与端到端测试, status: planned, prerequisites: [p2-04-data-state, g15-a11y-component-tests] }
       - { id: p2-06-deploy, title: 项目 2·项目面板：静态部署与验证, status: planned, prerequisites: [p2-05-tests, i02-deploy-static] }

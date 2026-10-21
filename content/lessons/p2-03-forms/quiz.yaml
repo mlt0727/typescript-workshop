@@ -1,0 +1,44 @@
+- id: original
+  type: single
+  prompt: 编辑“官网改版”时，什么也没改就点了“保存修改”，却提示“已经有一个叫‘官网改版’的项目”。最可能的原因是什么？
+  options:
+    - text: 校验时没有传入正在编辑的项目，检查重名时没有把它自己排除在外
+      correct: true
+      explain: 重名指的是和“别的”项目同名，所以校验需要知道正在编辑的是哪一个。
+    - text: 名称的比较不区分大小写
+      explain: 不区分大小写只会多找到一些重名，不会让项目和自己重名。
+    - text: 名称没有去掉首尾空白
+      explain: 原来的名称没有空白，去不去掉结果都一样。
+- id: date-parse
+  type: single
+  prompt: "为什么不用 `!Number.isNaN(Date.parse(text))` 检查日期是否有效？"
+  options:
+    - text: 不同引擎的结果不一样：有的把 2026-02-30 进位成 3 月 2 日，有的会接受 2026-1-5 这样的非标准格式
+      correct: true
+      explain: 先用正则确定 YYYY-MM-DD 格式，再转换成日期、转换回字符串比较。
+    - text: Date.parse 只能解析英文的日期
+      explain: 它能解析 ISO 格式；问题在于它对无效或非标准的输入太“宽容”，而且各引擎不一致。
+    - text: Date.parse 返回的是本地时间，不能比较
+      explain: 它返回的是毫秒数；这里的问题不是比较，而是它接受了不该接受的字符串。
+- id: dirty
+  type: single
+  prompt: 怎样判断表单“有未保存的修改”最合适？
+  options:
+    - text: 在渲染时比较当前的值和初始值
+      correct: true
+      explain: 改了又改回去就不算修改；保存之后初始值更新，结果也跟着变。
+    - text: 在 onChange 中把一个 dirty 标记设置为 true
+      explain: 改回原来的值之后，标记仍然是 true，用户会被问一个不必要的问题。
+    - text: 在 Effect 中比较新旧的值，再设置 dirty
+      explain: 能在渲染时算出来的值不需要 Effect，它只会多渲染一遍（g12）。
+- id: ref-not-state
+  type: single
+  prompt: 保存成功时先 `setSaved(true)`，再调用 `navigate('/projects/p1')`，拦截函数检查 `!saved`。为什么这次导航仍然被拦截？
+  options:
+    - text: setSaved 只是安排一次新的渲染；navigate 立刻执行时，React Router 用的还是上一次渲染时的拦截函数，它看到的 saved 是 false
+      correct: true
+      explain: 用 ref：saving.current = true 立刻生效，拦截函数在导航时读取它。
+    - text: navigate 不能在事件处理函数中调用
+      explain: 由事件引起的跳转正是 navigate 的用途。
+    - text: useBlocker 会拦截所有导航，无论函数返回什么
+      explain: 函数返回 false 时不拦截。

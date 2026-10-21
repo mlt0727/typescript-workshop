@@ -11283,6 +11283,108 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改筛选条件 › 输入搜索词：更新地址，替换当前的历史记录 ⟶ 输入时应该替换历史记录，“后退”一次就离开列表页)"
         }
       ]
+    },
+    "p2-03-forms": {
+      "verifiedAt": "2026-10-21T02:08:01.130Z",
+      "sourceHash": "f674bb6c8bb37639",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:parse-dates:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:parse-dates:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 2026-02-28 2026-02-28T00:00:00.000Z | [log] 2026-02-30 2026-03-02T00:00:00.000Z | [log] 2026-13-01 NaN | [log] 2026-1-5 2026-01-05T05:00:00.000Z | [log] 2026/10/30 2026-10-30T04:00:00.000Z | [log] [ true, false, true, false, false ]"
+        },
+        {
+          "target": "exercise:validate-project:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(通过校验 › 去掉首尾空白，没有截止日期时是 null ⟶ expect(…).toEqual({ ok: true, value: { name: '季度报告', owner: '阿明', dueDate: null } }),名称和负责人 › 没有填写：同时返回两个错误 ⟶ expect(…).toEqual({ ok: false, errors: { name: '请输入项目名称', owner: '请输入负责人' } }),名称和负责人 › 只有空白也算没有填写 ⟶ expect(…).toEqual({ ok: false, errors: { name: '请输入项目名称', owner: '请输入负责人' } }),名称和负责人 › 名称超过 40 个字符 ⟶ expect(…).toEqual({ ok: false, errors: { name: '项目名称不能超过 40 个字符' } }),名称和负责人 › 和已有的项目重名（去掉空白，不区分大小写） ⟶ expect(…).toEqual({ ok: false, errors: { name: '已经有一个叫“数据迁移”的项目' } }),名称和负责人 › 编辑时保留自己的名称不算重名，改成别的项目的名称算 ⟶ expect(…).toEqual({ ok: false, errors: { name: '已经有一个叫“Website”的项目' } }),截止日期 › 不是有效的日期 ⟶ 2026-02-30,截止日期 › 新建时不能早于今天 ⟶ expect(…).toEqual({ ok: false, errors: { dueDate: '截止日期不能早于今天' } }),截止日期 › 编辑已经过期的项目：截止日期不变可以保存；改成另一个过去的日期不行 ⟶ expect(…).toEqual({ ok: false, errors: { dueDate: '截止日期不能早于今天' } }),截止日期 › 三个字段的错误同时返回 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:validate-project:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:validate-project:alt:per-field-functions",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:validate-project:wrong:no-self",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(名称和负责人 › 编辑时保留自己的名称不算重名，改成别的项目的名称算 ⟶ expect(…).toBe(true),截止日期 › 编辑已经过期的项目：截止日期不变可以保存；改成另一个过去的日期不行 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:validate-project:wrong:case-sensitive",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(名称和负责人 › 和已有的项目重名（去掉空白，不区分大小写） ⟶ expect(…).toEqual({ ok: false, errors: { name: '已经有一个叫“Website”的项目' } }),名称和负责人 › 编辑时保留自己的名称不算重名，改成别的项目的名称算 ⟶ expect(…).toEqual({ ok: false, errors: { name: '已经有一个叫“Website”的项目' } }))"
+        },
+        {
+          "target": "exercise:validate-project:wrong:first-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(名称和负责人 › 没有填写：同时返回两个错误 ⟶ expect(…).toEqual({ ok: false, errors: { name: '请输入项目名称', owner: '请输入负责人' } }),名称和负责人 › 只有空白也算没有填写 ⟶ expect(…).toEqual({ ok: false, errors: { name: '请输入项目名称', owner: '请输入负责人' } }))"
+        },
+        {
+          "target": "exercise:validate-project:wrong:date-parse",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(截止日期 › 不是有效的日期 ⟶ 2026-02-30,截止日期 › 三个字段的错误同时返回 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:validate-project:wrong:past-always",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(截止日期 › 编辑已经过期的项目：截止日期不变可以保存；改成另一个过去的日期不行 ⟶ expect(…).toEqual({)"
+        },
+        {
+          "target": "exercise:project-form:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(新建项目 › 提交有错误的表单：显示错误，焦点移到第一个错误，不保存 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'),新建项目 › 提交过一次之后，错误随输入更新 ⟶ expect(…).toHaveAccessibleDescription('请输入项目名称'),新建项目 › 第一个错误在后面的字段时，焦点移到那里 ⟶ expect(…).toHaveAccessibleDescription('截止日期不能早于今天'),新建项目 › 提交正确的表单：保存整理好的数据，离开时不提醒 ⟶ expect(…).toEqual([ { name: '季度复盘', owner: '阿明', dueDate: null } ]),编辑项目 › 不做修改直接保存：自己的名称不算重名，已经过期的截止日期可以保留 ⟶ expect(…).toEqual([ { name: '数据迁移', owner: '阿明', dueDate: '2026-10-12' } ]),编辑项目 › 改成另一个项目的名称：显示错误 ⟶ expect(…).toHaveAccessibleDescription('已经有一个叫“数据迁移”的项目'),编辑项目 › 修改之后保存：保存新的数据，离开时不提醒 ⟶ expect(…).toEqual([ { name: '官网改版（第二版）', owner: '小林', dueDate: '2026-11-15' } ]),离开之前提醒 › 有修改时点击链接：先询问；“继续编辑”留在这里，修改还在 ⟶ TestingLibraryElementError: Unable to find role=\"alertdialog\" and name \"离开这个页面？\",离开之前提醒 › 选择“离开”：去往原来要去的页面 ⟶ TestingLibraryElementError: Unable to find role=\"button\" and name \"离开\",离开之前提醒 › “后退”也会被拦截 ⟶ TestingLibraryElementError: Unable to find role=\"alertdialog\" and name \"离开这个页面？\",离开之前提醒 › 刷新或关闭页面：只在有修改时提醒 ⟶ 有修改时应该调用 preventDefault())"
+        },
+        {
+          "target": "exercise:project-form:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-form:alt:callback-and-signal",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-form:wrong:block-save",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(新建项目 › 提交正确的表单：保存整理好的数据，离开时不提醒 ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"项目列表\",编辑项目 › 修改之后保存：保存新的数据，离开时不提醒 ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"项目详情\")"
+        },
+        {
+          "target": "exercise:project-form:wrong:dirty-flag",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(离开之前提醒 › 改了又改回原来的值：不算有修改 ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"项目详情\",离开之前提醒 › 刷新或关闭页面：只在有修改时提醒 ⟶ 改回原来的值之后不应该再提醒)"
+        },
+        {
+          "target": "exercise:project-form:wrong:always-beforeunload",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(离开之前提醒 › 刷新或关闭页面：只在有修改时提醒 ⟶ 没有修改时不应该提醒)"
+        },
+        {
+          "target": "exercise:project-form:wrong:no-original",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(编辑项目 › 不做修改直接保存：自己的名称不算重名，已经过期的截止日期可以保留 ⟶ expect(…).toEqual([ { name: '数据迁移', owner: '阿明', dueDate: '2026-10-12' } ]))"
+        },
+        {
+          "target": "exercise:project-form:wrong:errors-always",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(新建项目 › 空的表单；还没有提交时不显示错误 ⟶ expect(…).not.toHaveAttribute('aria-invalid', 'true'))"
+        },
+        {
+          "target": "exercise:project-form:wrong:no-focus",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(新建项目 › 提交有错误的表单：显示错误，焦点移到第一个错误，不保存 ⟶ expect(…).toHaveFocus(),新建项目 › 第一个错误在后面的字段时，焦点移到那里 ⟶ expect(…).toHaveFocus(),编辑项目 › 改成另一个项目的名称：显示错误 ⟶ expect(…).toHaveFocus())"
+        }
+      ]
     }
   }
 }
