@@ -12769,6 +12769,123 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(redirectTarget：404.html 中 › 查询参数和片段也一起带上，并且正确地编码 ⟶ expect(…).toBe('projects?status=active&q=a+b#list'),restoredPath：index.html 中 › 来回一趟，地址完全不变 ⟶ /shop/projects?status=active&q=a+b&sort=name#list)"
         }
       ]
+    },
+    "p3-01-plan": {
+      "verifiedAt": "2026-10-21T17:33:53.116Z",
+      "sourceHash": "b4565bdc38a12319",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:mass-assignment:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:mass-assignment:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 请求体的字段： [ 'name', 'version', 'ownerEmail', '__proto__' ] | [log] 展开： 1 evil@example.com | [log] Object.assign： true false | [log] 白名单： {\n  id: 'p1',\n  name: '官网改版（二期）',\n  ownerEmail: 'wang.fang@example.com',\n  version: 7\n}"
+        },
+        {
+          "target": "playground:json-shapes:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:json-shapes:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] {\"updatedAt\":\"2026-10-20T09:30:00.000Z\",\"tags\":{},\"progress\":null} | [log] BigInt： true"
+        },
+        {
+          "target": "exercise:parse-patch:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(parseProjectPatch › 请求体不是对象 ⟶ null,parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { name: '官网改版（二期）', status: 'active' } }),parseProjectPatch › dueDate 是 null：清除截止日期 ⟶ expect(…).toStrictEqual({ ok: true, patch: { dueDate: null } }),parseProjectPatch › 名称和负责人：必须是字符串，不能为空，长度按字符数 ⟶ expect(…).toStrictEqual({ ok: false, errors: { name: '名称必须是字符串' } }),parseProjectPatch › 截止日期：YYYY-MM-DD，并且日历上有这一天 ⟶ 2026-2-3,parseProjectPatch › 状态：只能是三种之一（状态能不能这样变，p3-02 再检查） ⟶ archived,parseProjectPatch › 不能修改的字段：每一个都报错，即使其他的字段都合法 ⟶ expect(…).toStrictEqual({,parseProjectPatch › 字段的名字是 __proto__ 或者 constructor 时也一样 ⟶ expect(…).toBe(false),parseProjectPatch › 所有的错误一起报告 ⟶ expect(…).toStrictEqual({,parseProjectPatch › 没有要修改的字段 ⟶ expect(…).toStrictEqual({ ok: false, errors: { body: '没有要修改的字段' } }))"
+        },
+        {
+          "target": "exercise:parse-patch:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-patch:alt:field-parsers",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:ignore-unknown",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 不能修改的字段：每一个都报错，即使其他的字段都合法 ⟶ expect(…).toStrictEqual({,parseProjectPatch › 字段的名字是 __proto__ 或者 constructor 时也一样 ⟶ expect(…).toBe(false),parseProjectPatch › 没有要修改的字段 ⟶ expect(…).toStrictEqual({ ok: false, errors: { id: '不能修改这个字段', body: '没有要修改的字段' } }))"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:plain-object-errors",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 字段的名字是 __proto__ 或者 constructor 时也一样 ⟶ expect(…).toStrictEqual([ '__proto__', 'constructor' ]))"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:no-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { name: '官网改版（二期）', status: 'active' } }),parseProjectPatch › 名称和负责人：必须是字符串，不能为空，长度按字符数 ⟶ expect(…).toStrictEqual({ ok: false, errors: { name: '名称不能为空' } }))"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:utf16-length",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 名称和负责人：必须是字符串，不能为空，长度按字符数 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:format-only-date",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 截止日期：YYYY-MM-DD，并且日历上有这一天 ⟶ 2026-02-30)"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:null-rejected",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › dueDate 是 null：清除截止日期 ⟶ expect(…).toStrictEqual({ ok: true, patch: { dueDate: null } }))"
+        },
+        {
+          "target": "exercise:parse-patch:wrong:undefined-field",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(parseProjectPatch › 合法的修改：去掉首尾的空白；没有出现的字段不在 patch 中 ⟶ expect(…).toStrictEqual({ ok: true, patch: { name: '官网改版（二期）', status: 'active' } }),parseProjectPatch › 名称和负责人：必须是字符串，不能为空，长度按字符数 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:project-dto:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(toProjectDto › 只有客户端需要的字段；任务按 position 排序，去掉已经删除的 ⟶ expect(…).toStrictEqual({,toProjectDto › 没有截止日期、没有任务 ⟶ expect(…).toMatchObject({ dueDate: null, tasks: [] }))"
+        },
+        {
+          "target": "exercise:project-dto:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-dto:alt:destructure-params",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:project-dto:wrong:deny-list",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toProjectDto › 存储中多出来的字段也不会发出去 ⟶ expect(…).toBe(false))"
+        },
+        {
+          "target": "exercise:project-dto:wrong:keep-deleted-tasks",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toProjectDto › 只有客户端需要的字段；任务按 position 排序，去掉已经删除的 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:project-dto:wrong:no-sort",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toProjectDto › 只有客户端需要的字段；任务按 position 排序，去掉已经删除的 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:project-dto:wrong:deleted-project",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toProjectDto › 已经删除的项目：null（接口返回 404） ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:project-dto:wrong:task-spread",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toProjectDto › 只有客户端需要的字段；任务按 position 排序，去掉已经删除的 ⟶ expect(…).toStrictEqual({,toProjectDto › 邮箱和内部的时间不会出现在 JSON 中 ⟶ createdAt,toProjectDto › 存储中多出来的字段也不会发出去 ⟶ expect(…).toBe(false))"
+        }
+      ]
     }
   }
 }

@@ -1,0 +1,44 @@
+- id: server-validates
+  type: single
+  prompt: 项目 2 的表单已经检查了名称不能为空（p2-03）。服务器上的 PATCH 接口还需要检查吗？
+  options:
+    - text: 需要：请求可以不经过这个表单发来，例如 curl、旧版本的客户端，或者一个有 bug 的页面
+      correct: true
+      explain: 浏览器中的检查只是为了用户方便。接口是公开的，服务器上的检查才算数。
+    - text: 不需要：同一份检查代码已经在浏览器中运行过了
+      explain: 运行在用户的电脑上的代码，用户可以绕过或者修改。
+    - text: 只有在使用 Route Handler 时才需要，Server Function 由 Next.js 自动检查
+      explain: Next.js 不知道你的业务规则。Server Function 也是一个可以直接发 POST 的地址（h05）。
+- id: mass-assignment
+  type: single
+  prompt: "处理 PATCH 时写了 `const next = { ...stored, ...body }`，客户端发来 `{\"name\":\"新名称\",\"version\":1}`。会怎样？"
+  options:
+    - text: 保存的 version 被客户端改成了 1，只有服务器能决定的字段被改掉了
+      correct: true
+      explain: 这就是批量赋值。只取白名单中的字段，并检查它们的类型。
+    - text: TypeScript 会报错，因为 body 中没有 version 这个字段
+      explain: body 来自网络，类型检查管不到运行时的内容。
+    - text: 没有影响，展开时后面的对象不会覆盖前面的字段
+      explain: 正好相反，后面的对象中的字段会覆盖前面的。
+- id: null-vs-missing
+  type: single
+  prompt: 'PATCH 请求体 `{"name":"新名称"}` 和 `{"name":"新名称","dueDate":null}` 有什么区别？'
+  options:
+    - text: 前一个不改截止日期，后一个清除截止日期
+      correct: true
+      explain: 没有这个字段表示不改，值是 null 表示清除。检查的结果中也要保留这个区别。
+    - text: 没有区别，两个都清除截止日期
+      explain: 那样的话，客户端每次修改名称都必须把截止日期也发一遍，否则就被清除了。
+    - text: 后一个是错误的请求，PATCH 中不能有 null
+      explain: null 是合法的 JSON 值，这里用它表示“没有截止日期”。
+- id: undefined-json
+  type: single
+  prompt: "服务器返回的 DTO 中写了 `dueDate: undefined`。项目 2 的客户端会怎样？"
+  options:
+    - text: JSON 中没有 dueDate 这个字段，客户端的 parseProject 认为格式不对，整个项目读取失败
+      correct: true
+      explain: JSON.stringify 丢掉值为 undefined 的字段。没有截止日期要明确写成 null。
+    - text: 客户端读到 undefined，当作没有截止日期
+      explain: JSON 中没有 undefined，这个字段根本不会出现。
+    - text: JSON.stringify 抛出错误，接口返回 500
+      explain: JSON.stringify 不会因为 undefined 报错，它只是悄悄地丢掉这个字段。

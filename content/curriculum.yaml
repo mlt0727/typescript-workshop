@@ -169,7 +169,7 @@ stages:
       - { id: p2-04-data-state, title: 项目 2·项目面板：数据状态与错误处理, status: published, prerequisites: [p2-03-forms, g14-async-data] }
       - { id: p2-05-tests, title: 项目 2·项目面板：组件测试与端到端测试, status: published, prerequisites: [p2-04-data-state, g15-a11y-component-tests, f09-e2e] }
       - { id: p2-06-deploy, title: 项目 2·项目面板：静态部署与验证, status: published, prerequisites: [p2-05-tests, i02-deploy-static] }
-      - { id: p3-01-plan, title: 项目 3·全栈扩展：需求与数据边界, status: planned, prerequisites: [h07-persistence, p2-06-deploy] }
+      - { id: p3-01-plan, title: 项目 3·全栈扩展：需求与数据边界, status: draft, prerequisites: [h07-persistence, p2-06-deploy] }
       - { id: p3-02-api-validation, title: 项目 3·全栈扩展：服务端读写与校验, status: planned, prerequisites: [p3-01-plan] }
       - { id: p3-03-persistence, title: 项目 3·全栈扩展：持久化与测试, status: planned, prerequisites: [p3-02-api-validation] }
       - { id: i03-deploy-server, title: 部署服务端应用：环境变量、日志与回滚, status: planned, prerequisites: [p3-03-persistence, h08-env-config] }
