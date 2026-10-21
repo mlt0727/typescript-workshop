@@ -29,11 +29,11 @@
       explain: 实测 base64 解码就读出了 userId 和 role；把 role 改成 admin、沿用原来的签名，验证失败。
     - text: 没有密钥的人读不出其中的内容
       explain: 签名不是加密，内容只是 base64 编码。
-    - text: 改了内容之后，服务器也能自动修正回来
-      explain: 签名只能检测出被改过，不能修正。
+    - text: 只要用 HTTPS 传输，令牌中的内容就是保密的
+      explain: HTTPS 只保护传输的过程。令牌到了浏览器中，用户自己就能解码读出来。
 - id: not-found-vs-forbidden
   type: single
-  prompt: 一个已经登录的用户请求一个他既不是成员也不是所有者的项目。为什么接口返回 404 而不是 403？
+  prompt: 一个已经登录的用户请求一个项目，他既不是这个项目的成员或所有者，也不是管理员。为什么接口返回 404 而不是 403？
   options:
     - text: 403 等于告诉他这个项目存在；404 不透露它是否存在
       correct: true

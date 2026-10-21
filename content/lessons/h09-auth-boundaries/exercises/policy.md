@@ -36,7 +36,7 @@ for (const user of users) {
     const decision = authorize(user, action, project);
     return `${action}:${decision.allowed ? '✓' : decision.reason}`;
   });
-  console.log((user?.id ?? '（未登录）').padEnd(8), row.join('  '));
+  console.log((user?.id ?? '(null)').padEnd(8), row.join('  '));
 }
 ```
 :::
@@ -89,7 +89,7 @@ for (const user of users) {
     const decision = authorize(user, action, project);
     return `${action}:${decision.allowed ? '✓' : decision.reason}`;
   });
-  console.log((user?.id ?? '（未登录）').padEnd(8), row.join('  '));
+  console.log((user?.id ?? '(null)').padEnd(8), row.join('  '));
 }
 ```
 :::
@@ -119,8 +119,9 @@ describe('authorize', () => {
   });
 
   test('和项目无关的人：not-found，连查看也不行（不透露项目的存在）', () => {
-    for (const action of ACTIONS) expect(authorize(mallory, action, project), action).toStrictEqual({ allowed: false, reason: 'not-found' });
-    expect(authorize(mallory, 'view', archived)).toStrictEqual({ allowed: false, reason: 'not-found' });
+    for (const p of [project, archived]) {
+      for (const action of ACTIONS) expect(authorize(mallory, action, p), `${action} ${p.archived}`).toStrictEqual({ allowed: false, reason: 'not-found' });
+    }
   });
 
   test('所有者：什么都可以，不管全局的角色是什么', () => {
@@ -146,7 +147,7 @@ describe('authorize', () => {
     expect(authorize(alice, 'edit', archived)).toStrictEqual({ allowed: false, reason: 'forbidden' });
   });
 
-  test('只看 id：名字相同的 role 不会让别人变成成员', () => {
+  test("id 按字符串完全相同比较：'Bob' 不是 'bob'", () => {
     const impostor: User = { id: 'Bob', role: 'member' };
     expect(authorize(impostor, 'view', project)).toStrictEqual({ allowed: false, reason: 'not-found' });
   });
@@ -322,6 +323,45 @@ export function authorize(user: User | null, action: Action, project: Project): 
   // 和项目无关的人：假装这个项目不存在，不透露它的存在
   if (!isAdmin && !isMember) return deny('not-found');
   if (isAdmin) {
+    return !project.archived || ARCHIVED_ACTIONS.includes(action) ? ALLOW : deny('forbidden');
+  }
+  if (project.archived && action !== 'view') return deny('forbidden');
+  return MEMBER_ACTIONS[user.role].includes(action) ? ALLOW : deny('forbidden');
+}
+```
+:::
+
+:::variant{kind=wrong name=archived-before-relation fails=tests reason="先检查归档、再检查关系：无关的人编辑归档的项目时得到 forbidden，等于告诉他项目存在"}
+```ts file=policy.ts
+export type Role = 'admin' | 'member' | 'viewer';
+export type User = Readonly<{ id: string; role: Role }>;
+export type Project = Readonly<{ id: string; ownerId: string; memberIds: readonly string[]; archived: boolean }>;
+export type Action = 'view' | 'edit' | 'delete' | 'archive' | 'invite';
+export type Decision = { allowed: true } | { allowed: false; reason: 'unauthenticated' | 'not-found' | 'forbidden' };
+
+const ALLOW: Decision = { allowed: true };
+const deny = (reason: 'unauthenticated' | 'not-found' | 'forbidden'): Decision => ({ allowed: false, reason });
+
+/** 成员按全局的角色能做的事（不是所有者） */
+const MEMBER_ACTIONS: Readonly<Record<Role, readonly Action[]>> = {
+  admin: ['view', 'edit', 'delete', 'archive', 'invite'],
+  member: ['view', 'edit'],
+  viewer: ['view'],
+};
+
+/** 归档的项目只能查看；所有者和管理员还可以取消归档 */
+const ARCHIVED_ACTIONS: readonly Action[] = ['view', 'archive'];
+
+/** 决定 user 能不能对 project 做 action */
+export function authorize(user: User | null, action: Action, project: Project): Decision {
+  if (user === null) return deny('unauthenticated');
+  if (project.archived && !ARCHIVED_ACTIONS.includes(action)) return deny('forbidden');
+  const isAdmin = user.role === 'admin';
+  const isOwner = project.ownerId === user.id;
+  const isMember = isOwner || project.memberIds.includes(user.id);
+  // 和项目无关的人：假装这个项目不存在，不透露它的存在
+  if (!isAdmin && !isMember) return deny('not-found');
+  if (isAdmin || isOwner) {
     return !project.archived || ARCHIVED_ACTIONS.includes(action) ? ALLOW : deny('forbidden');
   }
   if (project.archived && action !== 'view') return deny('forbidden');

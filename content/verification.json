@@ -11211,8 +11211,8 @@
       ]
     },
     "h09-auth-boundaries": {
-      "verifiedAt": "2026-10-21T17:06:27.066Z",
-      "sourceHash": "6656c332b5aec471",
+      "verifiedAt": "2026-10-21T17:23:04.816Z",
+      "sourceHash": "a20485cf0cf58409",
       "ok": true,
       "checks": [
         {
@@ -11228,7 +11228,7 @@
         {
           "target": "exercise:policy:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(authorize › 没有登录：unauthenticated ⟶ view,authorize › 和项目无关的人：not-found，连查看也不行（不透露项目的存在） ⟶ view,authorize › 成员按全局的角色：member 可以查看和编辑，viewer 只能查看 ⟶ expect(…).toStrictEqual([ 'view', 'edit' ]),authorize › 归档的项目：只能查看；所有者和管理员还可以 archive（取消归档） ⟶ expect(…).toStrictEqual([ 'view', 'archive' ]),authorize › 只看 id：名字相同的 role 不会让别人变成成员 ⟶ expect(…).toStrictEqual({ allowed: false, reason: 'not-found' }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(authorize › 没有登录：unauthenticated ⟶ view,authorize › 和项目无关的人：not-found，连查看也不行（不透露项目的存在） ⟶ view false,authorize › 成员按全局的角色：member 可以查看和编辑，viewer 只能查看 ⟶ expect(…).toStrictEqual([ 'view', 'edit' ]),authorize › 归档的项目：只能查看；所有者和管理员还可以 archive（取消归档） ⟶ expect(…).toStrictEqual([ 'view', 'archive' ]),authorize › id 按字符串完全相同比较：'Bob' 不是 'bob' ⟶ expect(…).toStrictEqual({ allowed: false, reason: 'not-found' }))"
         },
         {
           "target": "exercise:policy:solution:solution",
@@ -11243,17 +11243,22 @@
         {
           "target": "exercise:policy:wrong:forbidden-for-strangers",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(authorize › 和项目无关的人：not-found，连查看也不行（不透露项目的存在） ⟶ view,authorize › 只看 id：名字相同的 role 不会让别人变成成员 ⟶ expect(…).toStrictEqual({ allowed: false, reason: 'not-found' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(authorize › 和项目无关的人：not-found，连查看也不行（不透露项目的存在） ⟶ view false,authorize › id 按字符串完全相同比较：'Bob' 不是 'bob' ⟶ expect(…).toStrictEqual({ allowed: false, reason: 'not-found' }))"
         },
         {
           "target": "exercise:policy:wrong:strangers-can-view",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(authorize › 和项目无关的人：not-found，连查看也不行（不透露项目的存在） ⟶ view,authorize › 只看 id：名字相同的 role 不会让别人变成成员 ⟶ expect(…).toStrictEqual({ allowed: false, reason: 'not-found' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(authorize › 和项目无关的人：not-found，连查看也不行（不透露项目的存在） ⟶ view false,authorize › id 按字符串完全相同比较：'Bob' 不是 'bob' ⟶ expect(…).toStrictEqual({ allowed: false, reason: 'not-found' }))"
         },
         {
           "target": "exercise:policy:wrong:role-over-ownership",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(authorize › 所有者：什么都可以，不管全局的角色是什么 ⟶ expect(…).toStrictEqual([ 'view', 'edit', 'delete', 'archive', 'invite' ]),authorize › 归档的项目：只能查看；所有者和管理员还可以 archive（取消归档） ⟶ expect(…).toStrictEqual([ 'view', 'archive' ]))"
+        },
+        {
+          "target": "exercise:policy:wrong:archived-before-relation",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(authorize › 和项目无关的人：not-found，连查看也不行（不透露项目的存在） ⟶ edit true)"
         },
         {
           "target": "exercise:policy:wrong:archived-ignored",
@@ -11268,12 +11273,12 @@
         {
           "target": "exercise:policy:wrong:case-insensitive-id",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(authorize › 只看 id：名字相同的 role 不会让别人变成成员 ⟶ expect(…).toStrictEqual({ allowed: false, reason: 'not-found' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(authorize › id 按字符串完全相同比较：'Bob' 不是 'bob' ⟶ expect(…).toStrictEqual({ allowed: false, reason: 'not-found' }))"
         },
         {
           "target": "exercise:session:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(timingSafeEqual › 相同的字节：true；任何一个字节不同或者长度不同：false ⟶ expect(…).toBe(true),createSessionCodec › 签名：base64url 的 JSON 加上一个点和 base64url 的 HMAC-SHA256，没有 = 填充 ⟶ expect(…).toBe('eyJ1c2VySWQiOiJ1MSIsInJvbGUiOiJtZW1iZXIiLCJleHBpcmVzQXQiOjIwMDAwMDAwMDB9.KDBHhMfQV5kvzqbp77k1-x0jFXPpGuGXDgn7HVG9EZU'),createSessionCodec › 签名之后能验证回来；中文的 userId 也一样 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 签名不是加密：令牌中的内容谁都能读出来 ⟶ InvalidCharacterError: Failed to execute 'atob' on 'WorkerGlobalScope': The string to be decoded is not correctly encoded.,createSessionCodec › 更换密钥：用新的密钥签名，旧的密钥签的令牌在列表中仍然有效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 过期：now 到达 expiresAt 就无效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 签名正确，但内容不是合法的会话：无效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 没有密钥，或者密钥太短：创建时就报错 ⟶ expect(…).toThrow())"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(timingSafeEqual › 相同的字节：true；任何一个字节不同或者长度不同：false ⟶ expect(…).toBe(true),createSessionCodec › 签名：base64url 的 JSON 加上一个点和 base64url 的 HMAC-SHA256，没有 = 填充 ⟶ expect(…).toBe('eyJ1c2VySWQiOiJ1MSIsInJvbGUiOiJtZW1iZXIiLCJleHBpcmVzQXQiOjIwMDAwMDAwMDB9.KDBHhMfQV5kvzqbp77k1-x0jFXPpGuGXDgn7HVG9EZU'),createSessionCodec › 签名之后能验证回来；中文的 userId 也一样 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 签名不是加密：令牌中的内容谁都能读出来 ⟶ InvalidCharacterError: Failed to execute 'atob' on 'WorkerGlobalScope': The string to be decoded is not correctly encoded.,createSessionCodec › 更换密钥：用新的密钥签名，旧的密钥签的令牌在列表中仍然有效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 过期：now 到达 expiresAt 就无效；now 不是数字（NaN）时也无效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 签名正确，但内容不是合法的会话：无效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 返回的会话只有三个字段：payload 中多余的字段不带出去 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 没有密钥，或者密钥太短：创建时就报错 ⟶ expect(…).toThrow())"
         },
         {
           "target": "exercise:session:solution:solution",
@@ -11288,7 +11293,12 @@
         {
           "target": "exercise:session:wrong:no-signature-check",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 改了内容或者签名：无效 ⟶ expect(…).toBeNull(),createSessionCodec › 别的密钥签的：无效 ⟶ expect(…).toBeNull(),createSessionCodec › 更换密钥：用新的密钥签名，旧的密钥签的令牌在列表中仍然有效 ⟶ expect(…).toBeNull())"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 改了内容或者签名：无效 ⟶ expect(…).toBeNull(),createSessionCodec › 签名必须正好是算出来的那个字符串：最后一个字符中多余的 2 位改了也不行 ⟶ V,createSessionCodec › 别的密钥签的：无效 ⟶ expect(…).toBeNull(),createSessionCodec › 更换密钥：用新的密钥签名，旧的密钥签的令牌在列表中仍然有效 ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:session:wrong:decode-signature",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 签名必须正好是算出来的那个字符串：最后一个字符中多余的 2 位改了也不行 ⟶ V)"
         },
         {
           "target": "exercise:session:wrong:first-key-only",
@@ -11303,17 +11313,32 @@
         {
           "target": "exercise:session:wrong:expiry-inclusive",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 过期：now 到达 expiresAt 就无效 ⟶ expect(…).toBeNull())"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 过期：now 到达 expiresAt 就无效；now 不是数字（NaN）时也无效 ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:session:wrong:nan-not-expired",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 过期：now 到达 expiresAt 就无效；now 不是数字（NaN）时也无效 ⟶ expect(…).toBeNull())"
         },
         {
           "target": "exercise:session:wrong:no-shape-check",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 签名之后能验证回来；中文的 userId 也一样 ⟶ expect(…).toStrictEqual({ userId: '张三', role: 'admin', expiresAt: 2000000000 }),createSessionCodec › 签名正确，但内容不是合法的会话：无效 ⟶ {\"userId\":\"\",\"role\":\"member\",\"expiresAt\":2000000000})"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 签名正确，但内容不是合法的会话：无效 ⟶ {\"userId\":\"\",\"role\":\"member\",\"expiresAt\":2000000000})"
+        },
+        {
+          "target": "exercise:session:wrong:extra-fields",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 返回的会话只有三个字段：payload 中多余的字段不带出去 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }))"
+        },
+        {
+          "target": "exercise:session:wrong:btoa-on-json",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 签名之后能验证回来；中文的 userId 也一样 ⟶ InvalidCharacterError: Failed to execute 'btoa' on 'WorkerGlobalScope': The string to be encoded contains characters outside of the Latin1 range.)"
         },
         {
           "target": "exercise:session:wrong:base64-padding",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 签名：base64url 的 JSON 加上一个点和 base64url 的 HMAC-SHA256，没有 = 填充 ⟶ expect(…).toBe('eyJ1c2VySWQiOiJ1MSIsInJvbGUiOiJtZW1iZXIiLCJleHBpcmVzQXQiOjIwMDAwMDAwMDB9.KDBHhMfQV5kvzqbp77k1-x0jFXPpGuGXDgn7HVG9EZU'),createSessionCodec › 签名之后能验证回来；中文的 userId 也一样 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 更换密钥：用新的密钥签名，旧的密钥签的令牌在列表中仍然有效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createSessionCodec › 签名：base64url 的 JSON 加上一个点和 base64url 的 HMAC-SHA256，没有 = 填充 ⟶ expect(…).toBe('eyJ1c2VySWQiOiJ1MSIsInJvbGUiOiJtZW1iZXIiLCJleHBpcmVzQXQiOjIwMDAwMDAwMDB9.KDBHhMfQV5kvzqbp77k1-x0jFXPpGuGXDgn7HVG9EZU'),createSessionCodec › 签名之后能验证回来；中文的 userId 也一样 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 更换密钥：用新的密钥签名，旧的密钥签的令牌在列表中仍然有效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 过期：now 到达 expiresAt 就无效；now 不是数字（NaN）时也无效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 签名正确，但内容不是合法的会话：无效 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }),createSessionCodec › 返回的会话只有三个字段：payload 中多余的字段不带出去 ⟶ expect(…).toStrictEqual({ userId: 'u1', role: 'member', expiresAt: 2000000000 }))"
         },
         {
           "target": "exercise:session:wrong:short-secrets-ok",

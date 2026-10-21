@@ -2,8 +2,8 @@
 version: 1
 mode: ts
 estimatedMinutes: 55
-review: ai-draft
-problem: 登录之后，服务器怎样在后面的每个请求中认出这个用户？会话保存在 cookie 中时，怎样保证它没有被改过？Next.js 的 Proxy 在每个请求到达页面之前运行，看起来是检查登录的理想位置，但它只是第一道门：它的 matcher 漏掉的地址、直接发来的 Server Function 请求，都不会经过它。这一课不教“怎样写一个完整的登录系统”（那应该交给经过审查的库），而是讲清楚认证话题中的几条安全边界：会话 cookie 的属性，签名和加密的区别，Proxy 能做什么、不能做什么，以及为什么每个读取数据和修改数据的地方都要自己检查权限。结果都在实测的 Next.js 16.4.2 项目中确认过。
+review: self-reviewed
+problem: 登录之后，服务器怎样在后面的每个请求中认出这个用户？会话保存在 cookie 中时，怎样保证它没有被改过？Next.js 的 Proxy 在每个请求到达页面之前运行，看起来是检查登录的理想位置，但它只是第一道门：它的 matcher 漏掉的地址（包括发到这些地址的 Server Function 请求）都不会经过它。这一课不教“怎样写一个完整的登录系统”（那应该交给经过审查的库），而是讲清楚认证话题中的几条安全边界：会话 cookie 的属性，签名和加密的区别，Proxy 能做什么、不能做什么，以及为什么每个读取数据和修改数据的地方都要自己检查权限。结果都在实测的 Next.js 16.4.2 项目中确认过。
 objectives:
   - 区分认证（你是谁）和授权（你能做什么），把授权的规则写成一个可以测试的纯函数
   - 设置会话 cookie 时加上 HttpOnly、Secure、SameSite、过期时间，知道不加选项时的默认值
@@ -70,13 +70,13 @@ references:
 set-cookie: session=…; Path=/; Expires=Wed, 21 Oct 2026 17:50:22 GMT; Max-Age=3600; Secure; HttpOnly; SameSite=lax
 ```
 
-而不带选项的 `set('session', token)`，响应头只有 `Path=/`：**没有** `HttpOnly`、`Secure`、`SameSite`，也没有过期时间（关闭浏览器就没了）。每个属性的作用：
+而不带选项的 `set('session', token)`，响应头只有 `Path=/`：**没有** `HttpOnly`、`Secure`、`SameSite`，也没有过期时间（通常关闭浏览器就没了；浏览器恢复上次的会话时它可能还在）。每个属性的作用：
 
 | 属性 | 作用 |
 | --- | --- |
-| `HttpOnly` | 页面中的 JavaScript 读不到它：即使页面被注入了恶意的脚本（XSS），也偷不走会话 |
-| `Secure` | 只通过 HTTPS 发送（浏览器把 `localhost` 当作例外，开发时也能用） |
-| `SameSite=Lax` | 从别的网站发起的 POST 等请求不带上它，减少跨站请求伪造（CSRF）；h05 中 Next.js 对 Server Function 的 Origin 检查是另一层保护 |
+| `HttpOnly` | 页面中的 JavaScript 读不到它：即使页面被注入了恶意的脚本（XSS），也偷不走会话。但注入的脚本仍然可以用用户的身份发请求，`HttpOnly` 不能代替防止 XSS |
+| `Secure` | 只通过 HTTPS 发送。Chrome 和 Firefox 把 `http://localhost` 当作例外；Safari 长期不在 `http://localhost` 上保存带 `Secure` 的 cookie，开发时可以用 `next dev --experimental-https` |
+| `SameSite=Lax` | 从别的网站发起的 POST 等请求不带上它，减少跨站请求伪造（CSRF）；h05 中 Next.js 对 Server Function 的 Origin 检查是另一层保护。不设置时，Chrome 按 `Lax` 处理，其他的浏览器不一定，所以要明确写出来 |
 | `Max-Age` / `Expires` | 过期的时间；会话本身（例如签名中的 `expiresAt`）也要有自己的过期时间，不能只靠浏览器删除 cookie |
 
 ## 签名的会话
@@ -197,12 +197,12 @@ export function hmacSha256(key: Uint8Array, message: Uint8Array): Uint8Array<Arr
 }
 ```
 - 第 8 行：令牌的第一部分只是 base64 编码，解码就是 JSON；
-- 第 11 行：用密钥对 `payload` 重新计算签名；
+- 第 11、14 行：用密钥对 `payload` 重新计算签名，和令牌中的签名比较；
 - 第 16 行：`false`：内容改了一个词，签名就对不上了；
 - 第 18 行：实测 Chromium 中打印 `false` 和 `undefined`，WebKit 中打印 `true` 和 `object`。
 :::
 
-所以会话中只放“被别人看到也没关系”的东西；需要保密时用加密的格式，或者改用数据库中的会话。密钥本身放在服务器的环境变量中（h08），不能有 `NEXT_PUBLIC_` 前缀。
+所以会话中只放“被别人看到也没关系”的东西；需要保密时用加密的格式，或者改用数据库中的会话。密钥本身放在服务器的环境变量中（h08），不能有 `NEXT_PUBLIC_` 前缀，并且要随机生成（文档的例子是 `openssl rand -base64 32`）。数据库中的会话 id 也一样：要足够长、随机生成。
 
 ## Proxy：第一道门，不是唯一的门
 
@@ -210,8 +210,10 @@ Next.js 16 中，项目根目录的 `proxy.ts`（以前叫 Middleware）在请�
 
 ```ts
 // proxy.ts
+import { verifyToken } from './lib/h09-session'; // 验证签名和过期时间，做的事和练习二的 verify 一样
+
 export async function proxy(request: NextRequest) {
-  const session = await verifySession(request.cookies.get('session')?.value);
+  const session = await verifyToken(request.cookies.get('session')?.value);
   if (session === null) return NextResponse.redirect(new URL('/h09/login', request.url));
   return NextResponse.next();
 }
@@ -228,7 +230,7 @@ export const config = { matcher: ['/h09/dashboard/:path*'] };
 | `/api/h09/notes`（`matcher` 之外），没有 cookie | **200**，返回了 `u1 的私人笔记` |
 | `/api/h09/notes-safe`（自己验证会话），没有 cookie | 401 |
 
-第三行就是 Proxy 的边界：`matcher` 之外的地址不会经过它。漏掉一个路径、写错一个模式，保护就没了。另外：
+第三行就是 Proxy 的边界：`matcher` 之外的地址不会经过它。漏掉一个路径、写错一个模式，保护就没了。文档说“用于认证时，建议 Proxy 在所有的路由上运行”，可是文档自己的示例中 `matcher` 是 `'/((?!api|_next/static|_next/image|.*\\.png$).*)'`，恰好排除了所有的 `/api`：照抄它的话，接口就全都在 Proxy 之外。另外：
 
 - Server Function 是向**页面所在的地址**发 POST（h05），能不能经过 Proxy 取决于 `matcher`，不能指望它；
 - 文档建议 Proxy 只做“乐观的检查”：只读 cookie、验证签名，**不查数据库**，因为它对每个匹配的请求（包括预先获取）都运行；
@@ -242,15 +244,20 @@ import 'server-only';
 import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { verifyToken } from './session'; // 验证签名和过期时间
 
 export const verifySession = cache(async () => {
-  const session = await decrypt((await cookies()).get('session')?.value);
-  if (!session?.userId) redirect('/login');
+  const session = await verifyToken((await cookies()).get('session')?.value);
+  if (session === null) redirect('/login');
   return { userId: session.userId };
 });
 ```
 
-`server-only`（h03）保证它不会被导入到浏览器的代码中，`cache`（h04）让同一个请求中多次调用只验证一次。每个 Server Function、Route Handler 和读取数据的函数都先调用它，再用练习一那样的规则判断权限；返回给客户端组件的数据也只包含需要的字段（h03、h05）。在布局中检查是不够的：导航时布局不会重新渲染（h02），页面要自己检查。
+文档的示例中，验证令牌的函数叫 `decrypt`，但它用 jose 的 `HS256` 做的是**签名**的验证，不是解密：内容仍然是谁都能读的。这里改了一个名字，免得混淆。
+
+`server-only`（h03）保证它不会被导入到浏览器的代码中。`cache`（h04）让同一次渲染中多次调用只验证一次；文档特别说明，Server Function 和 Route Handler 不在渲染之中，`cache` 在那里不起作用，每次调用都会重新运行。每个 Server Function、Route Handler 和读取数据的函数都先验证会话，再用练习一那样的规则判断权限（Route Handler 中更适合返回 401，而不是重定向：实测项目的 `notes-safe` 就是这样）；返回给客户端组件的数据也只包含需要的字段（h03、h05）。
+
+在布局中检查是不够的：导航时布局不会重新渲染（h02）；文档还说，布局也挡不住页面本身的渲染，即使布局不显示它，页面和并行路由仍然会运行，内容会出现在发给浏览器的 RSC 载荷中。页面要自己检查。
 
 ## 编程挑战
 
@@ -260,14 +267,15 @@ export const verifySession = cache(async () => {
 
 ## 常见错误
 
-- **只在 Proxy 中检查登录**：实测 `matcher` 之外的接口不带 cookie 也返回了数据。每个入口都要自己验证会话。
+- **只在 Proxy 中检查登录**：实测 `matcher` 之外的接口不带 cookie 也返回了数据。Proxy 本身也可能出问题：2025 年的 CVE-2025-29927 中，一个特殊的请求头（`x-middleware-subrequest`）就能让请求跳过 Middleware（Proxy 以前的名字）。每个入口都要自己验证会话。
 - **只在页面上隐藏按钮**：请求可以不经过页面发来。Server Function 和 Route Handler 中也要检查权限。
 - **设置会话 cookie 时不加选项**：实测默认只有 `Path=/`，页面中的脚本可以读到它。加上 `httpOnly`、`secure`、`sameSite` 和过期时间。
 - **以为签名的会话是保密的**：base64 一解码就能读出来。
 - **用 `===` 比较签名或者密码的哈希**：比较的快慢会泄漏信息。用 `crypto.subtle.verify` 或者 Node.js 的 `crypto.timingSafeEqual`。
+- **用 SHA-256 存用户的密码**：用户设的密码容易被猜，要用 argon2、bcrypt、scrypt 这样故意很慢的哈希，交给库。
 - **对无关的人返回 403**：等于告诉他资源存在。返回 404。
 - **自己发明认证的方案**：用经过审查的库。
 
 ## 下一步
 
-H 阶段到这里结束。项目 3 把 H 阶段的内容合起来：从规划开始，做一个有服务器、有数据库、有登录的全栈应用。
+H 阶段到这里结束。项目 3 把 H 阶段的内容合起来，把项目 2 扩展成一个全栈应用：从需求和数据的边界开始，加上服务器端的读写、校验和持久化。
