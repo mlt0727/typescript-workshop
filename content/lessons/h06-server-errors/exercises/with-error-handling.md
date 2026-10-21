@@ -4,13 +4,14 @@ title: 包装 Route Handler
 ---
 每个 Route Handler 都写一遍 `try`/`catch` 很容易漏掉。在 `with-error-handling.ts` 中实现一个包装函数（`errors.ts`、`responses.ts` 是上一个练习的答案，只读）：
 
-1. `isControlFlow(error)`：`error` 是一个对象，有字符串类型的 `digest` 属性，并且它以 `NEXT_REDIRECT` 或 `NEXT_HTTP_ERROR_FALLBACK` 开头时返回 `true`（正文中实测的 `redirect()` 和 `notFound()` 抛出的值）；
+1. `isControlFlow(error)`：`error` 是一个对象（不一定是 `Error`），有字符串类型的 `digest` 属性，并且它以 `NEXT_REDIRECT` 或 `NEXT_HTTP_ERROR_FALLBACK` 开头时返回 `true`（正文中实测的 `redirect()` 和 `notFound()` 抛出的值）；只看 `digest`，不看 `message`；
 2. `withErrorHandling(handler, deps)` 返回一个新的 handler，参数和 `handler` 相同（`context` 原样交给它）。每次调用：
    - 用 `deps.newId()` 生成这个请求的 `requestId`（每个请求一个新的）；
-   - `handler` 正常返回：返回它的响应，加上 `X-Request-Id: requestId` 响应头，状态码、其他的头和响应体不变。有的响应的头不能修改（例如 `Response.redirect` 创建的），所以要构造一个新的响应；
+   - `handler` 正常返回：返回它的响应，加上 `X-Request-Id: requestId` 响应头，状态码、其他的头和响应体（包括二进制的内容）不变。有的响应的头不能修改（例如 `Response.redirect` 创建的，以及 `fetch()` 返回的、被原样转发的上游响应），所以要构造一个新的响应；
+   - `handler` 可能同步地抛出错误（它的类型只要求返回 Promise），也要和异步的拒绝一样处理；
    - `handler` 抛出了控制流：**原样抛出**，交给 Next.js 处理，不记录日志；
    - `handler` 抛出了其他的值：返回 `toErrorResponse(error, requestId)`；
-3. **日志**：除了控制流，每个请求调用一次 `deps.log({ requestId, method, path, status })`。`path` 是地址的路径部分，**不含**查询字符串；只有状态码是 5xx 并且是因为抛出了错误时，才加上 `error`（抛出的那个值）。`deps.log` 抛出错误时不影响返回的响应。
+3. **日志**：除了控制流，每个请求调用一次 `deps.log({ requestId, method, path, status })`。`path` 是地址的路径部分，**不含**查询字符串；只有状态码是 5xx 并且是因为抛出了错误时，才加上 `error`（抛出的那个值）；其他时候**没有** `error` 这个属性（不是 `error: undefined`）。`deps.log` 抛出错误时不影响返回的响应，不管这次是成功还是出错。
 
 :::files{role=starter}
 ```ts file=with-error-handling.ts
@@ -196,7 +197,7 @@ export function withErrorHandling<C>(handler: Handler<C>, deps: Deps): Handler<C
 ```ts file=with-error-handling.test.ts
 import { describe, expect, test, vi } from 'vitest';
 import { NotFoundError, ValidationError } from './errors';
-import { withErrorHandling, type Deps, type LogEntry } from './with-error-handling';
+import { isControlFlow, withErrorHandling, type Deps, type Handler, type LogEntry } from './with-error-handling';
 
 function setup() {
   const entries: LogEntry[] = [];
@@ -214,11 +215,12 @@ const notFoundError = () => Object.assign(new Error('NEXT_HTTP_ERROR_FALLBACK;40
 describe('withErrorHandling', () => {
   test('成功：响应原样返回，加上 X-Request-Id，记录一条日志', async () => {
     const { deps, entries } = setup();
-    const handler = withErrorHandling(async () => Response.json({ ok: true }, { status: 201, headers: { 'Set-Cookie': 'a=1' } }), deps);
+    const handler = withErrorHandling(async () => Response.json({ ok: true }, { status: 201, headers: { 'X-Total-Count': '42' } }), deps);
     const response = await handler(get('/api/todos'), {});
     expect(response.status).toBe(201);
     expect(await response.json()).toStrictEqual({ ok: true });
     expect(response.headers.get('x-request-id')).toBe('req-1');
+    expect(response.headers.get('x-total-count')).toBe('42');
     expect(response.headers.get('content-type')).toMatch(/^application\/json/);
     expect(entries).toStrictEqual([{ requestId: 'req-1', method: 'GET', path: '/api/todos', status: 201 }]);
   });
@@ -290,6 +292,16 @@ describe('withErrorHandling', () => {
     expect(entries).toStrictEqual([]);
   });
 
+  test('isControlFlow：只看对象的 digest 属性和它的前缀', () => {
+    expect(isControlFlow({ digest: 'NEXT_REDIRECT;push;/a;307;' })).toBe(true);
+    expect(isControlFlow({ digest: 'NEXT_HTTP_ERROR_FALLBACK;403' })).toBe(true);
+    expect(isControlFlow(new Error('NEXT_REDIRECT'))).toBe(false);
+    expect(isControlFlow({ digest: 404 })).toBe(false);
+    expect(isControlFlow({ digest: 'NEXT_X' })).toBe(false);
+    expect(isControlFlow('NEXT_REDIRECT')).toBe(false);
+    expect(isControlFlow(null)).toBe(false);
+  });
+
   test('只看 digest 的前缀：别的错误即使有 digest 也是普通的错误', async () => {
     const { deps } = setup();
     const handler = withErrorHandling(async () => {
@@ -312,6 +324,36 @@ describe('withErrorHandling', () => {
     const handler = withErrorHandling(async () => new Response(null, { status: 204 }), deps);
     await handler(get('/api/callback?token=secret&state=1'), {});
     expect(entries[0]?.path).toBe('/api/callback');
+  });
+
+  test('响应体原样保留，包括二进制的内容', async () => {
+    const { deps } = setup();
+    const bytes = new Uint8Array([0, 255, 128, 10]);
+    const handler = withErrorHandling(async () => new Response(bytes, { headers: { 'Content-Type': 'application/octet-stream' } }), deps);
+    const response = await handler(get('/api/file'), {});
+    expect([...new Uint8Array(await response.arrayBuffer())]).toStrictEqual([0, 255, 128, 10]);
+  });
+
+  test('handler 同步地抛出错误也要处理', async () => {
+    const { deps } = setup();
+    const throwing: Handler<unknown> = () => {
+      throw new NotFoundError('找不到这个项目');
+    };
+    const response = await withErrorHandling(throwing, deps)(get('/api/projects/p9'), {});
+    expect(response.status).toBe(404);
+  });
+
+  test('handler 抛出错误、日志函数也出错：仍然返回 500', async () => {
+    const deps: Deps = {
+      newId: () => 'req-1',
+      log: () => {
+        throw new Error('日志服务不可用');
+      },
+    };
+    const handler = withErrorHandling(async () => {
+      throw new Error('boom');
+    }, deps);
+    expect((await handler(get('/api/report'), {})).status).toBe(500);
   });
 
   test('日志函数出错不影响响应', async () => {
@@ -345,7 +387,7 @@ describe('withErrorHandling', () => {
 
 日志是给开发者看的，但它同样会被保存、被很多人看到：查询字符串中可能有登录的令牌，所以只记录路径；4xx 是用户的问题，不需要 `error`；5xx 才是程序的问题，要有完整的 `error` 才能查。`requestId` 同时出现在响应头、响应体和日志中，用户报告“请求 req-42 失败了”，开发者就能找到对应的那一条日志，这和 Next.js 给页面错误的 `digest` 是同一个思路。
 
-替代解用 `promise.then(onFulfilled, onRejected)` 把成功和失败分成两个回调，构造新的响应时直接把原来的响应作为初始化参数。
+替代解用 `promise.then(onFulfilled, onRejected)` 把成功和失败分成两个回调，构造新的响应时直接把原来的响应作为初始化参数。注意它先 `Promise.resolve().then(() => handler(…))`：直接写 `handler(…).then(…)` 的话，handler 同步抛出的错误不会进入 `onRejected`，而是让整个请求失败；参考解中 `try` 里的 `await` 两种都能接住。
 :::
 
 :::variant{kind=alt name=then-callbacks}
@@ -370,19 +412,22 @@ type Outcome = { response: Response; error?: unknown };
 export function withErrorHandling<C>(handler: Handler<C>, deps: Deps): Handler<C> {
   return async (request, context) => {
     const requestId = deps.newId();
-    const outcome: Outcome = await handler(request, context).then(
-      (response): Outcome => {
-        // 不在原来的响应上修改：用它的内容和状态构造一个新的响应
-        const copy = new Response(response.body, response);
-        copy.headers.set('X-Request-Id', requestId);
-        return { response: copy };
-      },
-      (error: unknown): Outcome => {
-        if (isControlFlow(error)) throw error;
-        const response = toErrorResponse(error, requestId);
-        return response.status >= 500 ? { response, error } : { response };
-      },
-    );
+    // 先进入 Promise 再调用 handler：handler 同步抛出的错误也会变成拒绝，交给第二个回调
+    const outcome: Outcome = await Promise.resolve()
+      .then(() => handler(request, context))
+      .then(
+        (response): Outcome => {
+          // 不在原来的响应上修改：用它的内容和状态构造一个新的响应
+          const copy = new Response(response.body, response);
+          copy.headers.set('X-Request-Id', requestId);
+          return { response: copy };
+        },
+        (error: unknown): Outcome => {
+          if (isControlFlow(error)) throw error;
+          const response = toErrorResponse(error, requestId);
+          return response.status >= 500 ? { response, error } : { response };
+        },
+      );
     const entry: LogEntry = { requestId, method: request.method, path: new URL(request.url).pathname, status: outcome.response.status };
     try {
       deps.log('error' in outcome ? { ...entry, error: outcome.error } : entry);

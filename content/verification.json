@@ -10860,8 +10860,8 @@
       ]
     },
     "h06-server-errors": {
-      "verifiedAt": "2026-10-21T16:05:27.173Z",
-      "sourceHash": "2d5da5ac4f9290e1",
+      "verifiedAt": "2026-10-21T16:26:08.867Z",
+      "sourceHash": "1c497d35da29b0a3",
       "ok": true,
       "checks": [
         {
@@ -10877,7 +10877,7 @@
         {
           "target": "exercise:error-responses:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(toErrorResponse › 校验错误：422，带上每个字段的信息 ⟶ expect(…).toMatchObject({,toErrorResponse › 其他预期的错误：各自的状态码和信息，没有 fields ⟶ 请求体不是有效的 JSON,toErrorResponse › 未预期的错误：500，不透露原来的信息 ⟶ expect(…).toStrictEqual({ error: '服务器出错了，请稍后再试', requestId: 'req-7' }),toErrorResponse › 响应头：JSON、不缓存、带上请求的 id ⟶ expect(…).toBe('no-store'),readJson › 无法解析的请求体（包括空的）：BadRequestError ⟶ {\"title\":)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(toErrorResponse › 校验错误：422，带上每个字段的信息 ⟶ expect(…).toMatchObject({,toErrorResponse › 其他预期的错误：各自的状态码和信息，没有 fields ⟶ 请求体不是有效的 JSON,toErrorResponse › 未预期的错误：500，不透露原来的信息 ⟶ expect(…).toStrictEqual({ error: '服务器出错了，请稍后再试', requestId: 'req-7' }),toErrorResponse › 按类判断，而不是按 name：一个名字叫 NotFoundError 的普通错误仍然是 500 ⟶ expect(…).toMatchObject({ status: 500, body: { error: '服务器出错了，请稍后再试' } }),toErrorResponse › 响应头：JSON、不缓存、带上请求的 id ⟶ expect(…).toBe('no-store'),readJson › 无法解析的请求体（包括空的）：BadRequestError ⟶ {\"title\":,readJson › WebKit 中解析失败抛出的是 name 为 SyntaxError 的 DOMException：也是 BadRequestError ⟶ expect(…).toBeInstanceOf([class BadRequestError extends Error]))"
         },
         {
           "target": "exercise:error-responses:solution:solution",
@@ -10892,7 +10892,7 @@
         {
           "target": "exercise:error-responses:wrong:leak-message",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toErrorResponse › 未预期的错误：500，不透露原来的信息 ⟶ expect(…).toStrictEqual({ error: '服务器出错了，请稍后再试', requestId: 'req-7' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toErrorResponse › 未预期的错误：500，不透露原来的信息 ⟶ expect(…).toStrictEqual({ error: '服务器出错了，请稍后再试', requestId: 'req-7' }),toErrorResponse › 按类判断，而不是按 name：一个名字叫 NotFoundError 的普通错误仍然是 500 ⟶ expect(…).toMatchObject({ status: 500, body: { error: '服务器出错了，请稍后再试' } }))"
         },
         {
           "target": "exercise:error-responses:wrong:syntax-error-400",
@@ -10910,14 +10910,19 @@
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(toErrorResponse › 响应头：JSON、不缓存、带上请求的 id ⟶ expect(…).toBe('no-store'))"
         },
         {
+          "target": "exercise:error-responses:wrong:missing-await",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(readJson › 无法解析的请求体（包括空的）：BadRequestError ⟶ {\"title\":,readJson › WebKit 中解析失败抛出的是 name 为 SyntaxError 的 DOMException：也是 BadRequestError ⟶ expect(…).toBeInstanceOf([class BadRequestError extends Error]))"
+        },
+        {
           "target": "exercise:error-responses:wrong:readjson-catch-all",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(readJson › 不是解析的问题（请求体已经被读过了）：原样抛出 ⟶ expect(…).toBeInstanceOf([Function: TypeError]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(readJson › 其他的 DOMException（例如请求被中止）：原样抛出 ⟶ expect(…).toBe(AbortError: The operation was aborted.),readJson › 不是解析的问题（请求体已经被读过了）：原样抛出 ⟶ expect(…).toBeInstanceOf([Function: TypeError]))"
         },
         {
           "target": "exercise:with-error-handling:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(withErrorHandling › 成功：响应原样返回，加上 X-Request-Id，记录一条日志 ⟶ expect(…).toBe('req-1'),withErrorHandling › 每个请求一个新的 id；context 原样交给 handler ⟶ expect(…).toStrictEqual([ 'req-1', 'req-2' ]),withErrorHandling › 预期的错误：变成对应的 JSON 响应，日志中没有 error ⟶ ValidationError: 输入有误,withErrorHandling › 未预期的错误：500，响应中没有细节，日志中有原来的 error ⟶ Error: 连接失败：密码 hunter2,withErrorHandling › handler 自己返回的 5xx：照样记录，没有 error ⟶ expect(…).toStrictEqual([,withErrorHandling › 只看 digest 的前缀：别的错误即使有 digest 也是普通的错误 ⟶ Error: x,withErrorHandling › Response.redirect 的响应头不能修改：也要能加上 X-Request-Id ⟶ expect(…).toBe('req-1'),withErrorHandling › 日志中的 path 不含查询字符串（里面可能有令牌） ⟶ expect(…).toBe('/api/callback'))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(withErrorHandling › 成功：响应原样返回，加上 X-Request-Id，记录一条日志 ⟶ expect(…).toBe('req-1'),withErrorHandling › 每个请求一个新的 id；context 原样交给 handler ⟶ expect(…).toStrictEqual([ 'req-1', 'req-2' ]),withErrorHandling › 预期的错误：变成对应的 JSON 响应，日志中没有 error ⟶ ValidationError: 输入有误,withErrorHandling › 未预期的错误：500，响应中没有细节，日志中有原来的 error ⟶ Error: 连接失败：密码 hunter2,withErrorHandling › handler 自己返回的 5xx：照样记录，没有 error ⟶ expect(…).toStrictEqual([,withErrorHandling › isControlFlow：只看对象的 digest 属性和它的前缀 ⟶ expect(…).toBe(true),withErrorHandling › 只看 digest 的前缀：别的错误即使有 digest 也是普通的错误 ⟶ Error: x,withErrorHandling › Response.redirect 的响应头不能修改：也要能加上 X-Request-Id ⟶ expect(…).toBe('req-1'),withErrorHandling › 日志中的 path 不含查询字符串（里面可能有令牌） ⟶ expect(…).toBe('/api/callback'),withErrorHandling › handler 同步地抛出错误也要处理 ⟶ NotFoundError: 找不到这个项目,withErrorHandling › handler 抛出错误、日志函数也出错：仍然返回 500 ⟶ Error: boom)"
         },
         {
           "target": "exercise:with-error-handling:solution:solution",
@@ -10957,7 +10962,7 @@
         {
           "target": "exercise:with-error-handling:wrong:log-can-break",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withErrorHandling › 日志函数出错不影响响应 ⟶ Error: 日志服务不可用)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(withErrorHandling › handler 抛出错误、日志函数也出错：仍然返回 500 ⟶ Error: 日志服务不可用,withErrorHandling › 日志函数出错不影响响应 ⟶ Error: 日志服务不可用)"
         }
       ]
     },

@@ -22,7 +22,7 @@
       explain: 有一段通用的说明，以及可以用来查日志的 digest。
 - id: status-codes
   type: single
-  prompt: 一个已经登录的用户请求删除别人的项目。Route Handler 应该返回什么状态码？
+  prompt: 一个已经登录的用户是某个项目的成员，可以查看它，但只有项目的所有者能删除它。他请求删除这个项目，Route Handler 应该返回什么状态码？
   options:
     - text: "403"
       correct: true
@@ -30,14 +30,14 @@
     - text: "401"
       explain: 401 表示没有登录，客户端会让用户重新登录。
     - text: "404"
-      explain: 有时为了不暴露“这个项目存在”，也会故意返回 404；但按照这个接口的约定，没有权限是 403。
+      explain: 他能查看这个项目，项目的存在不是秘密，返回 404 只会让客户端误以为它被删除了。
 - id: swallowed-redirect
   type: single
   prompt: "一个 Route Handler 写成 `try { const user = await requireUser(); … } catch { return Response.json({ error: '出错了' }, { status: 500 }) }`，其中 `requireUser` 在没有登录时调用 `redirect('/login')`。没有登录的用户会得到什么？"
   options:
     - text: 500 和 `{"error":"出错了"}`：redirect() 抛出的错误被 catch 接住了
       correct: true
-      explain: 实测如此。在 catch 的第一行调用 `unstable_rethrow(error)`，跳转才能生效。
+      explain: 实测如此。把 `requireUser()` 移到 try 的外面，或者在 catch 的第一行调用 `unstable_rethrow(error)`，跳转才能生效。（另外，接口对没有登录的请求通常返回 401，而不是跳转到登录页面：跳转是给页面用的。）
     - text: 307，跳转到 /login
       explain: redirect() 是靠抛出错误实现的，catch 接住它之后，Next.js 就看不到它了。
     - text: TypeScript 会报错，redirect 不能写在 try 中

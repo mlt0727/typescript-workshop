@@ -183,6 +183,11 @@ describe('toErrorResponse', () => {
     }
   });
 
+  test('按类判断，而不是按 name：一个名字叫 NotFoundError 的普通错误仍然是 500', async () => {
+    const spoofed = Object.assign(new Error('连接失败：密码 hunter2'), { name: 'NotFoundError' });
+    expect(await check(spoofed)).toMatchObject({ status: 500, body: { error: '服务器出错了，请稍后再试' } });
+  });
+
   test('响应头：JSON、不缓存、带上请求的 id', async () => {
     const { headers } = await check(new NotFoundError('找不到'));
     expect(headers.get('content-type')).toMatch(/^application\/json/);
@@ -212,6 +217,40 @@ describe('readJson', () => {
       expect(caught, body).toBeInstanceOf(BadRequestError);
       expect(caught instanceof Error ? caught.message : '', body).toBe('请求体不是有效的 JSON');
     }
+  });
+
+  test('WebKit 中解析失败抛出的是 name 为 SyntaxError 的 DOMException：也是 BadRequestError', async () => {
+    class WebKitLikeRequest extends Request {
+      override json(): Promise<unknown> {
+        return Promise.reject(new DOMException('The string did not match the expected pattern.', 'SyntaxError'));
+      }
+    }
+    let caught: unknown;
+    try {
+      await readJson(new WebKitLikeRequest('https://app.example/api', { method: 'POST', body: '{' }));
+    } catch (error) {
+      caught = error;
+    }
+    expect(caught).toBeInstanceOf(BadRequestError);
+  });
+
+  test('其他的 DOMException（例如请求被中止）：原样抛出', async () => {
+    const aborted = new DOMException('The operation was aborted.', 'AbortError');
+    class AbortedRequest extends Request {
+      override json(): Promise<unknown> {
+        return Promise.reject(aborted);
+      }
+      override text(): Promise<string> {
+        return Promise.reject(aborted);
+      }
+    }
+    let caught: unknown;
+    try {
+      await readJson(new AbortedRequest('https://app.example/api', { method: 'POST', body: '{}' }));
+    } catch (error) {
+      caught = error;
+    }
+    expect(caught).toBe(aborted);
   });
 
   test('不是解析的问题（请求体已经被读过了）：原样抛出', async () => {
@@ -438,6 +477,46 @@ function isParseError(error: unknown): boolean {
 export async function readJson(request: Request): Promise<unknown> {
   try {
     return await request.json();
+  } catch (error) {
+    if (isParseError(error)) throw new BadRequestError('请求体不是有效的 JSON');
+    throw error;
+  }
+}
+```
+:::
+
+:::variant{kind=wrong name=missing-await fails=tests reason="try 中直接 return request.json()，没有 await：Promise 在离开 try 之后才失败，catch 接不到，解析失败变成了 500"}
+```ts file=responses.ts
+import { AuthError, BadRequestError, ConflictError, NotFoundError, ValidationError } from './errors';
+
+export type ErrorBody = Readonly<{ error: string; requestId: string; fields?: Readonly<Record<string, string>> }>;
+
+/** 每种错误对应的状态码和返回给用户的信息；不认识的错误一律是 500，不透露任何细节 */
+function describe(error: unknown): { status: number; message: string; fields?: Readonly<Record<string, string>> } {
+  if (error instanceof ValidationError) return { status: 422, message: error.message, fields: error.fields };
+  if (error instanceof BadRequestError) return { status: 400, message: error.message };
+  if (error instanceof AuthError) return { status: error.reason === 'unauthenticated' ? 401 : 403, message: error.message };
+  if (error instanceof NotFoundError) return { status: 404, message: error.message };
+  if (error instanceof ConflictError) return { status: 409, message: error.message };
+  return { status: 500, message: '服务器出错了，请稍后再试' };
+}
+
+/** 把 Route Handler 中抛出的错误变成一个 JSON 响应 */
+export function toErrorResponse(error: unknown, requestId: string): Response {
+  const { status, message, fields } = describe(error);
+  const body: ErrorBody = fields === undefined ? { error: message, requestId } : { error: message, requestId, fields };
+  return Response.json(body, { status, headers: { 'Cache-Control': 'no-store', 'X-Request-Id': requestId } });
+}
+
+/** request.json() 解析失败：Node.js 和 Chromium 中是 SyntaxError，WebKit 中是 name 为 SyntaxError 的 DOMException */
+function isParseError(error: unknown): boolean {
+  return error instanceof SyntaxError || (error instanceof DOMException && error.name === 'SyntaxError');
+}
+
+/** 读取 JSON 请求体：无法解析时是 BadRequestError，其他的错误原样抛出 */
+export async function readJson(request: Request): Promise<unknown> {
+  try {
+    return request.json();
   } catch (error) {
     if (isParseError(error)) throw new BadRequestError('请求体不是有效的 JSON');
     throw error;

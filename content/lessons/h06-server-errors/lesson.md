@@ -2,7 +2,7 @@
 version: 1
 mode: ts
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 服务器上的代码出错时，浏览器看到什么？在单页应用中，这个问题由前端自己决定；在 Next.js 中，错误可能发生在服务端组件的渲染中、Server Function 中或者 Route Handler 中，每一种都有自己的去向。处理得不好，要么用户看到一个空白的 500，要么数据库的地址和密码出现在浏览器中。这一课在实测的 Next.js 16.4.2 项目中观察三种地方的错误各自变成了什么，然后把“预期的错误”和“未预期的错误”分开：前者变成有意义的状态码和信息，后者只告诉用户“出错了”和一个可以报告的 id。最后处理一个容易忽略的陷阱：redirect() 和 notFound() 是靠抛出错误实现的，接住所有错误的 catch 会把它们也吞掉。
 objectives:
   - 区分预期的错误和未预期的错误，知道各自应该怎样传给用户
@@ -68,23 +68,32 @@ export default function ErrorPage({ error, retry }: { error: unknown; retry: () 
 }
 ```
 
-`error` 的类型是 `unknown`（客户端组件中抛出的可以是任何值），读取属性之前先收窄。`retry()` 重新请求并渲染这一段，从 16.3 起是稳定的 API（之前是 `reset`，它只重新渲染、不重新请求）。在生产服务器上请求这个页面：
+`error` 的类型是 `unknown`（客户端组件中抛出的可以是任何值），读取属性之前先收窄。`retry()` 重新请求并渲染这一段：它在 16.2 以 `unstable_retry` 的名字加入，16.3 起是稳定的 API。`reset()` 仍然可用，它只清除错误的状态、重新渲染，不重新请求，大多数情况下用 `retry()`。旧的教程中常见的 `error: Error & { digest?: string }` 是以前的写法。在生产服务器上请求这个页面：
 
 - 状态码是 **200**：页面的外壳先送出了，后面的部分出错时状态码已经来不及改（和 h02 中 `notFound()` 的第一次请求一样）。HTML 中有标题“报表”，**没有** `hunter2`；
 - 在浏览器中，`error.tsx` 显示的 `message` 是 `Minified React error #441…`，一段通用的说明，原来的信息不见了；`digest` 是 `2618878670`；
 - 服务器的日志中有完整的错误信息，并且同样带着 `digest: '2618878670'`。
 
-这就是 `digest` 的作用：浏览器中只有一个编号，开发者用它在服务器的日志中找到对应的错误。开发模式（`next dev`）中浏览器会看到原来的信息，方便调试，所以“开发时看到的错误信息”不代表生产环境。
+这就是 `digest` 的作用：浏览器中只有一个编号，开发者用它在服务器的日志中找到对应的错误。它是由错误算出来的：实测同一个页面请求了好几次，每次的 `digest` 都一样，所以它标识的是“哪一个错误”，而不是“哪一次请求”。开发模式（`next dev`）中浏览器会看到原来的信息，方便调试，所以“开发时看到的错误信息”不代表生产环境。
 
 几个规则：
 
-- 错误向上冒泡到最近的 `error.tsx`。`error.tsx` 包住同一个文件夹中的 `page.tsx` 和下面的各层，但**不**包住同一个文件夹中的 `layout.tsx`：布局出错要由上一层的 `error.tsx` 处理，根布局出错用 `app/global-error.tsx`（它要自己输出 `<html>` 和 `<body>`）；
+- 错误向上冒泡到最近的 `error.tsx`。`error.tsx` 包住同一个文件夹中的 `page.tsx` 和下面的各层，但**不**包住同一个文件夹中的 `layout.tsx` 和 `template.tsx`：布局出错要由上一层的 `error.tsx` 处理，根布局出错用 `app/global-error.tsx`（它要自己输出 `<html>` 和 `<body>`）；
 - 错误边界只接住**渲染**中的错误。事件处理函数、`setTimeout` 中的错误要自己 `try`/`catch`，放进 state 显示；在 `startTransition` 中抛出的错误会冒泡到错误边界；
 - `notFound()` 由 `not-found.tsx` 显示，不经过 `error.tsx`。
 
+## Server Function 中的错误
+
+预期的错误作为返回值交给 `useActionState`（h05）。如果 Server Function **抛出**了一个未预期的错误呢？实测项目中一个 `useActionState` 表单的 action 抛出 `new Error('写入失败：数据库密码 hunter2')`，同一个文件夹中有和上面一样的 `error.tsx`。提交表单：
+
+- 页面被 `error.tsx` 的内容替换了，显示的 `message` 同样是 `Minified React error #441…`，`digest` 是 `2269142749`；
+- 服务器的日志中有完整的信息和同一个 `digest`。
+
+也就是说，从表单的 action、`useActionState` 或者 `startTransition` 中调用时，抛出的错误交给最近的错误边界，和渲染中的错误一样；在客户端组件中直接 `await` 一个 Server Function 时，得到的是一个被拒绝的 Promise，要自己处理。两种情况下浏览器都看不到原来的信息，所以“请检查输入”这样的话不能靠 `throw` 传给用户。
+
 ## Route Handler
 
-`app/` 中名为 `route.ts` 的文件是 **Route Handler**（h02）：它导出以 HTTP 方法命名的函数，收到 Web 标准的 `Request`，返回 `Response`，和 i01 中的 Vercel Function、这个网站的同步接口是同样的写法。
+`app/` 中名为 `route.ts` 的文件是 **Route Handler**（h02）：它导出以 HTTP 方法命名的函数，收到 Web 标准的 `Request`，返回 `Response`，和 i01 中的 Vercel Function、这个网站的同步接口一样基于 Web 标准的 `Request`/`Response`。
 
 ```ts
 // app/api/projects/[id]/route.ts
@@ -102,7 +111,7 @@ export async function GET(request: Request, context: RouteContext<'/api/projects
 | --- | --- |
 | 抛出 `new Error('查询失败：…，密码 hunter2')`，没有处理 | **500**，响应体是空的；服务器的日志中打印了完整的信息，**包括密码** |
 | `await request.json()`，请求体是 `{"a":` 或者空的 | 抛出 `SyntaxError: Unexpected end of JSON input` |
-| 调用 `redirect('/h06/boom')`（`next/navigation`） | **307**，`Location: /h06/boom` |
+| 调用 `redirect('/h06/boom')`（`next/navigation`） | **307**，`Location: /h06/boom`（这个路由不读取请求，所以是在构建时生成的响应） |
 
 第一行说明两件事：没有处理的错误不会泄漏给浏览器，但客户端也只得到一个毫无信息的 500；日志会记下错误的全部内容，所以错误信息中本来就不该有密码，日志也要当作敏感的数据保管。
 
@@ -120,7 +129,9 @@ export async function GET(request: Request, context: RouteContext<'/api/projects
 | 422 | 格式没问题，但内容不合法（字段的校验） | 显示每个字段的错误 |
 | 500 | 服务器出了问题 | 稍后重试，或者报告 `requestId` |
 
-响应体用固定的形状（这里是 `{ error, requestId, fields? }`），客户端只需要写一套处理的代码：p2-04 的 `api.ts` 就是按状态码和固定的响应体读取错误的。
+响应体用固定的形状（这里是 `{ error, requestId, fields? }`），客户端只需要写一套处理的代码。p2-04 的 `api.ts` 也是按状态码和固定的响应体读取错误的，只是那里 422 的字段错误叫 `errors`：同一个应用的前后端要约定同一种形状。
+
+官方文档说预期的错误不要用 `throw`，而练习中的 Route Handler 却 `throw new NotFoundError(…)`，这并不矛盾。真正的规则是：预期的错误不能交给**框架**去接，否则信息会丢失、状态码会变成 500。在自己的 Route Handler 中抛出自己定义的错误类是可以的，只要在离开自己的代码之前（练习二的包装函数中）把它变成一个 4xx 的响应。
 
 ::exercise{#error-responses}
 
@@ -158,7 +169,7 @@ function redirect(url: string): never {
 
 /** 模拟 unstable_rethrow：认出控制流就重新抛出 */
 function rethrow(error: unknown): void {
-  if (typeof error === 'object' && error !== null && 'digest' in error && typeof error.digest === 'string' && error.digest.startsWith('NEXT_')) {
+  if (typeof error === 'object' && error !== null && 'digest' in error && typeof error.digest === 'string' && /^(NEXT_REDIRECT|NEXT_HTTP_ERROR_FALLBACK)/.test(error.digest)) {
     throw error;
   }
 }
@@ -188,18 +199,20 @@ try {
 }
 ```
 - 第 2 行：返回类型是 `never`，TypeScript 知道它后面的代码不会运行；
-- 第 15–19 行：`catch` 不区分接住的是什么，跳转变成了一个 500；
-- 第 26 行：先让控制流离开，剩下的才是真正的错误。
+- 第 14–18 行：`catch` 不区分接住的是什么，跳转变成了一个 500；
+- 第 25 行：先让控制流离开，剩下的才是真正的错误。
 :::
 
-在 `catch` 的第一行调用 `unstable_rethrow(error)`（`next/navigation`），它认出 Next.js 的这类错误并重新抛出，其他的错误继续往下处理。除了 `redirect()`、`notFound()`、`permanentRedirect()`，在某些情况下 `cookies()`、`headers()` 这样的请求时 API 也会抛出需要原样抛出的错误。
+最简单的办法是官方文档推荐的：在 Route Handler 和 Server Function 中，**把 `redirect()` 写在 `try` 的外面**。做不到的时候（例如它藏在一个被调用的函数中），在 `catch` 的第一行调用 `unstable_rethrow(error)`（`next/navigation`），它认出 Next.js 的这类错误并重新抛出，其他的错误继续往下处理。除了 `redirect()`、`notFound()`、`permanentRedirect()`（以及实验功能中的 `forbidden()`、`unauthorized()`，它们的 digest 是 `NEXT_HTTP_ERROR_FALLBACK;403`、`;401`），在某些情况下 `cookies()`、`headers()` 这样的请求时 API 也会抛出需要原样抛出的错误。
 
 ## 请求的 id 和日志
 
-用户报告“刚才保存失败了”，开发者要在成千上万条日志中找到那一条。给每个请求一个 id，同时放进响应头、错误的响应体和日志中，就能对上：这和页面错误的 `digest` 是同一个思路。记录日志时：
+用户报告“刚才保存失败了”，开发者要在成千上万条日志中找到那一条。给每个请求一个 id，同时放进响应头、错误的响应体和日志中，就能对上。它和页面错误的 `digest` 都是“给用户一个编号”，区别是 `digest` 标识一个错误，请求的 id 标识一次请求。
 
-- 只记录路径，不记录查询字符串：其中可能有令牌（例如登录回调中的 `?code=…`）；
-- 4xx 是用户的问题，记一条简单的记录就够了；5xx 才需要完整的错误；
+还要注意：包装函数接住了错误、返回了 500 之后，Next.js 根本不知道发生过错误，上面实测的那条错误日志就不会再打印（Next.js 在 `instrumentation.ts` 中提供的 `onRequestError` 也不会被调用）。这时你自己的日志就是唯一的记录。记录日志时：
+
+- 只记录路径，不记录查询字符串：其中可能有令牌（例如登录回调中的 `?code=…`）；路径本身也可能有（例如 `/reset/[token]`），这样的路由要特别处理；
+- 4xx 是客户端的问题，记一条简单的记录就够了（但大量的 401、403 本身是一个安全上的信号，值得关注）；5xx 才需要完整的错误；
 - 日志服务出了问题，不能让本来成功的请求失败。
 
 ## 编程挑战
@@ -213,7 +226,7 @@ try {
 - **把未预期的错误信息返回给浏览器**：其中可能有 SQL、路径和密码。返回固定的信息和一个 id，细节留在服务器的日志中。
 - **用 `throw` 表示预期的错误，再在页面中显示 `error.message`**：生产环境中浏览器看不到这个信息（实测是一段通用的说明）。预期的错误作为值返回。
 - **所有的错误都返回 500，或者都返回 400**：客户端无法区分“稍后重试”和“修改输入”。
-- **`catch` 接住了 `redirect()` 和 `notFound()`**：实测跳转变成了 500。用 `unstable_rethrow`。
+- **`catch` 接住了 `redirect()` 和 `notFound()`**：实测跳转变成了 500。把它们写在 `try` 的外面，或者用 `unstable_rethrow`。
 - **在日志中记录完整的地址和请求体**：令牌和密码被写进了日志。
 - **以为开发模式中看到的错误信息就是用户看到的**：开发模式会把原来的信息发给浏览器，生产环境不会。
 
