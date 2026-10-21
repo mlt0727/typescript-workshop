@@ -1,0 +1,44 @@
+- id: parallel
+  type: single
+  prompt: "`const a = await getA(); const b = await getB();`，两个请求各要 300 ms，互不依赖。怎样改最好？"
+  options:
+    - text: "`const [a, b] = await Promise.all([getA(), getB()])`，一共约 300 ms"
+      correct: true
+      explain: 两个请求在 `Promise.all` 之前就都已经开始了。
+    - text: 不用改，服务端组件会自动让它们并行
+      explain: 同一个组件中连着写的 `await` 仍然是一个接一个的；并行的是不同的布局和页面。
+    - text: 把两个 `await` 都放进 `useEffect`
+      explain: 服务端组件中没有 effect，也没有必要在浏览器中再请求一次。
+- id: react-cache-scope
+  type: single
+  prompt: "`getUser = cache(loadUser)`。一个页面中三个组件都调用了 `getUser('1')`。两个用户先后打开这个页面，`loadUser` 一共运行几次？"
+  options:
+    - text: 2 次：每个请求 1 次
+      correct: true
+      explain: 实测如此：`React.cache` 的缓存只属于一个请求，请求之间不共享。
+    - text: 1 次：第二个请求直接用第一个请求的结果
+      explain: 这是 `'use cache'` 才有的效果。
+    - text: 6 次：每个组件每个请求各 1 次
+      explain: 不用 `cache` 包装时才是这样（实测一个请求 3 次）。
+- id: stale-while-revalidate
+  type: single
+  prompt: "一个 `'use cache'` 函数的 `cacheLife` 是 `{ revalidate: 5, expire: 3600 }`。距离上次生成过了 10 秒，来了一个请求。这个请求拿到什么？"
+  options:
+    - text: 旧的结果；服务器同时在后台重新生成，之后的请求拿到新的
+      correct: true
+      explain: 实测这个请求的 `x-nextjs-cache` 是 `STALE`，紧接着的请求就是新的结果。
+    - text: 新的结果，这个请求等它重新生成
+      explain: 那是过了 `expire`（1 小时）之后的行为。
+    - text: 一个错误，缓存已经过期了
+      explain: 过了 `revalidate` 只是“变旧”，旧的结果仍然可以先用。
+- id: update-vs-revalidate
+  type: single
+  prompt: 用户在资料页面修改了自己的昵称，提交之后页面重新渲染。应该怎样让缓存的资料失效？
+  options:
+    - text: "在 Server Function 中调用 `updateTag('profile')`：下一次读取等新的结果，用户马上看到自己的修改"
+      correct: true
+      explain: 这是“读到自己的写入”的场景，`updateTag` 让缓存立刻过期。
+    - text: "调用 `revalidateTag('profile', 'max')`"
+      explain: 失效之后的第一个请求仍然拿到旧的内容，用户会以为没有保存成功。
+    - text: 什么也不做，等 `revalidate` 的时间到
+      explain: 时间到了之后的第一个请求仍然是旧的；而且用户不知道要等多久。

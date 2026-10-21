@@ -10630,6 +10630,103 @@
         }
       ]
     },
+    "h04-data-reading": {
+      "verifiedAt": "2026-10-21T08:38:45.444Z",
+      "sourceHash": "50a04bbfdf214206",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:waterfall:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:waterfall:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 一个接一个：约 400 ms | [log] 一起等：约 200 ms | [log] [ 'fulfilled', 'rejected' ] 约 100 ms"
+        },
+        {
+          "target": "exercise:request-memo:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(createRequestScope().memo › 同样的参数只调用一次，返回同一个结果 ⟶ expect(…).toBe({ id: '1', name: '用户 1' }),createRequestScope().memo › 每个参数都要相同，参数的个数也要相同 ⟶ expect(…).toHaveBeenCalledTimes(4),createRequestScope().memo › 基本类型按值比较：1 和 \"1\" 不同，NaN 和 NaN 相同 ⟶ expect(…).toHaveBeenCalledTimes(5),createRequestScope().memo › 对象按引用比较：内容相同的两个对象是不同的参数 ⟶ expect(…).toHaveBeenCalledTimes(2),createRequestScope().memo › 抛出的错误也会被记住 ⟶ expect(…).toHaveBeenCalledTimes(1),createRequestScope().memo › 异步函数：同时发出的调用共用一个 Promise，失败的 Promise 也一样 ⟶ expect(…).toBe(Promise { <unknown> }),createRequestScope().memo › 一个页面中三个组件读取用户：同一个请求中数据库只查两次 ⟶ expect(…).toHaveBeenCalledTimes(2))"
+        },
+        {
+          "target": "exercise:request-memo:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:request-memo:alt:linear-search",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:request-memo:wrong:json-key",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRequestScope().memo › 基本类型按值比较：1 和 \"1\" 不同，NaN 和 NaN 相同 ⟶ expect(…).toHaveBeenCalledTimes(5),createRequestScope().memo › 对象按引用比较：内容相同的两个对象是不同的参数 ⟶ expect(…).toHaveBeenCalledTimes(2))"
+        },
+        {
+          "target": "exercise:request-memo:wrong:first-arg-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRequestScope().memo › 每个参数都要相同，参数的个数也要相同 ⟶ expect(…).toHaveBeenCalledTimes(4))"
+        },
+        {
+          "target": "exercise:request-memo:wrong:string-key",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRequestScope().memo › 基本类型按值比较：1 和 \"1\" 不同，NaN 和 NaN 相同 ⟶ expect(…).toHaveBeenCalledTimes(5),createRequestScope().memo › 对象按引用比较：内容相同的两个对象是不同的参数 ⟶ expect(…).toHaveBeenCalledTimes(2))"
+        },
+        {
+          "target": "exercise:request-memo:wrong:errors-not-cached",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createRequestScope().memo › 抛出的错误也会被记住 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+        },
+        {
+          "target": "exercise:tagged-cache:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(createCache › 第一次是 miss，之后在 revalidate 之前都是 hit ⟶ expect(…).toStrictEqual({ value: 'v1', outcome: 'hit' }),createCache › 过了 revalidate：先返回旧值，同时在后台刷新，下一次就是新值 ⟶ expect(…).toStrictEqual({ value: 'v1', outcome: 'stale' }),createCache › 后台刷新还没完成时，再次读取不会再发起一次刷新 ⟶ TimeoutError: 测试 超过 3000 ms 仍未完成：可能有 Promise 永远不会 resolve，或忘记 await。,createCache › 条目的时间从填充完成时算起 ⟶ expect(…).toStrictEqual({ value: 'slow', outcome: 'hit' }),createCache › 过了 expire：要等新的值 ⟶ expect(…).toStrictEqual({ value: 'fresh', outcome: 'expired' }),createCache › 同时发出的几次 miss 共用一次填充 ⟶ expect(…).toStrictEqual([,createCache › 后台刷新失败：继续返回旧值，下一次读取再试 ⟶ Error: 上游超时,createCache › revalidateTag：有这个标签的条目变旧（先返回旧值），其他的不受影响 ⟶ expect(…).toStrictEqual({ value: 'v1', outcome: 'stale' }),createCache › updateTag：有这个标签的条目立刻过期，下一次读取等新的值 ⟶ expect(…).toStrictEqual({ value: 'v2', outcome: 'expired' }),createCache › 每次填充带着自己的 life 和 tags ⟶ expect(…).toStrictEqual({ value: 'long', outcome: 'expired' }))"
+        },
+        {
+          "target": "exercise:tagged-cache:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:tagged-cache:alt:slot-class",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:tagged-cache:wrong:block-on-stale",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createCache › 过了 revalidate：先返回旧值，同时在后台刷新，下一次就是新值 ⟶ expect(…).toStrictEqual({ value: 'v1', outcome: 'stale' }),createCache › 后台刷新还没完成时，再次读取不会再发起一次刷新 ⟶ TimeoutError: 测试 超过 3000 ms 仍未完成：可能有 Promise 永远不会 resolve，或忘记 await。,createCache › 后台刷新失败：继续返回旧值，下一次读取再试 ⟶ Error: 上游超时,createCache › revalidateTag：有这个标签的条目变旧（先返回旧值），其他的不受影响 ⟶ expect(…).toStrictEqual({ value: 'v1', outcome: 'stale' }))"
+        },
+        {
+          "target": "exercise:tagged-cache:wrong:created-at-start",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createCache › 条目的时间从填充完成时算起 ⟶ expect(…).toStrictEqual({ value: 'slow', outcome: 'hit' }))"
+        },
+        {
+          "target": "exercise:tagged-cache:wrong:no-refresh-dedupe",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createCache › 后台刷新还没完成时，再次读取不会再发起一次刷新 ⟶ expect(…).toBe(1))"
+        },
+        {
+          "target": "exercise:tagged-cache:wrong:no-miss-dedupe",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createCache › 同时发出的几次 miss 共用一次填充 ⟶ expect(…).toStrictEqual([)"
+        },
+        {
+          "target": "exercise:tagged-cache:wrong:revalidate-expires",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createCache › revalidateTag：有这个标签的条目变旧（先返回旧值），其他的不受影响 ⟶ expect(…).toStrictEqual({ value: 'v1', outcome: 'stale' }))"
+        },
+        {
+          "target": "exercise:tagged-cache:wrong:forget-on-refresh-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(createCache › 后台刷新失败：继续返回旧值，下一次读取再试 ⟶ Error: 上游超时)"
+        }
+      ]
+    },
     "i01-static-vs-server": {
       "verifiedAt": "2026-10-21T02:16:04.710Z",
       "sourceHash": "369fce9321180dab",
