@@ -28,7 +28,7 @@
       correct: true
       explain: 实测如此。要保留它，让 action 把提交的值放进返回的状态，作为 `defaultValue`。
     - text: 用户填的备注：出错时 React 不会重置表单
-      explain: 不管 action 返回了什么，完成之后都会重置。
+      explain: 只要 action 没有抛出异常，不管它返回了什么，完成之后都会重置。
     - text: 浏览器会刷新页面，所有的输入框都是空的
       explain: 有 JavaScript 时 React 拦下了提交，页面没有刷新；清空的原因是表单被重置了。
 - id: after-write

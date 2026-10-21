@@ -7,10 +7,10 @@ timeoutMs: 30000
 在 `todo-form.tsx` 中完成 `TodoForm`。`action` 是一个 Server Function（这里用普通的异步函数代替）：它收到上一次的状态和表单数据，返回新的状态（类型在只读的 `state.ts` 中）。要求：
 
 1. 用 `useActionState(action, initialState)` 连接表单：`<form action={…}>`，表单的可访问名称是“新建待办”。两个输入框：标签是“标题”（`name="title"`）和“截止日期”（`name="due"`，`type="date"`）；一个提交按钮；
-2. **提交期间**：按钮 `disabled`，文字是“保存中…”；其他时候文字是“保存”；
+2. **提交期间**：按钮加上 `aria-disabled="true"`（不用 `disabled`：获得焦点的按钮被禁用时，焦点会掉到 `<body>`，e07），文字是“保存中…”；这时再次提交要被忽略：在表单的 `onSubmit` 中调用 `event.preventDefault()`，React 就不会调用 action。其他时候没有 `aria-disabled`，文字是“保存”；
 3. **显示的值**：两个输入框都不受控，`defaultValue` 是 `state.values` 中对应的值。React 在 action 完成之后会**重置表单**，输入框回到 `defaultValue`：这样出错时显示的是 action 返回的值（通常就是用户提交的值），保存成功时被清空；
 4. **字段错误**：`state.errors` 中有某个字段的错误时，这个输入框加上 `aria-invalid="true"`，`aria-describedby` 指向显示这条错误信息的元素；没有错误时不加这两个属性，也不显示错误信息；
-5. **焦点**：状态变成 `'error'` 时，焦点移到第一个出错的字段（标题在前，截止日期在后）；
+5. **焦点**：**每次** action 返回 `status` 为 `'error'` 的状态时（包括连续两次返回同样的错误），焦点都移到第一个出错的字段（标题在前，截止日期在后）；
 6. **消息**：一个 `role="status"` 的元素一直存在，内容是 `state.message`。
 
 `main.tsx` 中的预览用一个等 600 毫秒的函数模拟服务器：标题为空、或者截止日期早于 2026 年时返回错误。
@@ -20,7 +20,8 @@ timeoutMs: 30000
 import type { SaveAction } from './state';
 
 export function TodoForm({ action }: { action: SaveAction }) {
-  // TODO：用 useActionState 连接 action，显示字段错误、提交中的状态和消息
+  // TODO：用 useActionState 连接 action，显示字段错误、提交中的状态和消息。
+  // 下面的 onSubmit 只是为了让起始代码不提交表单：它调用了 preventDefault，React 就不会调用 action，连接 action 时要改掉它
   void action;
   return (
     <form aria-label="新建待办" onSubmit={(event) => event.preventDefault()}>
@@ -59,13 +60,15 @@ import { TodoForm } from './todo-form';
 // 这个预览没有服务器：用一个等待 600 毫秒的函数代替 Server Function
 const saveTodo: SaveAction = async (_previous, formData) => {
   await new Promise((resolve) => setTimeout(resolve, 600));
-  const title = String(formData.get('title') ?? '');
-  const due = String(formData.get('due') ?? '');
+  const rawTitle = formData.get('title');
+  const rawDue = formData.get('due');
+  const title = typeof rawTitle === 'string' ? rawTitle : '';
+  const due = typeof rawDue === 'string' ? rawDue : '';
   const errors: { title?: string; due?: string } = {};
   if (title.trim() === '') errors.title = '请填写标题';
   if (due !== '' && due < '2026-01-01') errors.due = '截止日期不能早于 2026 年';
   if (errors.title !== undefined || errors.due !== undefined) {
-    return { status: 'error', message: '请检查标红的字段', errors, values: { title, due } };
+    return { status: 'error', message: '请检查有问题的字段', errors, values: { title, due } };
   }
   return { status: 'saved', message: `已保存：${title.trim()}`, errors: {}, values: { title: '', due: '' } };
 };
@@ -88,7 +91,7 @@ export function TodoForm({ action }: { action: SaveAction }) {
   const dueRef = useRef<HTMLInputElement>(null);
   const { errors, values } = state;
 
-  // 出错之后，焦点移到第一个出错的字段
+  // 每次 action 返回错误，焦点都移到第一个出错的字段
   useEffect(() => {
     if (state.status !== 'error') return;
     if (state.errors.title !== undefined) titleRef.current?.focus();
@@ -96,7 +99,14 @@ export function TodoForm({ action }: { action: SaveAction }) {
   }, [state]);
 
   return (
-    <form action={formAction} aria-label="新建待办">
+    <form
+      action={formAction}
+      aria-label="新建待办"
+      onSubmit={(event) => {
+        // 提交期间忽略再次提交：preventDefault 之后 React 不会调用 action
+        if (pending) event.preventDefault();
+      }}
+    >
       <label>
         标题
         {/* 提交之后 React 会重置表单，输入框回到 defaultValue：用返回的值，用户输入的内容才不会丢 */}
@@ -121,7 +131,8 @@ export function TodoForm({ action }: { action: SaveAction }) {
         />
       </label>
       {errors.due !== undefined && <p id={`${id}-due`}>{errors.due}</p>}
-      <button type="submit" disabled={pending}>
+      {/* 用 aria-disabled 而不是 disabled：按钮被禁用时，焦点会掉到 <body>（e07） */}
+      <button type="submit" aria-disabled={pending ? true : undefined}>
         {pending ? '保存中…' : '保存'}
       </button>
       <p role="status">{state.message}</p>
@@ -153,7 +164,7 @@ const dueInput = () => screen.getByLabelText('截止日期');
 const saveButton = () => screen.getByRole('button', { name: /^保存/ });
 
 const saved = (message: string): FormState => ({ status: 'saved', message, errors: {}, values: { title: '', due: '' } });
-const failed = (errors: FormState['errors'], values: FormState['values']): FormState => ({ status: 'error', message: '请检查标红的字段', errors, values });
+const failed = (errors: FormState['errors'], values: FormState['values']): FormState => ({ status: 'error', message: '请检查有问题的字段', errors, values });
 
 function setup(action: SaveAction) {
   render(<TodoForm action={action} />);
@@ -166,9 +177,10 @@ describe('TodoForm', () => {
     expect(screen.getByRole('form', { name: '新建待办' })).toBeInTheDocument();
     expect(titleInput()).toHaveValue('');
     expect(titleInput()).not.toHaveAttribute('aria-invalid');
+    expect(titleInput()).not.toHaveAttribute('aria-describedby');
     expect(dueInput()).toHaveAttribute('type', 'date');
     expect(saveButton()).toHaveTextContent('保存');
-    expect(saveButton()).toBeEnabled();
+    expect(saveButton()).not.toHaveAttribute('aria-disabled', 'true');
     expect(screen.getByRole('status')).toHaveTextContent(/^$/);
   });
 
@@ -190,19 +202,26 @@ describe('TodoForm', () => {
     expect(action.mock.calls[1]?.[0]).toStrictEqual(saved('已保存：买牛奶'));
   });
 
-  test('提交期间按钮不可用，文字是“保存中…”', async () => {
+  test('提交期间：aria-disabled，文字是“保存中…”，再次提交被忽略', async () => {
     const pending = deferred<FormState>();
-    const user = setup(() => pending.promise);
-    await user.type(titleInput(), 'a');
-    await user.click(saveButton());
-    await waitFor(() => expect(saveButton()).toBeDisabled());
-    expect(saveButton()).toHaveTextContent('保存中…');
-    pending.resolve(saved('已保存：a'));
-    await waitFor(() => expect(saveButton()).toBeEnabled());
-    expect(saveButton()).toHaveTextContent(/^保存$/);
+    const action = vi.fn(() => pending.promise);
+    const user = setup(action);
+    try {
+      await user.type(titleInput(), 'a');
+      await user.click(saveButton());
+      await waitFor(() => expect(saveButton()).toHaveAttribute('aria-disabled', 'true'));
+      expect(saveButton()).toHaveTextContent('保存中…');
+      await user.click(saveButton());
+    } finally {
+      pending.resolve(saved('已保存：a'));
+    }
+    await waitFor(() => expect(saveButton()).toHaveTextContent(/^保存$/));
+    expect(saveButton()).not.toHaveAttribute('aria-disabled', 'true');
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(action).toHaveBeenCalledTimes(1);
   });
 
-  test('字段错误：标红、说明错误、焦点移到出错的字段，输入的内容保留', async () => {
+  test('字段错误：标记、说明错误、焦点移到出错的字段，输入的内容保留', async () => {
     const long = '很长的标题'.repeat(30);
     const user = setup(async () => failed({ title: '标题最多 100 个字' }, { title: long, due: '2026-10-31' }));
     await user.click(titleInput());
@@ -215,7 +234,8 @@ describe('TodoForm', () => {
     expect(titleInput()).toHaveValue(long);
     expect(dueInput()).toHaveValue('2026-10-31');
     expect(dueInput()).not.toHaveAttribute('aria-invalid');
-    expect(screen.getByRole('status')).toHaveTextContent('请检查标红的字段');
+    expect(dueInput()).not.toHaveAttribute('aria-describedby');
+    expect(screen.getByRole('status')).toHaveTextContent('请检查有问题的字段');
   });
 
   test('显示的是 action 返回的值：React 在提交之后会重置表单', async () => {
@@ -226,7 +246,7 @@ describe('TodoForm', () => {
     expect(dueInput()).toHaveValue('2020-01-01');
   });
 
-  test('只有截止日期出错：焦点移到截止日期，标题不标红', async () => {
+  test('只有截止日期出错：焦点移到截止日期，标题不标记', async () => {
     const user = setup(async () => failed({ due: '截止日期不能早于今天' }, { title: '买牛奶', due: '2020-01-01' }));
     await user.type(titleInput(), '买牛奶');
     await user.click(saveButton());
@@ -234,6 +254,26 @@ describe('TodoForm', () => {
     expect(dueInput()).toHaveAttribute('aria-invalid', 'true');
     expect(dueInput()).toHaveAccessibleDescription('截止日期不能早于今天');
     expect(titleInput()).not.toHaveAttribute('aria-invalid');
+  });
+
+  test('两个字段都出错：焦点在第一个（标题）', async () => {
+    const user = setup(async () => failed({ title: '请填写标题', due: '截止日期不能早于今天' }, { title: '', due: '2020-01-01' }));
+    await user.click(saveButton());
+    await waitFor(() => expect(dueInput()).toHaveAttribute('aria-invalid', 'true'));
+    await waitFor(() => expect(titleInput()).toHaveFocus());
+  });
+
+  test('连续两次同样的错误：每次都把焦点移到出错的字段', async () => {
+    const second = deferred<FormState>();
+    const results = [Promise.resolve(failed({ title: '请填写标题' }, { title: '', due: '' })), second.promise];
+    const user = setup(() => results.shift() ?? Promise.resolve(initialState));
+    await user.click(saveButton());
+    await waitFor(() => expect(titleInput()).toHaveFocus());
+    saveButton().focus();
+    await user.click(saveButton());
+    expect(saveButton()).toHaveFocus();
+    second.resolve(failed({ title: '请填写标题' }, { title: '', due: '' }));
+    await waitFor(() => expect(titleInput()).toHaveFocus());
   });
 
   test('保存成功：清空表单，错误消失，显示消息', async () => {
@@ -246,6 +286,7 @@ describe('TodoForm', () => {
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('已保存：买牛奶'));
     expect(titleInput()).toHaveValue('');
     expect(titleInput()).not.toHaveAttribute('aria-invalid');
+    expect(titleInput()).not.toHaveAttribute('aria-describedby');
     expect(screen.queryByText('请填写标题')).not.toBeInTheDocument();
   });
 });
@@ -261,9 +302,11 @@ describe('TodoForm', () => {
 :::
 
 :::explanation
-`useActionState` 把“提交 → 等待 → 结果”这件事交给了 React：`pending` 是提交中的状态，`state` 是 action 最近一次返回的值，下一次调用 action 时它又作为第一个参数传回去。和 p2-04 的 `useFetcher` 一样，它让表单在没有 JavaScript 时也能工作：表单是一个真正的 `<form>`，正文中实测，服务端组件中的这种表单不运行 JavaScript 也能提交。
+`useActionState` 把“提交 → 等待 → 结果”这件事交给了 React：`pending` 是提交中的状态，`state` 是 action 最近一次返回的值，下一次调用 action 时它又作为第一个参数传回去。在 Next.js 中，当 action 是一个 Server Function 时，表单在 JavaScript 加载之前也能提交（正文中实测）；这个练习中的 action 是一个普通的函数，没有这个效果。
 
 最容易出错的是第 3 条。React 19 在 action 完成之后会重置表单，正文中实测：没有 `defaultValue` 的输入框在出错之后被清空了，用户要重新输入一遍。解决的办法不是改成受控的输入框，而是让 action 把需要显示的值放进返回的状态，再作为 `defaultValue`：出错时显示用户提交的值，保存成功时显示空的。服务器也可以借这个机会返回整理过的值（例如去掉了首尾的空白）。
+
+提交中的按钮用 `aria-disabled` 而不是 `disabled`，理由和 e07、p2-04 一样：用户刚刚点过按钮，焦点就在它上面，`disabled` 会让焦点掉到 `<body>`。`aria-disabled` 只是告诉辅助技术“现在不可用”，真正阻止再次提交的是 `onSubmit` 中的 `preventDefault`。
 
 错误的可访问性和 g15、p2-03 中的一样：`aria-invalid` 让输入框被读作“无效”，`aria-describedby` 让它的说明就是错误信息，焦点移过去，用户马上知道要改哪里。一直存在的 `role="status"` 区域保证屏幕阅读器能听到“已保存”。
 
@@ -313,10 +356,10 @@ export function TodoForm({ action }: { action: SaveAction }) {
   }, [state]);
 
   return (
-    <form action={formAction} aria-label="新建待办">
+    <form action={formAction} aria-label="新建待办" onSubmit={(event) => pending && event.preventDefault()}>
       <Field label="标题" name="title" defaultValue={state.values.title} error={state.errors.title} inputRef={titleRef} />
       <Field label="截止日期" name="due" type="date" defaultValue={state.values.due} error={state.errors.due} inputRef={dueRef} />
-      <button type="submit" disabled={pending}>
+      <button type="submit" aria-disabled={pending || undefined}>
         {pending ? '保存中…' : '保存'}
       </button>
       <p role="status">{state.message}</p>
@@ -338,7 +381,7 @@ export function TodoForm({ action }: { action: SaveAction }) {
   const dueRef = useRef<HTMLInputElement>(null);
   const { errors, values } = state;
 
-  // 出错之后，焦点移到第一个出错的字段
+  // 每次 action 返回错误，焦点都移到第一个出错的字段
   useEffect(() => {
     if (state.status !== 'error') return;
     if (state.errors.title !== undefined) titleRef.current?.focus();
@@ -346,7 +389,14 @@ export function TodoForm({ action }: { action: SaveAction }) {
   }, [state]);
 
   return (
-    <form action={formAction} aria-label="新建待办">
+    <form
+      action={formAction}
+      aria-label="新建待办"
+      onSubmit={(event) => {
+        // 提交期间忽略再次提交：preventDefault 之后 React 不会调用 action
+        if (pending) event.preventDefault();
+      }}
+    >
       <label>
         标题
         {/* 提交之后 React 会重置表单，输入框回到 defaultValue：用返回的值，用户输入的内容才不会丢 */}
@@ -369,7 +419,8 @@ export function TodoForm({ action }: { action: SaveAction }) {
         />
       </label>
       {errors.due !== undefined && <p id={`${id}-due`}>{errors.due}</p>}
-      <button type="submit" disabled={pending}>
+      {/* 用 aria-disabled 而不是 disabled：按钮被禁用时，焦点会掉到 <body>（e07） */}
+      <button type="submit" aria-disabled={pending ? true : undefined}>
         {pending ? '保存中…' : '保存'}
       </button>
       <p role="status">{state.message}</p>
@@ -391,7 +442,7 @@ export function TodoForm({ action }: { action: SaveAction }) {
   const dueRef = useRef<HTMLInputElement>(null);
   const { errors, values } = state;
 
-  // 出错之后，焦点移到第一个出错的字段
+  // 每次 action 返回错误，焦点都移到第一个出错的字段
   useEffect(() => {
     if (state.status !== 'error') return;
     if (state.errors.title !== undefined) titleRef.current?.focus();
@@ -399,7 +450,14 @@ export function TodoForm({ action }: { action: SaveAction }) {
   }, [state]);
 
   return (
-    <form action={formAction} aria-label="新建待办">
+    <form
+      action={formAction}
+      aria-label="新建待办"
+      onSubmit={(event) => {
+        // 提交期间忽略再次提交：preventDefault 之后 React 不会调用 action
+        if (pending) event.preventDefault();
+      }}
+    >
       <label>
         标题
         {/* 提交之后 React 会重置表单，输入框回到 defaultValue：用返回的值，用户输入的内容才不会丢 */}
@@ -422,7 +480,8 @@ export function TodoForm({ action }: { action: SaveAction }) {
         />
       </label>
       {errors.due !== undefined && <p id={`${id}-due`}>{errors.due}</p>}
-      <button type="submit" disabled={pending}>
+      {/* 用 aria-disabled 而不是 disabled：按钮被禁用时，焦点会掉到 <body>（e07） */}
+      <button type="submit" aria-disabled={pending ? true : undefined}>
         {pending ? '保存中…' : '保存'}
       </button>
       <p role="status">{state.message}</p>
@@ -432,7 +491,7 @@ export function TodoForm({ action }: { action: SaveAction }) {
 ```
 :::
 
-:::variant{kind=wrong name=enabled-while-pending fails=tests reason="提交期间按钮仍然可用：用户可以连着提交好几次"}
+:::variant{kind=wrong name=resubmit-while-pending fails=tests reason="提交期间没有忽略再次提交：按钮看起来不可用，再点一次 action 又被调用了一次"}
 ```tsx file=todo-form.tsx
 import { useActionState, useEffect, useId, useRef } from 'react';
 import { initialState, type SaveAction } from './state';
@@ -444,7 +503,7 @@ export function TodoForm({ action }: { action: SaveAction }) {
   const dueRef = useRef<HTMLInputElement>(null);
   const { errors, values } = state;
 
-  // 出错之后，焦点移到第一个出错的字段
+  // 每次 action 返回错误，焦点都移到第一个出错的字段
   useEffect(() => {
     if (state.status !== 'error') return;
     if (state.errors.title !== undefined) titleRef.current?.focus();
@@ -452,7 +511,14 @@ export function TodoForm({ action }: { action: SaveAction }) {
   }, [state]);
 
   return (
-    <form action={formAction} aria-label="新建待办">
+    <form
+      action={formAction}
+      aria-label="新建待办"
+      onSubmit={(event) => {
+        // 提交期间忽略再次提交：preventDefault 之后 React 不会调用 action
+        void event;
+      }}
+    >
       <label>
         标题
         {/* 提交之后 React 会重置表单，输入框回到 defaultValue：用返回的值，用户输入的内容才不会丢 */}
@@ -477,7 +543,134 @@ export function TodoForm({ action }: { action: SaveAction }) {
         />
       </label>
       {errors.due !== undefined && <p id={`${id}-due`}>{errors.due}</p>}
-      <button type="submit">
+      {/* 用 aria-disabled 而不是 disabled：按钮被禁用时，焦点会掉到 <body>（e07） */}
+      <button type="submit" aria-disabled={pending ? true : undefined}>
+        {pending ? '保存中…' : '保存'}
+      </button>
+      <p role="status">{state.message}</p>
+    </form>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=focus-on-status-change fails=tests reason="effect 只依赖 state.status：连续两次出错时，第二次焦点没有回到出错的字段"}
+```tsx file=todo-form.tsx
+import { useActionState, useEffect, useId, useRef } from 'react';
+import { initialState, type SaveAction } from './state';
+
+export function TodoForm({ action }: { action: SaveAction }) {
+  const [state, formAction, pending] = useActionState(action, initialState);
+  const id = useId();
+  const titleRef = useRef<HTMLInputElement>(null);
+  const dueRef = useRef<HTMLInputElement>(null);
+  const { errors, values } = state;
+
+  // 每次 action 返回错误，焦点都移到第一个出错的字段
+  useEffect(() => {
+    if (state.status !== 'error') return;
+    if (state.errors.title !== undefined) titleRef.current?.focus();
+    else if (state.errors.due !== undefined) dueRef.current?.focus();
+  }, [state.status]);
+
+  return (
+    <form
+      action={formAction}
+      aria-label="新建待办"
+      onSubmit={(event) => {
+        // 提交期间忽略再次提交：preventDefault 之后 React 不会调用 action
+        if (pending) event.preventDefault();
+      }}
+    >
+      <label>
+        标题
+        {/* 提交之后 React 会重置表单，输入框回到 defaultValue：用返回的值，用户输入的内容才不会丢 */}
+        <input
+          ref={titleRef}
+          name="title"
+          defaultValue={values.title}
+          aria-invalid={errors.title !== undefined ? true : undefined}
+          aria-describedby={errors.title !== undefined ? `${id}-title` : undefined}
+        />
+      </label>
+      {errors.title !== undefined && <p id={`${id}-title`}>{errors.title}</p>}
+      <label>
+        截止日期
+        <input
+          ref={dueRef}
+          name="due"
+          type="date"
+          defaultValue={values.due}
+          aria-invalid={errors.due !== undefined ? true : undefined}
+          aria-describedby={errors.due !== undefined ? `${id}-due` : undefined}
+        />
+      </label>
+      {errors.due !== undefined && <p id={`${id}-due`}>{errors.due}</p>}
+      {/* 用 aria-disabled 而不是 disabled：按钮被禁用时，焦点会掉到 <body>（e07） */}
+      <button type="submit" aria-disabled={pending ? true : undefined}>
+        {pending ? '保存中…' : '保存'}
+      </button>
+      <p role="status">{state.message}</p>
+    </form>
+  );
+}
+```
+:::
+
+:::variant{kind=wrong name=focus-last-error fails=tests reason="两个字段都出错时，焦点最后落在了截止日期：应该是第一个出错的字段"}
+```tsx file=todo-form.tsx
+import { useActionState, useEffect, useId, useRef } from 'react';
+import { initialState, type SaveAction } from './state';
+
+export function TodoForm({ action }: { action: SaveAction }) {
+  const [state, formAction, pending] = useActionState(action, initialState);
+  const id = useId();
+  const titleRef = useRef<HTMLInputElement>(null);
+  const dueRef = useRef<HTMLInputElement>(null);
+  const { errors, values } = state;
+
+  // 每次 action 返回错误，焦点都移到第一个出错的字段
+  useEffect(() => {
+    if (state.status !== 'error') return;
+    if (state.errors.title !== undefined) titleRef.current?.focus();
+    if (state.errors.due !== undefined) dueRef.current?.focus();
+  }, [state]);
+
+  return (
+    <form
+      action={formAction}
+      aria-label="新建待办"
+      onSubmit={(event) => {
+        // 提交期间忽略再次提交：preventDefault 之后 React 不会调用 action
+        if (pending) event.preventDefault();
+      }}
+    >
+      <label>
+        标题
+        {/* 提交之后 React 会重置表单，输入框回到 defaultValue：用返回的值，用户输入的内容才不会丢 */}
+        <input
+          ref={titleRef}
+          name="title"
+          defaultValue={values.title}
+          aria-invalid={errors.title !== undefined ? true : undefined}
+          aria-describedby={errors.title !== undefined ? `${id}-title` : undefined}
+        />
+      </label>
+      {errors.title !== undefined && <p id={`${id}-title`}>{errors.title}</p>}
+      <label>
+        截止日期
+        <input
+          ref={dueRef}
+          name="due"
+          type="date"
+          defaultValue={values.due}
+          aria-invalid={errors.due !== undefined ? true : undefined}
+          aria-describedby={errors.due !== undefined ? `${id}-due` : undefined}
+        />
+      </label>
+      {errors.due !== undefined && <p id={`${id}-due`}>{errors.due}</p>}
+      {/* 用 aria-disabled 而不是 disabled：按钮被禁用时，焦点会掉到 <body>（e07） */}
+      <button type="submit" aria-disabled={pending ? true : undefined}>
         {pending ? '保存中…' : '保存'}
       </button>
       <p role="status">{state.message}</p>
@@ -499,14 +692,21 @@ export function TodoForm({ action }: { action: SaveAction }) {
   const dueRef = useRef<HTMLInputElement>(null);
   const { errors, values } = state;
 
-  // 出错之后，焦点移到第一个出错的字段
+  // 每次 action 返回错误，焦点都移到第一个出错的字段
   useEffect(() => {
     if (state.status !== 'error') return;
     titleRef.current?.focus();
   }, [state]);
 
   return (
-    <form action={formAction} aria-label="新建待办">
+    <form
+      action={formAction}
+      aria-label="新建待办"
+      onSubmit={(event) => {
+        // 提交期间忽略再次提交：preventDefault 之后 React 不会调用 action
+        if (pending) event.preventDefault();
+      }}
+    >
       <label>
         标题
         {/* 提交之后 React 会重置表单，输入框回到 defaultValue：用返回的值，用户输入的内容才不会丢 */}
@@ -531,7 +731,8 @@ export function TodoForm({ action }: { action: SaveAction }) {
         />
       </label>
       {errors.due !== undefined && <p id={`${id}-due`}>{errors.due}</p>}
-      <button type="submit" disabled={pending}>
+      {/* 用 aria-disabled 而不是 disabled：按钮被禁用时，焦点会掉到 <body>（e07） */}
+      <button type="submit" aria-disabled={pending ? true : undefined}>
         {pending ? '保存中…' : '保存'}
       </button>
       <p role="status">{state.message}</p>
@@ -553,7 +754,7 @@ export function TodoForm({ action }: { action: SaveAction }) {
   const dueRef = useRef<HTMLInputElement>(null);
   const { errors, values } = state;
 
-  // 出错之后，焦点移到第一个出错的字段
+  // 每次 action 返回错误，焦点都移到第一个出错的字段
   useEffect(() => {
     if (state.status !== 'error') return;
     if (state.errors.title !== undefined) titleRef.current?.focus();
@@ -561,7 +762,14 @@ export function TodoForm({ action }: { action: SaveAction }) {
   }, [state]);
 
   return (
-    <form action={formAction} aria-label="新建待办">
+    <form
+      action={formAction}
+      aria-label="新建待办"
+      onSubmit={(event) => {
+        // 提交期间忽略再次提交：preventDefault 之后 React 不会调用 action
+        if (pending) event.preventDefault();
+      }}
+    >
       <label>
         标题
         {/* 提交之后 React 会重置表单，输入框回到 defaultValue：用返回的值，用户输入的内容才不会丢 */}
@@ -586,7 +794,8 @@ export function TodoForm({ action }: { action: SaveAction }) {
         />
       </label>
       {errors.due !== undefined && <p id={`${id}-due`}>{errors.due}</p>}
-      <button type="submit" disabled={pending}>
+      {/* 用 aria-disabled 而不是 disabled：按钮被禁用时，焦点会掉到 <body>（e07） */}
+      <button type="submit" aria-disabled={pending ? true : undefined}>
         {pending ? '保存中…' : '保存'}
       </button>
       {state.status === 'error' && <p role="status">{state.message}</p>}

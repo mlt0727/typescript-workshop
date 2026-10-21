@@ -4,7 +4,7 @@ title: 校验表单数据
 ---
 在 `todo-form.ts` 中实现 `parseTodoForm(form)`：Server Function 收到的 `FormData` 可能来自页面上的表单，也可能是任何人直接发来的请求，每个值都要检查。规则：
 
-1. **标题** `title`：`form.get('title')` 是文件时报错“标题必须是文本”；去掉首尾的空白之后为空（或者没有这个字段）时报错“请填写标题”；超过 100 个字符时报错“标题最多 100 个字”。字符数按码点算（`[...title].length`，一个表情算一个）；
+1. **标题** `title`：`form.get('title')` 是文件时报错“标题必须是文本”；去掉首尾的空白之后为空（或者没有这个字段）时报错“请填写标题”；去掉空白之后超过 100 个字符时报错“标题最多 100 个字”。字符数按码点算（`[...title].length`，😀 这样的表情算一个）；
 2. **优先级** `priority`：没有这个字段或者是空字符串时是 `'normal'`；否则必须**正好**是 `'low'`、`'normal'`、`'high'` 之一（不去空白、区分大小写），不是时（包括文件）报错“优先级只能是 low、normal 或 high”；
 3. **截止日期** `due`：没有这个字段，或者去掉首尾的空白之后为空时是 `null`；否则去掉空白之后必须是 `YYYY-MM-DD` 格式、并且是**真正存在**的日期（`2026-02-30` 不是），不是时（包括文件）报错“截止日期的格式是 YYYY-MM-DD”；
 4. **标签** `tags`：同名的多个字段（`form.getAll('tags')`）。有文件时报错“标签必须是文本”；否则每个去掉首尾的空白，丢掉空的和重复的（保留第一次出现的顺序），超过 5 个时报错“最多 5 个标签”；
@@ -178,6 +178,8 @@ describe('parseTodoForm', () => {
     expect(parseTodoForm(form([['title', '   ']]))).toStrictEqual({ ok: false, errors: { title: '请填写标题' } });
     expect(parseTodoForm(form([['title', '字'.repeat(101)]]))).toStrictEqual({ ok: false, errors: { title: '标题最多 100 个字' } });
     expect(parseTodoForm(form([['title', '😀'.repeat(100)]])).ok).toBe(true);
+    // 先去掉首尾的空白，再数字数
+    expect(parseTodoForm(form([['title', ' ' + '字'.repeat(100) + ' ']])).ok).toBe(true);
   });
 
   test('客户端可以发送任何东西：文件不是文本', () => {
@@ -190,15 +192,18 @@ describe('parseTodoForm', () => {
 
   test('优先级：空的时候是 normal，其他的值必须正好是三个之一', () => {
     expect(parseTodoForm(form([['title', 'a'], ['priority', '']]))).toMatchObject({ ok: true, value: { priority: 'normal' } });
-    for (const bad of ['urgent', 'High', ' high']) {
+    for (const bad of ['urgent', 'High', ' high', '  ']) {
       expect(parseTodoForm(form([['title', 'a'], ['priority', bad]])), bad).toStrictEqual({ ok: false, errors: { priority: '优先级只能是 low、normal 或 high' } });
     }
   });
 
   test('截止日期：必须是真正存在的日期', () => {
     expect(parseTodoForm(form([['title', 'a'], ['due', '']]))).toMatchObject({ ok: true, value: { due: null } });
-    expect(parseTodoForm(form([['title', 'a'], ['due', '2028-02-29']]))).toMatchObject({ ok: true, value: { due: '2028-02-29' } });
-    for (const bad of ['2026-02-30', '2026-13-01', '2026-2-3', '10/31/2026', '2026-10-31T00:00']) {
+    expect(parseTodoForm(form([['title', 'a'], ['due', '   ']]))).toMatchObject({ ok: true, value: { due: null } });
+    for (const good of ['2028-02-29', '2000-02-29', '2026-12-31']) {
+      expect(parseTodoForm(form([['title', 'a'], ['due', good]])), good).toMatchObject({ ok: true, value: { due: good } });
+    }
+    for (const bad of ['2026-02-30', '2026-02-29', '2100-02-29', '2026-04-31', '2026-13-01', '2026-00-10', '2026-10-00', '2026-2-3', '10/31/2026', '2026-10-31T00:00']) {
       expect(parseTodoForm(form([['title', 'a'], ['due', bad]])), bad).toStrictEqual({ ok: false, errors: { due: '截止日期的格式是 YYYY-MM-DD' } });
     }
   });
@@ -208,11 +213,18 @@ describe('parseTodoForm', () => {
     expect(tags('a', '', ' a ', 'b')).toMatchObject({ ok: true, value: { tags: ['a', 'b'] } });
     expect(tags('1', '2', '3', '4', '5', '5', ' ')).toMatchObject({ ok: true, value: { tags: ['1', '2', '3', '4', '5'] } });
     expect(tags('1', '2', '3', '4', '5', '6')).toStrictEqual({ ok: false, errors: { tags: '最多 5 个标签' } });
+    // 保留第一次出现的顺序，不排序
+    expect(tags('b', 'a', 'b')).toMatchObject({ ok: true, value: { tags: ['b', 'a'] } });
+    // 有文件时报告“必须是文本”，即使标签也超过了 5 个
+    const withFile = form([['title', 'a'], ...['1', '2', '3', '4', '5', '6'].map((v) => ['tags', v] as const), ['tags', file()]]);
+    expect(parseTodoForm(withFile)).toStrictEqual({ ok: false, errors: { tags: '标签必须是文本' } });
   });
 
   test('复选框：只有值是 on 才算选中', () => {
     expect(parseTodoForm(form([['title', 'a'], ['done', 'on']]))).toMatchObject({ ok: true, value: { done: true } });
     expect(parseTodoForm(form([['title', 'a'], ['done', 'false']]))).toMatchObject({ ok: true, value: { done: false } });
+    // 同名的字段只看第一个
+    expect(parseTodoForm(form([['title', 'a'], ['done', 'false'], ['done', 'on']]))).toMatchObject({ ok: true, value: { done: false } });
   });
 
   test('一次报告所有的错误', () => {

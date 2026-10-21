@@ -10743,8 +10743,8 @@
       ]
     },
     "h05-mutations-validation": {
-      "verifiedAt": "2026-10-21T15:54:12.024Z",
-      "sourceHash": "91e48f0e7ca6a6c1",
+      "verifiedAt": "2026-10-21T16:19:29.284Z",
+      "sourceHash": "f1c4be91a3ff5003",
       "ok": true,
       "checks": [
         {
@@ -10810,7 +10810,7 @@
         {
           "target": "exercise:action-form:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(TodoForm › 一开始：空的表单，没有错误，按钮可用 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\",TodoForm › 提交时把上一次的状态和表单数据交给 action ⟶ TestingLibraryElementError: Unable to find role=\"status\",TodoForm › 提交期间按钮不可用，文字是“保存中…” ⟶ expect(…).toBeDisabled(),TodoForm › 字段错误：标红、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'),TodoForm › 显示的是 action 返回的值：React 在提交之后会重置表单 ⟶ expect(…).toHaveValue('服务器整理过的标题'),TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标红 ⟶ expect(…).toHaveFocus(),TodoForm › 保存成功：清空表单，错误消失，显示消息 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(TodoForm › 一开始：空的表单，没有错误，按钮可用 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\",TodoForm › 提交时把上一次的状态和表单数据交给 action ⟶ TestingLibraryElementError: Unable to find role=\"status\",TodoForm › 提交期间：aria-disabled，文字是“保存中…”，再次提交被忽略 ⟶ expect(…).toHaveAttribute('aria-disabled', 'true'),TodoForm › 字段错误：标记、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'),TodoForm › 显示的是 action 返回的值：React 在提交之后会重置表单 ⟶ expect(…).toHaveValue('服务器整理过的标题'),TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标记 ⟶ expect(…).toHaveFocus(),TodoForm › 两个字段都出错：焦点在第一个（标题） ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'),TodoForm › 连续两次同样的错误：每次都把焦点移到出错的字段 ⟶ expect(…).toHaveFocus(),TodoForm › 保存成功：清空表单，错误消失，显示消息 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'))"
         },
         {
           "target": "exercise:action-form:solution:solution",
@@ -10825,22 +10825,32 @@
         {
           "target": "exercise:action-form:wrong:no-default-value",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 字段错误：标红、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveValue('很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长,TodoForm › 显示的是 action 返回的值：React 在提交之后会重置表单 ⟶ expect(…).toHaveValue('服务器整理过的标题'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 字段错误：标记、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveValue('很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长的标题很长,TodoForm › 显示的是 action 返回的值：React 在提交之后会重置表单 ⟶ expect(…).toHaveValue('服务器整理过的标题'))"
         },
         {
           "target": "exercise:action-form:wrong:no-describedby",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 字段错误：标红、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveAccessibleDescription('标题最多 100 个字'),TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标红 ⟶ expect(…).toHaveAccessibleDescription('截止日期不能早于今天'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 字段错误：标记、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveAccessibleDescription('标题最多 100 个字'),TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标记 ⟶ expect(…).toHaveAccessibleDescription('截止日期不能早于今天'))"
         },
         {
-          "target": "exercise:action-form:wrong:enabled-while-pending",
+          "target": "exercise:action-form:wrong:resubmit-while-pending",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 提交期间按钮不可用，文字是“保存中…” ⟶ expect(…).toBeDisabled(),TodoForm › 字段错误：标红、说明错误、焦点移到出错的字段，输入的内容保留 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'),TodoForm › 显示的是 action 返回的值：React 在提交之后会重置表单 ⟶ expect(…).toHaveValue('服务器整理过的标题'),TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标红 ⟶ expect(…).toHaveFocus(),TodoForm › 保存成功：清空表单，错误消失，显示消息 ⟶ expect(…).toHaveAttribute('aria-invalid', 'true'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 提交期间：aria-disabled，文字是“保存中…”，再次提交被忽略 ⟶ expect(…).toHaveBeenCalledTimes(1))"
+        },
+        {
+          "target": "exercise:action-form:wrong:focus-on-status-change",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 连续两次同样的错误：每次都把焦点移到出错的字段 ⟶ expect(…).toHaveFocus())"
+        },
+        {
+          "target": "exercise:action-form:wrong:focus-last-error",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 两个字段都出错：焦点在第一个（标题） ⟶ expect(…).toHaveFocus())"
         },
         {
           "target": "exercise:action-form:wrong:focus-title-always",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标红 ⟶ expect(…).toHaveFocus())"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(TodoForm › 只有截止日期出错：焦点移到截止日期，标题不标记 ⟶ expect(…).toHaveFocus())"
         },
         {
           "target": "exercise:action-form:wrong:status-on-error-only",
