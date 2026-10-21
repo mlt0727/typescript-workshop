@@ -83,6 +83,66 @@ test.describe('课内学习闭环', () => {
     await expect(again.locator('.result')).toContainText('已经过期');
   });
 
+  test('课程更新之后：基于旧版本的草稿给出提示，可以保留自己的代码，也可以改用新版的起始代码', async ({ page }) => {
+    /** 模拟课程更新：把数据库中这道题的草稿改成是基于另一个版本的起始代码写的 */
+    const makeOutdated = () =>
+      page.evaluate(async () => {
+        const request = indexedDB.open('typescript-workshop');
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+        const tx = db.transaction('drafts', 'readwrite');
+        const drafts = tx.objectStore('drafts');
+        const get = drafts.get('a08-optional-chaining-nullish::get-city');
+        await new Promise((resolve) => (get.onsuccess = resolve));
+        drafts.put({ ...get.result, baseHash: 'an-older-version' });
+        await new Promise((resolve) => (tx.oncomplete = resolve));
+        db.close();
+      });
+    const banner = (ex: ReturnType<typeof block>) => ex.getByRole('status').filter({ hasText: '课程已更新' });
+
+    await page.goto(A08);
+    let ex = block(page, 'get-city');
+    await ex.scrollIntoViewIfNeeded();
+    await waitTypecheck(ex);
+    await setEditor(ex, `${GET_CITY_CORRECT}// 我自己的代码\n`);
+    await page.waitForTimeout(800); // 草稿写入数据库有 400ms 防抖
+
+    // 保留：提示消失，代码不变，刷新之后也不再提示
+    await makeOutdated();
+    await page.reload();
+    ex = block(page, 'get-city');
+    await ex.scrollIntoViewIfNeeded();
+    await expect(banner(ex)).toBeVisible();
+    await expect(ex.locator('.cm-content')).toContainText('// 我自己的代码');
+    await ex.getByRole('button', { name: '保留我的代码' }).click();
+    await expect(banner(ex)).toHaveCount(0);
+    await page.waitForTimeout(800);
+    await page.reload();
+    ex = block(page, 'get-city');
+    await ex.scrollIntoViewIfNeeded();
+    await expect(ex.locator('.cm-content')).toContainText('// 我自己的代码');
+    await expect(banner(ex)).toHaveCount(0);
+
+    // 改用新版：确认之后编辑器中是起始代码，草稿被删除
+    await makeOutdated();
+    await page.reload();
+    ex = block(page, 'get-city');
+    await ex.scrollIntoViewIfNeeded();
+    await expect(banner(ex)).toBeVisible();
+    page.once('dialog', (dialog) => void dialog.accept());
+    await ex.getByRole('button', { name: '改用新版起始代码' }).click();
+    await expect(banner(ex)).toHaveCount(0);
+    await expect(ex.locator('.cm-content')).not.toContainText('// 我自己的代码');
+    await page.waitForTimeout(800);
+    await page.reload();
+    ex = block(page, 'get-city');
+    await ex.scrollIntoViewIfNeeded();
+    await expect(ex.locator('.cm-content')).not.toContainText('// 我自己的代码');
+    await expect(banner(ex)).toHaveCount(0);
+  });
+
   test('下载本地项目：zip 中是当前的代码、验收测试和项目配置', async ({ page }) => {
     await page.goto(A08);
     const ex = block(page, 'get-city');
