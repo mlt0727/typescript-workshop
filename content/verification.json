@@ -11079,8 +11079,8 @@
       ]
     },
     "h08-env-config": {
-      "verifiedAt": "2026-10-21T16:43:36.113Z",
-      "sourceHash": "cd6f02812d674f16",
+      "verifiedAt": "2026-10-21T17:18:09.330Z",
+      "sourceHash": "272bed04f3b6c469",
       "ok": true,
       "checks": [
         {
@@ -11096,7 +11096,7 @@
         {
           "target": "exercise:env-files:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({,resolveEnv › 开发环境：读 .env.development，不读 .env.production ⟶ expect(…).toBe('.env.local'),resolveEnv › 测试环境：不读 .env.local，读 .env.test 和 .env.test.local ⟶ expect(…).toBe('.env.test'),resolveEnv › 解析：空行、注释、空白、不合格式的行 ⟶ expect(…).toStrictEqual({ A: '1', B: '', C: 'a=b' }),resolveEnv › 引号：双引号中的 \\n 是换行；单引号中的内容原样保留，不展开 ⟶ expect(…).toStrictEqual({,resolveEnv › 展开：$NAME 和 ${NAME}，用的是最终的值；不存在的是空字符串；\\$ 是 $ ⟶ expect(…).toStrictEqual({,resolveEnv › 展开只做一层；来自 process.env 的值原样使用 ⟶ expect(…).toStrictEqual({ A: '$C', B: '$NOT_EXPANDED', C: '$NOT_EXPANDED', D: '$B' }),resolveEnv › 只包含文件中出现过的变量 ⟶ expect(…).toStrictEqual({ A: '2' }))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({,resolveEnv › 开发环境：读 .env.development，不读 .env.production ⟶ expect(…).toBe('.env.local'),resolveEnv › 测试环境：不读 .env.local，读 .env.test 和 .env.test.local ⟶ expect(…).toBe('.env.test'),resolveEnv › 解析：空行、注释、空白、不合格式的行 ⟶ expect(…).toStrictEqual({ A: '1', B: '', C: 'a=b' }),resolveEnv › 同一个文件中出现两次：后面的生效 ⟶ expect(…).toStrictEqual({ A: '2', B: '2' }),resolveEnv › 引号和注释：没有引号时第一个 # 之后是注释；双引号中的 \\n 是换行，单引号中的不是；两种引号中的 $ 都展开 ⟶ expect(…).toStrictEqual({,resolveEnv › 展开：$NAME 和 ${NAME}；不存在的是空字符串；\\$ 是 $ ⟶ expect(…).toStrictEqual({,resolveEnv › 展开时 process.env 中的值优先 ⟶ expect(…).toStrictEqual({ HOST: 'db.prod', URL: 'http://db.prod' }),resolveEnv › 展开是递归的：被引用的变量中的 $ 也要展开 ⟶ expect(…).toStrictEqual({ A: 'end', B: 'end', C: 'end', D: 'end!' }),resolveEnv › 一个文件一个文件地处理：优先级更高的文件看不到只在更低的文件中定义的变量 ⟶ expect(…).toStrictEqual({,resolveEnv › processEnv 中的空字符串是设置了；undefined 等于没有设置 ⟶ expect(…).toStrictEqual({ A: '', B: '2' }),resolveEnv › 只包含文件中出现过的变量 ⟶ expect(…).toStrictEqual({ A: '2' }))"
         },
         {
           "target": "exercise:env-files:solution:solution",
@@ -11104,7 +11104,7 @@
           "detail": "通过；types=ok rules=ok tests=ok"
         },
         {
-          "target": "exercise:env-files:alt:first-found-wins",
+          "target": "exercise:env-files:alt:index-parse",
           "ok": true,
           "detail": "通过；types=ok rules=ok tests=ok"
         },
@@ -11121,27 +11121,47 @@
         {
           "target": "exercise:env-files:wrong:files-over-process",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({,resolveEnv › 展开只做一层；来自 process.env 的值原样使用 ⟶ expect(…).toStrictEqual({ A: '$C', B: '$NOT_EXPANDED', C: '$NOT_EXPANDED', D: '$B' }),resolveEnv › 只包含文件中出现过的变量 ⟶ expect(…).toStrictEqual({ A: '2' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({,resolveEnv › 展开时 process.env 中的值优先 ⟶ expect(…).toStrictEqual({ HOST: 'db.prod', URL: 'http://db.prod' }),resolveEnv › processEnv 中的空字符串是设置了；undefined 等于没有设置 ⟶ expect(…).toStrictEqual({ A: '', B: '2' }),resolveEnv › 只包含文件中出现过的变量 ⟶ expect(…).toStrictEqual({ A: '2' }))"
         },
         {
-          "target": "exercise:env-files:wrong:expand-single-quotes",
+          "target": "exercise:env-files:wrong:undefined-is-set",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 引号：双引号中的 \\n 是换行；单引号中的内容原样保留，不展开 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › processEnv 中的空字符串是设置了；undefined 等于没有设置 ⟶ expect(…).toStrictEqual({ A: '', B: '2' }))"
+        },
+        {
+          "target": "exercise:env-files:wrong:single-quotes-literal",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 引号和注释：没有引号时第一个 # 之后是注释；双引号中的 \\n 是换行，单引号中的不是；两种引号中的 $ 都展开 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:env-files:wrong:hash-needs-space",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 引号和注释：没有引号时第一个 # 之后是注释；双引号中的 \\n 是换行，单引号中的不是；两种引号中的 $ 都展开 ⟶ expect(…).toStrictEqual({)"
+        },
+        {
+          "target": "exercise:env-files:wrong:duplicate-first-wins",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 同一个文件中出现两次：后面的生效 ⟶ expect(…).toStrictEqual({ A: '2', B: '2' }))"
         },
         {
           "target": "exercise:env-files:wrong:no-escape",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({,resolveEnv › 展开：$NAME 和 ${NAME}，用的是最终的值；不存在的是空字符串；\\$ 是 $ ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 生产环境：实测的结果 ⟶ expect(…).toStrictEqual({,resolveEnv › 展开：$NAME 和 ${NAME}；不存在的是空字符串；\\$ 是 $ ⟶ expect(…).toStrictEqual({)"
         },
         {
-          "target": "exercise:env-files:wrong:keep-inline-comment",
+          "target": "exercise:env-files:wrong:own-file-first",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 引号：双引号中的 \\n 是换行；单引号中的内容原样保留，不展开 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 展开：$NAME 和 ${NAME}；不存在的是空字符串；\\$ 是 $ ⟶ expect(…).toStrictEqual({,resolveEnv › 展开时 process.env 中的值优先 ⟶ expect(…).toStrictEqual({ HOST: 'db.prod', URL: 'http://db.prod' }))"
+        },
+        {
+          "target": "exercise:env-files:wrong:no-recursion",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(resolveEnv › 展开是递归的：被引用的变量中的 $ 也要展开 ⟶ expect(…).toStrictEqual({ A: 'end', B: 'end', C: 'end', D: 'end!' }))"
         },
         {
           "target": "exercise:inline-env:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(inlinePublicEnv › 浏览器：NEXT_PUBLIC_ 换成构建时的值（JSON 字符串），其他的变量换成 undefined ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 值中的引号和换行用 JSON 的写法转义；没有设置的 NEXT_PUBLIC_ 变量是 undefined ⟶ expect(…).toBe('a(\"say \\\\\"hi\\\\\"\\\\n\"); b(undefined);'),inlinePublicEnv › 服务器：NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效），其他的变量留到运行时读取 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 字符串字面量的下标和点的写法一样 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 浏览器中只剩 process.env 本身（动态的读取、解构）：换成 ({})，并且计数 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › inlined 按名字排序，同一个变量只出现一次 ⟶ expect(…).toStrictEqual([ 'NEXT_PUBLIC_A', 'NEXT_PUBLIC_Z' ]),inlinePublicEnv › 替换之后可以继续访问属性 ⟶ expect(…).toBe('\"hello-from-env\".length'))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(inlinePublicEnv › 浏览器：NEXT_PUBLIC_ 换成构建时的值（JSON 字符串），其他的变量换成 undefined ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 值中的引号和换行用 JSON 的写法转义；浏览器中，构建时没有值的 NEXT_PUBLIC_ 变量是 undefined，不算被替换 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 服务器：有值的 NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效）；其他的变量和没有值的 NEXT_PUBLIC_ 留到运行时读取 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 字符串字面量的下标和点的写法一样 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 浏览器中只剩 process.env 本身（动态的读取、解构）：换成 ({})，并且计数 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › inlined 按名字排序，同一个变量只出现一次 ⟶ expect(…).toStrictEqual([ 'NEXT_PUBLIC_A', 'NEXT_PUBLIC_Z' ]),inlinePublicEnv › 替换之后可以继续访问属性 ⟶ expect(…).toBe('\"hello-from-env\".length'))"
         },
         {
           "target": "exercise:inline-env:solution:solution",
@@ -11156,12 +11176,12 @@
         {
           "target": "exercise:inline-env:wrong:server-not-inlined",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 服务器：NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效），其他的变量留到运行时读取 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 服务器：有值的 NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效）；其他的变量和没有值的 NEXT_PUBLIC_ 留到运行时读取 ⟶ expect(…).toStrictEqual({)"
         },
         {
-          "target": "exercise:inline-env:wrong:keep-secret-in-browser",
+          "target": "exercise:inline-env:wrong:missing-public-replaced",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 浏览器：NEXT_PUBLIC_ 换成构建时的值（JSON 字符串），其他的变量换成 undefined ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 字符串字面量的下标和点的写法一样 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 值中的引号和换行用 JSON 的写法转义；浏览器中，构建时没有值的 NEXT_PUBLIC_ 变量是 undefined，不算被替换 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 服务器：有值的 NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效）；其他的变量和没有值的 NEXT_PUBLIC_ 留到运行时读取 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › inlined 按名字排序，同一个变量只出现一次 ⟶ expect(…).toStrictEqual([ 'NEXT_PUBLIC_A', 'NEXT_PUBLIC_Z' ]))"
         },
         {
           "target": "exercise:inline-env:wrong:dot-only",
@@ -11171,7 +11191,7 @@
         {
           "target": "exercise:inline-env:wrong:raw-value",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 浏览器：NEXT_PUBLIC_ 换成构建时的值（JSON 字符串），其他的变量换成 undefined ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 值中的引号和换行用 JSON 的写法转义；没有设置的 NEXT_PUBLIC_ 变量是 undefined ⟶ expect(…).toBe('a(\"say \\\\\"hi\\\\\"\\\\n\"); b(undefined);'),inlinePublicEnv › 服务器：NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效），其他的变量留到运行时读取 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 字符串字面量的下标和点的写法一样 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 替换之后可以继续访问属性 ⟶ expect(…).toBe('\"hello-from-env\".length'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 浏览器：NEXT_PUBLIC_ 换成构建时的值（JSON 字符串），其他的变量换成 undefined ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 值中的引号和换行用 JSON 的写法转义；浏览器中，构建时没有值的 NEXT_PUBLIC_ 变量是 undefined，不算被替换 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 服务器：有值的 NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效）；其他的变量和没有值的 NEXT_PUBLIC_ 留到运行时读取 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 字符串字面量的下标和点的写法一样 ⟶ expect(…).toStrictEqual({,inlinePublicEnv › 替换之后可以继续访问属性 ⟶ expect(…).toBe('\"hello-from-env\".length'))"
         },
         {
           "target": "exercise:inline-env:wrong:no-boundary",
@@ -11181,7 +11201,7 @@
         {
           "target": "exercise:inline-env:wrong:bare-on-server",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 服务器：NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效），其他的变量留到运行时读取 ⟶ expect(…).toStrictEqual({)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(inlinePublicEnv › 服务器：有值的 NEXT_PUBLIC_ 同样被替换（实测启动时的新值不会生效）；其他的变量和没有值的 NEXT_PUBLIC_ 留到运行时读取 ⟶ expect(…).toStrictEqual({)"
         },
         {
           "target": "exercise:inline-env:wrong:braces-without-parens",
