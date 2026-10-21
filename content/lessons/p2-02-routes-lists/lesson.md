@@ -2,14 +2,14 @@
 version: 1
 mode: react
 estimatedMinutes: 55
-review: ai-draft
+review: self-reviewed
 problem: 项目面板的第二个里程碑做出两个页面：项目列表和项目详情。列表可以按状态筛选、搜索、排序，这些条件保存在地址中，刷新、后退、分享链接都不会丢；点进一个项目再返回，筛选条件还在。g13 已经讲过 React Router 的路由配置、路径参数和查询参数，这一课把它们用在一个真实的应用里，并解决几个具体的问题：地址怎样设计，地址中的值怎样读出和生成，中文名称怎样排序，从详情页怎样回到“刚才那个列表”，以及根地址怎样转到列表页。
 objectives:
   - 按“哪个资源放在路径中，怎样查看放在查询参数中”设计页面的地址，让同一个页面只有一种地址
   - 把读取和生成查询参数集中在一对函数中，用允许的值的列表验证地址中的值
   - 用 localeCompare 或 Intl.Collator 按拼音排序中文，把没有值的项排在最后，并用第二个条件让顺序确定
   - 用 Link 的 state 在导航时传递数据，把类型为 any 的 location.state 当作 unknown 检查
-  - 用 loader 返回 replace(…) 转向另一个地址，并且不在历史记录中留下转向前的地址
+  - 用 <Navigate replace> 转向另一个地址，理解 replace 与 redirect 对历史记录的影响
 references:
   - title: Link — React Router API（state、replace、relative）
     url: https://reactrouter.com/api/components/Link
@@ -58,7 +58,7 @@ p2-01 的需求中，这个里程碑负责第 1 条和第 2 条的“查看”�
 
 一条简单的规则：**“看哪一个”放在路径中，“怎样看”放在查询参数中**。项目编号决定了显示的是哪个资源，没有它这个页面就不存在，所以是路径的一部分（`useParams`）。筛选、搜索、排序只是查看同一份数据的不同方式，都可以省略，省略时有默认值，所以是查询参数（`useSearchParams`）。
 
-还有一个细节：`/projects` 和 `/projects?status=all&sort=due` 显示的是同一个列表。让应用**只生成一种写法**，和默认值相同的条件不写进地址。这样地址更短，同一个列表的两个链接可以直接比较是否相同，浏览器的历史记录、统计工具中也不会出现同一个页面的几种写法。
+还有一个细节：`/projects` 和 `/projects?status=all&sort=due` 显示的是同一个列表。让应用**只生成一种写法**，和默认值相同的条件不写进地址（只有空格的搜索词是个例外：它会生成 `?q=+`，但列表和没有搜索词时一样）。这样地址更短，同一个列表的两个链接可以直接比较是否相同，浏览器的历史记录、统计工具中也不会出现同一个页面的几种写法。
 
 ## 读出和生成查询参数
 
@@ -110,7 +110,7 @@ console.log(new URLSearchParams().toString() === '');
 
 ## 排序：中文名称与空值
 
-按名称排序，最直接的写法是 `a.name < b.name`，或者不带比较函数的 `sort()`。它们比较的是 UTF-16 码元，对中文来说就是 Unicode 中汉字的编号顺序，用户看起来是乱的。`localeCompare` 按某种语言的规则比较，`'zh-CN'` 的规则是按拼音：
+按名称排序，最直接的写法是 `a.name < b.name`，或者不带比较函数的 `sort()`。它们比较的是 UTF-16 码元，对中文来说就是 Unicode 中汉字的编号顺序，在用户看来是乱的。`localeCompare` 按某种语言的规则比较，`'zh-CN'` 的规则是按拼音：
 
 :::playground{#collation mode=ts}
 ```ts file=main.ts
@@ -130,7 +130,7 @@ console.log(['b', 'B', 'a', 'A'].toSorted().join(' '), ['b', 'B', 'a', 'A'].toSo
 - 第 10 行：英文字母也不再是“大写全在前面”。
 :::
 
-`localeCompare` 和 `Intl.Collator` 的结果依赖运行环境中的语言数据。本课的顺序在 Chromium、WebKit 和 Node 24 中测量过，结果相同；Firefox 没有测量。
+`localeCompare` 和 `Intl.Collator` 的结果依赖运行环境中的语言数据。本课的顺序在 Chromium、WebKit 和 Node 24 中测量过，结果相同；Firefox 没有测量。一定要写上 `'zh-CN'`：不写时用的是浏览器的语言，中文浏览器中碰巧按拼音排序，英文浏览器中就不是了，在自己的电脑上测试还发现不了。
 
 按截止日期排序时还有两个问题：
 
@@ -174,20 +174,25 @@ function listSearchOf(state: unknown): string {
 
 ## 根地址：转到列表页
 
-打开 `/` 时转到 `/projects`。转向的时机最好是在渲染之前：路由的 `loader` 函数在导航到这个路由时、渲染之前运行（g14 会详细讲它加载数据的用法），它可以返回一个“转向”的响应：
+打开 `/` 时转到 `/projects`。转向时要注意历史记录：“后退”应该回到用户来的地方。有三种写法，在 React Router 8.5 中实测（历史记录中原来是 A、B 两个页面）：
 
-```ts
-import { replace } from 'react-router';
+| 写法 | 在地址栏打开 `/` 之后按“后退” | 从站内的页面 B 导航到 `/` 之后按“后退” |
+| --- | --- | --- |
+| loader 返回 `redirect('/projects')` | 回到 `/`，又被转回 `/projects`，好像“后退”没有用 | 回到 B |
+| loader 返回 `replace('/projects')` | 回到 B | 回到 A：**B 被替换掉了** |
+| `<Navigate to="/projects" replace />` | 回到 B | 回到 B |
 
-{ index: true, loader: () => replace('/projects') }
+- `redirect` 新增一条历史记录。直接打开 `/` 时，`/` 已经是当前的那一条，转向又在它后面加了一条 `/projects`；
+- `replace` 替换当前的那一条。直接打开 `/` 时，替换的正是 `/`；但从站内导航时，loader 在 `/` 进入历史记录**之前**就运行了，这时“当前的那一条”还是 B；
+- `<Navigate>` 是一个组件：`/` 先成为当前的一条、渲染出这个组件，它再在 Effect 中跳转（g11），所以 `replace` 替换的总是 `/`。代价是先渲染了一次再跳转。
+
+所以这里用 `<Navigate to="/projects" replace />`：
+
+```tsx
+{ index: true, element: <Navigate to="/projects" replace /> }
 ```
 
-为什么是 `replace` 而不是 `redirect`？两者都转到另一个地址，区别在历史记录：
-
-- `redirect('/projects')`：新增一条历史记录。历史记录变成“之前的页面 → `/` → `/projects`”。用户按“后退”回到 `/`，又被转到 `/projects`，怎么也退不出去；
-- `replace('/projects')`：用 `/projects` **替换** `/` 这一条，历史记录是“之前的页面 → `/projects`”，“后退”正常。
-
-在组件中也可以用 `<Navigate to="/projects" replace />` 转向，同样要加上 `replace`。但它要先渲染、再在 Effect 中跳转，React Router 的文档也建议尽量不用这个组件。
+如果站内没有任何链接指向 `/`，`/` 只是直接访问的入口，用 loader 返回 `replace('/projects')` 也可以，它在渲染之前就转走了（g14 讲过 loader）。React Router 的文档介绍 `<Navigate>` 时，说它是为不能使用 Hook 的类组件准备的，建议尽量用 `useNavigate`。但 `useNavigate` 返回的函数只能在事件处理函数或 Effect 中调用；像这样“渲染到这里就转走”的场景，用组件最直接。
 
 ## 编程挑战
 
@@ -204,7 +209,8 @@ import { replace } from 'react-router';
 - **在地址中写入默认值**：同一个列表有了几种地址。只在条件和默认值不同时才写入。
 - **按码元排序中文**：`sort()`、`<` 比较的是编号，不是拼音。用 `localeCompare(…, 'zh-CN')` 或 `Intl.Collator`。
 - **直接使用 `location.state`**：它的类型是 `any`，可能是 `null`，也可能是旧的格式。当作 `unknown` 检查。
-- **转向时新增历史记录**：`redirect` 或没有 `replace` 的 `<Navigate>` 让用户退不出去。根地址转向用 `replace`。
+- **转向时没有替换历史记录**：`redirect` 或没有 `replace` 的 `<Navigate>`，直接打开 `/` 之后，按一下“后退”退不出去。
+- **在 loader 中用 `replace` 处理站内也会访问的地址**：替换掉的是上一页。
 
 ## 下一步
 

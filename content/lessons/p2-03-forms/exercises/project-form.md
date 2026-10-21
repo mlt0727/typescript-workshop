@@ -243,7 +243,7 @@ export function saveProject(id: string | null, input: ProjectInput): Project {
 }
 ```
 ```tsx file=routes.tsx readonly
-import { Link, Outlet, replace, useNavigate, useParams, type RouteObject } from 'react-router';
+import { Link, Navigate, Outlet, useNavigate, useParams, type RouteObject } from 'react-router';
 import { TODAY } from './data';
 import { STATUS_NAMES } from './model';
 import { ProjectForm } from './ProjectForm';
@@ -347,7 +347,7 @@ export const routes: RouteObject[] = [
     path: '/',
     Component: Layout,
     children: [
-      { index: true, loader: () => replace('/projects') },
+      { index: true, element: <Navigate to="/projects" replace /> },
       { path: 'projects', Component: ProjectList },
       { path: 'projects/new', Component: NewProject },
       { path: 'projects/:projectId', Component: ProjectDetail },

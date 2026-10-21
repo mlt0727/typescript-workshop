@@ -4,14 +4,14 @@ title: 带业务规则的项目更新
 ---
 在 `project.ts` 中实现 `update(project, action)`：按动作更新项目，返回 `{ ok: true, project }`；动作违反规则时返回 `{ ok: false, error }`。**不修改**传入的项目；没有任何变化时返回**原来的那个对象**。
 
-- `rename`：去掉首尾空白，不能为空（`名称不能为空`），不超过 60 个字符（按字符计算，emoji 算一个；`名称不能超过 60 个字符`）；
+- `rename`：去掉首尾空白，不能为空（`名称不能为空`），不超过 60 个字符（按码点计算，即 `[...name].length`，常见的 emoji 算一个；`名称不能超过 60 个字符`）；
 - `setDueDate`：`null` 表示清除；否则必须是 `YYYY-MM-DD` 格式、并且日历上真实存在的一天（`2026-02-29` 不存在），否则是 `日期格式不正确`；
 - `addTask`：去掉首尾空白，不能为空（`任务不能为空`），不超过 80 个字符（`任务不能超过 80 个字符`）；`id` 已经存在时是 `任务的编号重复`；新任务没有完成，放在最后；
 - `toggleTask`：切换这个任务的完成状态；`removeTask`：删除这个任务。找不到 `taskId` 时是 `没有这个任务`；
 - **已完成的项目**不能添加、切换、删除任务（`已完成的项目不能修改任务`），但可以改名、改截止日期；
-- `setStatus`：允许的变化是 计划中 → 进行中、进行中 → 计划中、进行中 → 已完成、已完成 → 进行中。其他的变化是 `不能从“已完成”改为“计划中”` 这样的错误（用 `STATUS_NAMES` 中的中文名称）。改为已完成时，所有的任务都要已经完成（没有任务也可以），否则是 `还有 2 个任务没有完成`；改为现在的状态不算变化。
+- `setStatus`：允许的变化是计划中 → 进行中、进行中 → 计划中、进行中 → 已完成、已完成 → 进行中。其他的变化是 `不能从“已完成”改为“计划中”` 这样的错误（用 `STATUS_NAMES` 中的中文名称）。改为已完成时，所有的任务都要已经完成（没有任务也可以），否则是 `还有 2 个任务没有完成`；改为现在的状态不算变化。
 
-检查的顺序以上面每一条中的顺序为准（例如已完成的项目中添加一个空的任务，错误是“已完成的项目不能修改任务”）。
+检查的顺序：修改任务的动作（添加、切换、删除）**先**检查项目是否已完成（已完成的项目中添加一个空的任务，错误是“已完成的项目不能修改任务”）；`addTask` 接着依次检查任务为空、太长、编号重复；`setStatus` 先检查转换表，再检查未完成的任务。
 
 :::files{role=support}
 ```ts file=model.ts readonly
@@ -229,6 +229,16 @@ describe('任务', () => {
     expect(update(base, { type: 'addTask', id: 'c', title: ' ' })).toEqual({ ok: false, error: '任务不能为空' });
     expect(update(base, { type: 'addTask', id: 'c', title: '字'.repeat(81) })).toEqual({ ok: false, error: '任务不能超过 80 个字符' });
     expect(update(base, { type: 'addTask', id: 'a', title: '重复' })).toEqual({ ok: false, error: '任务的编号重复' });
+    expect(okProject(update(base, { type: 'addTask', id: 'c', title: '😀'.repeat(80) })).tasks.at(-1)?.title, '按码点计算长度').toBe('😀'.repeat(80));
+  });
+
+  test('检查的顺序', () => {
+    const done = with_({ status: 'done', tasks: [task('a', true)] });
+    expect(update(done, { type: 'addTask', id: 'b', title: ' ' })).toEqual({ ok: false, error: '已完成的项目不能修改任务' });
+    expect(update(done, { type: 'toggleTask', taskId: 'x' })).toEqual({ ok: false, error: '已完成的项目不能修改任务' });
+    expect(update(base, { type: 'addTask', id: 'a', title: ' ' })).toEqual({ ok: false, error: '任务不能为空' });
+    expect(update(base, { type: 'addTask', id: 'a', title: '字'.repeat(81) })).toEqual({ ok: false, error: '任务不能超过 80 个字符' });
+    expect(update(with_({ status: 'planning' }), { type: 'setStatus', status: 'done' })).toEqual({ ok: false, error: '不能从“计划中”改为“已完成”' });
   });
 
   test('切换完成状态、删除；找不到时失败', () => {
@@ -332,7 +342,8 @@ function text(value: string, what: string, max: number): { value: string } | { e
 
 function validDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  // 只有日期的 ISO 字符串按 UTC 解析；2026-02-30 会变成 3 月 2 日，转回字符串就不一样了
+  // 只有日期的 ISO 字符串按 UTC 解析。2026-02-30 在 Chromium 中会进位成 3 月 2 日（转回字符串就不一样了），
+  // 在 WebKit（Safari）中是 NaN：下面一行把两种情况都排除了
   const time = Date.parse(value);
   return !Number.isNaN(time) && new Date(time).toISOString().slice(0, 10) === value;
 }

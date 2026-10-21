@@ -11,7 +11,7 @@
       explain: Date 是一个普通的内置类型，可以写在类型中。
 - id: dst
   type: single
-  prompt: "`(new Date(2026, 10, 2) - new Date(2026, 9, 31)) / 86400000` 在某些地区不是 2，而是 2.04。为什么？"
+  prompt: "`(new Date(2026, 10, 2).getTime() - new Date(2026, 9, 31).getTime()) / 86400000` 在某些地区不是 2，而是 2.04。为什么？"
   options:
     - text: 这两个是本地时间的零点，中间经过了夏令时的切换，那一天有 25 个小时
       correct: true

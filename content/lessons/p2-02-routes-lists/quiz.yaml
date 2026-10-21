@@ -22,18 +22,18 @@
       explain: 断言只是告诉编译器“相信我”，运行时什么也不检查。
 - id: replace-redirect
   type: single
-  prompt: 根地址 `/` 的 loader 返回 `redirect('/projects')`。用户打开 `/` 之后按“后退”，会发生什么？
+  prompt: 根地址 `/` 的 loader 返回 `redirect('/projects')`。用户在地址栏中打开 `/`，之后按“后退”，会发生什么？
   options:
     - text: 回到 `/`，又被转到 `/projects`，看起来“后退”没有用
       correct: true
-      explain: redirect 新增一条历史记录。用 replace('/projects') 替换 `/` 这一条，“后退”就回到之前的页面。
+      explain: redirect 新增一条历史记录。用 `<Navigate to="/projects" replace />` 替换 `/` 这一条，“后退”就回到之前的页面。
     - text: 回到打开 `/` 之前的页面
       explain: 这是 replace 的效果；redirect 会在历史记录中留下 `/`。
     - text: 页面报错，因为 loader 不能返回转向
       explain: loader 可以返回 redirect 或 replace 的响应，路由会转到那个地址。
 - id: sort-chinese
   type: single
-  prompt: "`['官网改版', '安全检查', '数据迁移'].toSorted()` 的顺序是按什么排的？"
+  prompt: "`['培训课程', '季度报告', '安全检查'].toSorted()` 的结果正好和拼音的顺序相反。它是按什么排的？"
   options:
     - text: 按每个字符的 UTF-16 码元，也就是汉字在 Unicode 中的编号，不是拼音
       correct: true

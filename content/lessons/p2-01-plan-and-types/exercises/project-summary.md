@@ -106,8 +106,8 @@ function utcDay(date: string): number {
 export function summarize(project: Project, today: string): Summary {
   const total = project.tasks.length;
   const done = project.tasks.filter((t) => t.done).length;
-  const percent = total === 0 ? 0 : Math.floor((done / total) * 100);
-  const daysLeft = project.dueDate === null ? null : Math.round((utcDay(project.dueDate) - utcDay(today)) / DAY);
+  const percent = total === 0 ? 0 : Math.floor((done * 100) / total);
+  const daysLeft = project.dueDate === null ? null : (utcDay(project.dueDate) - utcDay(today)) / DAY;
   const overdue = project.status !== 'done' && daysLeft !== null && daysLeft < 0;
   return { done, total, percent, overdue, daysLeft };
 }
@@ -145,6 +145,12 @@ describe('summarize', () => {
     expect(summarize(project({ tasks: [task('a', true)] }), '2026-10-20')).toMatchObject({ done: 1, total: 1, percent: 100 });
   });
 
+  test('百分比没有浮点误差', () => {
+    const tasks = (done: number, total: number) => Array.from({ length: total }, (_, i) => task(`t${i}`, i < done));
+    expect(summarize(project({ tasks: tasks(29, 50) }), '2026-10-20').percent, '29/50 是 58%').toBe(58);
+    expect(summarize(project({ tasks: tasks(57, 100) }), '2026-10-20').percent, '57/100 是 57%').toBe(57);
+  });
+
   test('没有任务时百分比是 0', () => {
     expect(summarize(project({ tasks: [] }), '2026-10-20')).toMatchObject({ done: 0, total: 0, percent: 0 });
   });
@@ -160,9 +166,12 @@ describe('summarize', () => {
     expect(summarize(project({ dueDate: '2027-01-02' }), '2026-12-30').daysLeft).toBe(3);
     expect(summarize(project({ dueDate: '2028-03-01' }), '2028-02-28').daysLeft).toBe(2);
     expect(summarize(project({ dueDate: '2027-03-01' }), '2027-02-28').daysLeft).toBe(1);
-    // 很多地区在 3 月、11 月切换夏令时，这一天只有 23 或 25 个小时；按日历计算不受影响
+    // 夏令时切换的那一天只有 23 或 25 个小时；按日历计算不受影响
+    // 北美：2026-11-01、2027-03-14；欧洲：2027-03-28；中国 1986–1991 年也实行过夏令时：1990-04-15
     expect(summarize(project({ dueDate: '2026-11-02' }), '2026-10-31').daysLeft).toBe(2);
     expect(summarize(project({ dueDate: '2027-03-15' }), '2027-03-13').daysLeft).toBe(2);
+    expect(summarize(project({ dueDate: '2027-03-29' }), '2027-03-27').daysLeft).toBe(2);
+    expect(summarize(project({ dueDate: '1990-04-16' }), '1990-04-14').daysLeft).toBe(2);
   });
 
   test('过期：没有完成，并且截止日期在今天之前（当天不算）', () => {
@@ -177,7 +186,7 @@ describe('summarize', () => {
 :::
 
 :::hint{level=1}
-百分比用 `Math.floor(done / total * 100)`，`total` 为 0 时单独处理（0 / 0 是 `NaN`）。天数可以用正文示例中的 `utcDay`：把 `'2026-10-20'` 分成年、月、日，交给 `Date.UTC(年, 月 - 1, 日)`，两天相减再除以一天的毫秒数。
+百分比用 `Math.floor(done * 100 / total)`（先乘再除，原因见解释），`total` 为 0 时单独处理（0 / 0 是 `NaN`）。天数可以用正文示例中的 `utcDay`：把 `'2026-10-20'` 分成年、月、日，交给 `Date.UTC(年, 月 - 1, 日)`，两天相减再除以一天的毫秒数。
 :::
 
 :::hint{level=2}
@@ -189,9 +198,9 @@ describe('summarize', () => {
 
 `today` 作为参数传进来，测试就可以指定任意一天，包括闰年和夏令时切换的那几天。如果在函数中写 `new Date()`，测试只能在“今天”运行，结果每天都可能不同。
 
-计算天数时用 UTC：UTC 没有夏令时，每天都正好 24 小时，两天的 UTC 零点相减一定是 24 小时的整数倍。用本地时间的零点相减，在切换夏令时的那一天会多出或者少了一个小时。测试中有两个这样的日子（2026 年 11 月 1 日前后、2027 年 3 月 14 日前后，美国等地区在这两天切换）；在没有夏令时的地区运行，本地时间的写法也能通过，但换一个地区的用户就可能出错。
+计算天数时用 UTC：UTC 没有夏令时，每天都正好 24 小时，两天的 UTC 零点相减一定是一天的毫秒数的整数倍，除出来就是整数。用本地时间的零点相减，在切换夏令时的那一天会多出或少掉一个小时。测试中有几个这样的日子：北美的 2026 年 11 月 1 日和 2027 年 3 月 14 日、欧洲的 2027 年 3 月 28 日，以及 1990 年 4 月 15 日（中国在 1986–1991 年实行过夏令时）。在上海、柏林、纽约等时区运行，本地时间的写法都会在其中某一天算错；只在从来没有夏令时的时区（例如 UTC）才看不出问题。
 
-百分比向下取整也是一个有意的决定：只完成了 99.6% 的项目不应该显示为 100%。
+百分比向下取整也是一个有意的决定：只完成了 99.6% 的项目不应该显示为 100%。注意先乘 100 再除：`29 / 50 * 100` 是 `57.99999999999999`（二进制的浮点数表示不了 0.58，a04），向下取整就成了 57；`29 * 100 / 50` 是整数运算，正好是 58。
 :::
 
 :::variant{kind=alt name=date-parse}
@@ -260,8 +269,8 @@ function utcDay(date: string): number {
 export function summarize(project: Project, today: string): Summary {
   const total = project.tasks.length;
   const done = project.tasks.filter((t) => t.done).length;
-  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
-  const daysLeft = project.dueDate === null ? null : Math.round((utcDay(project.dueDate) - utcDay(today)) / DAY);
+  const percent = total === 0 ? 0 : Math.round((done * 100) / total);
+  const daysLeft = project.dueDate === null ? null : (utcDay(project.dueDate) - utcDay(today)) / DAY;
   const overdue = project.status !== 'done' && daysLeft !== null && daysLeft < 0;
   return { done, total, percent, overdue, daysLeft };
 }
@@ -302,8 +311,8 @@ function utcDay(date: string): number {
 export function summarize(project: Project, today: string): Summary {
   const total = project.tasks.length;
   const done = project.tasks.filter((t) => t.done).length;
-  const percent = total === 0 ? 0 : Math.floor((done / total) * 100);
-  const daysLeft = project.dueDate === null ? null : Math.round((utcDay(project.dueDate) - utcDay(today)) / DAY);
+  const percent = total === 0 ? 0 : Math.floor((done * 100) / total);
+  const daysLeft = project.dueDate === null ? null : (utcDay(project.dueDate) - utcDay(today)) / DAY;
   const overdue = project.status !== 'done' && daysLeft !== null && daysLeft <= 0;
   return { done, total, percent, overdue, daysLeft };
 }
@@ -344,8 +353,8 @@ function utcDay(date: string): number {
 export function summarize(project: Project, today: string): Summary {
   const total = project.tasks.length;
   const done = project.tasks.filter((t) => t.done).length;
-  const percent = total === 0 ? 0 : Math.floor((done / total) * 100);
-  const daysLeft = project.dueDate === null ? null : Math.round((utcDay(project.dueDate) - utcDay(today)) / DAY);
+  const percent = total === 0 ? 0 : Math.floor((done * 100) / total);
+  const daysLeft = project.dueDate === null ? null : (utcDay(project.dueDate) - utcDay(today)) / DAY;
   const overdue = daysLeft !== null && daysLeft < 0;
   return { done, total, percent, overdue, daysLeft };
 }
@@ -386,8 +395,8 @@ function utcDay(date: string): number {
 export function summarize(project: Project, today: string): Summary {
   const total = project.tasks.length;
   const done = project.tasks.filter((t) => t.done).length;
-  const percent = Math.floor((done / total) * 100);
-  const daysLeft = project.dueDate === null ? null : Math.round((utcDay(project.dueDate) - utcDay(today)) / DAY);
+  const percent = Math.floor((done * 100) / total);
+  const daysLeft = project.dueDate === null ? null : (utcDay(project.dueDate) - utcDay(today)) / DAY;
   const overdue = project.status !== 'done' && daysLeft !== null && daysLeft < 0;
   return { done, total, percent, overdue, daysLeft };
 }

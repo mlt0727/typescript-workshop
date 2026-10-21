@@ -4,12 +4,12 @@ title: 项目列表与详情页
 ---
 在 `routes.tsx` 中完成项目面板的路由，导出路由配置 `routes`。`query.ts` 是上一个练习的答案，`data.ts` 是项目数据和固定的“今天” `TODAY`；这些文件和 `main.tsx` 都是只读的。布局 `Layout` 已经写好，所有页面都显示在它的 `<main>` 中。
 
-1. `/`：用 loader 转到 `/projects`，并且**替换**当前的历史记录；
+1. `/`：转到 `/projects`，并且**替换**当前的历史记录：直接打开 `/` 之后按“后退”，不会又被转回来；从站内的页面导航到 `/`，“后退”仍然回到那个页面；
 2. `/projects`：标题 `<h1>项目</h1>`。
    - 三个带标签的控件：“状态”下拉框（选项的 `value` 是 `STATUS_FILTERS` 中的值）、“搜索”输入框、“排序”下拉框（`value` 是 `SORTS` 中的值）。它们的值都来自地址（用 `parseFilters`）；
    - 改变状态、排序：更新地址，新增一条历史记录；输入搜索词：更新地址，**替换**当前的历史记录（`{ replace: true, flushSync: true }`）。地址用 `toSearchParams` 生成，和默认值相同的条件不出现在地址中，其他条件保留；
    - 一个 `role="status"` 的段落：“找到 3 个项目”，没有项目时是“没有符合条件的项目”；
-   - 有项目时显示列表 `<ul aria-label="项目列表">`（用 `listProjects`），每一项：项目名称是指向 `/projects/编号` 的链接，后面是负责人、状态的名称、进度（如 `1/3`）、截止日期（没有时写“无截止日期”），过期的项目再加上“已过期”；
+   - 有项目时显示列表 `<ul aria-label="项目列表">`（用 `listProjects`），每一项：项目名称是指向 `/projects/编号` 的链接，后面是负责人、状态的名称、进度（如“进度 1/3”）、截止日期（没有时写“无截止日期”），过期的项目再加上“已过期”；
 3. `/projects/:projectId`：标题是项目名称，下面依次是这几段文字：
    - “负责人：阿明”“状态：进行中”“进度：1/2（50%）”；
    - 截止日期：“截止日期：2026-10-12（已过期 8 天）”，还没到期是“（还有 26 天）”，当天是“（今天到期）”；已完成的项目只写“截止日期：2026-09-30”；没有截止日期时写“没有截止日期”；
@@ -114,8 +114,8 @@ function utcDay(date: string): number {
 export function summarize(project: Project, today: string): Summary {
   const total = project.tasks.length;
   const done = project.tasks.filter((t) => t.done).length;
-  const percent = total === 0 ? 0 : Math.floor((done / total) * 100);
-  const daysLeft = project.dueDate === null ? null : Math.round((utcDay(project.dueDate) - utcDay(today)) / DAY);
+  const percent = total === 0 ? 0 : Math.floor((done * 100) / total);
+  const daysLeft = project.dueDate === null ? null : (utcDay(project.dueDate) - utcDay(today)) / DAY;
   const overdue = project.status !== 'done' && daysLeft !== null && daysLeft < 0;
   return { done, total, percent, overdue, daysLeft };
 }
@@ -251,7 +251,7 @@ createRoot(container).render(<RouterProvider router={router} />);
 
 :::files{role=solution}
 ```tsx file=routes.tsx
-import { Link, Outlet, replace, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
+import { Link, Navigate, Outlet, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
 import { PROJECTS, TODAY } from './data';
 import { STATUS_NAMES, type Project } from './model';
 import { listProjects, parseFilters, SORTS, STATUS_FILTERS, toSearchParams, type Filters, type Sort, type StatusFilter } from './query';
@@ -291,7 +291,7 @@ function ProjectItem({ project, from }: { project: Project; from: FromList }) {
       <Link to={`/projects/${project.id}`} state={from}>
         {project.name}
       </Link>{' '}
-      {project.owner} · {STATUS_NAMES[project.status]} · {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
+      {project.owner} · {STATUS_NAMES[project.status]} · 进度 {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
       {s.overdue && <strong> 已过期</strong>}
     </li>
   );
@@ -420,8 +420,8 @@ export const routes: RouteObject[] = [
     path: '/',
     Component: Layout,
     children: [
-      // replace 而不是 redirect：否则“后退”回到 /，又被转回 /projects，用户就退不出去了
-      { index: true, loader: () => replace('/projects') },
+      // replace：/ 不留在历史记录中，“后退”不会又被转回来；站内导航到 / 时，上一页也还在
+      { index: true, element: <Navigate to="/projects" replace /> },
       { path: 'projects', Component: ProjectList },
       { path: 'projects/:projectId', Component: ProjectDetail },
       { path: '*', Component: NotFound },
@@ -486,6 +486,9 @@ const statusSelect = () => screen.getByLabelText('状态');
 const sortSelect = () => screen.getByLabelText('排序');
 const searchBox = () => screen.getByLabelText('搜索');
 const param = (router: ReturnType<typeof start>['router'], name: string) => new URLSearchParams(router.state.location.search).get(name);
+/** 元素的全部文字正好是 text（允许其中有 <strong> 这样的子元素） */
+const byFullText = (text: string) =>
+  screen.getByText((_, el) => el !== null && el.textContent === text && ![...el.children].some((child) => child.textContent === text));
 
 const BY_DUE = ['季度报告', '数据迁移', '培训课程', '安全检查', '官网改版', '招聘计划'];
 
@@ -496,6 +499,15 @@ describe('地址', () => {
     expect(router.state.location.pathname).toBe('/projects');
     await act(() => router.navigate(-1));
     expect(router.state.location.pathname, '“后退”应该回到进入 / 之前的页面').toBe('/elsewhere');
+  });
+
+  test('站内导航到 / 时，转向也不能覆盖上一页', async () => {
+    const { router } = start('/projects/p1');
+    await act(() => router.navigate('/'));
+    expect(await screen.findByRole('heading', { level: 1, name: '项目' })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/projects');
+    await act(() => router.navigate(-1));
+    expect(router.state.location.pathname, '“后退”应该回到 /projects/p1').toBe('/projects/p1');
   });
 
   test('其他地址：“页面不存在”，显示在布局的 main 中', () => {
@@ -574,6 +586,15 @@ describe('修改筛选条件', () => {
     expect(listNames()).toEqual(BY_DUE);
   });
 
+  test('改变排序：新增一条历史记录', async () => {
+    const { router, user } = start('/projects');
+    await user.selectOptions(sortSelect(), 'name');
+    expect(listNames()[0]).toBe('安全检查');
+    await act(() => router.navigate(-1));
+    expect(sortSelect()).toHaveValue('due');
+    expect(listNames()).toEqual(BY_DUE);
+  });
+
   test('选回默认值时，参数从地址中删除；其他参数保留', async () => {
     const { router, user } = start('/projects?q=%E9%98%BF&status=active');
     await user.selectOptions(sortSelect(), 'name');
@@ -588,9 +609,9 @@ describe('修改筛选条件', () => {
 
   test('输入搜索词：更新地址，替换当前的历史记录', async () => {
     const { router, user } = start('/elsewhere', '/projects?status=active');
-    await user.type(searchBox(), 'lin');
-    expect(searchBox()).toHaveValue('lin');
-    expect(param(router, 'q')).toBe('lin');
+    await user.type(searchBox(), 'l in');
+    expect(searchBox(), '输入框中的空格要保留').toHaveValue('l in');
+    expect(param(router, 'q')).toBe('l in');
     expect(param(router, 'status')).toBe('active');
     expect(screen.getByRole('status')).toHaveTextContent('没有符合条件的项目');
     await user.clear(searchBox());
@@ -621,7 +642,7 @@ describe('详情页', () => {
     expect(heading()).toHaveTextContent('数据迁移');
     expect(screen.getByRole('main')).toContainElement(heading());
     for (const text of ['负责人：阿明', '状态：进行中', '进度：1/2（50%）', '截止日期：2026-10-12（已过期 8 天）']) {
-      expect(screen.getByText(text)).toBeInTheDocument();
+      expect(byFullText(text)).toBeInTheDocument();
     }
     const tasks = within(screen.getByRole('list', { name: '任务' })).getAllByRole('listitem');
     expect(tasks.map((li) => li.textContent)).toEqual(['备份旧库（已完成）', '迁移脚本']);
@@ -636,15 +657,15 @@ describe('详情页', () => {
     ];
     for (const [path, text] of cases) {
       const { unmount } = start(path);
-      expect(screen.getByText(text), path).toBeInTheDocument();
+      expect(byFullText(text), path).toBeInTheDocument();
       unmount();
     }
   });
 
   test('没有任务时显示“还没有任务”', () => {
     start('/projects/p4');
-    expect(screen.getByText('进度：0/0（0%）')).toBeInTheDocument();
-    expect(screen.getByText('还没有任务')).toBeInTheDocument();
+    expect(byFullText('进度：0/0（0%）')).toBeInTheDocument();
+    expect(byFullText('还没有任务')).toBeInTheDocument();
     expect(screen.queryByRole('list', { name: '任务' })).toBeNull();
   });
 
@@ -673,7 +694,7 @@ describe('详情页', () => {
 :::
 
 :::hint{level=1}
-路由配置：`Layout` 的 `children` 中放 `{ index: true, loader: () => replace('/projects') }`、`{ path: 'projects', … }`、`{ path: 'projects/:projectId', … }`、`{ path: '*', … }`。列表页：`const [searchParams, setSearchParams] = useSearchParams()`，`const filters = parseFilters(searchParams)`；修改时 `setSearchParams(toSearchParams({ ...filters, ...changes }), options)`。
+路由配置：`Layout` 的 `children` 中放 `{ index: true, element: <Navigate to="/projects" replace /> }`、`{ path: 'projects', … }`、`{ path: 'projects/:projectId', … }`、`{ path: '*', … }`。列表页：`const [searchParams, setSearchParams] = useSearchParams()`，`const filters = parseFilters(searchParams)`；修改时 `setSearchParams(toSearchParams({ ...filters, ...changes }), options)`。
 :::
 
 :::hint{level=2}
@@ -687,9 +708,9 @@ describe('详情页', () => {
 
 “返回项目列表”用链接的 `state` 记住列表页当时的 `search`。它随这条历史记录保存，刷新之后还在，但不在地址中，分享出去的详情页链接很干净。读取时一定要检查：`location.state` 的类型是 `any`，直接打开的页面中它是 `null`，旧版本的应用写进去的可能是别的格式。如果把 `{ listSearch: 42 }` 直接交给 `Link`，React Router 生成地址时会出错，整个页面都显示不出来。
 
-根地址的 loader 返回 `replace('/projects')`，在渲染之前就转走了，并且 `/` 不会留在历史记录中。用 `redirect` 的话，“后退”回到 `/`，又被转回 `/projects`。
+根地址用 `<Navigate to="/projects" replace />`：`/` 这一条历史记录被 `/projects` 替换。正文比较了三种转向的写法：loader 返回 `replace(…)` 在直接打开 `/` 时没有问题，但站内导航到 `/` 时，它替换掉的是上一页（错误解 `loader-replace`）；不加 `replace` 的 `<Navigate>` 或者 loader 返回 `redirect(…)`，直接打开 `/` 之后就“后退”不出去。
 
-替代解换了几种写法：根地址用 `<Navigate to="/projects" replace />`；`projects` 路由下嵌套 index 路由和 `:projectId` 子路由，列表中用相对链接 `to={p.id}`，返回链接用 `to={{ pathname: '..', search }}`（`..` 是相对于路由的上一级，也就是 `/projects`）；`setSearchParams` 传一个函数，在地址当前的参数上修改；用类型守卫 `isFromList` 检查 `state`。
+替代解换了几种写法：`projects` 路由下嵌套 index 路由和 `:projectId` 子路由，列表中用相对链接 `to={p.id}`，返回链接用 `to={{ pathname: '..', search }}`（`..` 是相对于路由的上一级，也就是 `/projects`）；`setSearchParams` 传一个函数，在地址当前的参数上修改；用类型守卫 `isFromList` 检查 `state`。
 :::
 
 :::variant{kind=alt name=navigate-nested}
@@ -764,7 +785,7 @@ function ProjectList() {
                 <Link to={p.id} state={from}>
                   {p.name}
                 </Link>
-                ：{[p.owner, STATUS_NAMES[p.status], `${s.done}/${s.total}`, p.dueDate ?? '无截止日期'].join('，')}
+                ：{[p.owner, STATUS_NAMES[p.status], `进度 ${s.done}/${s.total}`, p.dueDate ?? '无截止日期'].join('，')}
                 {s.overdue ? '（已过期）' : null}
               </li>
             );
@@ -843,9 +864,9 @@ export const routes: RouteObject[] = [
 ```
 :::
 
-:::variant{kind=wrong name=push-redirect fails=tests reason="用 redirect 转向：/ 留在历史记录中，“后退”又被转回 /projects"}
+:::variant{kind=wrong name=push-redirect fails=tests reason="Navigate 没有加 replace：/ 留在历史记录中，“后退”又被转回 /projects"}
 ```tsx file=routes.tsx
-import { Link, Outlet, redirect, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
+import { Link, Navigate, Outlet, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
 import { PROJECTS, TODAY } from './data';
 import { STATUS_NAMES, type Project } from './model';
 import { listProjects, parseFilters, SORTS, STATUS_FILTERS, toSearchParams, type Filters, type Sort, type StatusFilter } from './query';
@@ -885,7 +906,7 @@ function ProjectItem({ project, from }: { project: Project; from: FromList }) {
       <Link to={`/projects/${project.id}`} state={from}>
         {project.name}
       </Link>{' '}
-      {project.owner} · {STATUS_NAMES[project.status]} · {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
+      {project.owner} · {STATUS_NAMES[project.status]} · 进度 {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
       {s.overdue && <strong> 已过期</strong>}
     </li>
   );
@@ -1014,8 +1035,8 @@ export const routes: RouteObject[] = [
     path: '/',
     Component: Layout,
     children: [
-      // replace 而不是 redirect：否则“后退”回到 /，又被转回 /projects，用户就退不出去了
-      { index: true, loader: () => redirect('/projects') },
+      // replace：/ 不留在历史记录中，“后退”不会又被转回来；站内导航到 / 时，上一页也还在
+      { index: true, element: <Navigate to="/projects" /> },
       { path: 'projects', Component: ProjectList },
       { path: 'projects/:projectId', Component: ProjectDetail },
       { path: '*', Component: NotFound },
@@ -1025,9 +1046,8 @@ export const routes: RouteObject[] = [
 ```
 :::
 
-:::variant{kind=wrong name=filters-state fails=tests reason="把筛选条件复制进 useState：“后退”之后地址变了，界面却不变"}
+:::variant{kind=wrong name=loader-replace fails=tests reason="loader 返回 replace：站内导航到 / 时，上一页的历史记录被替换掉了"}
 ```tsx file=routes.tsx
-import { useState } from 'react';
 import { Link, Outlet, replace, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
 import { PROJECTS, TODAY } from './data';
 import { STATUS_NAMES, type Project } from './model';
@@ -1068,7 +1088,190 @@ function ProjectItem({ project, from }: { project: Project; from: FromList }) {
       <Link to={`/projects/${project.id}`} state={from}>
         {project.name}
       </Link>{' '}
-      {project.owner} · {STATUS_NAMES[project.status]} · {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
+      {project.owner} · {STATUS_NAMES[project.status]} · 进度 {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
+      {s.overdue && <strong> 已过期</strong>}
+    </li>
+  );
+}
+
+function ProjectList() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { search } = useLocation();
+  const filters = parseFilters(searchParams);
+  const projects = listProjects(PROJECTS, filters, TODAY);
+
+  /** 地址只由 toSearchParams 生成：和默认值相同的条件不出现在地址中 */
+  function update(changes: Partial<Filters>, options?: { replace: boolean; flushSync: boolean }) {
+    setSearchParams(toSearchParams({ ...filters, ...changes }), options);
+  }
+
+  return (
+    <>
+      <h1>项目</h1>
+      <label>
+        状态{' '}
+        <select
+          value={filters.status}
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            const status = STATUS_FILTERS.find((s) => s === value);
+            if (status !== undefined) update({ status });
+          }}
+        >
+          {STATUS_FILTERS.map((s) => (
+            <option key={s} value={s}>
+              {STATUS_LABELS[s]}
+            </option>
+          ))}
+        </select>
+      </label>{' '}
+      <label>
+        搜索 <input type="search" value={filters.q} onChange={(e) => update({ q: e.currentTarget.value }, { replace: true, flushSync: true })} />
+      </label>{' '}
+      <label>
+        排序{' '}
+        <select
+          value={filters.sort}
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            const sort = SORTS.find((s) => s === value);
+            if (sort !== undefined) update({ sort });
+          }}
+        >
+          {SORTS.map((s) => (
+            <option key={s} value={s}>
+              {SORT_LABELS[s]}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p role="status">{projects.length === 0 ? '没有符合条件的项目' : `找到 ${projects.length} 个项目`}</p>
+      {projects.length > 0 && (
+        <ul aria-label="项目列表">
+          {projects.map((p) => (
+            <ProjectItem key={p.id} project={p} from={{ listSearch: search }} />
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}
+
+function dueText(project: Project, s: Summary): string {
+  const { dueDate } = project;
+  if (dueDate === null || s.daysLeft === null) return '没有截止日期';
+  if (project.status === 'done') return `截止日期：${dueDate}`;
+  if (s.daysLeft > 0) return `截止日期：${dueDate}（还有 ${s.daysLeft} 天）`;
+  if (s.daysLeft === 0) return `截止日期：${dueDate}（今天到期）`;
+  return `截止日期：${dueDate}（已过期 ${-s.daysLeft} 天）`;
+}
+
+function ProjectDetail() {
+  const { projectId } = useParams();
+  const location = useLocation();
+  const back = { pathname: '/projects', search: listSearchOf(location.state) };
+  const project = PROJECTS.find((p) => p.id === projectId);
+
+  if (project === undefined) {
+    return (
+      <>
+        <h1>没有这个项目</h1>
+        <Link to={back}>返回项目列表</Link>
+      </>
+    );
+  }
+
+  const s = summarize(project, TODAY);
+  return (
+    <>
+      <h1>{project.name}</h1>
+      <p>负责人：{project.owner}</p>
+      <p>状态：{STATUS_NAMES[project.status]}</p>
+      <p>
+        进度：{s.done}/{s.total}（{s.percent}%）
+      </p>
+      <p>{dueText(project, s)}</p>
+      {project.tasks.length === 0 ? (
+        <p>还没有任务</p>
+      ) : (
+        <ul aria-label="任务">
+          {project.tasks.map((t) => (
+            <li key={t.id}>
+              {t.title}
+              {t.done && '（已完成）'}
+            </li>
+          ))}
+        </ul>
+      )}
+      <Link to={back}>返回项目列表</Link>
+    </>
+  );
+}
+
+function NotFound() {
+  return <h1>页面不存在</h1>;
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: '/',
+    Component: Layout,
+    children: [
+      // replace：/ 不留在历史记录中，“后退”不会又被转回来；站内导航到 / 时，上一页也还在
+      { index: true, loader: () => replace('/projects') },
+      { path: 'projects', Component: ProjectList },
+      { path: 'projects/:projectId', Component: ProjectDetail },
+      { path: '*', Component: NotFound },
+    ],
+  },
+];
+```
+:::
+
+:::variant{kind=wrong name=filters-state fails=tests reason="把筛选条件复制进 useState：“后退”之后地址变了，界面却不变"}
+```tsx file=routes.tsx
+import { useState } from 'react';
+import { Link, Navigate, Outlet, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
+import { PROJECTS, TODAY } from './data';
+import { STATUS_NAMES, type Project } from './model';
+import { listProjects, parseFilters, SORTS, STATUS_FILTERS, toSearchParams, type Filters, type Sort, type StatusFilter } from './query';
+import { summarize, type Summary } from './summary';
+
+const STATUS_LABELS: Record<StatusFilter, string> = { all: '全部', ...STATUS_NAMES, overdue: '已过期' };
+const SORT_LABELS: Record<Sort, string> = { due: '截止日期', name: '名称' };
+
+/** 进入详情页时随导航保存的数据：列表页当时的查询字符串 */
+type FromList = { listSearch: string };
+
+/** location.state 的类型是 any：它可能来自旧版本的页面，也可能根本没有，用之前先检查 */
+function listSearchOf(state: unknown): string {
+  if (typeof state === 'object' && state !== null && 'listSearch' in state && typeof state.listSearch === 'string') {
+    return state.listSearch;
+  }
+  return '';
+}
+
+function Layout() {
+  return (
+    <>
+      <header>
+        <Link to="/projects">项目面板</Link>
+      </header>
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+}
+
+function ProjectItem({ project, from }: { project: Project; from: FromList }) {
+  const s = summarize(project, TODAY);
+  return (
+    <li>
+      <Link to={`/projects/${project.id}`} state={from}>
+        {project.name}
+      </Link>{' '}
+      {project.owner} · {STATUS_NAMES[project.status]} · 进度 {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
       {s.overdue && <strong> 已过期</strong>}
     </li>
   );
@@ -1199,8 +1402,8 @@ export const routes: RouteObject[] = [
     path: '/',
     Component: Layout,
     children: [
-      // replace 而不是 redirect：否则“后退”回到 /，又被转回 /projects，用户就退不出去了
-      { index: true, loader: () => replace('/projects') },
+      // replace：/ 不留在历史记录中，“后退”不会又被转回来；站内导航到 / 时，上一页也还在
+      { index: true, element: <Navigate to="/projects" replace /> },
       { path: 'projects', Component: ProjectList },
       { path: 'projects/:projectId', Component: ProjectDetail },
       { path: '*', Component: NotFound },
@@ -1212,7 +1415,7 @@ export const routes: RouteObject[] = [
 
 :::variant{kind=wrong name=back-plain fails=tests reason="“返回项目列表”总是 /projects：筛选条件丢了"}
 ```tsx file=routes.tsx
-import { Link, Outlet, replace, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
+import { Link, Navigate, Outlet, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
 import { PROJECTS, TODAY } from './data';
 import { STATUS_NAMES, type Project } from './model';
 import { listProjects, parseFilters, SORTS, STATUS_FILTERS, toSearchParams, type Filters, type Sort, type StatusFilter } from './query';
@@ -1252,7 +1455,7 @@ function ProjectItem({ project, from }: { project: Project; from: FromList }) {
       <Link to={`/projects/${project.id}`} state={from}>
         {project.name}
       </Link>{' '}
-      {project.owner} · {STATUS_NAMES[project.status]} · {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
+      {project.owner} · {STATUS_NAMES[project.status]} · 进度 {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
       {s.overdue && <strong> 已过期</strong>}
     </li>
   );
@@ -1381,8 +1584,8 @@ export const routes: RouteObject[] = [
     path: '/',
     Component: Layout,
     children: [
-      // replace 而不是 redirect：否则“后退”回到 /，又被转回 /projects，用户就退不出去了
-      { index: true, loader: () => replace('/projects') },
+      // replace：/ 不留在历史记录中，“后退”不会又被转回来；站内导航到 / 时，上一页也还在
+      { index: true, element: <Navigate to="/projects" replace /> },
       { path: 'projects', Component: ProjectList },
       { path: 'projects/:projectId', Component: ProjectDetail },
       { path: '*', Component: NotFound },
@@ -1394,7 +1597,7 @@ export const routes: RouteObject[] = [
 
 :::variant{kind=wrong name=state-unchecked fails=tests reason="直接使用类型为 any 的 location.state：格式不对时整个页面出错"}
 ```tsx file=routes.tsx
-import { Link, Outlet, replace, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
+import { Link, Navigate, Outlet, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
 import { PROJECTS, TODAY } from './data';
 import { STATUS_NAMES, type Project } from './model';
 import { listProjects, parseFilters, SORTS, STATUS_FILTERS, toSearchParams, type Filters, type Sort, type StatusFilter } from './query';
@@ -1434,7 +1637,7 @@ function ProjectItem({ project, from }: { project: Project; from: FromList }) {
       <Link to={`/projects/${project.id}`} state={from}>
         {project.name}
       </Link>{' '}
-      {project.owner} · {STATUS_NAMES[project.status]} · {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
+      {project.owner} · {STATUS_NAMES[project.status]} · 进度 {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
       {s.overdue && <strong> 已过期</strong>}
     </li>
   );
@@ -1563,8 +1766,8 @@ export const routes: RouteObject[] = [
     path: '/',
     Component: Layout,
     children: [
-      // replace 而不是 redirect：否则“后退”回到 /，又被转回 /projects，用户就退不出去了
-      { index: true, loader: () => replace('/projects') },
+      // replace：/ 不留在历史记录中，“后退”不会又被转回来；站内导航到 / 时，上一页也还在
+      { index: true, element: <Navigate to="/projects" replace /> },
       { path: 'projects', Component: ProjectList },
       { path: 'projects/:projectId', Component: ProjectDetail },
       { path: '*', Component: NotFound },
@@ -1576,7 +1779,7 @@ export const routes: RouteObject[] = [
 
 :::variant{kind=wrong name=search-push fails=tests reason="输入搜索词时新增历史记录：每个字都要按一次“后退”"}
 ```tsx file=routes.tsx
-import { Link, Outlet, replace, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
+import { Link, Navigate, Outlet, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
 import { PROJECTS, TODAY } from './data';
 import { STATUS_NAMES, type Project } from './model';
 import { listProjects, parseFilters, SORTS, STATUS_FILTERS, toSearchParams, type Filters, type Sort, type StatusFilter } from './query';
@@ -1616,7 +1819,7 @@ function ProjectItem({ project, from }: { project: Project; from: FromList }) {
       <Link to={`/projects/${project.id}`} state={from}>
         {project.name}
       </Link>{' '}
-      {project.owner} · {STATUS_NAMES[project.status]} · {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
+      {project.owner} · {STATUS_NAMES[project.status]} · 进度 {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
       {s.overdue && <strong> 已过期</strong>}
     </li>
   );
@@ -1745,8 +1948,372 @@ export const routes: RouteObject[] = [
     path: '/',
     Component: Layout,
     children: [
-      // replace 而不是 redirect：否则“后退”回到 /，又被转回 /projects，用户就退不出去了
-      { index: true, loader: () => replace('/projects') },
+      // replace：/ 不留在历史记录中，“后退”不会又被转回来；站内导航到 / 时，上一页也还在
+      { index: true, element: <Navigate to="/projects" replace /> },
+      { path: 'projects', Component: ProjectList },
+      { path: 'projects/:projectId', Component: ProjectDetail },
+      { path: '*', Component: NotFound },
+    ],
+  },
+];
+```
+:::
+
+:::variant{kind=wrong name=search-trim fails=tests reason="输入时就去掉空白：输入框的值来自地址，用户输入的空格被“吃掉”了"}
+```tsx file=routes.tsx
+import { Link, Navigate, Outlet, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
+import { PROJECTS, TODAY } from './data';
+import { STATUS_NAMES, type Project } from './model';
+import { listProjects, parseFilters, SORTS, STATUS_FILTERS, toSearchParams, type Filters, type Sort, type StatusFilter } from './query';
+import { summarize, type Summary } from './summary';
+
+const STATUS_LABELS: Record<StatusFilter, string> = { all: '全部', ...STATUS_NAMES, overdue: '已过期' };
+const SORT_LABELS: Record<Sort, string> = { due: '截止日期', name: '名称' };
+
+/** 进入详情页时随导航保存的数据：列表页当时的查询字符串 */
+type FromList = { listSearch: string };
+
+/** location.state 的类型是 any：它可能来自旧版本的页面，也可能根本没有，用之前先检查 */
+function listSearchOf(state: unknown): string {
+  if (typeof state === 'object' && state !== null && 'listSearch' in state && typeof state.listSearch === 'string') {
+    return state.listSearch;
+  }
+  return '';
+}
+
+function Layout() {
+  return (
+    <>
+      <header>
+        <Link to="/projects">项目面板</Link>
+      </header>
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+}
+
+function ProjectItem({ project, from }: { project: Project; from: FromList }) {
+  const s = summarize(project, TODAY);
+  return (
+    <li>
+      <Link to={`/projects/${project.id}`} state={from}>
+        {project.name}
+      </Link>{' '}
+      {project.owner} · {STATUS_NAMES[project.status]} · 进度 {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
+      {s.overdue && <strong> 已过期</strong>}
+    </li>
+  );
+}
+
+function ProjectList() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { search } = useLocation();
+  const filters = parseFilters(searchParams);
+  const projects = listProjects(PROJECTS, filters, TODAY);
+
+  /** 地址只由 toSearchParams 生成：和默认值相同的条件不出现在地址中 */
+  function update(changes: Partial<Filters>, options?: { replace: boolean; flushSync: boolean }) {
+    setSearchParams(toSearchParams({ ...filters, ...changes }), options);
+  }
+
+  return (
+    <>
+      <h1>项目</h1>
+      <label>
+        状态{' '}
+        <select
+          value={filters.status}
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            const status = STATUS_FILTERS.find((s) => s === value);
+            if (status !== undefined) update({ status });
+          }}
+        >
+          {STATUS_FILTERS.map((s) => (
+            <option key={s} value={s}>
+              {STATUS_LABELS[s]}
+            </option>
+          ))}
+        </select>
+      </label>{' '}
+      <label>
+        搜索 <input type="search" value={filters.q} onChange={(e) => update({ q: e.currentTarget.value.trim() }, { replace: true, flushSync: true })} />
+      </label>{' '}
+      <label>
+        排序{' '}
+        <select
+          value={filters.sort}
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            const sort = SORTS.find((s) => s === value);
+            if (sort !== undefined) update({ sort });
+          }}
+        >
+          {SORTS.map((s) => (
+            <option key={s} value={s}>
+              {SORT_LABELS[s]}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p role="status">{projects.length === 0 ? '没有符合条件的项目' : `找到 ${projects.length} 个项目`}</p>
+      {projects.length > 0 && (
+        <ul aria-label="项目列表">
+          {projects.map((p) => (
+            <ProjectItem key={p.id} project={p} from={{ listSearch: search }} />
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}
+
+function dueText(project: Project, s: Summary): string {
+  const { dueDate } = project;
+  if (dueDate === null || s.daysLeft === null) return '没有截止日期';
+  if (project.status === 'done') return `截止日期：${dueDate}`;
+  if (s.daysLeft > 0) return `截止日期：${dueDate}（还有 ${s.daysLeft} 天）`;
+  if (s.daysLeft === 0) return `截止日期：${dueDate}（今天到期）`;
+  return `截止日期：${dueDate}（已过期 ${-s.daysLeft} 天）`;
+}
+
+function ProjectDetail() {
+  const { projectId } = useParams();
+  const location = useLocation();
+  const back = { pathname: '/projects', search: listSearchOf(location.state) };
+  const project = PROJECTS.find((p) => p.id === projectId);
+
+  if (project === undefined) {
+    return (
+      <>
+        <h1>没有这个项目</h1>
+        <Link to={back}>返回项目列表</Link>
+      </>
+    );
+  }
+
+  const s = summarize(project, TODAY);
+  return (
+    <>
+      <h1>{project.name}</h1>
+      <p>负责人：{project.owner}</p>
+      <p>状态：{STATUS_NAMES[project.status]}</p>
+      <p>
+        进度：{s.done}/{s.total}（{s.percent}%）
+      </p>
+      <p>{dueText(project, s)}</p>
+      {project.tasks.length === 0 ? (
+        <p>还没有任务</p>
+      ) : (
+        <ul aria-label="任务">
+          {project.tasks.map((t) => (
+            <li key={t.id}>
+              {t.title}
+              {t.done && '（已完成）'}
+            </li>
+          ))}
+        </ul>
+      )}
+      <Link to={back}>返回项目列表</Link>
+    </>
+  );
+}
+
+function NotFound() {
+  return <h1>页面不存在</h1>;
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: '/',
+    Component: Layout,
+    children: [
+      // replace：/ 不留在历史记录中，“后退”不会又被转回来；站内导航到 / 时，上一页也还在
+      { index: true, element: <Navigate to="/projects" replace /> },
+      { path: 'projects', Component: ProjectList },
+      { path: 'projects/:projectId', Component: ProjectDetail },
+      { path: '*', Component: NotFound },
+    ],
+  },
+];
+```
+:::
+
+:::variant{kind=wrong name=sort-replace fails=tests reason="改变排序时替换了历史记录：“后退”不能撤销这次选择"}
+```tsx file=routes.tsx
+import { Link, Navigate, Outlet, useLocation, useParams, useSearchParams, type RouteObject } from 'react-router';
+import { PROJECTS, TODAY } from './data';
+import { STATUS_NAMES, type Project } from './model';
+import { listProjects, parseFilters, SORTS, STATUS_FILTERS, toSearchParams, type Filters, type Sort, type StatusFilter } from './query';
+import { summarize, type Summary } from './summary';
+
+const STATUS_LABELS: Record<StatusFilter, string> = { all: '全部', ...STATUS_NAMES, overdue: '已过期' };
+const SORT_LABELS: Record<Sort, string> = { due: '截止日期', name: '名称' };
+
+/** 进入详情页时随导航保存的数据：列表页当时的查询字符串 */
+type FromList = { listSearch: string };
+
+/** location.state 的类型是 any：它可能来自旧版本的页面，也可能根本没有，用之前先检查 */
+function listSearchOf(state: unknown): string {
+  if (typeof state === 'object' && state !== null && 'listSearch' in state && typeof state.listSearch === 'string') {
+    return state.listSearch;
+  }
+  return '';
+}
+
+function Layout() {
+  return (
+    <>
+      <header>
+        <Link to="/projects">项目面板</Link>
+      </header>
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+}
+
+function ProjectItem({ project, from }: { project: Project; from: FromList }) {
+  const s = summarize(project, TODAY);
+  return (
+    <li>
+      <Link to={`/projects/${project.id}`} state={from}>
+        {project.name}
+      </Link>{' '}
+      {project.owner} · {STATUS_NAMES[project.status]} · 进度 {s.done}/{s.total} · {project.dueDate ?? '无截止日期'}
+      {s.overdue && <strong> 已过期</strong>}
+    </li>
+  );
+}
+
+function ProjectList() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { search } = useLocation();
+  const filters = parseFilters(searchParams);
+  const projects = listProjects(PROJECTS, filters, TODAY);
+
+  /** 地址只由 toSearchParams 生成：和默认值相同的条件不出现在地址中 */
+  function update(changes: Partial<Filters>, options?: { replace: boolean; flushSync: boolean }) {
+    setSearchParams(toSearchParams({ ...filters, ...changes }), options);
+  }
+
+  return (
+    <>
+      <h1>项目</h1>
+      <label>
+        状态{' '}
+        <select
+          value={filters.status}
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            const status = STATUS_FILTERS.find((s) => s === value);
+            if (status !== undefined) update({ status });
+          }}
+        >
+          {STATUS_FILTERS.map((s) => (
+            <option key={s} value={s}>
+              {STATUS_LABELS[s]}
+            </option>
+          ))}
+        </select>
+      </label>{' '}
+      <label>
+        搜索 <input type="search" value={filters.q} onChange={(e) => update({ q: e.currentTarget.value }, { replace: true, flushSync: true })} />
+      </label>{' '}
+      <label>
+        排序{' '}
+        <select
+          value={filters.sort}
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            const sort = SORTS.find((s) => s === value);
+            if (sort !== undefined) update({ sort }, { replace: true, flushSync: true });
+          }}
+        >
+          {SORTS.map((s) => (
+            <option key={s} value={s}>
+              {SORT_LABELS[s]}
+            </option>
+          ))}
+        </select>
+      </label>
+      <p role="status">{projects.length === 0 ? '没有符合条件的项目' : `找到 ${projects.length} 个项目`}</p>
+      {projects.length > 0 && (
+        <ul aria-label="项目列表">
+          {projects.map((p) => (
+            <ProjectItem key={p.id} project={p} from={{ listSearch: search }} />
+          ))}
+        </ul>
+      )}
+    </>
+  );
+}
+
+function dueText(project: Project, s: Summary): string {
+  const { dueDate } = project;
+  if (dueDate === null || s.daysLeft === null) return '没有截止日期';
+  if (project.status === 'done') return `截止日期：${dueDate}`;
+  if (s.daysLeft > 0) return `截止日期：${dueDate}（还有 ${s.daysLeft} 天）`;
+  if (s.daysLeft === 0) return `截止日期：${dueDate}（今天到期）`;
+  return `截止日期：${dueDate}（已过期 ${-s.daysLeft} 天）`;
+}
+
+function ProjectDetail() {
+  const { projectId } = useParams();
+  const location = useLocation();
+  const back = { pathname: '/projects', search: listSearchOf(location.state) };
+  const project = PROJECTS.find((p) => p.id === projectId);
+
+  if (project === undefined) {
+    return (
+      <>
+        <h1>没有这个项目</h1>
+        <Link to={back}>返回项目列表</Link>
+      </>
+    );
+  }
+
+  const s = summarize(project, TODAY);
+  return (
+    <>
+      <h1>{project.name}</h1>
+      <p>负责人：{project.owner}</p>
+      <p>状态：{STATUS_NAMES[project.status]}</p>
+      <p>
+        进度：{s.done}/{s.total}（{s.percent}%）
+      </p>
+      <p>{dueText(project, s)}</p>
+      {project.tasks.length === 0 ? (
+        <p>还没有任务</p>
+      ) : (
+        <ul aria-label="任务">
+          {project.tasks.map((t) => (
+            <li key={t.id}>
+              {t.title}
+              {t.done && '（已完成）'}
+            </li>
+          ))}
+        </ul>
+      )}
+      <Link to={back}>返回项目列表</Link>
+    </>
+  );
+}
+
+function NotFound() {
+  return <h1>页面不存在</h1>;
+}
+
+export const routes: RouteObject[] = [
+  {
+    path: '/',
+    Component: Layout,
+    children: [
+      // replace：/ 不留在历史记录中，“后退”不会又被转回来；站内导航到 / 时，上一页也还在
+      { index: true, element: <Navigate to="/projects" replace /> },
       { path: 'projects', Component: ProjectList },
       { path: 'projects/:projectId', Component: ProjectDetail },
       { path: '*', Component: NotFound },

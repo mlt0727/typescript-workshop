@@ -11106,8 +11106,8 @@
       ]
     },
     "p2-01-plan-and-types": {
-      "verifiedAt": "2026-10-21T01:39:52.084Z",
-      "sourceHash": "a3694671eec6b191",
+      "verifiedAt": "2026-10-21T05:38:26.857Z",
+      "sourceHash": "c838afe56299b23d",
       "ok": true,
       "checks": [
         {
@@ -11123,7 +11123,7 @@
         {
           "target": "exercise:project-summary:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(summarize › 完成的数量、总数和百分比（向下取整） ⟶ expect(…).toMatchObject({ done: 1, total: 3, percent: 33 }),summarize › 还有几天：当天是 0，过期是负数，没有截止日期是 null ⟶ expect(…).toBe(26),summarize › 跨月、跨年、闰年都按日历计算 ⟶ expect(…).toBe(3),summarize › 过期：没有完成，并且截止日期在今天之前（当天不算） ⟶ expect(…).toBe(true))"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(summarize › 完成的数量、总数和百分比（向下取整） ⟶ expect(…).toMatchObject({ done: 1, total: 3, percent: 33 }),summarize › 百分比没有浮点误差 ⟶ 29/50 是 58%,summarize › 还有几天：当天是 0，过期是负数，没有截止日期是 null ⟶ expect(…).toBe(26),summarize › 跨月、跨年、闰年都按日历计算 ⟶ expect(…).toBe(3),summarize › 过期：没有完成，并且截止日期在今天之前（当天不算） ⟶ expect(…).toBe(true))"
         },
         {
           "target": "exercise:project-summary:solution:solution",
@@ -11158,7 +11158,7 @@
         {
           "target": "exercise:project-reducer:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(名称与截止日期 › 改名：去掉首尾空白，1 到 60 个字符 ⟶ expect(…).toBe('新官网'),名称与截止日期 › 截止日期：YYYY-MM-DD 并且真实存在，可以清除 ⟶ expect(…).toBe('2028-02-29'),名称与截止日期 › 已完成的项目也可以改名、改截止日期 ⟶ expect(…).toBeNull(),任务 › 添加：去掉空白，没有完成，放在最后；不修改原来的项目 ⟶ expect(…).toEqual([,任务 › 添加时的检查 ⟶ expect(…).toEqual({ ok: false, error: '任务不能为空' }),任务 › 切换完成状态、删除；找不到时失败 ⟶ expect(…).toEqual([,任务 › 已完成的项目不能修改任务 ⟶ addTask,状态 › 允许的变化：计划中 ⇄ 进行中，进行中 → 已完成，已完成 → 进行中 ⟶ expect(…).toBe('active'),状态 › 不允许的变化 ⟶ expect(…).toEqual({ ok: false, error: '不能从“计划中”改为“已完成”' }),状态 › 还有没完成的任务时不能完成项目 ⟶ expect(…).toEqual({ ok: false, error: '还有 1 个任务没有完成' }),没有变化时返回原来的对象 › 同样的名称、日期、状态 ⟶ rename)"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(名称与截止日期 › 改名：去掉首尾空白，1 到 60 个字符 ⟶ expect(…).toBe('新官网'),名称与截止日期 › 截止日期：YYYY-MM-DD 并且真实存在，可以清除 ⟶ expect(…).toBe('2028-02-29'),名称与截止日期 › 已完成的项目也可以改名、改截止日期 ⟶ expect(…).toBeNull(),任务 › 添加：去掉空白，没有完成，放在最后；不修改原来的项目 ⟶ expect(…).toEqual([,任务 › 添加时的检查 ⟶ expect(…).toEqual({ ok: false, error: '任务不能为空' }),任务 › 检查的顺序 ⟶ expect(…).toEqual({ ok: false, error: '已完成的项目不能修改任务' }),任务 › 切换完成状态、删除；找不到时失败 ⟶ expect(…).toEqual([,任务 › 已完成的项目不能修改任务 ⟶ addTask,状态 › 允许的变化：计划中 ⇄ 进行中，进行中 → 已完成，已完成 → 进行中 ⟶ expect(…).toBe('active'),状态 › 不允许的变化 ⟶ expect(…).toEqual({ ok: false, error: '不能从“计划中”改为“已完成”' }),状态 › 还有没完成的任务时不能完成项目 ⟶ expect(…).toEqual({ ok: false, error: '还有 1 个任务没有完成' }),没有变化时返回原来的对象 › 同样的名称、日期、状态 ⟶ rename)"
         },
         {
           "target": "exercise:project-reducer:solution:solution",
@@ -11173,7 +11173,7 @@
         {
           "target": "exercise:project-reducer:wrong:mutate",
           "ok": true,
-          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@55) tests=fail(任务 › 添加：去掉空白，没有完成，放在最后；不修改原来的项目 ⟶ expect(…).toEqual([,任务 › 切换完成状态、删除；找不到时失败 ⟶ expect(…).toEqual([,状态 › 还有没完成的任务时不能完成项目 ⟶ expect(…).toEqual({ ok: false, error: '还有 1 个任务没有完成' }))"
+          "detail": "被拒绝（rules）；types=ok rules=fail(type-assertion@55) tests=fail(任务 › 添加：去掉空白，没有完成，放在最后；不修改原来的项目 ⟶ expect(…).toEqual([,任务 › 添加时的检查 ⟶ Error: 期望成功，实际失败：任务的编号重复,任务 › 切换完成状态、删除；找不到时失败 ⟶ expect(…).toEqual([,状态 › 还有没完成的任务时不能完成项目 ⟶ expect(…).toEqual({ ok: false, error: '还有 1 个任务没有完成' }))"
         },
         {
           "target": "exercise:project-reducer:wrong:ignore-open-tasks",
@@ -11183,12 +11183,12 @@
         {
           "target": "exercise:project-reducer:wrong:any-transition",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(状态 › 不允许的变化 ⟶ expect(…).toEqual({ ok: false, error: '不能从“计划中”改为“已完成”' }))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(任务 › 检查的顺序 ⟶ expect(…).toEqual({ ok: false, error: '不能从“计划中”改为“已完成”' }),状态 › 不允许的变化 ⟶ expect(…).toEqual({ ok: false, error: '不能从“计划中”改为“已完成”' }))"
         },
         {
           "target": "exercise:project-reducer:wrong:done-unlocked",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(任务 › 已完成的项目不能修改任务 ⟶ addTask)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(任务 › 检查的顺序 ⟶ expect(…).toEqual({ ok: false, error: '已完成的项目不能修改任务' }),任务 › 已完成的项目不能修改任务 ⟶ addTask)"
         },
         {
           "target": "exercise:project-reducer:wrong:always-new",
@@ -11198,8 +11198,8 @@
       ]
     },
     "p2-02-routes-lists": {
-      "verifiedAt": "2026-10-21T01:55:27.951Z",
-      "sourceHash": "d165fbb370685525",
+      "verifiedAt": "2026-10-21T05:38:34.093Z",
+      "sourceHash": "29de76f32ac23460",
       "ok": true,
       "checks": [
         {
@@ -11270,7 +11270,7 @@
         {
           "target": "exercise:project-pages:starter:starter",
           "ok": true,
-          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(地址 › / 转到 /projects，并且替换历史记录：“后退”不会又回到 / ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"项目\",地址 › 其他地址：“页面不存在”，显示在布局的 main 中 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",列表页 › 默认显示全部项目，按截止日期排序 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\",列表页 › 每一项：名称链接到详情页，后面是负责人、状态、进度、截止日期，过期的标出“已过期” ⟶ Error: 列表中没有“数据迁移”,列表页 › 筛选条件来自地址 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 状态,列表页 › 搜索词来自地址；地址中不认识的值按默认值处理 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 搜索,列表页 › 没有符合条件的项目 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\",修改筛选条件 › 改变状态：更新地址并新增历史记录，“后退”时列表和下拉框都跟着变 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 状态,修改筛选条件 › 选回默认值时，参数从地址中删除；其他参数保留 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 排序,修改筛选条件 › 输入搜索词：更新地址，替换当前的历史记录 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 搜索,详情页 › 从列表进入详情，再返回：保留列表的筛选条件，页面不重新加载 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\" and name \"数据迁移\",详情页 › 显示负责人、状态、进度、截止日期和任务 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",详情页 › 截止日期的几种情况 ⟶ TestingLibraryElementError: Unable to find an element with the text: 截止日期：2026-11-15（还有 26 天）. This could be because the text is broken up by multiple elements.,详情页 › 没有任务时显示“还没有任务” ⟶ TestingLibraryElementError: Unable to find an element with the text: 进度：0/0（0%）. This could be because the text is broken up by multiple elements. In this case,,详情页 › 直接打开详情页（不是从列表进入）：返回 /projects ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\" and name \"返回项目列表\",详情页 › 导航中保存的数据格式不对时，也返回 /projects，页面不出错 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",详情页 › 没有这个项目 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\")"
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(地址 › / 转到 /projects，并且替换历史记录：“后退”不会又回到 / ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"项目\",地址 › 站内导航到 / 时，转向也不能覆盖上一页 ⟶ TestingLibraryElementError: Unable to find role=\"heading\" and name \"项目\",地址 › 其他地址：“页面不存在”，显示在布局的 main 中 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",列表页 › 默认显示全部项目，按截止日期排序 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\",列表页 › 每一项：名称链接到详情页，后面是负责人、状态、进度、截止日期，过期的标出“已过期” ⟶ Error: 列表中没有“数据迁移”,列表页 › 筛选条件来自地址 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 状态,列表页 › 搜索词来自地址；地址中不认识的值按默认值处理 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 搜索,列表页 › 没有符合条件的项目 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"status\",修改筛选条件 › 改变状态：更新地址并新增历史记录，“后退”时列表和下拉框都跟着变 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 状态,修改筛选条件 › 改变排序：新增一条历史记录 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 排序,修改筛选条件 › 选回默认值时，参数从地址中删除；其他参数保留 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 排序,修改筛选条件 › 输入搜索词：更新地址，替换当前的历史记录 ⟶ TestingLibraryElementError: Unable to find a label with the text of: 搜索,详情页 › 从列表进入详情，再返回：保留列表的筛选条件，页面不重新加载 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\" and name \"数据迁移\",详情页 › 显示负责人、状态、进度、截止日期和任务 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",详情页 › 截止日期的几种情况 ⟶ TestingLibraryElementError: Unable to find an element with the text: (_, el) => el !== null && el.textContent === text && ![...el.children].some((child) => chil,详情页 › 没有任务时显示“还没有任务” ⟶ TestingLibraryElementError: Unable to find an element with the text: (_, el) => el !== null && el.textContent === text && ![...el.children].some((child) => chil,详情页 › 直接打开详情页（不是从列表进入）：返回 /projects ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"link\" and name \"返回项目列表\",详情页 › 导航中保存的数据格式不对时，也返回 /projects，页面不出错 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\",详情页 › 没有这个项目 ⟶ TestingLibraryElementError: Unable to find an accessible element with the role \"heading\")"
         },
         {
           "target": "exercise:project-pages:solution:solution",
@@ -11285,12 +11285,17 @@
         {
           "target": "exercise:project-pages:wrong:push-redirect",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(地址 › / 转到 /projects，并且替换历史记录：“后退”不会又回到 / ⟶ “后退”应该回到进入 / 之前的页面)"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(地址 › / 转到 /projects，并且替换历史记录：“后退”不会又回到 / ⟶ “后退”应该回到进入 / 之前的页面,地址 › 站内导航到 / 时，转向也不能覆盖上一页 ⟶ “后退”应该回到 /projects/p1)"
+        },
+        {
+          "target": "exercise:project-pages:wrong:loader-replace",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(地址 › 站内导航到 / 时，转向也不能覆盖上一页 ⟶ “后退”应该回到 /projects/p1)"
         },
         {
           "target": "exercise:project-pages:wrong:filters-state",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改筛选条件 › 改变状态：更新地址并新增历史记录，“后退”时列表和下拉框都跟着变 ⟶ expect(…).toHaveValue('overdue'))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改筛选条件 › 改变状态：更新地址并新增历史记录，“后退”时列表和下拉框都跟着变 ⟶ expect(…).toHaveValue('overdue'),修改筛选条件 › 改变排序：新增一条历史记录 ⟶ expect(…).toHaveValue('due'))"
         },
         {
           "target": "exercise:project-pages:wrong:back-plain",
@@ -11306,12 +11311,22 @@
           "target": "exercise:project-pages:wrong:search-push",
           "ok": true,
           "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改筛选条件 › 输入搜索词：更新地址，替换当前的历史记录 ⟶ 输入时应该替换历史记录，“后退”一次就离开列表页)"
+        },
+        {
+          "target": "exercise:project-pages:wrong:search-trim",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改筛选条件 › 输入搜索词：更新地址，替换当前的历史记录 ⟶ 输入框中的空格要保留)"
+        },
+        {
+          "target": "exercise:project-pages:wrong:sort-replace",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(修改筛选条件 › 改变排序：新增一条历史记录 ⟶ expect(…).toHaveValue('due'))"
         }
       ]
     },
     "p2-03-forms": {
-      "verifiedAt": "2026-10-21T02:08:01.130Z",
-      "sourceHash": "f674bb6c8bb37639",
+      "verifiedAt": "2026-10-21T05:36:38.983Z",
+      "sourceHash": "2b39770f95b1dc85",
       "ok": true,
       "checks": [
         {

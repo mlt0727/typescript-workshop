@@ -3,7 +3,7 @@
 > 本文件由 `npm run content:build` 根据 `content/curriculum.yaml` 自动生成，请勿手工编辑。
 > 状态：✅ 已发布（通过发布验收）· 📝 草稿（有内容但未通过全部验收，不计入已发布）· ⬜ 规划中（只有标题）。
 
-**已发布 107 / 规划总数 126**（草稿 3，规划中 16）
+**已发布 109 / 规划总数 126**（草稿 1，规划中 16）
 
 ## A. 起步与 JavaScript 共同语法（已发布 20 / 20）
 
@@ -169,7 +169,7 @@
 | `h08-env-config` 环境变量与配置 | ⬜ 规划中 | `h07-persistence`、`e13-env-secrets` |
 | `h09-auth-boundaries` 认证话题的安全边界 | ⬜ 规划中 | `h08-env-config` |
 
-## I. 项目与部署（已发布 8 / 18）
+## I. 项目与部署（已发布 10 / 18）
 
 三个层层递进的项目，每个拆成独立里程碑；以及静态与服务端部署。
 
@@ -183,8 +183,8 @@
 | `p1-06-local-project` 项目 1·任务板：本地工程、测试与导出 | ✅ 已发布 | `p1-05-persistence`、`f08-dom-tests` |
 | `i01-static-vs-server` 静态站点与服务端应用的区别 | ✅ 已发布 | `f12-build-ci` |
 | `i02-deploy-static` 部署静态站点：构建、路由刷新与资源路径 | ✅ 已发布 | `i01-static-vs-server` |
-| `p2-01-plan-and-types` 项目 2·项目面板：需求与类型模型 | 📝 草稿 | `g08-custom-hooks` |
-| `p2-02-routes-lists` 项目 2·项目面板：路由与列表 | 📝 草稿 | `p2-01-plan-and-types`、`g13-routing` |
+| `p2-01-plan-and-types` 项目 2·项目面板：需求与类型模型 | ✅ 已发布 | `g08-custom-hooks` |
+| `p2-02-routes-lists` 项目 2·项目面板：路由与列表 | ✅ 已发布 | `p2-01-plan-and-types`、`g13-routing` |
 | `p2-03-forms` 项目 2·项目面板：表单与校验 | 📝 草稿 | `p2-02-routes-lists` |
 | `p2-04-data-state` 项目 2·项目面板：数据状态与错误处理 | ⬜ 规划中 | `p2-03-forms`、`g14-async-data` |
 | `p2-05-tests` 项目 2·项目面板：组件测试与端到端测试 | ⬜ 规划中 | `p2-04-data-state`、`g15-a11y-component-tests` |

@@ -63,8 +63,8 @@ function utcDay(date: string): number {
 export function summarize(project: Project, today: string): Summary {
   const total = project.tasks.length;
   const done = project.tasks.filter((t) => t.done).length;
-  const percent = total === 0 ? 0 : Math.floor((done / total) * 100);
-  const daysLeft = project.dueDate === null ? null : Math.round((utcDay(project.dueDate) - utcDay(today)) / DAY);
+  const percent = total === 0 ? 0 : Math.floor((done * 100) / total);
+  const daysLeft = project.dueDate === null ? null : (utcDay(project.dueDate) - utcDay(today)) / DAY;
   const overdue = project.status !== 'done' && daysLeft !== null && daysLeft < 0;
   return { done, total, percent, overdue, daysLeft };
 }
@@ -368,13 +368,13 @@ describe('listProjects：排序', () => {
 :::
 
 :::hint{level=2}
-比较名称用 `a.name.localeCompare(b.name, 'zh-CN')`。比较截止日期时先处理 `null`：两个相同（包括都是 `null`）时按名称；只有 `a` 是 `null` 时返回 `1`（`a` 排在后面），只有 `b` 是 `null` 时返回 `-1`；都不是 `null` 时，`YYYY-MM-DD` 字符串可以直接用 `<` 比较。
+比较名称用 `a.name.localeCompare(b.name, 'zh-CN')`，一定要传入 `'zh-CN'`：不传时按浏览器的语言比较，中文浏览器中碰巧是拼音的顺序，英文浏览器中就不是了。比较截止日期时先处理 `null`：两个相同（包括都是 `null`）时按名称；只有 `a` 是 `null` 时返回 `1`（`a` 排在后面），只有 `b` 是 `null` 时返回 `-1`；都不是 `null` 时，`YYYY-MM-DD` 字符串可以直接用 `<` 比较。
 :::
 
 :::explanation
 `parseFilters` 用 `find` 检查地址中的值：它返回数组中**和输入相等的那个元素**，类型是元素的类型，所以不需要断言。`as StatusFilter` 能通过类型检查，却什么也没有检查，地址中的 `status=Active` 就会原样进入程序，`listProjects` 找不到这个状态，列表变成空的。
 
-搜索词在 `parseFilters` 中原样保留，在 `listProjects` 中才去掉空白：输入框的值来自地址，如果读出来时就去掉空白，用户输入的空格会被“吃掉”，没法输入“小 林”这样中间有空格的词。
+搜索词在 `parseFilters` 中原样保留，在 `listProjects` 中才去掉空白：输入框的值来自地址，如果读出来时就去掉空白，用户输入的空格会被“吃掉”，没法输入“小 林”这样中间有空格的词。p1-04 的 `parseFilters` 会去掉空白：那里的搜索框是普通的 DOM 输入框，输入时它的内容不会被地址中的值覆盖（只有打开页面和后退、前进时才从地址填回去）；这里的输入框是受控的，每输入一个字都用地址中的值重新渲染，去掉空白就等于删掉了用户刚输入的空格。
 
 截止日期的比较中，`null` 要单独处理。把它换成空字符串，它就排在最前面；换成一个比所有日期都大的字符串（替代解用了 `'9999-99-99'`）也可以，但要确定它真的比所有可能的值都大。截止日期相同时用名称作为第二个条件，结果就不依赖于数据原来的顺序。
 
