@@ -10391,6 +10391,113 @@
         }
       ]
     },
+    "h02-app-router-layouts": {
+      "verifiedAt": "2026-10-21T07:47:55.848Z",
+      "sourceHash": "5ea055d1e208be3f",
+      "ok": true,
+      "checks": [
+        {
+          "target": "playground:decode-segments:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:decode-segments:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] /api/one/%E5%AE%98 [\"api\",\"one\",\"官\"] [\"api\",\"one\",\"官\"] | [log] /api/one/a%2Fb [\"api\",\"one\",\"a/b\"] [\"api\",\"one\",\"a\",\"b\"] | [log] /docs/%E4%B8%AD/a%20b [\"docs\",\"中\",\"a b\"] [\"docs\",\"中\",\"a b\"] | [log] true URIError: URI malformed"
+        },
+        {
+          "target": "exercise:file-route:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(routeFromFile › page 文件是页面，文件夹就是地址 ⟶ expect(…).toEqual({ pattern: '/', kind: 'page' }),routeFromFile › 四种扩展名都可以 ⟶ expect(…).toEqual({ pattern: '/blog', kind: 'page' }),routeFromFile › 动态段原样保留 ⟶ expect(…).toEqual({ pattern: '/projects/[id]', kind: 'page' }),routeFromFile › route 文件是 Route Handler ⟶ expect(…).toEqual({ pattern: '/api/health', kind: 'route' }),routeFromFile › 路由组不出现在地址中 ⟶ expect(…).toEqual({ pattern: '/about', kind: 'page' }))"
+        },
+        {
+          "target": "exercise:file-route:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:file-route:alt:one-regex",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:file-route:wrong:groups-in-url",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routeFromFile › 路由组不出现在地址中 ⟶ expect(…).toEqual({ pattern: '/about', kind: 'page' }))"
+        },
+        {
+          "target": "exercise:file-route:wrong:skip-private-folder",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routeFromFile › 私有文件夹中的文件都不是路由，即使它叫 page ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:file-route:wrong:ts-only",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routeFromFile › 四种扩展名都可以 ⟶ expect(…).toEqual({ pattern: '/blog', kind: 'page' }),routeFromFile › route 文件是 Route Handler ⟶ expect(…).toEqual({ pattern: '/api/one/[id]', kind: 'route' }))"
+        },
+        {
+          "target": "exercise:file-route:wrong:name-prefix",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(routeFromFile › 其他文件不产生路由 ⟶ app/projects/page.module.css)"
+        },
+        {
+          "target": "exercise:match-route:starter:starter",
+          "ok": true,
+          "detail": "起始代码未通过（符合预期）；types=ok rules=ok tests=fail(matchRoute › 固定的地址 ⟶ expect(…).toStrictEqual({ pattern: '/', params: {} }),matchRoute › 动态段：一段，参数是字符串；固定的段优先 ⟶ expect(…).toStrictEqual({ pattern: '/projects/[id]', params: { id: 'p1' } }),matchRoute › 捕获段：至少一段，参数是数组 ⟶ expect(…).toStrictEqual({ pattern: '/shop/[...slug]', params: { slug: [ 'x' ] } }),matchRoute › 可选的捕获段：零段时 params 中没有这个键 ⟶ expect(…).toStrictEqual({ pattern: '/docs/[[...slug]]', params: {} }),matchRoute › 参数是解码之后的值；编码的 / 仍然是同一段 ⟶ expect(…).toStrictEqual({ pattern: '/api/one/[id]', params: { id: '官' } }),matchRoute › 更具体的路由优先；匹配不上时退回到可选的捕获段 ⟶ expect(…).toStrictEqual({ pattern: '/api/r/[[...slug]]', params: {} }),matchRoute › 路由表中的顺序不影响结果 ⟶ expect(…).toBe('/projects/new'))"
+        },
+        {
+          "target": "exercise:match-route:solution:solution",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:match-route:alt:best-of-matches",
+          "ok": true,
+          "detail": "通过；types=ok rules=ok tests=ok"
+        },
+        {
+          "target": "exercise:match-route:wrong:first-match",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchRoute › 更具体的路由优先；匹配不上时退回到可选的捕获段 ⟶ expect(…).toStrictEqual({ pattern: '/api/r/intro', params: {} }),matchRoute › 路由表中的顺序不影响结果 ⟶ expect(…).toBe('/projects/new'))"
+        },
+        {
+          "target": "exercise:match-route:wrong:longest-first",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchRoute › 动态段：一段，参数是字符串；固定的段优先 ⟶ expect(…).toStrictEqual({ pattern: '/projects/new', params: {} }),matchRoute › 更具体的路由优先；匹配不上时退回到可选的捕获段 ⟶ expect(…).toStrictEqual({ pattern: '/api/r/intro', params: {} }),matchRoute › 路由表中的顺序不影响结果 ⟶ expect(…).toBe('/projects/new'))"
+        },
+        {
+          "target": "exercise:match-route:wrong:no-decode",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchRoute › 参数是解码之后的值；编码的 / 仍然是同一段 ⟶ expect(…).toStrictEqual({ pattern: '/api/one/[id]', params: { id: '官' } }),matchRoute › 无法解码的地址：null ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:match-route:wrong:decode-whole",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchRoute › 参数是解码之后的值；编码的 / 仍然是同一段 ⟶ expect(…).toStrictEqual({ pattern: '/api/one/[id]', params: { id: 'a/b' } }))"
+        },
+        {
+          "target": "exercise:match-route:wrong:catch-all-empty",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchRoute › 捕获段：至少一段，参数是数组 ⟶ /shop 实测是 404)"
+        },
+        {
+          "target": "exercise:match-route:wrong:optional-empty-array",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchRoute › 可选的捕获段：零段时 params 中没有这个键 ⟶ expect(…).toStrictEqual({ pattern: '/docs/[[...slug]]', params: {} }),matchRoute › 更具体的路由优先；匹配不上时退回到可选的捕获段 ⟶ expect(…).toStrictEqual({ pattern: '/api/r/[[...slug]]', params: {} }))"
+        },
+        {
+          "target": "exercise:match-route:wrong:trailing-slash",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchRoute › 区分大小写；结尾的 / 不匹配（Next.js 会先用 308 转走） ⟶ expect(…).toBeNull())"
+        },
+        {
+          "target": "exercise:match-route:wrong:ignore-case",
+          "ok": true,
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(matchRoute › 区分大小写；结尾的 / 不匹配（Next.js 会先用 308 转走） ⟶ expect(…).toBeNull())"
+        }
+      ]
+    },
     "i01-static-vs-server": {
       "verifiedAt": "2026-10-21T02:16:04.710Z",
       "sourceHash": "369fce9321180dab",

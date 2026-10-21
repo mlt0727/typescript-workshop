@@ -1,0 +1,47 @@
+- id: which-files
+  type: multiple
+  prompt: 下面哪些文件会产生一个可以访问的路由？
+  options:
+    - text: "`app/(shop)/cart/page.tsx`"
+      correct: true
+      explain: 路由组不出现在地址中，它是 `/cart` 这个页面。
+    - text: "`app/api/health/route.ts`"
+      correct: true
+      explain: 这是 `/api/health` 这个 Route Handler。
+    - text: "`app/blog/_components/page.tsx`"
+      explain: 私有文件夹（以 `_` 开头）和它里面的所有文件都不参与路由，即使文件名是 `page`。
+    - text: "`app/settings/layout.tsx`（文件夹中没有 page）"
+      explain: 布局只包住页面，本身不让地址可以访问；没有 `page` 时 `/settings` 是 404。
+- id: layout-state
+  type: single
+  prompt: "`app/projects/layout.tsx` 中有一个计数器（客户端组件）。在 `/projects/p1` 把它点到 3，再点布局中的 `<Link href=\"/projects/p2\">`。计数器显示什么？"
+  options:
+    - text: 3，布局在导航时保留状态，只有页面换了
+      correct: true
+      explain: 实测如此。用 `location.assign` 跳转时整个页面重新加载，计数器才会回到 0。
+    - text: 0，每个页面都有自己的一份布局
+      explain: 同一个布局下面的页面之间导航时，布局不重新创建。需要每次导航都重新创建时用 `template.tsx`。
+    - text: 3，但只是因为浏览器缓存了页面
+      explain: 不是缓存：浏览器没有加载新的文档，React 只替换了布局中的 `children`。
+- id: cache-components-params
+  type: single
+  prompt: 开启了 Cache Components，`app/docs/[[...slug]]/page.tsx` 没有 `generateStaticParams`，在组件的顶层 `await params`。`next build` 会怎样？
+  options:
+    - text: 构建失败：参数在构建时未知，是请求时的数据，必须放进 `<Suspense>`（或者提供 `generateStaticParams`）
+      correct: true
+      explain: 实测的错误是 `Next.js encountered uncached or runtime data during prerendering`。
+    - text: 构建成功，这个页面变成 ƒ
+      explain: 开启 Cache Components 之后，构建会检查每个页面能不能生成静态的外壳，不能时报错而不是悄悄变成动态。
+    - text: 构建成功，参数在构建时是空对象
+      explain: 构建时不会用一个假的参数来渲染页面。
+- id: precedence
+  type: single
+  prompt: "有三个路由：`/blog/[[...slug]]`、`/blog/[id]`、`/blog/new`。请求 `/blog/new` 和 `/blog/a/b` 分别匹配哪一个？"
+  options:
+    - text: "`/blog/new` 匹配 `/blog/new`；`/blog/a/b` 匹配 `/blog/[[...slug]]`"
+      correct: true
+      explain: 同一个位置上固定的段最优先；`/blog/[id]` 只匹配一段，`/blog/a/b` 有两段，只能退回到捕获段。
+    - text: "`/blog/new` 匹配 `/blog/[id]`；`/blog/a/b` 匹配 `/blog/[[...slug]]`"
+      explain: 固定的段优先于动态段，与文件的创建顺序无关。
+    - text: 两个都匹配 `/blog/[[...slug]]`，因为它能匹配所有的地址
+      explain: 可选的捕获段是最不具体的，只有更具体的路由都匹配不上时才用它。
