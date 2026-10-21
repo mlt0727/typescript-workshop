@@ -13,13 +13,13 @@ title: 地址中的搜索、排序与翻页
 4. “上一页”“下一页”是**链接**（`Link`），保留其他参数，只改 `page`；指向第 1 页时删除 `page`。第一页没有“上一页”，最后一页没有“下一页”；
 5. 界面上显示的一切都由地址决定：后退、前进之后，输入框、下拉框、列表都要跟着变。
 
-`catalog.ts`（只读）中是商品数据。路由配置 `routes` 已经写好。
+`products.ts`（只读）中是商品数据。路由配置 `routes` 已经写好。
 
 :::files{role=starter}
 ```tsx file=Catalog.tsx
 import { useState } from 'react';
 import { Link, type RouteObject } from 'react-router';
-import { PAGE_SIZE, PRODUCTS, type Product } from './catalog';
+import { PAGE_SIZE, PRODUCTS, type Product } from './products';
 
 type Sort = 'default' | 'price-asc' | 'price-desc';
 
@@ -108,7 +108,7 @@ export const routes: RouteObject[] = [
 :::
 
 :::files{role=support}
-```ts file=catalog.ts readonly
+```ts file=products.ts readonly
 export type Product = { id: number; name: string; price: number };
 
 export const PRODUCTS: readonly Product[] = [
@@ -142,7 +142,7 @@ createRoot(container).render(<RouterProvider router={router} />);
 :::files{role=solution}
 ```tsx file=Catalog.tsx
 import { Link, useSearchParams, type RouteObject } from 'react-router';
-import { PAGE_SIZE, PRODUCTS, type Product } from './catalog';
+import { PAGE_SIZE, PRODUCTS, type Product } from './products';
 
 type Sort = 'default' | 'price-asc' | 'price-desc';
 
@@ -396,7 +396,7 @@ test('没有匹配的商品', async () => {
 :::variant{kind=alt name=functional-updates}
 ```tsx file=Catalog.tsx
 import { Link, useSearchParams, type RouteObject } from 'react-router';
-import { PAGE_SIZE, PRODUCTS, type Product } from './catalog';
+import { PAGE_SIZE, PRODUCTS, type Product } from './products';
 
 type Sort = 'default' | 'price-asc' | 'price-desc';
 
@@ -502,7 +502,7 @@ export const routes: RouteObject[] = [
 ```tsx file=Catalog.tsx
 import { useState } from 'react';
 import { Link, useSearchParams, type RouteObject } from 'react-router';
-import { PAGE_SIZE, PRODUCTS, type Product } from './catalog';
+import { PAGE_SIZE, PRODUCTS, type Product } from './products';
 
 type Sort = 'default' | 'price-asc' | 'price-desc';
 
@@ -605,7 +605,7 @@ export const routes: RouteObject[] = [
 :::variant{kind=wrong name=push-while-typing fails=tests reason="输入时没有 replace，每个字都新增一条历史记录"}
 ```tsx file=Catalog.tsx
 import { Link, useSearchParams, type RouteObject } from 'react-router';
-import { PAGE_SIZE, PRODUCTS, type Product } from './catalog';
+import { PAGE_SIZE, PRODUCTS, type Product } from './products';
 
 type Sort = 'default' | 'price-asc' | 'price-desc';
 
@@ -707,7 +707,7 @@ export const routes: RouteObject[] = [
 :::variant{kind=wrong name=keep-page fails=tests reason="改变搜索词时没有回到第 1 页"}
 ```tsx file=Catalog.tsx
 import { Link, useSearchParams, type RouteObject } from 'react-router';
-import { PAGE_SIZE, PRODUCTS, type Product } from './catalog';
+import { PAGE_SIZE, PRODUCTS, type Product } from './products';
 
 type Sort = 'default' | 'price-asc' | 'price-desc';
 
@@ -809,7 +809,7 @@ export const routes: RouteObject[] = [
 :::variant{kind=wrong name=no-clamp fails=tests reason="页码超过总页数时没有显示最后一页，而是“没有找到商品”"}
 ```tsx file=Catalog.tsx
 import { Link, useSearchParams, type RouteObject } from 'react-router';
-import { PAGE_SIZE, PRODUCTS, type Product } from './catalog';
+import { PAGE_SIZE, PRODUCTS, type Product } from './products';
 
 type Sort = 'default' | 'price-asc' | 'price-desc';
 
@@ -911,7 +911,7 @@ export const routes: RouteObject[] = [
 :::variant{kind=wrong name=page-one-in-url fails=tests reason="指向第 1 页的链接仍然带着 page=1"}
 ```tsx file=Catalog.tsx
 import { Link, useSearchParams, type RouteObject } from 'react-router';
-import { PAGE_SIZE, PRODUCTS, type Product } from './catalog';
+import { PAGE_SIZE, PRODUCTS, type Product } from './products';
 
 type Sort = 'default' | 'price-asc' | 'price-desc';
 

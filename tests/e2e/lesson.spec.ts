@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import { A08, activeRuns, block, D07, G03, GET_CITY_CORRECT, GET_CITY_TYPE_ERROR_BUT_RUNS, setEditor, submit, waitTypecheck } from './helpers.ts';
 
@@ -80,6 +81,27 @@ test.describe('课内学习闭环', () => {
     await expect(again.locator('.cm-content')).toContainText('// 改了一点');
     await expect(again.locator('.status-chips')).toContainText(/曾于 .* 通过/);
     await expect(again.locator('.result')).toContainText('已经过期');
+  });
+
+  test('下载本地项目：zip 中是当前的代码、验收测试和项目配置', async ({ page }) => {
+    await page.goto(A08);
+    const ex = block(page, 'get-city');
+    await ex.scrollIntoViewIfNeeded();
+    await setEditor(ex, `${GET_CITY_CORRECT}// 下载前改的代码\n`);
+    const downloading = page.waitForEvent('download');
+    await ex.getByRole('button', { name: '下载本地项目' }).click();
+    const download = await downloading;
+    expect(download.suggestedFilename()).toBe('a08-optional-chaining-nullish-get-city.zip');
+    const zip = await fs.readFile(await download.path());
+    // 文件以“存储”方式写入（不压缩），文件名与内容都可以直接在字节中找到
+    expect(zip.subarray(0, 4).toString('hex')).toBe('504b0304');
+    const text = zip.toString('utf8');
+    for (const name of ['package.json', 'tsconfig.json', 'vite.config.ts', 'README.md', '.gitignore']) {
+      expect(text).toContain(`a08-optional-chaining-nullish-get-city/${name}`);
+    }
+    expect(text).toContain('// 下载前改的代码');
+    expect(text).toContain('"test": "vitest run"');
+    expect(text).toContain("from 'vitest'");
   });
 
   test('提示逐级展开；查看答案需要确认并被记录', async ({ page }) => {

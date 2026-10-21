@@ -1,7 +1,7 @@
 import { LIMITS } from '../../../src/shared/limits.ts';
 import type { TestResult } from '../../../src/shared/sandbox-protocol.ts';
 import { format } from '../inspect.ts';
-import { AssertionError, checkAssertionCount, expect, resetAssertionCounter } from './expect.ts';
+import { AssertionError, checkAssertionCount, expect, resetAssertionCounter, settleAsyncAssertions } from './expect.ts';
 import { fn, restoreAllMocks, spyOn } from './mock.ts';
 import * as timers from './timers.ts';
 import { realTimers } from './timers.ts';
@@ -141,6 +141,7 @@ export class TestCollector {
         await hooks.beforeEach?.();
         for (const s of suites) for (const h of s.beforeEach) await withTimeout(h, perTestTimeoutMs, 'beforeEach');
         await withTimeout(t.fn, t.timeout ?? perTestTimeoutMs, 'test');
+        await withTimeout(settleAsyncAssertions, perTestTimeoutMs, 'test');
         checkAssertionCount();
       } catch (err) {
         failure = err;

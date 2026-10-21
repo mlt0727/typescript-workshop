@@ -54,6 +54,19 @@ function rawHtmlIn(lessonId: string): string[] {
   );
 }
 
+/**
+ * 只有大小写不同的文件名（去掉扩展名后比较）：沙箱的虚拟文件系统区分大小写，
+ * 但 Windows、macOS 默认不区分。例如同时有 catalog.ts 和 Catalog.tsx 时，下载到本机后 `./Catalog` 会解析到 catalog.ts。
+ */
+function caseCollisions(paths: readonly string[]): string[] {
+  const byKey = new Map<string, Set<string>>();
+  for (const p of paths) {
+    const key = p.replace(/\.[^./]+$/, '').toLowerCase();
+    byKey.set(key, (byKey.get(key) ?? new Set()).add(p.replace(/\.[^./]+$/, '')));
+  }
+  return [...byKey.values()].filter((stems) => stems.size > 1).map((stems) => [...stems].join('、'));
+}
+
 const all = catalog.stages.flatMap((s) => s.lessons);
 const status = new Map(all.map((l) => [l.id, l.status]));
 
@@ -88,6 +101,12 @@ for (const meta of all) {
     const starter = JSON.stringify(ex.starter.map((f) => f.content));
     const solution = JSON.stringify(ex.solution.map((f) => f.content));
     if (starter === solution) problems.push(`${where} 起始代码与参考解相同`);
+    const paths = [...ex.starter, ...ex.support, ...ex.tests, ...ex.solution].map((f) => f.path);
+    for (const c of caseCollisions(paths)) errors.push(`${meta.id}: ${where} 的文件名只有大小写不同（${c}）：在不区分大小写的文件系统上会互相冲突`);
+  }
+  for (const b of lesson.blocks) {
+    if (b.kind !== 'playground') continue;
+    for (const c of caseCollisions(b.files.map((f) => f.path))) errors.push(`${meta.id}: 示例 ${b.id} 的文件名只有大小写不同（${c}）：在不区分大小写的文件系统上会互相冲突`);
   }
 
   for (const issue of rawHtmlIn(meta.id)) problems.push(issue);

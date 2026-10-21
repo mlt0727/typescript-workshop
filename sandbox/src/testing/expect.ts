@@ -18,9 +18,31 @@ export class AssertionError extends Error {
 let assertionCount = 0;
 let expectedAssertions: number | undefined;
 
+/**
+ * 本测试中的 resolves/rejects 断言。与 Vitest 5 一致：测试函数结束时还没有被 await（或 then）的，
+ * 先等它完成，再让测试失败——即使断言本身成立，因为不 await 时它不一定在测试结束前完成。
+ */
+interface AsyncAssertion {
+  promise: Promise<void>;
+  awaited: boolean;
+  /** 在调用断言的位置创建，错误位置指向测试中的那一行 */
+  notAwaited: AssertionError;
+}
+let asyncAssertions: AsyncAssertion[] = [];
+
 export function resetAssertionCounter() {
   assertionCount = 0;
   expectedAssertions = undefined;
+  asyncAssertions = [];
+}
+
+/** 测试函数结束后调用：等待没有被 await 的 resolves/rejects 断言，断言失败或没有被 await 时抛出 */
+export async function settleAsyncAssertions(): Promise<void> {
+  const pending = asyncAssertions.filter((a) => !a.awaited);
+  asyncAssertions = [];
+  for (const a of pending) await a.promise;
+  const first = pending[0];
+  if (first) throw first.notAwaited;
 }
 
 export function checkAssertionCount() {
@@ -400,7 +422,15 @@ function buildAssertion(actual: unknown, negate: boolean, asyncMode: AsyncMode, 
         evaluate(actual);
         return undefined;
       }
-      return (async () => {
+      const label = `expect(…)${negate ? '.not' : ''}.${asyncMode}.${name}(…)`;
+      const record: AsyncAssertion = {
+        promise: Promise.resolve(),
+        awaited: false,
+        notAwaited: new AssertionError(
+          `${label} 返回的 Promise 没有被 await。这是异步的断言，必须写成 await ${label}，否则它不一定在测试结束前完成（Vitest 同样会让这个测试失败）。`,
+        ),
+      };
+      record.promise = (async () => {
         if (!actual || typeof (actual as PromiseLike<unknown>).then !== 'function') {
           throw new AssertionError(`expect(…).${asyncMode} 需要一个 Promise，实际收到：${show(actual)}`);
         }
@@ -426,6 +456,26 @@ function buildAssertion(actual: unknown, negate: boolean, asyncMode: AsyncMode, 
         }
         evaluate(value);
       })();
+      // 没有被 await 时，失败由 settleAsyncAssertions 报告，不再显示为“未处理的 Promise 拒绝”
+      record.promise.catch(() => {});
+      asyncAssertions.push(record);
+      // 返回 thenable 而不是原生 Promise：await、Promise.all、return 都会调用 then，从而记下“已经 await”
+      // （await 原生 Promise 时不会读取它的 then 属性，无法得知）
+      return {
+        then<A = void, B = never>(onFulfilled?: ((v: void) => A | PromiseLike<A>) | null, onRejected?: ((e: unknown) => B | PromiseLike<B>) | null) {
+          record.awaited = true;
+          return record.promise.then(onFulfilled, onRejected);
+        },
+        catch<B = never>(onRejected?: ((e: unknown) => B | PromiseLike<B>) | null) {
+          record.awaited = true;
+          return record.promise.catch(onRejected);
+        },
+        finally(onFinally?: (() => void) | null) {
+          record.awaited = true;
+          return record.promise.finally(onFinally);
+        },
+        [Symbol.toStringTag]: 'Promise',
+      };
     };
   }
   Object.defineProperty(target, 'not', { get: () => buildAssertion(actual, !negate, asyncMode, customMessage) });

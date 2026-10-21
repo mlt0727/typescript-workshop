@@ -20,6 +20,7 @@ const PATHS = {
   chat: 'M4 4h16v12H7l-3 3z',
   circle: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z',
   dot: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+  download: 'M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z',
 } as const;
 
 export type IconName = keyof typeof PATHS;

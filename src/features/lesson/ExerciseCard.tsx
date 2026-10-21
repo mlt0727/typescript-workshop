@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Exercise, Lesson } from '../../content/types.ts';
 import { hashFiles } from '../../judge/hash.ts';
 import { judge, mutantInputs, type JudgeResult } from '../../judge/judge.ts';
+import { downloadLocalProject } from '../../shared/export/download.ts';
 import { progressStore, useProgress } from '../../storage/store.ts';
 import { Icon } from '../../ui/Icon.tsx';
 import { AskAiButton } from '../ai/AskAiButton.tsx';
@@ -185,6 +186,14 @@ export function ExerciseCard({ lesson, exercise }: { lesson: Lesson; exercise: E
             {showTests ? '隐藏验收测试' : '查看验收测试'}
           </button>
         )}
+        <button
+          type="button"
+          className="btn btn-ghost"
+          onClick={() => downloadLocalProject(lesson, exercise, all)}
+          title="把当前代码、支持文件和验收测试下载为可以在本机运行的 Vite + Vitest 项目（.zip）"
+        >
+          <Icon name="download" /> 下载本地项目
+        </button>
         <AskAiButton lesson={lesson} blockId={exercise.id} files={student} diagnostics={project.diagnostics} logs={runner.state.logs} exercise={exercise} />
       </div>
       <div className="playground-body">
