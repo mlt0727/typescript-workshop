@@ -10387,10 +10387,20 @@
       ]
     },
     "i02-deploy-static": {
-      "verifiedAt": "2026-10-21T01:32:18.346Z",
-      "sourceHash": "fb3c81e9f8a5f6c5",
+      "verifiedAt": "2026-10-21T01:33:20.864Z",
+      "sourceHash": "0fa52e780f9d3ccb",
       "ok": true,
       "checks": [
+        {
+          "target": "playground:resolve:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:resolve:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] https://shop.example/              /assets/app.js         /assets/app.js | [log] https://shop.example/products      /assets/app.js         /assets/app.js | [log] https://shop.example/products/205  /assets/app.js         /products/assets/app.js | [log] https://user.github.io/shop/       /assets/app.js         /shop/assets/app.js"
+        },
         {
           "target": "exercise:asset-urls:starter:starter",
           "ok": true,

@@ -63,6 +63,20 @@ f02 讲过 `base`：部署在子路径（例如 GitHub Pages 的 `https://用户
 
 文件名中的哈希随代码和 `base` 变化，所以三次构建的文件名不完全相同。浏览器按**页面的地址**解析这些地址（MDN 的 `new URL(地址, 页面的地址)` 就是这个规则）：以 `/` 开头的从网站的根开始；`./` 开头的相对于页面所在的“文件夹”。这带来了三个实测到的问题：
 
+:::playground{#resolve}
+```ts file=main.ts
+const pages = ['https://shop.example/', 'https://shop.example/products', 'https://shop.example/products/205', 'https://user.github.io/shop/'];
+
+for (const page of pages) {
+  const root = new URL('/assets/app.js', page).pathname;
+  const relative = new URL('./assets/app.js', page).pathname;
+  console.log(page.padEnd(34), root.padEnd(22), relative);
+}
+```
+- 第二列是 `/assets/app.js`（`base` 为 `/`）解析的结果：在任何页面上都一样，包括子路径上的 `/shop/`，那里它缺了 `/shop`；
+- 第三列是 `./assets/app.js`（`base` 为 `./`）：在 `/products/205` 上变成了 `/products/assets/app.js`，在 `/shop/` 上反而是对的。
+:::
+
 1. **部署在 `/shop/` 上，`base` 却是 `/`**：页面请求的是 `/assets/index-CMnIaEjP.js`（缺了 `/shop`），404，页面一片空白；
 2. **`base` 是 `/shop/`，路由却不知道**：资源都加载了，页面上显示的却是“页面不存在”：路由看到的地址是 `/shop/`，而路由表中只有 `/`。要告诉路由它在哪个前缀下：`createBrowserRouter(routes, { basename: '/shop' })`。用 `import.meta.env.BASE_URL` 得到 `base`，就不用在两个地方各写一遍。加上之后实测显示“首页”；
 3. **`base` 是 `./`，配合 `createBrowserRouter`**：在 `/products` 上，`./assets/…` 解析成 `/assets/…`，一切正常；在 `/products/205` 上，它被解析成 `/products/assets/…`，实测 Chromium 和 WebKit 中这个脚本都是 404，页面一片空白。相对路径只适合页面都在同一层的网站（或者 hash 路由）。
