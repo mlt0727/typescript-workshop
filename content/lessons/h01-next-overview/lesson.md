@@ -40,7 +40,7 @@ Next.js 的代码有一部分运行在服务器上，这个网站的练习运行
 
 ## 单页应用的首屏
 
-在浏览器中打开这个网站的一课时，服务器送来的 HTML 是什么样子的？2026-10-21 用 curl 请求 `https://typescript-workshop-jade.vercel.app/learn/a01-where-ts-runs`：整个 HTML 只有 597 字节，其中 `<div id="root"></div>` 是空的。课文、编辑器，全都是浏览器下载并运行 JavaScript 之后才生成的。这就是单页应用（i01 的“客户端渲染”）：
+在浏览器中打开这个网站的一课时，服务器送来的 HTML 是什么样子的？2026-10-27 用 curl 请求 `https://typescript-workshop-lingtong.vercel.app/learn/a01-where-ts-runs`：整个 HTML 只有 597 字节，其中 `<div id="root"></div>` 是空的。课文、编辑器，全都是浏览器下载并运行 JavaScript 之后才生成的。这就是单页应用（i01 的“客户端渲染”）：
 
 - **首屏要等 JavaScript**：在 JavaScript 下载、运行完之前，页面是空白的。网络慢、设备慢的时候尤其明显；
 - **数据是一串等待**：HTML 到达，再下载 JavaScript，JavaScript 运行之后才开始请求数据（g14），数据到达之后才有内容；

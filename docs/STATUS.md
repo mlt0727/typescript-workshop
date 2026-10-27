@@ -13,7 +13,7 @@
 | 项目实验（I 阶段） | ✅ 项目 1、项目 2、项目 3（Next.js 服务器：Route Handler、ETag/If-Match、SQLite、迁移、契约测试）和 i03（服务端部署）已完成 |
 | Next.js 实验（H、I 阶段） | ⚠ 在本机用 create-next-app 16.4.2 创建的实验项目中实测（构建、生产服务器、curl、浏览器、两个实例共用 SQLite），结果写在 h01–h09、p3-01–p3-03、i03 的课文中；实验项目本身**不在仓库中** |
 
-线上地址：https://typescript-workshop-jade.vercel.app　源码：https://github.com/mlt0727/typescript-workshop
+线上地址：https://typescript-workshop-lingtong.vercel.app（原来的 `typescript-workshop-jade.vercel.app` 重定向到这里）　源码：https://github.com/mlt0727/typescript-workshop
 
 ## 平台功能
 

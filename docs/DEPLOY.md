@@ -6,7 +6,7 @@
 
 | 项 | 值 |
 |---|---|
-| 网址 | https://typescript-workshop-jade.vercel.app（公开的生产域名） |
+| 网址 | https://typescript-workshop-lingtong.vercel.app（公开的生产域名；2026-10-27 起原来的 `typescript-workshop-jade.vercel.app` 在 Vercel 的域名设置中 307 重定向到这里） |
 | 其他域名 | `typescript-workshop-lingtong-mengs-projects.vercel.app` 开着 Vercel 的部署保护（要先登录 Vercel）：沙箱 iframe 是不透明来源，请求不带 Vercel 的登录 cookie，沙箱的文件会被重定向到登录页，运行代码时“沙箱启动超时”。`vercel.json` 中把这个域名重定向到公开域名；两个域名的浏览器存储也是分开的（同步设置、进度各自独立） |
 | 托管 | Vercel Hobby（免费计划），项目 `typescript-workshop` |
 | 函数区域 | `iad1`（美国东部，华盛顿特区），在 `vercel.json` 的 `regions` 中设置 |
@@ -44,21 +44,21 @@
 
 ```bash
 # 1. API 是否在线、同步与 AI 是否已配置
-curl https://typescript-workshop-jade.vercel.app/api/health
+curl https://typescript-workshop-lingtong.vercel.app/api/health
 # 期望：{"ok":true,"sync":true,"ai":false}（配置了 ANTHROPIC_API_KEY 时 ai 为 true）
 # 它只说明变量设置了，不连接数据库；数据库能不能用，要在设置页实际同步一次
 
 # 函数运行的区域：X-Vercel-Id 的第二段
-curl -sI https://typescript-workshop-jade.vercel.app/api/health | grep -i x-vercel-id
+curl -sI https://typescript-workshop-lingtong.vercel.app/api/health | grep -i x-vercel-id
 # 期望：iad1::iad1::…
 
 # 2. 未带密码访问同步接口应被拒绝
-curl -i https://typescript-workshop-jade.vercel.app/api/sync
+curl -i https://typescript-workshop-lingtong.vercel.app/api/sync
 # 期望：HTTP 401
 
 # 3. 深层路由刷新、安全响应头
-curl -sI https://typescript-workshop-jade.vercel.app/learn/a08-optional-chaining-nullish | grep -i content-security-policy
-curl -sI https://typescript-workshop-jade.vercel.app/sandbox/index.html | grep -i content-security-policy
+curl -sI https://typescript-workshop-lingtong.vercel.app/learn/a08-optional-chaining-nullish | grep -i content-security-policy
+curl -sI https://typescript-workshop-lingtong.vercel.app/sandbox/index.html | grep -i content-security-policy
 ```
 
 在浏览器中：打开任一课 → 示例显示“类型检查通过” → 点击“运行”看到输出 → React 课的预览中点击按钮界面会更新 → 设置页输入同步密码后显示“已同步”。

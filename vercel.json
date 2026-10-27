@@ -8,7 +8,7 @@
     {
       "source": "/:path*",
       "has": [{ "type": "host", "value": "typescript-workshop-lingtong-mengs-projects.vercel.app" }],
-      "destination": "https://typescript-workshop-jade.vercel.app/:path*",
+      "destination": "https://typescript-workshop-lingtong.vercel.app/:path*",
       "permanent": false
     }
   ],

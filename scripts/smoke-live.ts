@@ -1,6 +1,6 @@
 /**
  * 部署之后的冒烟测试：对线上的网站发出几个请求，检查页面、资源、接口和 404。
- * 用法：node scripts/smoke-live.ts https://typescript-workshop-jade.vercel.app
+ * 用法：node scripts/smoke-live.ts https://typescript-workshop-lingtong.vercel.app
  * 有问题时逐条打印，并以退出码 1 结束（.github/workflows/smoke.yml 在每次生产部署之后运行它）。
  */
 
