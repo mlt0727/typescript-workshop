@@ -96,7 +96,7 @@ function AiSection() {
         <p>正在检查…</p>
       ) : status.configured ? (
         <p>
-          已配置：练习与示例旁会出现“问 AI”按钮，由 <code>{status.model}</code> 回答（需要上面的同步密码）。AI 可能出错，请对照课程与官方文档核实。
+          已配置：课页右侧有 AI 问答栏（顶栏的“问 AI”按钮可以展开或收起），示例与练习上的“问 AI”会把那段代码带到问答栏。可以在问答栏中选择模型（{status.models.map((m) => m.label).join('、')}），默认 <code>{status.model}</code>。需要上面的同步密码。AI 可能出错，请对照课程与官方文档核实。
         </p>
       ) : (
         <p>

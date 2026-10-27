@@ -22,8 +22,8 @@
 |---|---|---|
 | `SYNC_PASSWORD_HASH` | 同步需要 | 同步密码的 SHA-256 哈希（`npx tsx scripts/new-sync-password.ts` 生成）。服务器不保存密码本身。 |
 | `DATABASE_URL` | 同步需要 | Neon Postgres 连接串。在 Vercel 中设为 Sensitive（不可回读）。 |
-| `ANTHROPIC_API_KEY` | 可选 | 启用“问 AI”。不设置时按钮不出现。 |
-| `AI_MODEL` | 可选 | 默认 `claude-opus-5-5`。 |
+| `ANTHROPIC_API_KEY` | 可选 | 启用“问 AI”（课页右侧的问答栏）。不设置时问答栏和按钮都不出现。 |
+| `AI_MODEL` | 可选 | 默认模型，默认 `claude-sonnet-5-5`。学习者在问答栏中可以选 `claude-haiku-5-5`、`claude-sonnet-5-5`、`claude-opus-5-5`；`AI_MODEL` 是别的模型时，它也加进可选列表。服务器拒绝其他模型。 |
 | `AI_EFFORT` | 可选 | `low` / `medium` / `high`，默认 `medium`。 |
 
 修改环境变量后需要**重新部署**才会生效（已经运行的部署使用创建时的变量）。

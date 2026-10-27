@@ -7,7 +7,7 @@
 | 方面 | 状态 |
 |---|---|
 | 平台功能（M1） | ✅ 最小完整学习闭环已实现并通过自动化测试 |
-| 同步 / 问 AI / 部署（M2） | ✅ 同步与部署已上线并验证（2026-10-27 起函数在 `iad1`、数据库在 `aws-us-east-1`，都在美国东部）；问 AI 已实现，2026-10-27 学习者在 Vercel 中配置了密钥（线上 `"ai":true`，模型 `claude-opus-5-5`），**真实调用尚未验证** |
+| 同步 / 问 AI / 部署（M2） | ✅ 同步与部署已上线并验证（2026-10-27 起函数在 `iad1`、数据库在 `aws-us-east-1`，都在美国东部）；问 AI 已上线：2026-10-27 学习者在线上实际问过一次并收到回答（`claude-opus-5-5`），之后改为课页右侧的问答栏、可选模型 |
 | 课程编写 | ✅ 已发布 **126 / 126** 节：A 20、B 17、C 12、D 10、E 13、F 12、G 15、H 9、I 18 节（项目 1、项目 2、项目 3 全部里程碑，i01–i03）；没有草稿和规划中的课时 |
 | 课程审核 | ⚠ 全部 126 节：浏览器自动验证 + 独立 AI 审查 + 按意见修正（`self-reviewed`）；**没有人工审核** |
 | 项目实验（I 阶段） | ✅ 项目 1、项目 2、项目 3（Next.js 服务器：Route Handler、ETag/If-Match、SQLite、迁移、契约测试）和 i03（服务端部署）已完成 |
@@ -43,7 +43,7 @@
 | 进度：IndexedDB 草稿与状态、刷新恢复、继续学习、导出/导入（合并或替换，非法文件拒绝且不破坏数据） | ✅ | e2e、单元测试 |
 | 课程更新后草稿不被静默覆盖（提示“保留我的代码 / 改用新版”） | ✅ | e2e：把数据库中草稿的版本改旧之后刷新，两个按钮分别保留代码和恢复起始代码，刷新后结果保持 |
 | 跨设备同步（单用户密码、乐观并发、可交换的合并、重置跟随） | ✅ | 单元测试；本地 e2e（两个浏览器上下文）；线上 API 读写验证 |
-| 问 AI（服务端代理 Claude，`claude-opus-5-5`，流式，默认先给思路） | ✅ 已实现 | ⚠ 密钥已配置（`/api/ai/status` 返回 `{"configured":true,"model":"claude-opus-5-5"}`），还没有做过真实调用；接口鉴权、未配置时的降级、回答中途出错（模拟 401）有单元测试 |
+| 问 AI：课页右侧的问答栏（宽屏停靠、分隔线可拖动并记住宽度；窄屏为抽屉），示例与练习的“问 AI”把代码块附加到对话，每次发送读取它当时的代码、讲解、类型错误与运行输出；每课一个对话保存在本机；可选 Haiku 5.5 / Sonnet 5.5（默认）/ Opus 5.5，服务器拒绝其他模型；服务端代理 Claude，流式，默认先给思路 | ✅ | 2026-10-27 学习者在线上实际调用成功（旧的弹窗界面，Opus 5.5）；问答栏：e2e 5 项（模拟的 `/api/ai`：附加代码块、改代码后再问带上新代码、换模型、刷新后对话与模型还在、按课分开、新对话、拖动与方向键调整宽度、收起展开、窄屏抽屉与 Esc、未配置时不显示）；服务端单元测试：模型列表、未知模型 400、Haiku 不带 `fallbacks`、Sonnet 带上、中途出错（模拟 401）。**新的问答栏与 Haiku/Sonnet 还没有做过真实调用** |
 | 服务端错误日志（`server/log.ts`）：每个出错的请求一行 JSON，只有方法、路径和错误的名字、信息、`cause`；连接串、其中的密码、密码哈希、API 密钥换成 `[REDACTED]` | ✅ | 单元测试 3 项；问 AI 中途出错时调用的测试 |
 | 浅色/深色、字号、可折叠目录、窄屏抽屉、目录搜索 | ✅ | e2e（手机/平板/桌面无横向溢出） |
 | 课程内容管线与发布验收（`content:check`、`content:verify`、`content:verify:webkit`、链接检查） | ✅ | 实际运行 |
@@ -73,7 +73,7 @@
 
 **不在支持范围**：Firefox（学习者决定不做 Firefox 兼容）。2026-10-27 在 GitHub Actions（Linux）中试运行过一次（本机的 Playwright 无法启动 Firefox：`spawn UNKNOWN`）：126 节课中 125 节全部通过，g11 城市搜索的参考解有一个测试超过了 3 秒；端到端测试 40 项通过、8 项失败，失败的都是测试向编辑器输入代码之后编辑器为空，没有查明是 Playwright 在 Firefox 中的输入方式还是网站本身的问题。
 
-**未验证**：真实的 Safari 和 iPhone（WebKit 的结果来自 Playwright 的 WebKit 构建）；真实移动设备（只做了视口模拟）；问 AI 的真实模型调用。
+**未验证**：真实的 Safari 和 iPhone（WebKit 的结果来自 Playwright 的 WebKit 构建）；真实移动设备（只做了视口模拟）；新的问答栏和 Haiku 5.5、Sonnet 5.5 的真实调用。
 
 ## 课程审查记录
 
@@ -129,14 +129,14 @@
 | 沙箱运行时为经典脚本 IIFE，Worker 内联 | 不透明来源加载模块脚本需要 CORS；WebKit 不允许沙箱 Worker `importScripts` 自托管脚本。 |
 | 控制台输出对齐 Node.js | 课文中的预期输出以 Node 为准，学习者本地运行时看到的一致。 |
 | 跨设备同步：Vercel Function（`iad1`）+ Neon（`aws-us-east-1`），都在美国东部 | 学习者要求跨设备；单用户密码；本地优先、离线可用。函数和数据库在同一地区，每次查询不跨洋往返。2026-10-20 最初放在新加坡，是编写方没有询问学习者所在地的假设（学习者在美国）；10-21 函数改到 `iad1`、新建美国的 Neon 项目并复制数据，10-27 学习者在 Vercel 中换了 `DATABASE_URL` 并重新部署。 |
-| 问 AI：服务端调用 `@anthropic-ai/sdk`，默认 `claude-opus-5-5`，开启服务端 refusal fallback（`fallbacks: "default"`） | 密钥不进浏览器；按 Anthropic 官方用法；模型可用 `AI_MODEL` 更换。 |
+| 问 AI：服务端调用 `@anthropic-ai/sdk`，默认 `claude-sonnet-5-5`，可选 Haiku 5.5 / Opus 5.5；Opus 与 Sonnet 开启服务端 refusal fallback（`fallbacks: "default"`），Haiku 5.5 没有服务端 fallback，不带这个参数 | 密钥不进浏览器；按 Anthropic 官方用法；学习者觉得 Opus 太慢，默认改为 Sonnet，可以在问答栏中换。 |
 | 课程审核状态 | AI 起草的内容最高只标 `self-reviewed`（经过明确的二次检查），不冒称人工审核。 |
 | React Router 打包进 React 运行时 | g13 需要真实的 React Router。平台本身已经依赖 react-router 8.5，和 React 打包在一起可以共用同一个 React 实例；代价是 React 运行时从约 612 KB 增加到约 815 KB（gzip 约 231 KB），React 类型组从约 1.1 MB 增加到约 1.5 MB。沙箱中不能修改路径，课程预览用 `createHashRouter`，测试用 `createMemoryRouter`。 |
 
 ## 阻塞与需要你处理的事项
 
 1. **部署**：GitHub 仓库 `mlt0727/typescript-workshop` 与 Vercel 项目已关联，每次推送到 `main` 自动部署（最近的提交上都有 Vercel 写入的状态 “Deployment has completed”）。Vercel 连接器对团队作用域返回 403（需要在连接器中重新授权团队访问）；2026-10-21 在 Vercel 控制台（你的 Chrome，只读）核对：全部部署都是 Ready，最新的提交是当前的生产部署，运行日志中没有警告和错误。2026-10-27 再次核对：`DATABASE_URL` 已在 Production 与 Preview 中换成美国的数据库，之后的重新部署是 Ready 的当前生产部署；线上 `X-Vercel-Id` 为 `iad1::iad1::…`。
-2. ✅ **问 AI 的密钥**：2026-10-27 已在 Vercel 中添加 `ANTHROPIC_API_KEY` 并重新部署，线上 `/api/health` 返回 `"ai":true`。还差一次真实调用：在开启了同步的浏览器中，任意一课点“问 AI”提一个问题，看到回答即可。每次调用按用量从 Anthropic 账户扣费。
+2. ✅ **问 AI 的密钥**：2026-10-27 已在 Vercel 中添加 `ANTHROPIC_API_KEY` 并重新部署，线上 `/api/health` 返回 `"ai":true`，你在线上实际问过一次并收到了回答。每次调用按用量从 Anthropic 账户扣费。
 3. **人工审核**：全部课程都只经过 AI 审查（`self-reviewed`）。如果要标为 `reviewed`，需要有人实际读过并确认。
 4. ✅ **旧的新加坡数据库**（已处理）：Neon 项目 `typescript-workshop`（`old-dust-95480900`，`aws-ap-southeast-1`）已不再使用：2026-10-21 之后没有任何访问，其中唯一的一行已复制到美国的项目，两边完全相同。2026-10-27 你在设置页开启同步之后核对：同步的数据写进了美国的项目（`revision` 从 1 变为 2，`updated_at` 为 05:01:10 UTC），旧项目在那之后没有任何访问。同日按你的要求在你的 Chrome 中删除了它（Neon 控制台 → Settings → Delete project）。控制台的确认框写着不可撤销，但 Neon 的文档写明删除的项目 7 天内可以恢复；删除之前先用一个空的测试项目实测过，删除之后旧项目出现在可恢复列表中，可以恢复到 2026-11-03 05:16 UTC（`neon projects recover old-dust-95480900`），之后永久删除。
 

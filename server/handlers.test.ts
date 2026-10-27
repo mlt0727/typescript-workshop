@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 import { generatePassword, hashPassword, verifyPassword } from './auth.ts';
+import { aiConfigFromEnv } from './ai.ts';
 import { handleApi, MAX_SYNC_BYTES, type Deps } from './handlers.ts';
 import { MemoryStore } from './sync-store.ts';
 
@@ -7,7 +8,7 @@ const password = generatePassword();
 const deps = (): Deps => ({
   store: new MemoryStore(),
   passwordHash: hashPassword(password),
-  ai: { apiKey: undefined, model: 'claude-opus-5-5', effort: 'medium' },
+  ai: aiConfigFromEnv({}),
 });
 
 const req = (method: string, path: string, body?: unknown, auth: string | null = password) =>
@@ -83,19 +84,19 @@ describe('/api/sync', () => {
 describe('/api/ai', () => {
   test('未配置密钥时 status 显示未配置，调用返回 503', async () => {
     const d = deps();
-    expect(await (await handleApi(req('GET', '/api/ai/status'), d)).json()).toEqual({ configured: false, model: null });
+    expect(await (await handleApi(req('GET', '/api/ai/status'), d)).json()).toEqual({ configured: false, model: null, models: [] });
     const res = await handleApi(req('POST', '/api/ai', { question: 'hi' }), d);
     expect(res.status).toBe(503);
   });
 
   test('需要同步密码', async () => {
-    const d = { ...deps(), ai: { apiKey: 'sk-test', model: 'claude-opus-5-5', effort: 'medium' as const } };
+    const d = { ...deps(), ai: aiConfigFromEnv({ ANTHROPIC_API_KEY: 'sk-test' }) };
     expect((await handleApi(req('POST', '/api/ai', { question: 'hi' }, 'wrong'), d)).status).toBe(401);
   });
 
   test('回答中途出错：流中给出中文提示，错误交给 logError', async () => {
     const logged: unknown[] = [];
-    const d: Deps = { ...deps(), ai: { apiKey: 'sk-test', model: 'claude-opus-5-5', effort: 'medium' }, logError: (_request, error) => logged.push(error) };
+    const d: Deps = { ...deps(), ai: aiConfigFromEnv({ ANTHROPIC_API_KEY: 'sk-test' }), logError: (_request, error) => logged.push(error) };
     vi.stubGlobal('fetch', async () =>
       Response.json({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }, { status: 401 }),
     );
@@ -109,6 +110,44 @@ describe('/api/ai', () => {
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+
+  test('可选的模型：默认 Sonnet 5.5；部署者用 AI_MODEL 指定的模型也可以选', async () => {
+    const d = { ...deps(), ai: aiConfigFromEnv({ ANTHROPIC_API_KEY: 'sk-test' }) };
+    const status = (await (await handleApi(req('GET', '/api/ai/status'), d)).json()) as { configured: boolean; model: string; models: { id: string }[] };
+    expect(status.configured).toBe(true);
+    expect(status.model).toBe('claude-sonnet-5-5');
+    expect(status.models.map((m) => m.id)).toEqual(['claude-haiku-5-5', 'claude-sonnet-5-5', 'claude-opus-5-5']);
+    const custom = aiConfigFromEnv({ ANTHROPIC_API_KEY: 'sk-test', AI_MODEL: 'claude-fable-5-1' });
+    expect(custom.model).toBe('claude-fable-5-1');
+    expect(custom.models.map((m) => m.id)).toContain('claude-fable-5-1');
+    expect(aiConfigFromEnv({ AI_MODEL: 'claude-opus-5-5' }).models).toHaveLength(3);
+  });
+
+  test('不在列表中的模型返回 400；Haiku 的请求不带 fallbacks，Sonnet 的请求带上', async () => {
+    const d = { ...deps(), ai: aiConfigFromEnv({ ANTHROPIC_API_KEY: 'sk-test' }) };
+    const input = { lessonId: 'a01', lessonTitle: '课', mode: 'ts', files: {}, diagnostics: [], output: [], question: 'hi' };
+    const bad = await handleApi(req('POST', '/api/ai', { ...input, model: 'claude-fable-5-1' }), d);
+    expect(bad.status).toBe(400);
+    expect(((await bad.json()) as { error: string }).error).toContain('不支持的模型');
+
+    const sent: { body: Record<string, unknown>; beta: string | null }[] = [];
+    vi.stubGlobal('fetch', async (_url: unknown, init: RequestInit) => {
+      sent.push({ body: JSON.parse(String(init.body)) as Record<string, unknown>, beta: new Headers(init.headers).get('anthropic-beta') });
+      return Response.json({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }, { status: 401 });
+    });
+    try {
+      await (await handleApi(req('POST', '/api/ai', { ...input, model: 'claude-haiku-5-5' }), d)).text();
+      await (await handleApi(req('POST', '/api/ai', input), d)).text();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+    expect(sent[0]?.body.model).toBe('claude-haiku-5-5');
+    expect(sent[0]?.body).not.toHaveProperty('fallbacks');
+    expect(sent[0]?.beta ?? '').not.toContain('server-side-fallback');
+    expect(sent[1]?.body.model).toBe('claude-sonnet-5-5');
+    expect(sent[1]?.body.fallbacks).toBe('default');
+    expect(sent[1]?.beta).toContain('server-side-fallback-2026-07-01');
   });
 });
 

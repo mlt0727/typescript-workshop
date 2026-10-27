@@ -93,7 +93,8 @@ export async function handleApi(request: Request, deps: Deps): Promise<Response>
   }
 
   if (path === '/api/ai/status') {
-    return json(200, { configured: Boolean(deps.ai.apiKey && deps.passwordHash), model: deps.ai.apiKey ? deps.ai.model : null });
+    const configured = Boolean(deps.ai.apiKey && deps.passwordHash);
+    return json(200, { configured, model: configured ? deps.ai.model : null, models: configured ? deps.ai.models : [] });
   }
 
   if (path === '/api/ai') {
@@ -105,6 +106,8 @@ export async function handleApi(request: Request, deps: Deps): Promise<Response>
     if (!body.ok) return body.response;
     const parsed = askSchema.safeParse(parseJson(body.text));
     if (!parsed.success) return json(400, { error: '请求格式不正确' });
+    const model = parsed.data.model;
+    if (model !== undefined && !deps.ai.models.some((m) => m.id === model)) return json(400, { error: `不支持的模型：${model}` });
     return new Response(streamAnswer(deps.ai, parsed.data, request.signal, (err) => deps.logError?.(request, err)), {
       status: 200,
       headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' },

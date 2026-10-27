@@ -5,7 +5,21 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 
-export const DEFAULT_MODEL = 'claude-opus-5-5';
+export interface AiModel {
+  id: string;
+  label: string;
+  description: string;
+}
+
+/** 学习者可以在问答栏中选择的模型；服务器只接受这些（加上部署者用 AI_MODEL 指定的那个） */
+export const AI_MODELS: readonly AiModel[] = [
+  { id: 'claude-haiku-5-5', label: 'Haiku 5.5', description: '最快、最便宜' },
+  { id: 'claude-sonnet-5-5', label: 'Sonnet 5.5', description: '速度与质量平衡' },
+  { id: 'claude-opus-5-5', label: 'Opus 5.5', description: '最强，较慢' },
+];
+export const DEFAULT_MODEL = 'claude-sonnet-5-5';
+/** 支持服务端 refusal fallback（fallbacks: "default"）的模型；Haiku 5.5 没有，带上会被拒绝 */
+const SERVER_FALLBACK_MODELS = new Set(['claude-opus-5-5', 'claude-sonnet-5-5']);
 
 export const askSchema = z.object({
   lessonId: z.string().max(100),
@@ -20,6 +34,8 @@ export const askSchema = z.object({
   /** 判题结果摘要（如果有） */
   result: z.string().max(6000).optional(),
   question: z.string().min(1).max(4000),
+  /** 不填时用默认模型；必须是 AiConfig.models 中的一个 */
+  model: z.string().max(100).optional(),
   history: z
     .array(z.object({ role: z.enum(['user', 'assistant']), content: z.string().max(12_000) }))
     .max(12)
@@ -58,15 +74,20 @@ function buildUserMessage(input: AskInput): string {
 
 export interface AiConfig {
   apiKey?: string;
+  /** 默认模型 */
   model: string;
+  /** 可选的模型（包括默认模型） */
+  models: readonly AiModel[];
   effort: 'low' | 'medium' | 'high' | 'xhigh' | 'max';
 }
 
 export function aiConfigFromEnv(env: Record<string, string | undefined>): AiConfig {
   const effort = env.AI_EFFORT;
+  const model = env.AI_MODEL || DEFAULT_MODEL;
   return {
     apiKey: env.ANTHROPIC_API_KEY || undefined,
-    model: env.AI_MODEL || DEFAULT_MODEL,
+    model,
+    models: AI_MODELS.some((m) => m.id === model) ? AI_MODELS : [...AI_MODELS, { id: model, label: model, description: '部署者指定的模型' }],
     effort: effort === 'low' || effort === 'high' || effort === 'xhigh' || effort === 'max' ? effort : 'medium',
   };
 }
@@ -74,6 +95,7 @@ export function aiConfigFromEnv(env: Record<string, string | undefined>): AiConf
 /** 返回一个纯文本流（UTF-8），边生成边发送。 */
 export function streamAnswer(config: AiConfig, input: AskInput, signal: AbortSignal, onError?: (error: unknown) => void): ReadableStream<Uint8Array> {
   const client = new Anthropic({ apiKey: config.apiKey });
+  const model = input.model ?? config.model;
   const encoder = new TextEncoder();
   const messages: Anthropic.Beta.BetaMessageParam[] = [];
   for (const h of input.history ?? []) messages.push({ role: h.role, content: h.content });
@@ -84,14 +106,13 @@ export function streamAnswer(config: AiConfig, input: AskInput, signal: AbortSig
       try {
         const stream = client.beta.messages.stream(
           {
-            model: config.model,
+            model,
             max_tokens: 8000,
             system: SYSTEM,
             messages,
             output_config: { effort: config.effort },
-            // 安全分类器拒答时，由服务端自动换用推荐的后备模型重试
-            betas: ['server-side-fallback-2026-07-01'],
-            fallbacks: 'default',
+            // 安全分类器拒答时，由服务端自动换用推荐的后备模型重试（只有支持的模型才带上）
+            ...(SERVER_FALLBACK_MODELS.has(model) ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const } : {}),
           },
           { signal },
         );
