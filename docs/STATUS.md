@@ -136,7 +136,7 @@
 1. **部署**：GitHub 仓库 `mlt0727/typescript-workshop` 与 Vercel 项目已关联，每次推送到 `main` 自动部署（最近的提交上都有 Vercel 写入的状态 “Deployment has completed”）。Vercel 连接器对团队作用域返回 403（需要在连接器中重新授权团队访问）；2026-10-21 在 Vercel 控制台（你的 Chrome，只读）核对：全部部署都是 Ready，最新的提交是当前的生产部署，运行日志中没有警告和错误。2026-10-27 再次核对：`DATABASE_URL` 已在 Production 与 Preview 中换成美国的数据库，之后的重新部署是 Ready 的当前生产部署；线上 `X-Vercel-Id` 为 `iad1::iad1::…`。
 2. **问 AI 的密钥**：在 Vercel 项目 → Settings → Environment Variables 添加 `ANTHROPIC_API_KEY`（可选 `AI_MODEL`），然后重新部署。线上 `/api/health` 目前返回 `"ai":false`。
 3. **人工审核**：全部课程都只经过 AI 审查（`self-reviewed`）。如果要标为 `reviewed`，需要有人实际读过并确认。
-4. **旧的新加坡数据库**：Neon 项目 `typescript-workshop`（`old-dust-95480900`，`aws-ap-southeast-1`）已不再使用：2026-10-21 之后没有任何访问，其中唯一的一行已复制到美国的项目，两边完全相同。2026-10-27 你在设置页开启同步之后核对：同步的数据写进了美国的项目（`revision` 从 1 变为 2，`updated_at` 为 05:01:10 UTC），旧项目在那之后没有任何访问。现在可以在 Neon 控制台 → 该项目 → Settings → Delete project 删除它。删除不可恢复，所以由你来做。
+4. ✅ **旧的新加坡数据库**（已处理）：Neon 项目 `typescript-workshop`（`old-dust-95480900`，`aws-ap-southeast-1`）已不再使用：2026-10-21 之后没有任何访问，其中唯一的一行已复制到美国的项目，两边完全相同。2026-10-27 你在设置页开启同步之后核对：同步的数据写进了美国的项目（`revision` 从 1 变为 2，`updated_at` 为 05:01:10 UTC），旧项目在那之后没有任何访问。同日按你的要求在你的 Chrome 中删除了它（Neon 控制台 → Settings → Delete project）。控制台的确认框写着不可撤销，但 Neon 的文档写明删除的项目 7 天内可以恢复；删除之前先用一个空的测试项目实测过，删除之后旧项目出现在可恢复列表中，可以恢复到 2026-11-03 05:16 UTC（`neon projects recover old-dust-95480900`），之后永久删除。
 
 ## 下一步
 

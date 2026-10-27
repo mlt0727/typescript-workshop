@@ -69,7 +69,7 @@ curl -sI https://typescript-workshop-jade.vercel.app/sandbox/index.html | grep -
 1. 在 Neon 新建一个项目，区域选和函数相同的地区；建表 `tsw_sync`（第一次请求时也会自动创建），把旧库中的行复制过去（只有一行，`id = 'main'`）。
 2. `vercel.json` 的 `regions` 改为对应的 Vercel 区域，推送。
 3. Vercel → Settings → Environment Variables：把 `DATABASE_URL` 换成新项目的连接串（Production 与 Preview），然后在 Deployments 中重新部署最新的生产部署（环境变量只在新的部署中生效）。
-4. 用上面的方法验证，在设置页同步一次，确认新库有访问、旧库没有访问之后，再在 Neon 控制台删除旧项目。
+4. 用上面的方法验证，在设置页同步一次，确认新库有访问、旧库没有访问之后，再在 Neon 控制台删除旧项目（Settings → Delete project）。确认框写着不可撤销，但实测删除的项目会出现在可恢复列表中，7 天内可以用 `neon projects recover <项目 id>` 或 API 恢复。
 
 ## 回滚
 
