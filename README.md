@@ -16,7 +16,7 @@
 |---|---|
 | Node.js | 22.22 或更高（开发与验证使用 24.13） |
 | npm | 11（随 Node 安装） |
-| 浏览器 | 近期版本的 Chrome / Edge / Safari（已在 Chromium 152 与 WebKit 上自动化测试；Firefox 在本机无法启动 Playwright，尚未验证） |
+| 浏览器 | 近期版本的 Chrome / Edge / Safari（已在 Chromium 152 与 WebKit 上自动化测试）。Firefox 不在支持范围：一次试运行中课程练习基本正常，但代码编辑器的自动化测试有失败，没有修复（见 docs/STATUS.md） |
 
 首次安装依赖与（可选的）下载测试浏览器需要联网；之后本地开发、类型检查与运行练习都不依赖任何 CDN。本项目**没有**实现离线缓存（PWA），关闭网络后刷新页面无法加载。
 

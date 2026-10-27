@@ -71,7 +71,9 @@
 | `npx playwright test --project=e2e --project=e2e-webkit`（生产预览，含 CSP） | 73 项通过，1 项跳过（“规划中的课时”页面：课程图谱中已经没有规划中的课时） |
 | 部署之后（`d891f6a`） | Vercel 部署完成，冒烟测试工作流通过；线上 `/api/health` 为 `{"ok":true,"sync":true,"ai":false}`，`X-Vercel-Id` 为 `iad1::iad1::…`，未带密码的 `/api/sync` 返回 401；线上 i03 显示修改后的课文 |
 
-**未验证**：Firefox（本机 Playwright 无法启动 Firefox：`spawn UNKNOWN`）；真实的 Safari 和 iPhone（WebKit 的结果来自 Playwright 的 WebKit 构建）；真实移动设备（只做了视口模拟）；问 AI 的真实模型调用。
+**不在支持范围**：Firefox（学习者决定不做 Firefox 兼容）。2026-10-27 在 GitHub Actions（Linux）中试运行过一次（本机的 Playwright 无法启动 Firefox：`spawn UNKNOWN`）：126 节课中 125 节全部通过，g11 城市搜索的参考解有一个测试超过了 3 秒；端到端测试 40 项通过、8 项失败，失败的都是测试向编辑器输入代码之后编辑器为空，没有查明是 Playwright 在 Firefox 中的输入方式还是网站本身的问题。
+
+**未验证**：真实的 Safari 和 iPhone（WebKit 的结果来自 Playwright 的 WebKit 构建）；真实移动设备（只做了视口模拟）；问 AI 的真实模型调用。
 
 ## 课程审查记录
 
@@ -143,5 +145,5 @@
 课程图谱中的 126 节已全部发布。可以继续的方向：
 
 1. 人工审核（见上），尤其是 H 阶段和项目 3 中依赖版本的实测说法：升级 Next.js、Node.js 或 Vercel 的计划变化之后，按课中写明的方法重新实测。
-2. 平台：Firefox、真实的 Safari/iPhone 尚未验证。
+2. 平台：真实的 Safari/iPhone 尚未验证（Firefox 不在支持范围，见上）。
 3. 课程：项目 3 中留作练习的部分（新建/删除项目、截止日期与重名规则、Postgres 存储与契约测试）可以作为附加的练习课。
