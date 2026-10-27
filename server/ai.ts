@@ -72,7 +72,7 @@ export function aiConfigFromEnv(env: Record<string, string | undefined>): AiConf
 }
 
 /** 返回一个纯文本流（UTF-8），边生成边发送。 */
-export function streamAnswer(config: AiConfig, input: AskInput, signal: AbortSignal): ReadableStream<Uint8Array> {
+export function streamAnswer(config: AiConfig, input: AskInput, signal: AbortSignal, onError?: (error: unknown) => void): ReadableStream<Uint8Array> {
   const client = new Anthropic({ apiKey: config.apiKey });
   const encoder = new TextEncoder();
   const messages: Anthropic.Beta.BetaMessageParam[] = [];
@@ -108,6 +108,8 @@ export function streamAnswer(config: AiConfig, input: AskInput, signal: AbortSig
         }
         controller.close();
       } catch (err) {
+        // 学习者自己中止的不算错误
+        if (!signal.aborted) onError?.(err);
         let message = 'AI 服务暂时不可用，请稍后再试。';
         if (err instanceof Anthropic.AuthenticationError) message = 'AI 密钥无效：请检查服务器的 ANTHROPIC_API_KEY。';
         else if (err instanceof Anthropic.RateLimitError) message = 'AI 服务调用太频繁或额度不足，请稍后再试。';

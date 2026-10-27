@@ -7,6 +7,7 @@ import { Readable } from 'node:stream';
 import type { Plugin } from 'vite';
 import { loadEnv } from 'vite';
 import { aiConfigFromEnv, handleApi } from './handlers.js';
+import { formatErrorLog, secretsFromEnv } from './log.js';
 import { FileStore } from './sync-store.js';
 
 export function devApiPlugin(): Plugin {
@@ -15,6 +16,7 @@ export function devApiPlugin(): Plugin {
     configureServer(server) {
       const env = loadEnv(server.config.mode, server.config.root, '');
       const store = new FileStore(env.TSW_SYNC_FILE || path.join(server.config.root, '.data', 'sync.json'));
+      const secrets = secretsFromEnv(env);
       server.middlewares.use(async (req, res, next) => {
         if (!req.url?.startsWith('/api/')) return next();
         try {
@@ -33,6 +35,7 @@ export function devApiPlugin(): Plugin {
             store,
             passwordHash: env.SYNC_PASSWORD_HASH,
             ai: aiConfigFromEnv(env),
+            logError: (req, error) => console.error(formatErrorLog(req, error, secrets)),
           });
           res.statusCode = response.status;
           response.headers.forEach((v, k) => res.setHeader(k, v));

@@ -1,13 +1,13 @@
 # 项目状态
 
-最后更新：2026-10-21。本文件如实记录已完成、已验证与未完成的内容；“未验证”的项目会明确标出。
+最后更新：2026-10-27。本文件如实记录已完成、已验证与未完成的内容；“未验证”的项目会明确标出。
 
 ## 概览
 
 | 方面 | 状态 |
 |---|---|
 | 平台功能（M1） | ✅ 最小完整学习闭环已实现并通过自动化测试 |
-| 同步 / 问 AI / 部署（M2） | ✅ 同步与部署已上线并验证；问 AI 已实现，**未配置密钥，未做线上调用验证** |
+| 同步 / 问 AI / 部署（M2） | ✅ 同步与部署已上线并验证（2026-10-27 起函数在 `iad1`、数据库在 `aws-us-east-1`，都在美国东部）；问 AI 已实现，**未配置密钥，未做线上调用验证** |
 | 课程编写 | ✅ 已发布 **126 / 126** 节：A 20、B 17、C 12、D 10、E 13、F 12、G 15、H 9、I 18 节（项目 1、项目 2、项目 3 全部里程碑，i01–i03）；没有草稿和规划中的课时 |
 | 课程审核 | ⚠ 全部 126 节：浏览器自动验证 + 独立 AI 审查 + 按意见修正（`self-reviewed`）；**没有人工审核** |
 | 项目实验（I 阶段） | ✅ 项目 1、项目 2、项目 3（Next.js 服务器：Route Handler、ETag/If-Match、SQLite、迁移、契约测试）和 i03（服务端部署）已完成 |
@@ -43,7 +43,8 @@
 | 进度：IndexedDB 草稿与状态、刷新恢复、继续学习、导出/导入（合并或替换，非法文件拒绝且不破坏数据） | ✅ | e2e、单元测试 |
 | 课程更新后草稿不被静默覆盖（提示“保留我的代码 / 改用新版”） | ✅ | e2e：把数据库中草稿的版本改旧之后刷新，两个按钮分别保留代码和恢复起始代码，刷新后结果保持 |
 | 跨设备同步（单用户密码、乐观并发、可交换的合并、重置跟随） | ✅ | 单元测试；本地 e2e（两个浏览器上下文）；线上 API 读写验证 |
-| 问 AI（服务端代理 Claude，`claude-opus-5-5`，流式，默认先给思路） | ✅ 已实现 | ⚠ 未配置 API 密钥，未做真实调用；接口鉴权与未配置时的降级有单元测试 |
+| 问 AI（服务端代理 Claude，`claude-opus-5-5`，流式，默认先给思路） | ✅ 已实现 | ⚠ 未配置 API 密钥，未做真实调用；接口鉴权、未配置时的降级、回答中途出错（模拟 401）有单元测试 |
+| 服务端错误日志（`server/log.ts`）：每个出错的请求一行 JSON，只有方法、路径和错误的名字、信息、`cause`；连接串、其中的密码、密码哈希、API 密钥换成 `[REDACTED]` | ✅ | 单元测试 3 项；问 AI 中途出错时调用的测试 |
 | 浅色/深色、字号、可折叠目录、窄屏抽屉、目录搜索 | ✅ | e2e（手机/平板/桌面无横向溢出） |
 | 课程内容管线与发布验收（`content:check`、`content:verify`、`content:verify:webkit`、链接检查） | ✅ | 实际运行 |
 | 课程 Markdown 中作者写的原始 HTML（例如没有加反引号的 `<T>`）当作文字显示，`content:check` 报告为错误 | ✅ | 单元测试 3 项；全部课程的检查 |
@@ -105,7 +106,7 @@
 
 - 沙箱 iframe 与主页面在测试的浏览器中**同一线程**：DOM/React 模式依靠插入循环体的时间型保护（1.5 秒）中止同步死循环；不经过循环的长时间同步计算（例如灾难性回溯的正则）仍可能卡住标签页，需要关闭页面。纯 TS 模式在 Worker 中运行，`terminate()` 已验证能中断死循环。
 - 平台面向自学，**不防作弊**：测试与答案都在客户端；学生代码与测试框架运行在同一个沙箱中，理论上可以篡改测试结果（只会欺骗自己）。
-- 练习中的 `fetch`、`localStorage`/`sessionStorage`、`alert` 都是**模拟**的（界面会标注）；真实行为需要在本地项目中验证（相关课程尚未编写）。
+- 练习中的 `fetch`、`localStorage`/`sessionStorage`、`alert` 都是**模拟**的（界面会标注）；真实行为需要在本地项目中验证（F 阶段讲了本地的 Vite 项目和 DevTools 的网络面板，H 阶段在 Next.js 项目中实测）。
 - 只支持平台提供的依赖（react、react-dom、Testing Library、vitest 子集），不支持安装任意 npm 包；不支持循环导入。
 - `console.log(promise)` 无法显示 Promise 状态（显示 `Promise { <unknown> }`）；`%o` 不显示隐藏属性。
 - Safari/WebKit 中，测试运行时的焦点是模拟的：`element.matches(':focus')` 这类选择器查询得不到模拟的焦点（`toHaveFocus()`、`document.activeElement` 和计算样式没有问题）。可见的预览中，脚本移动焦点（例如路由把焦点移到标题）在 Safari 中不起作用，这是浏览器对跨源 iframe 的限制。
@@ -124,21 +125,22 @@
 | 纯 TS 的 Worker 由沙箱 iframe 内部创建 | Worker 继承不透明来源与 CSP，无法访问主应用 IndexedDB，也无法联网。 |
 | 沙箱运行时为经典脚本 IIFE，Worker 内联 | 不透明来源加载模块脚本需要 CORS；WebKit 不允许沙箱 Worker `importScripts` 自托管脚本。 |
 | 控制台输出对齐 Node.js | 课文中的预期输出以 Node 为准，学习者本地运行时看到的一致。 |
-| 跨设备同步：Vercel Function + Neon（新加坡） | 学习者要求跨设备；单用户密码；离中国大陆较近；本地优先、离线可用。 |
+| 跨设备同步：Vercel Function（`iad1`）+ Neon（`aws-us-east-1`），都在美国东部 | 学习者要求跨设备；单用户密码；本地优先、离线可用。函数和数据库在同一地区，每次查询不跨洋往返。2026-10-20 最初放在新加坡，是编写方没有询问学习者所在地的假设（学习者在美国）；10-21 函数改到 `iad1`、新建美国的 Neon 项目并复制数据，10-27 学习者在 Vercel 中换了 `DATABASE_URL` 并重新部署。 |
 | 问 AI：服务端调用 `@anthropic-ai/sdk`，默认 `claude-opus-5-5`，开启服务端 refusal fallback（`fallbacks: "default"`） | 密钥不进浏览器；按 Anthropic 官方用法；模型可用 `AI_MODEL` 更换。 |
 | 课程审核状态 | AI 起草的内容最高只标 `self-reviewed`（经过明确的二次检查），不冒称人工审核。 |
 | React Router 打包进 React 运行时 | g13 需要真实的 React Router。平台本身已经依赖 react-router 8.5，和 React 打包在一起可以共用同一个 React 实例；代价是 React 运行时从约 612 KB 增加到约 815 KB（gzip 约 231 KB），React 类型组从约 1.1 MB 增加到约 1.5 MB。沙箱中不能修改路径，课程预览用 `createHashRouter`，测试用 `createMemoryRouter`。 |
 
 ## 阻塞与需要你处理的事项
 
-1. **部署**：GitHub 仓库 `mlt0727/typescript-workshop` 与 Vercel 项目已关联，每次推送到 `main` 自动部署（最近的提交上都有 Vercel 写入的状态 “Deployment has completed”）。Vercel 连接器对团队作用域返回 403（需要在连接器中重新授权团队访问）；2026-10-21 在 Vercel 控制台（你的 Chrome，只读）核对：全部部署都是 Ready，最新的提交是当前的生产部署，运行日志中没有警告和错误。
+1. **部署**：GitHub 仓库 `mlt0727/typescript-workshop` 与 Vercel 项目已关联，每次推送到 `main` 自动部署（最近的提交上都有 Vercel 写入的状态 “Deployment has completed”）。Vercel 连接器对团队作用域返回 403（需要在连接器中重新授权团队访问）；2026-10-21 在 Vercel 控制台（你的 Chrome，只读）核对：全部部署都是 Ready，最新的提交是当前的生产部署，运行日志中没有警告和错误。2026-10-27 再次核对：`DATABASE_URL` 已在 Production 与 Preview 中换成美国的数据库，之后的重新部署是 Ready 的当前生产部署；线上 `X-Vercel-Id` 为 `iad1::iad1::…`。
 2. **问 AI 的密钥**：在 Vercel 项目 → Settings → Environment Variables 添加 `ANTHROPIC_API_KEY`（可选 `AI_MODEL`），然后重新部署。线上 `/api/health` 目前返回 `"ai":false`。
 3. **人工审核**：全部课程都只经过 AI 审查（`self-reviewed`）。如果要标为 `reviewed`，需要有人实际读过并确认。
+4. **旧的新加坡数据库**：Neon 项目 `typescript-workshop`（`old-dust-95480900`，`aws-ap-southeast-1`）已不再使用：2026-10-21 之后没有任何访问，其中唯一的一行已复制到美国的项目，两边完全相同。在设置页同步一次、确认正常之后，可以在 Neon 控制台 → 该项目 → Settings → Delete project 删除它。删除不可恢复，所以由你来做。
 
 ## 下一步
 
 课程图谱中的 126 节已全部发布。可以继续的方向：
 
 1. 人工审核（见上），尤其是 H 阶段和项目 3 中依赖版本的实测说法：升级 Next.js、Node.js 或 Vercel 的计划变化之后，按课中写明的方法重新实测。
-2. 平台：`api/index.ts` 的错误处理仍是直接 `console.error(err)`（i03 中指出的写法），可以改为结构化、去掉密钥的日志；Firefox、真实的 Safari/iPhone 尚未验证。
+2. 平台：Firefox、真实的 Safari/iPhone 尚未验证。
 3. 课程：项目 3 中留作练习的部分（新建/删除项目、截止日期与重名规则、Postgres 存储与契约测试）可以作为附加的练习课。

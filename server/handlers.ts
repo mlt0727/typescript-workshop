@@ -19,6 +19,8 @@ export interface Deps {
   store: SyncStore | undefined;
   passwordHash: string | undefined;
   ai: AiConfig;
+  /** 记录请求处理中的错误（问 AI 的流式回答中途出错时，响应已经开始，只能写日志） */
+  logError?: (request: Request, error: unknown) => void;
 }
 
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -103,7 +105,7 @@ export async function handleApi(request: Request, deps: Deps): Promise<Response>
     if (!body.ok) return body.response;
     const parsed = askSchema.safeParse(parseJson(body.text));
     if (!parsed.success) return json(400, { error: '请求格式不正确' });
-    return new Response(streamAnswer(deps.ai, parsed.data, request.signal), {
+    return new Response(streamAnswer(deps.ai, parsed.data, request.signal, (err) => deps.logError?.(request, err)), {
       status: 200,
       headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' },
     });

@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { generatePassword, hashPassword, verifyPassword } from './auth.ts';
 import { handleApi, MAX_SYNC_BYTES, type Deps } from './handlers.ts';
 import { MemoryStore } from './sync-store.ts';
@@ -91,6 +91,24 @@ describe('/api/ai', () => {
   test('需要同步密码', async () => {
     const d = { ...deps(), ai: { apiKey: 'sk-test', model: 'claude-opus-5-5', effort: 'medium' as const } };
     expect((await handleApi(req('POST', '/api/ai', { question: 'hi' }, 'wrong'), d)).status).toBe(401);
+  });
+
+  test('回答中途出错：流中给出中文提示，错误交给 logError', async () => {
+    const logged: unknown[] = [];
+    const d: Deps = { ...deps(), ai: { apiKey: 'sk-test', model: 'claude-opus-5-5', effort: 'medium' }, logError: (_request, error) => logged.push(error) };
+    vi.stubGlobal('fetch', async () =>
+      Response.json({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }, { status: 401 }),
+    );
+    try {
+      const input = { lessonId: 'a01', lessonTitle: '课', mode: 'ts', files: { 'main.ts': '' }, diagnostics: [], output: [], question: 'hi' };
+      const res = await handleApi(req('POST', '/api/ai', input), d);
+      expect(res.status).toBe(200);
+      expect(await res.text()).toContain('AI 密钥无效');
+      expect(logged).toHaveLength(1);
+      expect((logged[0] as Error).message).toContain('invalid x-api-key');
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });
 

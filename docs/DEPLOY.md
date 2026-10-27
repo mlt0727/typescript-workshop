@@ -1,19 +1,19 @@
 # 部署说明
 
-本文记录 TypeScript 工坊自身的部署方式。课程中“部署你自己的网站”的教学内容另见课程 I 阶段（规划中）。
+本文记录 TypeScript 工坊自身的部署方式。课程中“部署你自己的网站”的教学内容见 I 阶段的 i01–i03。
 
-## 当前线上部署（2026-10-20）
+## 当前线上部署（2026-10-27）
 
 | 项 | 值 |
 |---|---|
 | 网址 | https://typescript-workshop-jade.vercel.app |
 | 托管 | Vercel Hobby（免费计划），项目 `typescript-workshop` |
-| 函数区域 | `sin1`（新加坡） |
-| 数据库 | Neon Postgres 免费计划，项目 `typescript-workshop`，区域 `aws-ap-southeast-1`（新加坡），表 `tsw_sync` |
+| 函数区域 | `iad1`（美国东部，华盛顿特区），在 `vercel.json` 的 `regions` 中设置 |
+| 数据库 | Neon Postgres 免费计划，项目 `typescript-workshop-us`，区域 `aws-us-east-1`（美国东部，弗吉尼亚北部），表 `tsw_sync` |
 | 源码 | https://github.com/mlt0727/typescript-workshop（`main` 分支） |
 
 > 免费计划的额度与条款可能变化，本项目不保证任何云服务永久免费。
-> `*.vercel.app` 域名在部分地区（包括中国大陆的部分网络）可能无法访问或较慢；如遇此情况可以绑定自己的域名，或在本地运行（见 README）。
+> 函数和数据库要放在同一个地区：同步的每次读写都要查询数据库，跨洋往返会让每个请求都变慢。
 
 ## 环境变量
 
@@ -45,6 +45,11 @@
 # 1. API 是否在线、同步与 AI 是否已配置
 curl https://typescript-workshop-jade.vercel.app/api/health
 # 期望：{"ok":true,"sync":true,"ai":false}（配置了 ANTHROPIC_API_KEY 时 ai 为 true）
+# 它只说明变量设置了，不连接数据库；数据库能不能用，要在设置页实际同步一次
+
+# 函数运行的区域：X-Vercel-Id 的第二段
+curl -sI https://typescript-workshop-jade.vercel.app/api/health | grep -i x-vercel-id
+# 期望：iad1::iad1::…
 
 # 2. 未带密码访问同步接口应被拒绝
 curl -i https://typescript-workshop-jade.vercel.app/api/sync
@@ -59,6 +64,13 @@ curl -sI https://typescript-workshop-jade.vercel.app/sandbox/index.html | grep -
 
 仓库中的 `.debug/` 不提交；作者用 Playwright 写的线上冒烟脚本做了上述检查，结果记录在 `docs/STATUS.md`。
 
+## 更换区域（2026-10-21 至 10-27 实际做过一次：新加坡 → 美国东部）
+
+1. 在 Neon 新建一个项目，区域选和函数相同的地区；建表 `tsw_sync`（第一次请求时也会自动创建），把旧库中的行复制过去（只有一行，`id = 'main'`）。
+2. `vercel.json` 的 `regions` 改为对应的 Vercel 区域，推送。
+3. Vercel → Settings → Environment Variables：把 `DATABASE_URL` 换成新项目的连接串（Production 与 Preview），然后在 Deployments 中重新部署最新的生产部署（环境变量只在新的部署中生效）。
+4. 用上面的方法验证，在设置页同步一次，确认新库有访问、旧库没有访问之后，再在 Neon 控制台删除旧项目。
+
 ## 回滚
 
 - Vercel 控制台 → 项目 → Deployments，选择之前一个状态为 Ready 的生产部署 → “Promote to Production”（或 “Instant Rollback”）。静态资源与函数会一起回到那次部署的版本。
@@ -67,5 +79,5 @@ curl -sI https://typescript-workshop-jade.vercel.app/sandbox/index.html | grep -
 
 ## 日志
 
-- Vercel 控制台 → 项目 → Logs：查看 `/api` 函数的运行日志（`api/index.ts` 会记录未捕获的错误）。
+- Vercel 控制台 → 项目 → Logs：查看 `/api` 函数的运行日志。`api/index.ts` 把出错的请求写成一行 JSON（`server/log.ts`：只有方法、路径和错误的名字、信息、`cause`；数据库连接串、其中的密码、同步密码的哈希和 API 密钥换成 `[REDACTED]`），问 AI 的回答中途出错也会记一行。写到标准错误，按级别筛选时是 error。Hobby 计划的运行日志只保存 1 小时。
 - 前端没有接入第三方监控或统计；浏览器中的错误只出现在开发者工具控制台。

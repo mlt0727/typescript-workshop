@@ -56,20 +56,24 @@ references:
 
 ```ts
 const store = process.env.DATABASE_URL ? new NeonStore(process.env.DATABASE_URL) : undefined;
+const secrets = secretsFromEnv(process.env);
+const logError = (request: Request, error: unknown) => console.error(formatErrorLog(request, error, secrets));
 
 export default {
   async fetch(request: Request): Promise<Response> {
     try {
-      return await handleApi(request, { store, passwordHash: process.env.SYNC_PASSWORD_HASH, ai: aiConfigFromEnv(process.env) });
+      return await handleApi(request, { store, passwordHash: process.env.SYNC_PASSWORD_HASH, ai: aiConfigFromEnv(process.env), logError });
     } catch (err) {
-      console.error('API error', err);
+      logError(request, err);
       return new Response(JSON.stringify({ error: '服务器内部错误' }), { status: 500, headers: { 'content-type': 'application/json; charset=utf-8' } });
     }
   },
 };
 ```
 
-它的 `catch` 直接把错误交给了 `console.error`：正是下文要改进的写法。数据库在网络的另一端，p3-03 中的 N+1 问题在这里也会变得明显。
+它的 `catch` 最初是 `console.error('API error', err)`，把错误对象原样交给日志：正是下文要改进的写法。现在的 `formatErrorLog` 用的就是下文的做法：一行 JSON，只有错误的名字和信息，环境变量中密钥的值换成 `[REDACTED]`。
+
+数据库在网络的另一端，每一次查询都要往返一次，p3-03 中的 N+1 问题在这里会变得明显。所以函数的区域（`vercel.json` 中的 `regions`）要和数据库在同一个地区：这个网站的函数在 `iad1`（美国东部），数据库也在美国东部。
 
 自己运行 `next start` 时，Next.js 的文档提醒：停止服务器时发送 `SIGINT` 或者 `SIGTERM` 并等待，Next.js 会处理完正在进行的请求再退出，平台应该留出 10 到 30 秒的时间。
 
@@ -123,7 +127,7 @@ console.log(JSON.stringify({ level: 'error', error: { name: error.name, message:
 
 - 密码被换成了 `[REDACTED]`：`LAB_DB_PASSWORD` 的值在“不能出现的值”的列表中；
 - 日志中只有路径。不过 Vercel 的运行日志自己会记下请求的查询参数（日志详情中的 Search Params），所以令牌本来就不该放在网址中；
-- 每个响应带着请求的 id（h06），用户报告问题时给出它，就能找到对应的那一行。Vercel 自己也给每个响应一个 id：实测线上 `/api/health` 的响应头中有 `X-Vercel-Id: iad1::sin1::…`（处理请求的边缘区域、函数的区域和请求的 id）。请求中带来的 `x-request-id` 来自客户端，任何人都可以写，只有在你自己的代理会覆盖它时才能沿用。
+- 每个响应带着请求的 id（h06），用户报告问题时给出它，就能找到对应的那一行。Vercel 自己也给每个响应一个 id：实测线上 `/api/health` 的响应头中有 `X-Vercel-Id: iad1::iad1::…`（处理请求的边缘区域、函数的区域和请求的 id；函数原来在新加坡（`sin1`）时是 `iad1::sin1::…`）。请求中带来的 `x-request-id` 来自客户端，任何人都可以写，只有在你自己的代理会覆盖它时才能沿用。
 
 Vercel 的运行日志还有几个规则（文档）：
 
