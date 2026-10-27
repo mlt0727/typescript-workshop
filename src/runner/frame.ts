@@ -64,7 +64,7 @@ export class SandboxFrame {
 
     this.ready = new Promise<void>((resolve, reject) => {
       let loads = 0;
-      const timer = window.setTimeout(() => reject(new Error('沙箱启动超时（15 秒）')), 15_000);
+      const timer = window.setTimeout(() => reject(new Error('沙箱启动超时（15 秒）。如果这个网址要先登录 Vercel 才能打开（部署保护），沙箱的文件加载不了，请改用公开的网址；否则请刷新页面再试。')), 15_000);
       iframe.addEventListener('load', () => {
         loads++;
         if (loads > 1) {

@@ -34,8 +34,9 @@
 
   --editor-bg: #ffffff;
   --editor-gutter: #f6f6f4;
-  --editor-active-line: #f2f4f8;
-  --editor-selection: #cfe0ff;
+  /* 当前行用半透明色：选区画在文字下面的一层，不透明的当前行会把这一行的选区完全盖住 */
+  --editor-active-line: rgba(40, 70, 140, 0.05);
+  --editor-selection: #b9d3ff;
   --code-keyword: #8b2bb1;
   --code-string: #1b7f3b;
   --code-number: #b35900;
@@ -78,8 +79,8 @@
   --info-soft: #1f2a3d;
   --editor-bg: #1b1d21;
   --editor-gutter: #1e2024;
-  --editor-active-line: #23262c;
-  --editor-selection: #34476b;
+  --editor-active-line: rgba(255, 255, 255, 0.035);
+  --editor-selection: #3a5a8c;
   --code-keyword: #d49cf7;
   --code-string: #8fd49c;
   --code-number: #f0b070;
@@ -118,8 +119,8 @@
     --info-soft: #1f2a3d;
     --editor-bg: #1b1d21;
     --editor-gutter: #1e2024;
-    --editor-active-line: #23262c;
-    --editor-selection: #34476b;
+    --editor-active-line: rgba(255, 255, 255, 0.035);
+    --editor-selection: #3a5a8c;
     --code-keyword: #d49cf7;
     --code-string: #8fd49c;
     --code-number: #f0b070;

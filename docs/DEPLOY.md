@@ -6,7 +6,8 @@
 
 | 项 | 值 |
 |---|---|
-| 网址 | https://typescript-workshop-jade.vercel.app |
+| 网址 | https://typescript-workshop-jade.vercel.app（公开的生产域名） |
+| 其他域名 | `typescript-workshop-lingtong-mengs-projects.vercel.app` 开着 Vercel 的部署保护（要先登录 Vercel）：沙箱 iframe 是不透明来源，请求不带 Vercel 的登录 cookie，沙箱的文件会被重定向到登录页，运行代码时“沙箱启动超时”。`vercel.json` 中把这个域名重定向到公开域名；两个域名的浏览器存储也是分开的（同步设置、进度各自独立） |
 | 托管 | Vercel Hobby（免费计划），项目 `typescript-workshop` |
 | 函数区域 | `iad1`（美国东部，华盛顿特区），在 `vercel.json` 的 `regions` 中设置 |
 | 数据库 | Neon Postgres 免费计划，项目 `typescript-workshop-us`，区域 `aws-us-east-1`（美国东部，弗吉尼亚北部），表 `tsw_sync` |

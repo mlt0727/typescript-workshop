@@ -4,6 +4,14 @@
   "regions": ["iad1"],
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "typescript-workshop-lingtong-mengs-projects.vercel.app" }],
+      "destination": "https://typescript-workshop-jade.vercel.app/:path*",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api" },
     { "source": "/learn/:lessonId", "destination": "/index.html" },
