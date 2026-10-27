@@ -23,6 +23,9 @@ export default defineConfig({
     { name: 'e2e-webkit', testDir: './tests/e2e', testMatch: /pipeline|security/, use: { ...devices['Desktop Safari'] } },
     { name: 'content', testDir: './tests/content', timeout: 1_200_000, use: { ...devices['Desktop Chrome'] } },
     { name: 'content-webkit', testDir: './tests/content', timeout: 1_800_000, use: { ...devices['Desktop Safari'] } },
+    // Firefox：本机（Windows）无法启动 Playwright 的 Firefox（spawn UNKNOWN），在 CI（Linux）中运行
+    { name: 'e2e-firefox', testDir: './tests/e2e', use: { ...devices['Desktop Firefox'] } },
+    { name: 'content-firefox', testDir: './tests/content', timeout: 1_800_000, use: { ...devices['Desktop Firefox'] } },
     // 本地探测（不提交）：PROBE=1 npx playwright test --project=probe
     ...(process.env.PROBE === '1' ? [{ name: 'probe', testDir: './tests/probe', use: { ...devices[process.env.PROBE_WEBKIT === '1' ? 'Desktop Safari' : 'Desktop Chrome'] } }] : []),
   ],

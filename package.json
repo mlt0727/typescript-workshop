@@ -25,6 +25,7 @@
     "test:e2e": "playwright test --project=e2e",
     "content:verify": "playwright test --project=content",
     "content:verify:webkit": "playwright test --project=content-webkit",
+    "content:verify:firefox": "playwright test --project=content-firefox",
     "check": "npm run typecheck && npm run lint && npm run test && npm run content:check",
     "build:types": "tsx scripts/build-types.ts",
     "prepare:assets": "npm run build:types && npm run content:build && npm run build:sandbox",
