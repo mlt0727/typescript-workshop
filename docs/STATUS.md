@@ -56,19 +56,20 @@
 | 学生写测试的练习（`grading: tests`）：学生的测试先要在正确的实现上通过，再对每个故意写错的实现（`:::mutant`，至少 2 个）重新编译和运行，类型测试报错或任一测试失败才算“发现”；结果面板列出漏掉的错误实现及其提示。课程验证中错误的测试用 `fails=tests`（在正确的实现上失败）或 `fails=mutants misses=…`（必须正好漏掉声明的那几个） | ✅ | e2e（Chromium、WebKit）：行为测试与类型测试分别发现错误实现、测试本身有错时不检查错误实现 |
 | 沙箱中的 `history.back/forward/go`：在本页面自己的条目之间模拟完成（异步；恢复地址与 `history.state`，触发 `popstate`，只有片段不同时再触发 `hashchange`）。修复前，后退之后页面会被浏览器重新加载（Chromium 后退到加载时的条目、WebKit 任意条目之间，已实测），之后的测试被“页面被导航离开”中止 | ✅ | e2e（Chromium、WebKit）；e10、g13、p1-04 在 WebKit 中重新验证 |
 
-## 已运行的检查（2026-10-21，Windows 11，Node 24.13）
+## 已运行的检查（2026-10-27，Windows 11，Node 24.13）
 
 | 命令 | 结果 |
 |---|---|
 | `npm run typecheck` | 通过 |
 | `npm run lint` | 通过 |
-| `npm test` | 12 个文件、140 项全部通过 |
+| `npm test` | 13 个文件、145 项全部通过（新增服务端日志 3 项、问 AI 中途出错 1 项） |
 | `npm run content:check` | 已发布 126、草稿 0、规划 0、错误 0、提醒 0 |
-| `npm run content:links` | 437 个参考链接全部可访问（修正了 p1-02 中两个已失效的 MDN 中文页面） |
+| `npm run content:links` | 437 个参考链接全部可访问（2026-10-21 修正了 p1-02 中两个已失效的 MDN 中文页面） |
 | `npm run build` | 通过 |
-| `npm run content:verify`（Chromium，生产构建） | 全部 126 节通过（约 10 分钟）；之后修改过的 p1-02、p3-03、i03 重新验证通过；`content/verification.json` 中 126 条记录全部与当前源文件一致 |
-| `npm run content:verify:webkit`（生产构建） | 全部 126 节通过：一次全量运行中通过 113 节后到达当时 15 分钟的超时（课时增加之后，全量运行需要更长时间；超时已改为 30 分钟），其余 13 节和修改过的 3 节单独运行全部通过 |
-| `npx playwright test --project=e2e --project=e2e-webkit`（生产预览，含 CSP） | 73 项通过，1 项跳过（“规划中的课时”页面：课程图谱中已经没有规划中的课时）；新增“课程更新之后的草稿”和“首页如实显示数量” |
+| `npm run content:verify`（Chromium，生产构建） | 2026-10-21 全部 126 节通过（约 10 分钟）；之后修改过的 p1-02、p3-03、i03 重新验证通过（i03 在 10-27 改了课文后再次验证）；`content/verification.json` 中 126 条记录全部与当前源文件一致 |
+| `npm run content:verify:webkit`（生产构建） | 2026-10-21 全部 126 节通过：一次全量运行中通过 113 节后到达当时 15 分钟的超时（课时增加之后，全量运行需要更长时间；超时已改为 30 分钟），其余 13 节和修改过的 3 节单独运行全部通过；10-27 修改后的 i03 再次通过 |
+| `npx playwright test --project=e2e --project=e2e-webkit`（生产预览，含 CSP） | 73 项通过，1 项跳过（“规划中的课时”页面：课程图谱中已经没有规划中的课时） |
+| 部署之后（`d891f6a`） | Vercel 部署完成，冒烟测试工作流通过；线上 `/api/health` 为 `{"ok":true,"sync":true,"ai":false}`，`X-Vercel-Id` 为 `iad1::iad1::…`，未带密码的 `/api/sync` 返回 401；线上 i03 显示修改后的课文 |
 
 **未验证**：Firefox（本机 Playwright 无法启动 Firefox：`spawn UNKNOWN`）；真实的 Safari 和 iPhone（WebKit 的结果来自 Playwright 的 WebKit 构建）；真实移动设备（只做了视口模拟）；问 AI 的真实模型调用。
 
