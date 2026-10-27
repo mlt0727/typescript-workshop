@@ -141,6 +141,18 @@ test.describe('AI 问答栏', () => {
     await expect(dock(page)).toBeVisible();
   });
 
+  test('中等宽度（1100px，目录展开）：问答栏仍然停靠在右边，正文至少留 480px，没有横向溢出', async ({ page }) => {
+    await page.setViewportSize({ width: 1100, height: 800 });
+    await mockAi(page);
+    await page.goto(A08);
+    await expect(dock(page)).toBeVisible();
+    await expect(dock(page)).not.toHaveClass(/ai-dock-overlay/);
+    const main = await page.locator('#main').boundingBox();
+    expect(main?.width ?? 0).toBeGreaterThanOrEqual(479);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+
   test('窄屏：问答栏是抽屉，默认收起；示例的“问 AI”会打开它；Esc 关闭；换页后收起', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await mockAi(page);

@@ -15,7 +15,7 @@ const SettingsPage = lazy(() => import('../features/settings/SettingsPage.tsx'))
 const AiDock = lazy(() => import('../features/ai/AiDock.tsx'));
 
 /** 比这窄时，AI 问答栏不停靠在正文旁边，而是从右侧滑出 */
-const DOCK_OVERLAY_QUERY = '(max-width: 1199px)';
+const DOCK_OVERLAY_QUERY = '(max-width: 999px)';
 
 function StorageBanner() {
   const status = useProgress((s) => s.status);
@@ -133,7 +133,7 @@ function Shell() {
         {lessonId !== undefined && (
           <Suspense fallback={null}>
             {/* 每节课一个对话：换课时重新挂载，正在进行的请求随之中止 */}
-            <AiDock key={lessonId} lessonId={lessonId} overlay={aiOverlay} />
+            <AiDock key={lessonId} lessonId={lessonId} overlay={aiOverlay} sidebarOpen={sidebarOpen && !narrow} />
           </Suspense>
         )}
       </div>

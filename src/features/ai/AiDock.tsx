@@ -10,13 +10,15 @@ import type { Lesson } from '../../content/types.ts';
 import { Icon } from '../../ui/Icon.tsx';
 import { syncManager } from '../sync/syncManager.ts';
 import { askAi, useAiStatus, type AskPayload } from './aiClient.ts';
-import { aiDock, DOCK_DEFAULT_WIDTH, readBlockContext, useAiDock } from './aiDock.ts';
+import { aiDock, DOCK_DEFAULT_WIDTH, DOCK_MIN_WIDTH, readBlockContext, useAiDock } from './aiDock.ts';
 import { htmlToText } from './AskAiButton.tsx';
 import { loadConversation, saveConversation, type Turn } from './conversation.ts';
 import { SafeMarkdown } from './SafeMarkdown.tsx';
 
 /** 正文至少留这么宽 */
 const MIN_MAIN_WIDTH = 480;
+/** 分隔线占的宽度（7px，向右重叠 3px） */
+const SPLITTER_WIDTH = 4;
 const WIDTH_STEP = 32;
 
 function lessonText(lesson: Lesson): string {
@@ -26,11 +28,16 @@ function lessonText(lesson: Lesson): string {
     .slice(0, 12_000);
 }
 
-function clampWidth(width: number) {
-  return Math.min(width, Math.max(300, window.innerWidth - MIN_MAIN_WIDTH));
+function sidebarWidth(): number {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width')) || 290;
 }
 
-function Splitter({ width }: { width: number }) {
+/** 问答栏最宽到正文还剩 MIN_MAIN_WIDTH（目录展开时再减去目录的宽度），最窄 300 */
+function clampWidth(width: number, viewport: number, sidebarOpen: boolean) {
+  return Math.min(width, Math.max(DOCK_MIN_WIDTH, viewport - (sidebarOpen ? sidebarWidth() : 0) - SPLITTER_WIDTH - MIN_MAIN_WIDTH));
+}
+
+function Splitter({ width, clamp }: { width: number; clamp: (w: number) => number }) {
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     e.preventDefault();
@@ -39,7 +46,7 @@ function Splitter({ width }: { width: number }) {
     el.setPointerCapture(e.pointerId);
     // 拖过预览 iframe 时事件会被 iframe 吃掉：拖动期间让 iframe 不接收指针事件
     document.body.classList.add('resizing-dock');
-    const move = (ev: PointerEvent) => aiDock.setWidth(clampWidth(width + (startX - ev.clientX)));
+    const move = (ev: PointerEvent) => aiDock.setWidth(clamp(width + (startX - ev.clientX)));
     const end = () => {
       el.removeEventListener('pointermove', move);
       el.removeEventListener('pointerup', end);
@@ -57,13 +64,13 @@ function Splitter({ width }: { width: number }) {
       aria-orientation="vertical"
       aria-label="拖动调整 AI 问答栏的宽度（左右方向键也可以调整，双击恢复默认宽度）"
       aria-valuenow={width}
-      aria-valuemin={300}
+      aria-valuemin={DOCK_MIN_WIDTH}
       tabIndex={0}
       onPointerDown={onPointerDown}
       onDoubleClick={() => aiDock.setWidth(DOCK_DEFAULT_WIDTH)}
       onKeyDown={(e) => {
-        if (e.key === 'ArrowLeft') aiDock.setWidth(clampWidth(width + WIDTH_STEP));
-        else if (e.key === 'ArrowRight') aiDock.setWidth(clampWidth(width - WIDTH_STEP));
+        if (e.key === 'ArrowLeft') aiDock.setWidth(clamp(width + WIDTH_STEP));
+        else if (e.key === 'ArrowRight') aiDock.setWidth(clamp(width - WIDTH_STEP));
         else return;
         e.preventDefault();
       }}
@@ -71,7 +78,7 @@ function Splitter({ width }: { width: number }) {
   );
 }
 
-export default function AiDock({ lessonId, overlay }: { lessonId: string; overlay: boolean }) {
+export default function AiDock({ lessonId, overlay, sidebarOpen }: { lessonId: string; overlay: boolean; sidebarOpen: boolean }) {
   const status = useAiStatus();
   const dock = useAiDock();
   const [lesson, setLesson] = useState<Lesson | null>(null);
@@ -84,6 +91,14 @@ export default function AiDock({ lessonId, overlay }: { lessonId: string; overla
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const initialFocusRequest = useRef(dock.focusRequest);
+  // 不含滚动条的宽度
+  const [viewport, setViewport] = useState(() => document.documentElement.clientWidth);
+
+  useEffect(() => {
+    const onResize = () => setViewport(document.documentElement.clientWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -107,6 +122,7 @@ export default function AiDock({ lessonId, overlay }: { lessonId: string; overla
 
   if (!status?.configured) return null;
 
+  const clamp = (w: number) => clampWidth(w, viewport, sidebarOpen);
   const models = status.models;
   const model = models.some((m) => m.id === dock.model) ? (dock.model ?? '') : (status.model ?? models[0]?.id ?? '');
   const modelLabel = (id: string | undefined) => models.find((m) => m.id === id)?.label ?? id ?? '';
@@ -166,7 +182,7 @@ export default function AiDock({ lessonId, overlay }: { lessonId: string; overla
     <aside
       className={`ai-dock ${overlay ? 'ai-dock-overlay' : ''}`}
       aria-label="AI 问答"
-      style={overlay ? undefined : { width: clampWidth(dock.width) }}
+      style={overlay ? undefined : { width: clamp(dock.width) }}
       onKeyDown={(e) => {
         if (overlay && e.key === 'Escape') close();
       }}
@@ -301,7 +317,7 @@ export default function AiDock({ lessonId, overlay }: { lessonId: string; overla
   if (!dock.open) return null;
   return (
     <>
-      <Splitter width={clampWidth(dock.width)} />
+      <Splitter width={clamp(dock.width)} clamp={clamp} />
       {panel}
     </>
   );
