@@ -45,6 +45,12 @@ function ProseBlockView({ lesson, html, id }: { lesson: Lesson; html: string; id
   );
 }
 
+/** 课末的标记：滚到这里记为“读到课末”。课文加载之后才挂载，IntersectionObserver 才有元素可观察 */
+function EndSentinel({ lesson }: { lesson: Lesson }) {
+  const ref = useReadSentinel(() => progressStore.markFinishedReading(lesson.id, lesson.version));
+  return <div ref={ref} className="read-sentinel" aria-hidden="true" />;
+}
+
 function Block({ lesson, block }: { lesson: Lesson; block: LessonBlock }) {
   switch (block.kind) {
     case 'prose':
@@ -132,9 +138,6 @@ export function LessonPage() {
   // 记录加载结果属于哪一课；切换课时后旧结果自然失效，无需在 effect 中重置
   const [loaded, setLoaded] = useState<{ id: string; lesson: Lesson | null }>();
   const lesson = loaded?.id === lessonId ? loaded.lesson : undefined;
-  const endSentinel = useReadSentinel(() => {
-    if (lesson) progressStore.markFinishedReading(lesson.id, lesson.version);
-  });
 
   useEffect(() => {
     let cancelled = false;
@@ -207,7 +210,7 @@ export function LessonPage() {
       </header>
 
       {lesson.blocks.map((b) => (
-        <Block key={`${b.kind}:${b.id}`} lesson={lesson} block={b} />
+        <Block key={`${lesson.id}:${b.kind}:${b.id}`} lesson={lesson} block={b} />
       ))}
 
       <section className="references" aria-labelledby="refs-title">
@@ -223,7 +226,7 @@ export function LessonPage() {
           ))}
         </ul>
       </section>
-      <div ref={endSentinel} className="read-sentinel" aria-hidden="true" />
+      <EndSentinel key={lesson.id} lesson={lesson} />
 
       <nav className="lesson-nav" aria-label="课程导航">
         {lesson.prev ? (

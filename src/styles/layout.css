@@ -123,16 +123,24 @@
 .toc-stage-toggle:hover {
   background: var(--surface-sunken);
 }
-.toc-stage-toggle[aria-expanded='true'] .icon {
+/* 只旋转前面的箭头，不旋转完成数旁边的对勾 */
+.toc-stage-toggle[aria-expanded='true'] > .icon {
   transform: rotate(90deg);
 }
 .toc-stage-title {
   flex: 1;
 }
 .toc-stage-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
   font-size: 0.78rem;
   color: var(--text-faint);
   font-weight: 400;
+}
+.stage-completed .toc-stage-count {
+  color: var(--ok);
+  font-weight: 600;
 }
 .toc-lessons {
   list-style: none;
@@ -164,6 +172,9 @@
 }
 .toc-lesson.state-in-progress .icon {
   color: var(--accent);
+}
+.toc-lesson.state-not-started .icon {
+  color: var(--text-faint);
 }
 .toc-lesson-title {
   flex: 1;

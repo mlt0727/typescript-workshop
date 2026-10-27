@@ -4,7 +4,7 @@ import { catalog, lessonState } from '../../content/catalog.ts';
 import { useProgress } from '../../storage/store.ts';
 import { Icon } from '../../ui/Icon.tsx';
 
-const STATE_ICON = { completed: 'check', 'in-progress': 'dot', 'not-started': 'circle' } as const;
+const STATE_ICON = { completed: 'check', 'in-progress': 'halfCircle', 'not-started': 'circle' } as const;
 const STATE_TEXT = { completed: '已完成', 'in-progress': '进行中', 'not-started': '未开始' } as const;
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
@@ -17,6 +17,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     () =>
       catalog.stages.map((s) => ({
         ...s,
+        all: s.lessons,
         lessons: s.lessons.filter((l) => !q || l.title.toLowerCase().includes(q) || l.id.includes(q)),
       })),
     [q],
@@ -36,18 +37,22 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
       </p>
       {stages.map((s) => {
         if (q && s.lessons.length === 0) return null;
-        const published = s.lessons.filter((l) => l.status === 'published').length;
         const available = s.lessons.filter((l) => l.status !== 'planned').length;
+        // 按整个阶段计算（搜索时也一样）
+        const done = s.all.filter((l) => l.status !== 'planned' && lessonState(l, progress[l.id]) === 'completed').length;
+        const stageDone = done === s.all.length;
         const open = q ? true : (openStages[s.id] ?? available > 0);
         return (
-          <section key={s.id} className="toc-stage">
+          <section key={s.id} className={`toc-stage ${stageDone ? 'stage-completed' : ''}`}>
             <button type="button" className="toc-stage-toggle" aria-expanded={open} onClick={() => setOpenStages((o) => ({ ...o, [s.id]: !open }))}>
               <Icon name={open ? 'chevronRight' : 'chevronRight'} />
               <span className="toc-stage-title">
                 {s.id}. {s.title}
               </span>
-              <span className="toc-stage-count" title={`已发布 ${published}，共 ${s.lessons.length} 节`}>
-                {published}/{s.lessons.length}
+              <span className="toc-stage-count" title={`已完成 ${done} 节，共 ${s.all.length} 节`}>
+                {stageDone && <Icon name="check" />}
+                {done}/{s.all.length}
+                <span className="sr-only">{stageDone ? '（本阶段已全部完成）' : `（已完成 ${done} 节，共 ${s.all.length} 节）`}</span>
               </span>
             </button>
             {open && (
