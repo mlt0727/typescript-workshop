@@ -47,6 +47,93 @@
   color: var(--text-muted);
 }
 
+/* —— 本课要完成的内容、课末小结 —— */
+/* 跳到课文中的一块时，不被固定的顶栏挡住 */
+[data-block] {
+  scroll-margin-top: calc(var(--topbar-height) + 0.75rem);
+}
+.lesson-steps {
+  margin-top: 0.8rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+.lesson-steps ol,
+.finish-remaining {
+  list-style: none;
+  margin: 0.3rem 0 0;
+  padding: 0;
+}
+.step-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.15rem 0.3rem;
+  margin-left: -0.3rem;
+  border: none;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.step-link:hover {
+  background: var(--accent-soft);
+}
+.step-link .icon {
+  position: relative;
+  top: 0.15em;
+  color: var(--text-faint);
+}
+.lesson-steps li.done .step-link {
+  color: var(--text-muted);
+}
+.lesson-steps li.done .icon {
+  color: var(--ok);
+}
+.step-detail {
+  color: var(--text-muted);
+}
+.lesson-finish {
+  margin: 2.5rem 0 0;
+  padding: 1rem 1.25rem 1.1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.lesson-finish.complete {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+.lesson-finish h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+}
+.lesson-finish.complete h2 {
+  color: var(--ok);
+}
+.lesson-finish > p {
+  margin: 0.3rem 0 0.8rem;
+}
+.finish-remaining {
+  margin-bottom: 0.9rem;
+}
+.lesson-finish .btn-large {
+  max-width: 100%;
+}
+.lesson-finish .small {
+  margin: 0.6rem 0 0;
+}
+/* 课文中引用其他课时的链接（a13、h06）：不抢正文的注意力 */
+a.lesson-ref {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
 /* —— 正文排版 —— */
 .prose {
   line-height: 1.8;

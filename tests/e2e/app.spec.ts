@@ -22,14 +22,22 @@ test.describe('路由与生产构建资源', () => {
     await page.goto(`/learn/${PLANNED?.id}`);
     await expect(page.getByText('这节课还在规划中')).toBeVisible();
     await page.goto('/');
-    await expect(page.locator('.continue-card')).toContainText(`规划共 ${catalog.counts.total} 节`);
+    await expect(page.locator('.continue-card')).toContainText(`另有 ${catalog.counts.total - catalog.counts.published} 节尚未发布`);
   });
 
-  test('首页和目录如实显示已发布的数量', async ({ page }) => {
+  test('首页和目录显示学习者自己的进度，以已发布的课时为总数；没有发布的课时如实另外说明', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.sidebar-counts')).toContainText(`已发布 ${catalog.counts.published}`);
-    const { planned, draft, total } = catalog.counts;
-    await expect(page.locator('.continue-card')).toContainText(planned || draft ? `规划共 ${total} 节` : `课程图谱中的 ${total} 节已全部发布`);
+    const { published, total } = catalog.counts;
+    await expect(page.locator('.sidebar-counts')).toContainText(`已完成 0 / ${published} 节`);
+    await expect(page.locator('.continue-card')).toContainText(`已完成 0 / ${published} 节`);
+    if (total > published) {
+      await expect(page.locator('.sidebar-counts')).toContainText(`另有 ${total - published} 节尚未发布`);
+      await expect(page.locator('.continue-card')).toContainText(`另有 ${total - published} 节尚未发布`);
+    } else {
+      await expect(page.locator('.continue-card')).not.toContainText('尚未发布');
+    }
+    // 进度条表示的是完成的课时，不是发布的课时
+    await expect(page.getByRole('progressbar', { name: '全部课程的完成进度' })).toHaveAttribute('aria-valuenow', '0');
   });
 
   test('目录搜索', async ({ page }) => {
@@ -147,6 +155,8 @@ test.describe('布局', () => {
     await expect(page.locator('#sidebar')).toHaveCount(0);
     await page.getByRole('button', { name: /展开目录/ }).click();
     await expect(page.locator('#sidebar')).toBeVisible();
+    // 目录默认只展开正在学的阶段
+    await page.locator('#sidebar').getByRole('button', { name: /React \+ TypeScript/ }).click();
     await page.locator('#sidebar').getByRole('link', { name: /事件与 state/ }).click();
     await expect(page.locator('#sidebar')).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 1 })).toContainText('事件与 state');

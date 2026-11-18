@@ -50,14 +50,21 @@ test.describe('完成标记', () => {
     const [first] = stage.lessons;
     if (!first) throw new Error('阶段没有课');
     const section = page.locator('.toc-stage').filter({ hasText: stage.title });
+    // 目录默认只展开正在学的阶段：展开要看的这个阶段
+    const expand = async () => {
+      const toggle = section.locator('.toc-stage-toggle');
+      if ((await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
+    };
 
     await importProgress(page, [first]);
+    await expand();
     await expect(section.locator('.toc-stage-count')).toContainText(`1/${stage.lessons.length}`);
     await expect(section.locator(`a[href$="/learn/${first.id}"]`)).toContainText('（已完成）');
     await expect(section.locator('.toc-lesson.state-completed')).toHaveCount(1);
     await expect(section).not.toHaveClass(/stage-completed/);
 
     await importProgress(page, stage.lessons);
+    await expand();
     await expect(section).toHaveClass(/stage-completed/);
     await expect(section.locator('.toc-stage-count')).toContainText(`${stage.lessons.length}/${stage.lessons.length}`);
     await expect(section.locator('.toc-stage-count')).toContainText('本阶段已全部完成');
@@ -73,6 +80,7 @@ test.describe('完成标记', () => {
     await page.goto(A08);
     await readAll();
     // 不刷新页面，用目录切换到另一课：两课都有 p1 这样的段落 id
+    await page.locator('#sidebar').getByRole('button', { name: /HTML、CSS 与 DOM/ }).click();
     await page.locator('#sidebar').getByRole('link', { name: /事件监听/ }).click();
     await expect(page).toHaveURL(new RegExp(D07));
     await readAll();

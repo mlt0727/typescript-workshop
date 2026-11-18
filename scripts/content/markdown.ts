@@ -86,9 +86,69 @@ export function findRawHtml(source: string): string[] {
   return out;
 }
 
-/** 把一组 mdast 节点渲染成 HTML（代码块高亮、外部链接新窗口打开）。 */
+export interface LessonRef {
+  id: string;
+  title: string;
+}
+
+/**
+ * 课文中引用其他课时的写法：a13、h06、p3-02（课时 id 中第一个“-”或第二个“-”之前的部分）。
+ * 后面紧跟“-字母”的是完整的 id（a13-functions）或别的词，不处理。
+ */
+const LESSON_REF = /(?<![A-Za-z0-9_-])(p[1-9]-[0-9]{2}|[a-o][0-9]{2})(?![A-Za-z0-9_]|-[A-Za-z])/g;
+
+let lessonRefs: ReadonlyMap<string, LessonRef> | undefined;
+let currentLesson: string | undefined;
+
+/** 课时 id 的简称：a13-functions → a13，p3-02-api-validation → p3-02 */
+export function lessonShortId(id: string): string {
+  return /^(p[1-9]-[0-9]{2}|[a-z][0-9]{2})(?=-)/.exec(id)?.[1] ?? id;
+}
+
+/**
+ * 设置之后，课文里提到其他课时的简称（例如“a13 详细讲”）会渲染成指向那一课的链接。
+ * refs 的键是简称；self 是正在渲染的课时，它自己的简称不加链接。
+ */
+export function setLessonRefs(refs: ReadonlyMap<string, LessonRef> | undefined, self?: string): void {
+  lessonRefs = refs;
+  currentLesson = self;
+}
+
+/** 正文文字中的课时简称换成链接；代码、已有的链接和标题中的不动 */
+function linkLessonRefs(node: RootContent | Root): RootContent | Root {
+  if (!lessonRefs || node.type === 'link' || node.type === 'heading' || node.type === 'html' || node.type === 'code' || node.type === 'inlineCode') return node;
+  if (!('children' in node) || !Array.isArray(node.children)) return node;
+  const children: RootContent[] = [];
+  for (const child of node.children as RootContent[]) {
+    if (child.type !== 'text') {
+      children.push(linkLessonRefs(child) as RootContent);
+      continue;
+    }
+    let last = 0;
+    for (const m of child.value.matchAll(LESSON_REF)) {
+      const ref = lessonRefs.get(m[1] ?? '');
+      if (!ref || ref.id === currentLesson) continue;
+      if (m.index > last) children.push({ type: 'text', value: child.value.slice(last, m.index) });
+      children.push({
+        type: 'link',
+        // 相对地址：课页的地址是 …/learn/<id>，换掉最后一段就是另一课（不依赖部署的子路径）
+        url: `./${ref.id}`,
+        title: ref.title,
+        children: [{ type: 'text', value: m[0] }],
+        data: { hProperties: { className: ['lesson-ref'], 'data-lesson': ref.id } },
+      });
+      last = m.index + m[0].length;
+    }
+    if (last === 0) children.push(child);
+    else if (last < child.value.length) children.push({ type: 'text', value: child.value.slice(last) });
+  }
+  (node as { children: RootContent[] }).children = children;
+  return node;
+}
+
+/** 把一组 mdast 节点渲染成 HTML（代码块高亮、外部链接新窗口打开、课时简称变成链接）。 */
 export function renderNodes(nodes: RootContent[]): string {
-  const root: Root = { type: 'root', children: nodes.map((n) => replaceCode(escapeRawHtml(structuredClone(n))) as RootContent) };
+  const root: Root = { type: 'root', children: nodes.map((n) => linkLessonRefs(replaceCode(escapeRawHtml(structuredClone(n)))) as RootContent) };
   const hast = toHtml.runSync(root as never);
   let html = String(toHtml.stringify(hast as never));
   html = html.replace(/<a href="(https?:\/\/[^"]+)"/g, '<a href="$1" target="_blank" rel="noopener noreferrer"');

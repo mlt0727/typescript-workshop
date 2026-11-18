@@ -766,8 +766,8 @@
       ]
     },
     "a08-optional-chaining-nullish": {
-      "verifiedAt": "2026-10-21T18:22:35.947Z",
-      "sourceHash": "7d438c40c3026e6d",
+      "verifiedAt": "2026-11-18T11:14:04.486Z",
+      "sourceHash": "ab4c8575a2a86d66",
       "ok": true,
       "checks": [
         {
@@ -3929,8 +3929,8 @@
       ]
     },
     "b17-enums-and-alternatives": {
-      "verifiedAt": "2026-10-21T18:22:48.334Z",
-      "sourceHash": "66c70085712d293e",
+      "verifiedAt": "2026-11-18T11:14:04.934Z",
+      "sourceHash": "8dd128f6b8062c05",
       "ok": true,
       "checks": [
         {
@@ -5792,8 +5792,8 @@
       ]
     },
     "d07-events": {
-      "verifiedAt": "2026-10-21T18:23:15.157Z",
-      "sourceHash": "5fb16b205d4ef535",
+      "verifiedAt": "2026-11-18T11:14:10.670Z",
+      "sourceHash": "343d90f01fb49af4",
       "ok": true,
       "checks": [
         {
@@ -6098,8 +6098,8 @@
       ]
     },
     "d10-state-and-render": {
-      "verifiedAt": "2026-10-21T18:23:27.738Z",
-      "sourceHash": "470022db270eeb23",
+      "verifiedAt": "2026-11-18T11:14:13.047Z",
+      "sourceHash": "4eb68c173bd02808",
       "ok": true,
       "checks": [
         {
@@ -7392,8 +7392,8 @@
       ]
     },
     "e12-xss": {
-      "verifiedAt": "2026-10-21T18:24:26.716Z",
-      "sourceHash": "6289c56e8d06b561",
+      "verifiedAt": "2026-11-18T11:14:14.672Z",
+      "sourceHash": "8aa70fe1d2ce4807",
       "ok": true,
       "checks": [
         {
@@ -7404,7 +7404,7 @@
         {
           "target": "playground:inner-html:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] innerHTML：页面上多了一个 img 吗？ true | [log] 它带着 onerror 吗？ console.log('攻击者的代码运行了') | [log] textContent：页面上有 img 吗？ false | [log] CSP 拦下了： script-src-attr | [log] CSP 拦下了： script-src-attr"
+          "detail": "期望 done，实际 done；输出：[log] innerHTML：页面上多了一个 img 吗？ true | [log] 它带着 onerror 吗？ console.log('攻击者的代码运行了') | [log] textContent：页面上有 img 吗？ false | [log] CSP 拦下了： script-src-attr"
         },
         {
           "target": "playground:safe-url:types",
@@ -8914,8 +8914,8 @@
       ]
     },
     "g03-events-state": {
-      "verifiedAt": "2026-10-21T18:25:03.669Z",
-      "sourceHash": "0a98baee8e519cd3",
+      "verifiedAt": "2026-11-18T11:14:18.279Z",
+      "sourceHash": "61df8a56bfd85c56",
       "ok": true,
       "checks": [
         {

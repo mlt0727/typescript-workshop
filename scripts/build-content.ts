@@ -31,7 +31,7 @@ import type {
   VerifyData,
   VerifyExercise,
 } from '../src/content/types.ts';
-import { initHighlighter, parseMarkdown, parseMeta, renderMarkdown, renderNodes } from './content/markdown.ts';
+import { initHighlighter, lessonShortId, parseMarkdown, parseMeta, renderMarkdown, renderNodes, setLessonRefs, type LessonRef } from './content/markdown.ts';
 import {
   curriculumSchema,
   exerciseFrontmatterSchema,
@@ -422,6 +422,8 @@ async function main() {
   const lessons: Lesson[] = [];
   const verify: VerifyExercise[] = [];
   const catalogLessons = new Map<string, CatalogLesson>();
+  // 课文中用简称引用其他课时（“a13 详细讲”）：渲染成链接。只链接可以进入的课时
+  const refs = new Map<string, LessonRef>(available.map((l) => [lessonShortId(l.id), { id: l.id, title: l.title }]));
 
   for (const entry of ordered) {
     const base: CatalogLesson = { id: entry.id, title: entry.title, stage: entry.stage, status: entry.status, prerequisites: entry.prerequisites };
@@ -430,6 +432,7 @@ async function main() {
 
     const dir = path.join(lessonsDir, entry.id);
     const where = `lessons/${entry.id}`;
+    setLessonRefs(refs, entry.id);
     const lessonFile = path.join(dir, 'lesson.md');
     if (!fs.existsSync(lessonFile)) {
       fail(where, `状态为 ${entry.status}，但缺少 lesson.md`);

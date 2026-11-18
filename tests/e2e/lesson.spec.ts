@@ -215,6 +215,8 @@ test.describe('课内学习闭环', () => {
     await pg.getByRole('button', { name: '运行' }).click();
     await expect(pg.locator('.console-status')).toContainText('运行中');
     expect(await activeRuns(page)).toBe(1);
+    // 目录默认只展开正在学的阶段：先展开 D 阶段
+    await page.locator('#sidebar').getByRole('button', { name: /HTML、CSS 与 DOM/ }).click();
     await page.getByRole('link', { name: /事件监听/ }).first().click();
     await expect(page.getByRole('heading', { level: 1 })).toContainText('事件监听');
     await expect.poll(() => activeRuns(page), { timeout: 5000 }).toBe(0);

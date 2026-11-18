@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { findLesson, lessonState, loadLesson, stageOf } from '../../content/catalog.ts';
 import type { Lesson, LessonBlock } from '../../content/types.ts';
 import { progressStore, useProgress } from '../../storage/store.ts';
@@ -7,6 +7,7 @@ import { Icon } from '../../ui/Icon.tsx';
 import { ExerciseCard } from './ExerciseCard.tsx';
 import { Playground } from './Playground.tsx';
 import { Quiz } from './Quiz.tsx';
+import { FINISH_BLOCK, jumpToBlock, lessonSteps, type LessonStep } from './steps.ts';
 
 const REVIEW_LABEL = {
   'ai-draft': { text: 'AI 起草 · 已通过自动验证，尚未经人工审核', cls: 'badge-warn' },
@@ -102,6 +103,83 @@ function Prerequisites({ lesson }: { lesson: Lesson }) {
   );
 }
 
+/** 课页顶部：这一课要完成哪几项，点击跳到那里 */
+function StepList({ steps }: { steps: LessonStep[] }) {
+  if (steps.length === 0) return null;
+  return (
+    <div className="lesson-steps">
+      <strong>本课要完成：</strong>
+      <ol>
+        {steps.map((s) => (
+          <li key={s.id} className={s.done ? 'done' : ''}>
+            <button type="button" className="step-link" onClick={() => jumpToBlock(s.id)}>
+              <Icon name={s.done ? 'check' : 'circle'} />
+              <span>
+                {s.label}
+                {s.detail && <span className="step-detail">（{s.detail}）</span>}
+              </span>
+              <span className="sr-only">{s.done ? '，已完成' : '，未完成'}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+/** 课末小结：还差什么、下一课去哪里 */
+function LessonFinish({ lesson, steps }: { lesson: Lesson; steps: LessonStep[] }) {
+  const progress = useProgress((s) => s.state.lessons);
+  const remaining = steps.filter((s) => !s.done);
+  const complete = remaining.length === 0;
+  const stage = stageOf(lesson.id);
+  const nextStage = lesson.next ? stageOf(lesson.next.id) : undefined;
+  const entersNewStage = nextStage !== undefined && nextStage.id !== stage?.id;
+  const stageDone = stage !== undefined && stage.lessons.every((l) => l.status === 'planned' || lessonState(l, progress[l.id]) === 'completed');
+  return (
+    <section className={`lesson-finish ${complete ? 'complete' : ''}`} aria-labelledby="finish-title" data-block={FINISH_BLOCK} tabIndex={-1}>
+      <h2 id="finish-title">
+        {complete && <Icon name="check" size={20} />}
+        {complete ? '这一课完成了' : '这一课还差'}
+      </h2>
+      {complete ? (
+        <p>
+          练习全部通过，测验全部答对，目录中已经打勾。
+          {stageDone && stage && ` “${stage.id}. ${stage.title}”阶段的 ${stage.lessons.length} 节课全部完成。`}
+        </p>
+      ) : (
+        <ul className="finish-remaining">
+          {remaining.map((s) => (
+            <li key={s.id}>
+              <button type="button" className="step-link" onClick={() => jumpToBlock(s.id)}>
+                <Icon name="circle" />
+                <span>
+                  {s.label}
+                  {s.detail && <span className="step-detail">（{s.detail}）</span>}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {lesson.next ? (
+        <>
+          <Link to={`/learn/${lesson.next.id}`} className={`btn btn-large ${complete ? 'btn-primary' : ''}`}>
+            <span>
+              {entersNewStage && nextStage ? `进入 ${nextStage.id} 阶段：` : '下一课：'}
+              {lesson.next.title}
+            </span>
+            <Icon name="chevronRight" />
+          </Link>
+          {!complete && <p className="muted small">也可以先去下一课，之后再回来：目录会记着这一课还没有完成。</p>}
+        </>
+      ) : (
+        <p className="muted">这是课程的最后一课。</p>
+      )}
+    </section>
+  );
+}
+
 function PlannedLesson({ id }: { id: string }) {
   const meta = findLesson(id);
   const stage = stageOf(id);
@@ -134,7 +212,9 @@ function NotFoundLesson() {
 export function LessonPage() {
   const { lessonId = '' } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const meta = findLesson(lessonId);
+  const progress = useProgress((s) => s.state.lessons[lessonId]);
   // 记录加载结果属于哪一课；切换课时后旧结果自然失效，无需在 effect 中重置
   const [loaded, setLoaded] = useState<{ id: string; lesson: Lesson | null }>();
   const lesson = loaded?.id === lessonId ? loaded.lesson : undefined;
@@ -172,8 +252,17 @@ export function LessonPage() {
   if (lesson === null) return <NotFoundLesson />;
 
   const review = REVIEW_LABEL[lesson.review];
+  const steps = lessonSteps(lesson, progress);
+  // 课文中引用其他课时的链接（构建时生成的 a.lesson-ref）：在应用内跳转，不重新加载页面
+  const openLessonRef = (e: React.MouseEvent<HTMLElement>) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const id = (e.target instanceof Element ? e.target.closest('a.lesson-ref') : null)?.getAttribute('data-lesson');
+    if (!id || !findLesson(id)) return;
+    e.preventDefault();
+    void navigate(`/learn/${id}`);
+  };
   return (
-    <article className="lesson" key={lesson.id}>
+    <article className="lesson" key={lesson.id} onClick={openLessonRef}>
       <header className="lesson-header">
         <p className="breadcrumb">
           {lesson.stage}. {lesson.stageTitle}
@@ -206,12 +295,15 @@ export function LessonPage() {
             </ul>
           </div>
           <Prerequisites lesson={lesson} />
+          <StepList steps={steps} />
         </section>
       </header>
 
       {lesson.blocks.map((b) => (
         <Block key={`${lesson.id}:${b.kind}:${b.id}`} lesson={lesson} block={b} />
       ))}
+
+      <LessonFinish lesson={lesson} steps={steps} />
 
       <section className="references" aria-labelledby="refs-title">
         <h2 id="refs-title">参考资料</h2>

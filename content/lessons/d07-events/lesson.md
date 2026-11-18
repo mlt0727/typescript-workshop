@@ -1,7 +1,6 @@
 ---
 version: 1
 mode: dom
-representative: true
 estimatedMinutes: 35
 review: self-reviewed
 problem: 网页要响应点击、输入、按键等用户操作。你需要知道监听器拿到的事件对象是什么类型，分清“被点中的元素”和“挂监听器的元素”，并在不再需要时移除监听器。

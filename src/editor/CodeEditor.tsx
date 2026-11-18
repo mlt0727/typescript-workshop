@@ -62,7 +62,8 @@ const highlightStyle = HighlightStyle.define([
 ]);
 
 const baseTheme = EditorView.theme({
-  '&': { fontSize: 'var(--editor-font-size)', backgroundColor: 'var(--editor-bg)', color: 'var(--text)', height: '100%' },
+  // 高度由样式表决定（workspace.css）：默认随代码增长，展开时填满
+  '&': { fontSize: 'var(--editor-font-size)', backgroundColor: 'var(--editor-bg)', color: 'var(--text)' },
   '.cm-content': { fontFamily: 'var(--font-mono)', caretColor: 'var(--text)', padding: '8px 0' },
   '.cm-scroller': { fontFamily: 'var(--font-mono)', lineHeight: '1.6', overflow: 'auto' },
   '.cm-gutters': { backgroundColor: 'var(--editor-gutter)', color: 'var(--text-faint)', border: 'none' },

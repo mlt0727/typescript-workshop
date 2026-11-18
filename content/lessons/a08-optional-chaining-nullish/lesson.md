@@ -1,7 +1,6 @@
 ---
 version: 1
 mode: ts
-representative: true
 estimatedMinutes: 30
 review: self-reviewed
 problem: 读取可能缺失的嵌套数据时，直接访问会在中途遇到 undefined 而抛出 TypeError；用 || 设默认值又会把 0、空字符串和 false 这些“有意义的值”也替换掉。

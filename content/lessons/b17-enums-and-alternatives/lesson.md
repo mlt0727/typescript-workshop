@@ -121,4 +121,4 @@ console.log(a, b, label('disabled'), Object.values(Status));
 
 ## 下一步
 
-B 阶段到这里结束。接下来是 E 阶段：事件循环、Promise 与异步；之后是 C 阶段的进阶类型，以及 D 阶段的 HTML、CSS 与 DOM。
+B 阶段到这里结束。接下来是 D 阶段：HTML、CSS 与 DOM，把前面学的类型用在真实的页面上；之后是 E 阶段（事件循环、Promise 与异步）和 C 阶段的进阶类型。

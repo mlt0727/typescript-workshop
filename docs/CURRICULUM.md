@@ -56,45 +56,6 @@
 | `b16-assertions-as-const-satisfies` 类型断言、as const 与 satisfies | ✅ 已发布 | `b15-generic-constraints` |
 | `b17-enums-and-alternatives` 枚举与可擦除语法 | ✅ 已发布 | `b16-assertions-as-const-satisfies` |
 
-## E. 浏览器机制、异步与数据（已发布 13 / 13）
-
-事件循环、Promise、fetch、运行时校验、取消与竞态、存储、URL 与安全边界。
-
-| 课时 | 状态 | 先修 |
-|---|---|---|
-| `e01-event-loop` 事件循环的必要知识 | ✅ 已发布 | `a14-scope-closures`、`b12-classes` |
-| `e02-promises` Promise 基础 | ✅ 已发布 | `e01-event-loop`、`b14-generics`、`a20-errors` |
-| `e03-async-await` async/await 与错误传播 | ✅ 已发布 | `e02-promises`、`a20-errors` |
-| `e04-promise-combinators` Promise.all、allSettled、race 与 any | ✅ 已发布 | `e03-async-await`、`b09-discriminated-unions`、`b13-inheritance-implements` |
-| `e05-fetch-json` fetch、HTTP 状态与 JSON | ✅ 已发布 | `e04-promise-combinators` |
-| `e06-runtime-validation` 运行时数据校验 | ✅ 已发布 | `e05-fetch-json`、`b08-type-guards` |
-| `e07-loading-states` 加载、空与失败状态 | ✅ 已发布 | `e06-runtime-validation`、`d06-dom-create-update` |
-| `e08-abort-races` AbortController、取消请求与竞态 | ✅ 已发布 | `e07-loading-states` |
-| `e09-storage-serialization` 浏览器存储与序列化 | ✅ 已发布 | `e06-runtime-validation` |
-| `e10-url-routing` URL、History 与基础路由 | ✅ 已发布 | `d10-state-and-render`、`e06-runtime-validation` |
-| `e11-cors` CORS 的真实边界 | ✅ 已发布 | `e05-fetch-json` |
-| `e12-xss` 基础 XSS 防范 | ✅ 已发布 | `d06-dom-create-update` |
-| `e13-env-secrets` 客户端环境变量与密钥边界 | ✅ 已发布 | `f02-vite-project`、`f04-devtools`、`f12-build-ci` |
-
-## C. 进阶类型与类型设计（已发布 12 / 12）
-
-类型运算的工程用途；区分“类型体操”和日常收益。部分内容可选学。
-
-| 课时 | 状态 | 先修 |
-|---|---|---|
-| `c01-keyof-typeof-indexed` keyof、typeof 与索引访问类型 | ✅ 已发布 | `b16-assertions-as-const-satisfies` |
-| `c02-mapped-types` 映射类型与修饰符 | ✅ 已发布 | `c01-keyof-typeof-indexed` |
-| `c03-conditional-infer` 条件类型与 infer | ✅ 已发布 | `c02-mapped-types` |
-| `c04-distributive-conditional` 分布式条件类型 | ✅ 已发布 | `c03-conditional-infer` |
-| `c05-template-literal-types` 模板字面量类型的实际用途 | ✅ 已发布 | `c03-conditional-infer` |
-| `c06-utility-types` Partial、Required、Pick、Omit、Record、Readonly | ✅ 已发布 | `c02-mapped-types`、`c04-distributive-conditional` |
-| `c07-function-utility-types` ReturnType、Parameters 与 Awaited | ✅ 已发布 | `c06-utility-types`、`e03-async-await` |
-| `c08-generic-api-design` 泛型 API 设计 | ✅ 已发布 | `c07-function-utility-types` |
-| `c09-boundary-modeling` 边界数据建模 | ✅ 已发布 | `c08-generic-api-design`、`e06-runtime-validation` |
-| `c10-avoid-any` 避免 any 与不必要的双重断言 | ✅ 已发布 | `c09-boundary-modeling` |
-| `c11-strict-options` strict、strictNullChecks 与 noUncheckedIndexedAccess | ✅ 已发布 | `c10-avoid-any` |
-| `c12-modules-dts` 模块与 .d.ts 基础 | ✅ 已发布 | `c11-strict-options`、`f03-tsconfig` |
-
 ## D. HTML、CSS 与 DOM（已发布 10 / 10）
 
 足以完成项目的 HTML/CSS，以及类型安全的 DOM 操作、事件与表单。
@@ -112,7 +73,44 @@
 | `d09-form-validation` 类型安全的表单输入与验证 | ✅ 已发布 | `d08-bubbling-delegation`、`d02-html-forms` |
 | `d10-state-and-render` 状态与渲染：从数据到界面 | ✅ 已发布 | `d09-form-validation`、`b09-discriminated-unions` |
 
-## F. 工程化、测试与调试（已发布 12 / 12）
+## E. 浏览器机制、异步与数据（已发布 12 / 12）
+
+事件循环、Promise、fetch、运行时校验、取消与竞态、存储、URL 与安全边界。
+
+| 课时 | 状态 | 先修 |
+|---|---|---|
+| `e01-event-loop` 事件循环的必要知识 | ✅ 已发布 | `a14-scope-closures`、`b12-classes` |
+| `e02-promises` Promise 基础 | ✅ 已发布 | `e01-event-loop`、`b14-generics`、`a20-errors` |
+| `e03-async-await` async/await 与错误传播 | ✅ 已发布 | `e02-promises`、`a20-errors` |
+| `e04-promise-combinators` Promise.all、allSettled、race 与 any | ✅ 已发布 | `e03-async-await`、`b09-discriminated-unions`、`b13-inheritance-implements` |
+| `e05-fetch-json` fetch、HTTP 状态与 JSON | ✅ 已发布 | `e04-promise-combinators` |
+| `e06-runtime-validation` 运行时数据校验 | ✅ 已发布 | `e05-fetch-json`、`b08-type-guards` |
+| `e07-loading-states` 加载、空与失败状态 | ✅ 已发布 | `e06-runtime-validation`、`d06-dom-create-update` |
+| `e08-abort-races` AbortController、取消请求与竞态 | ✅ 已发布 | `e07-loading-states` |
+| `e09-storage-serialization` 浏览器存储与序列化 | ✅ 已发布 | `e06-runtime-validation` |
+| `e10-url-routing` URL、History 与基础路由 | ✅ 已发布 | `d10-state-and-render`、`e06-runtime-validation` |
+| `e11-cors` CORS 的真实边界 | ✅ 已发布 | `e05-fetch-json` |
+| `e12-xss` 基础 XSS 防范 | ✅ 已发布 | `d06-dom-create-update` |
+
+## C. 进阶类型与类型设计（已发布 11 / 11）
+
+类型运算的工程用途；区分“类型体操”和日常收益。部分内容可选学。排在 E 之后：其中两节用到异步与运行时校验。
+
+| 课时 | 状态 | 先修 |
+|---|---|---|
+| `c01-keyof-typeof-indexed` keyof、typeof 与索引访问类型 | ✅ 已发布 | `b16-assertions-as-const-satisfies` |
+| `c02-mapped-types` 映射类型与修饰符 | ✅ 已发布 | `c01-keyof-typeof-indexed` |
+| `c03-conditional-infer` 条件类型与 infer | ✅ 已发布 | `c02-mapped-types` |
+| `c04-distributive-conditional` 分布式条件类型 | ✅ 已发布 | `c03-conditional-infer` |
+| `c05-template-literal-types` 模板字面量类型的实际用途 | ✅ 已发布 | `c03-conditional-infer` |
+| `c06-utility-types` Partial、Required、Pick、Omit、Record、Readonly | ✅ 已发布 | `c02-mapped-types`、`c04-distributive-conditional` |
+| `c07-function-utility-types` ReturnType、Parameters 与 Awaited | ✅ 已发布 | `c06-utility-types`、`e03-async-await` |
+| `c08-generic-api-design` 泛型 API 设计 | ✅ 已发布 | `c07-function-utility-types` |
+| `c09-boundary-modeling` 边界数据建模 | ✅ 已发布 | `c08-generic-api-design`、`e06-runtime-validation` |
+| `c10-avoid-any` 避免 any 与不必要的双重断言 | ✅ 已发布 | `c09-boundary-modeling` |
+| `c11-strict-options` strict、strictNullChecks 与 noUncheckedIndexedAccess | ✅ 已发布 | `c10-avoid-any` |
+
+## F. 工程化、测试与调试（已发布 14 / 14）
 
 在本机搭建真实项目：npm、Vite、tsconfig、调试、测试、Git、构建与 CI。
 
@@ -121,6 +119,7 @@
 | `f01-node-npm` Node.js、npm、package.json 与锁文件 | ✅ 已发布 | `a19-modules`、`b05-intersection-tuple`、`b08-type-guards` |
 | `f02-vite-project` 用 Vite 创建 TypeScript 项目 | ✅ 已发布 | `f01-node-npm`、`d06-dom-create-update` |
 | `f03-tsconfig` tsconfig、ESM 与模块解析 | ✅ 已发布 | `f02-vite-project` |
+| `c12-modules-dts` 模块与 .d.ts 基础 | ✅ 已发布 | `c11-strict-options`、`f03-tsconfig` |
 | `f04-devtools` DevTools、断点、source map 与网络面板 | ✅ 已发布 | `f02-vite-project` |
 | `f05-debugging-practice` 实际排错练习 | ✅ 已发布 | `f04-devtools` |
 | `f06-unit-tests` 用 Vitest 写单元测试 | ✅ 已发布 | `f03-tsconfig` |
@@ -130,6 +129,7 @@
 | `f10-git` Git 基础工作流 | ✅ 已发布 | `f01-node-npm` |
 | `f11-lint-format` 格式化与静态检查 | ✅ 已发布 | `f03-tsconfig` |
 | `f12-build-ci` 生产构建与 CI | ✅ 已发布 | `f11-lint-format`、`f10-git`、`f09-e2e` |
+| `e13-env-secrets` 客户端环境变量与密钥边界 | ✅ 已发布 | `f02-vite-project`、`f04-devtools`、`f12-build-ci` |
 
 ## G. React + TypeScript（已发布 15 / 15）
 

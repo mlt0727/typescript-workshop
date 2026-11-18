@@ -2,6 +2,8 @@
 # planned：只在图谱中出现，不可进入；draft：有内容但未通过发布验收，不计入已发布；published：通过全部发布验收。
 # 每个 draft/published 课时必须有 content/lessons/<id>/lesson.md。
 version: 1
+# 阶段和课时按学习的顺序排列：每节课的先修课都必须排在它前面（content:check 会检查）。
+# 所以 C 阶段排在 E 之后（c07、c09 用到 E 阶段的异步与运行时校验），c12、e13 排在 F 阶段中它们的先修课之后。
 stages:
   - id: A
     title: 起步与 JavaScript 共同语法
@@ -50,6 +52,21 @@ stages:
       - { id: b16-assertions-as-const-satisfies, title: 类型断言、as const 与 satisfies, status: published, prerequisites: [b15-generic-constraints] }
       - { id: b17-enums-and-alternatives, title: 枚举与可擦除语法, status: published, prerequisites: [b16-assertions-as-const-satisfies] }
 
+  - id: D
+    title: HTML、CSS 与 DOM
+    summary: 足以完成项目的 HTML/CSS，以及类型安全的 DOM 操作、事件与表单。
+    lessons:
+      - { id: d01-html-semantics, title: HTML 语义结构, status: published, prerequisites: [a01-where-ts-runs] }
+      - { id: d02-html-forms, title: 表单元素与标签, status: published, prerequisites: [d01-html-semantics] }
+      - { id: d03-css-layout, title: CSS 布局：Flexbox 与 Grid, status: published, prerequisites: [d01-html-semantics] }
+      - { id: d04-responsive-a11y, title: 响应式与可访问性基础, status: published, prerequisites: [d03-css-layout, d02-html-forms] }
+      - { id: d05-dom-query, title: DOM 查询、null 检查与元素类型收窄, status: published, prerequisites: [d01-html-semantics, b07-narrowing] }
+      - { id: d06-dom-create-update, title: 创建与更新节点, status: published, prerequisites: [d05-dom-query] }
+      - { id: d07-events, title: 事件监听、target 与 currentTarget, status: published, prerequisites: [d06-dom-create-update, b10-function-types] }
+      - { id: d08-bubbling-delegation, title: 冒泡、委托、preventDefault 与清理监听器, status: published, prerequisites: [d07-events] }
+      - { id: d09-form-validation, title: 类型安全的表单输入与验证, status: published, prerequisites: [d08-bubbling-delegation, d02-html-forms] }
+      - { id: d10-state-and-render, title: 状态与渲染：从数据到界面, status: published, prerequisites: [d09-form-validation, b09-discriminated-unions] }
+
   - id: E
     title: 浏览器机制、异步与数据
     summary: 事件循环、Promise、fetch、运行时校验、取消与竞态、存储、URL 与安全边界。
@@ -66,11 +83,10 @@ stages:
       - { id: e10-url-routing, title: URL、History 与基础路由, status: published, prerequisites: [d10-state-and-render, e06-runtime-validation] }
       - { id: e11-cors, title: CORS 的真实边界, status: published, prerequisites: [e05-fetch-json] }
       - { id: e12-xss, title: 基础 XSS 防范, status: published, prerequisites: [d06-dom-create-update] }
-      - { id: e13-env-secrets, title: 客户端环境变量与密钥边界, status: published, prerequisites: [f02-vite-project, f04-devtools, f12-build-ci] }
 
   - id: C
     title: 进阶类型与类型设计
-    summary: 类型运算的工程用途；区分“类型体操”和日常收益。部分内容可选学。
+    summary: 类型运算的工程用途；区分“类型体操”和日常收益。部分内容可选学。排在 E 之后：其中两节用到异步与运行时校验。
     lessons:
       - { id: c01-keyof-typeof-indexed, title: keyof、typeof 与索引访问类型, status: published, prerequisites: [b16-assertions-as-const-satisfies] }
       - { id: c02-mapped-types, title: 映射类型与修饰符, status: published, prerequisites: [c01-keyof-typeof-indexed] }
@@ -83,22 +99,6 @@ stages:
       - { id: c09-boundary-modeling, title: 边界数据建模, status: published, prerequisites: [c08-generic-api-design, e06-runtime-validation] }
       - { id: c10-avoid-any, title: 避免 any 与不必要的双重断言, status: published, prerequisites: [c09-boundary-modeling] }
       - { id: c11-strict-options, title: strict、strictNullChecks 与 noUncheckedIndexedAccess, status: published, prerequisites: [c10-avoid-any] }
-      - { id: c12-modules-dts, title: 模块与 .d.ts 基础, status: published, prerequisites: [c11-strict-options, f03-tsconfig] }
-
-  - id: D
-    title: HTML、CSS 与 DOM
-    summary: 足以完成项目的 HTML/CSS，以及类型安全的 DOM 操作、事件与表单。
-    lessons:
-      - { id: d01-html-semantics, title: HTML 语义结构, status: published, prerequisites: [a01-where-ts-runs] }
-      - { id: d02-html-forms, title: 表单元素与标签, status: published, prerequisites: [d01-html-semantics] }
-      - { id: d03-css-layout, title: CSS 布局：Flexbox 与 Grid, status: published, prerequisites: [d01-html-semantics] }
-      - { id: d04-responsive-a11y, title: 响应式与可访问性基础, status: published, prerequisites: [d03-css-layout, d02-html-forms] }
-      - { id: d05-dom-query, title: DOM 查询、null 检查与元素类型收窄, status: published, prerequisites: [d01-html-semantics, b07-narrowing] }
-      - { id: d06-dom-create-update, title: 创建与更新节点, status: published, prerequisites: [d05-dom-query] }
-      - { id: d07-events, title: 事件监听、target 与 currentTarget, status: published, prerequisites: [d06-dom-create-update, b10-function-types] }
-      - { id: d08-bubbling-delegation, title: 冒泡、委托、preventDefault 与清理监听器, status: published, prerequisites: [d07-events] }
-      - { id: d09-form-validation, title: 类型安全的表单输入与验证, status: published, prerequisites: [d08-bubbling-delegation, d02-html-forms] }
-      - { id: d10-state-and-render, title: 状态与渲染：从数据到界面, status: published, prerequisites: [d09-form-validation, b09-discriminated-unions] }
 
   - id: F
     title: 工程化、测试与调试
@@ -107,6 +107,7 @@ stages:
       - { id: f01-node-npm, title: Node.js、npm、package.json 与锁文件, status: published, prerequisites: [a19-modules, b05-intersection-tuple, b08-type-guards] }
       - { id: f02-vite-project, title: 用 Vite 创建 TypeScript 项目, status: published, prerequisites: [f01-node-npm, d06-dom-create-update] }
       - { id: f03-tsconfig, title: tsconfig、ESM 与模块解析, status: published, prerequisites: [f02-vite-project] }
+      - { id: c12-modules-dts, title: 模块与 .d.ts 基础, status: published, prerequisites: [c11-strict-options, f03-tsconfig] }
       - { id: f04-devtools, title: DevTools、断点、source map 与网络面板, status: published, prerequisites: [f02-vite-project] }
       - { id: f05-debugging-practice, title: 实际排错练习, status: published, prerequisites: [f04-devtools] }
       - { id: f06-unit-tests, title: 用 Vitest 写单元测试, status: published, prerequisites: [f03-tsconfig] }
@@ -116,6 +117,7 @@ stages:
       - { id: f10-git, title: Git 基础工作流, status: published, prerequisites: [f01-node-npm] }
       - { id: f11-lint-format, title: 格式化与静态检查, status: published, prerequisites: [f03-tsconfig] }
       - { id: f12-build-ci, title: 生产构建与 CI, status: published, prerequisites: [f11-lint-format, f10-git, f09-e2e] }
+      - { id: e13-env-secrets, title: 客户端环境变量与密钥边界, status: published, prerequisites: [f02-vite-project, f04-devtools, f12-build-ci] }
 
   - id: G
     title: React + TypeScript

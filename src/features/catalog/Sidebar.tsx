@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
-import { NavLink } from 'react-router';
-import { catalog, lessonState } from '../../content/catalog.ts';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { matchPath, NavLink, useLocation } from 'react-router';
+import { allLessons, catalog, lessonState, stageOf } from '../../content/catalog.ts';
 import { useProgress } from '../../storage/store.ts';
 import { Icon } from '../../ui/Icon.tsx';
 
@@ -10,8 +10,24 @@ const STATE_TEXT = { completed: '已完成', 'in-progress': '进行中', 'not-st
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const [query, setQuery] = useState('');
   const progress = useProgress((s) => s.state.lessons);
-  const [openStages, setOpenStages] = useState<Record<string, boolean>>({});
+  const last = useProgress((s) => s.state.meta.lastLocation);
+  const location = useLocation();
+  const navRef = useRef<HTMLElement>(null);
   const q = query.trim().toLowerCase();
+
+  // 默认只展开“现在所在”的阶段：正在看的课；不在课页时，是上次学到的课，或者第一节没完成的课
+  const currentId = matchPath('/learn/:lessonId', location.pathname)?.params.lessonId;
+  const focusId =
+    currentId ?? last?.lessonId ?? allLessons.find((l) => l.status !== 'planned' && lessonState(l, progress[l.id]) !== 'completed')?.id ?? allLessons[0]?.id;
+  const focusStage = (focusId ? stageOf(focusId)?.id : undefined) ?? catalog.stages[0]?.id ?? '';
+  // 学习者自己展开或收起过的阶段
+  const [toggled, setToggled] = useState<Record<string, boolean>>({});
+  const [seenStage, setSeenStage] = useState(focusStage);
+  // 走到另一个阶段时展开它（即使之前收起过）：在渲染期间根据新的阶段调整状态
+  if (seenStage !== focusStage) {
+    setSeenStage(focusStage);
+    setToggled((t) => ({ ...t, [focusStage]: true }));
+  }
 
   const stages = useMemo(
     () =>
@@ -23,8 +39,17 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     [q],
   );
 
+  // 换课之后，把目录滚到当前这一课
+  useEffect(() => {
+    navRef.current?.querySelector('a.active')?.scrollIntoView({ block: 'nearest' });
+  }, [location.pathname, focusStage]);
+
+  const available = allLessons.filter((l) => l.status !== 'planned');
+  const completed = available.filter((l) => lessonState(l, progress[l.id]) === 'completed').length;
+  const unpublished = catalog.counts.total - catalog.counts.published;
+
   return (
-    <nav className="sidebar" aria-label="课程目录">
+    <nav className="sidebar" aria-label="课程目录" ref={navRef}>
       <div className="sidebar-search">
         <label htmlFor="toc-search" className="sr-only">
           搜索课程
@@ -33,19 +58,19 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <input id="toc-search" type="search" placeholder="搜索课时…" value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
       <p className="sidebar-counts">
-        已发布 {catalog.counts.published} · 规划 {catalog.counts.total} 节
+        已完成 {completed} / {catalog.counts.published} 节
+        {unpublished > 0 && `（另有 ${unpublished} 节尚未发布）`}
       </p>
       {stages.map((s) => {
         if (q && s.lessons.length === 0) return null;
-        const available = s.lessons.filter((l) => l.status !== 'planned').length;
         // 按整个阶段计算（搜索时也一样）
         const done = s.all.filter((l) => l.status !== 'planned' && lessonState(l, progress[l.id]) === 'completed').length;
         const stageDone = done === s.all.length;
-        const open = q ? true : (openStages[s.id] ?? available > 0);
+        const open = q ? true : (toggled[s.id] ?? s.id === focusStage);
         return (
           <section key={s.id} className={`toc-stage ${stageDone ? 'stage-completed' : ''}`}>
-            <button type="button" className="toc-stage-toggle" aria-expanded={open} onClick={() => setOpenStages((o) => ({ ...o, [s.id]: !open }))}>
-              <Icon name={open ? 'chevronRight' : 'chevronRight'} />
+            <button type="button" className="toc-stage-toggle" aria-expanded={open} onClick={() => setToggled((t) => ({ ...t, [s.id]: !open }))}>
+              <Icon name="chevronRight" />
               <span className="toc-stage-title">
                 {s.id}. {s.title}
               </span>

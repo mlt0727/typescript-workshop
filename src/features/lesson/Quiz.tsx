@@ -98,7 +98,7 @@ function Question({ lesson, q, index }: { lesson: Lesson; q: QuizQuestion; index
 export function Quiz({ lesson }: { lesson: Lesson }) {
   if (lesson.quiz.length === 0) return null;
   return (
-    <section className="quiz" aria-labelledby="quiz-title" data-block="quiz">
+    <section className="quiz" aria-labelledby="quiz-title" data-block="quiz" tabIndex={-1}>
       <h2 id="quiz-title">小测验</h2>
       <p className="muted">选错也会给出原因；可以重新作答。</p>
       {lesson.quiz.map((q, i) => (

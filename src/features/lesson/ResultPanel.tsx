@@ -29,6 +29,8 @@ export function ResultPanel(props: {
   /** tests：学生写测试的练习 */
   grading?: 'implementation' | 'tests';
   onJump(file: string, line: number, column: number): void;
+  /** 通过之后的下一步（下一个练习、测验或课末小结） */
+  next?: { label: string; go(): void };
 }) {
   const { result, stale, onJump } = props;
   const writingTests = props.grading === 'tests';
@@ -41,6 +43,11 @@ export function ResultPanel(props: {
         <Icon name={result.passed ? 'check' : 'cross'} size={20} />
         <strong>{result.passed ? '通过全部检查' : '还没有通过'}</strong>
         <span className="result-time">提交于 {new Date(result.at).toLocaleTimeString('zh-CN')}</span>
+        {result.passed && !stale && props.next && (
+          <button type="button" className="btn btn-primary btn-small result-next" onClick={props.next.go}>
+            继续：{props.next.label} <Icon name="chevronRight" />
+          </button>
+        )}
       </div>
       {stale && (
         <div className="notice notice-info">

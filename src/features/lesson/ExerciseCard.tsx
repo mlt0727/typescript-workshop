@@ -14,6 +14,7 @@ import { useRunner } from '../workspace/useRunner.ts';
 import { useJump, Workspace } from '../workspace/Workspace.tsx';
 import { MODE_LABEL } from './Playground.tsx';
 import { ResultPanel } from './ResultPanel.tsx';
+import { jumpToBlock, stepAfter } from './steps.ts';
 
 const EMPTY: Record<string, string> = {};
 
@@ -111,9 +112,10 @@ export function ExerciseCard({ lesson, exercise }: { lesson: Lesson; exercise: E
   const resultStale = result !== undefined && currentHash !== undefined && result.snapshotHash !== currentHash;
   const busy = runner.state.status === 'running' || runner.state.status === 'compiling';
   const kindLabel = exercise.kind === 'task' ? '小任务' : '编程挑战';
+  const after = stepAfter(lesson, exercise.id);
 
   return (
-    <section ref={ref} className={`exercise exercise-${exercise.kind}`} aria-labelledby={`${exercise.id}-title`} data-block={exercise.id}>
+    <section ref={ref} className={`exercise exercise-${exercise.kind}`} aria-labelledby={`${exercise.id}-title`} data-block={exercise.id} tabIndex={-1}>
       <header className="block-header">
         <span className="block-kind">{kindLabel}</span>
         <h3 id={`${exercise.id}-title`}>{exercise.title}</h3>
@@ -121,9 +123,6 @@ export function ExerciseCard({ lesson, exercise }: { lesson: Lesson; exercise: E
         {exercise.grading === 'tests' && <span className="badge badge-info">写测试</span>}
       </header>
       <ul className="status-chips" aria-label="练习状态">
-        <li className={progress?.ranAt ? 'on' : ''}>
-          <Icon name={progress?.ranAt ? 'check' : 'circle'} /> {progress?.ranAt ? '运行过' : '未运行'}
-        </li>
         <li className={project.status === 'ready' && studentErrors === 0 ? 'on' : project.status === 'ready' ? 'bad' : ''}>
           <Icon name={project.status === 'ready' && studentErrors === 0 ? 'check' : project.status === 'ready' ? 'cross' : 'circle'} />
           {project.status === 'ready' ? (studentErrors === 0 ? '当前代码类型正确' : `当前代码有 ${studentErrors} 个类型错误`) : '类型检查未完成'}
@@ -203,7 +202,7 @@ export function ExerciseCard({ lesson, exercise }: { lesson: Lesson; exercise: E
         </div>
         <OutputPanel mode={exercise.mode} state={runner.state} stale={runner.state.ranFiles !== undefined && runner.state.ranFiles !== EMPTY && JSON.stringify(runner.state.ranFiles) !== JSON.stringify(runFiles)} previewRef={runner.previewRef} onJump={(l, c, f) => jumpTo(f, l, c)} />
       </div>
-      {result && <ResultPanel result={result} stale={resultStale} grading={exercise.grading} onJump={jumpTo} />}
+      {result && <ResultPanel result={result} stale={resultStale} grading={exercise.grading} onJump={jumpTo} next={{ label: after.label, go: () => jumpToBlock(after.id) }} />}
 
       <div className="hints">
         {exercise.hints.map((h) =>

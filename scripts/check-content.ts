@@ -69,6 +69,8 @@ function caseCollisions(paths: readonly string[]): string[] {
 
 const all = catalog.stages.flatMap((s) => s.lessons);
 const status = new Map(all.map((l) => [l.id, l.status]));
+/** 课时在图谱中的位置：目录、“下一课”都按这个顺序 */
+const position = new Map(all.map((l, i) => [l.id, i]));
 
 for (const meta of all) {
   if (meta.status === 'planned') continue;
@@ -115,6 +117,10 @@ for (const meta of all) {
     for (const p of meta.prerequisites) {
       if (status.get(p) !== 'published') problems.push(`先修课 ${p} 尚未发布（主线必须连续；提前编写的课请标记 representative）`);
     }
+  }
+  // 学习者按图谱的顺序往下学：先修课排在后面，“下一课”就会把人带到还没有准备好的课
+  for (const p of meta.prerequisites) {
+    if ((position.get(p) ?? -1) > (position.get(meta.id) ?? 0)) problems.push(`先修课 ${p} 在图谱中排在本课之后（调整 curriculum.yaml 中的顺序）`);
   }
 
   for (const p of problems) (meta.status === 'published' ? errors : warnings).push(`${meta.id}: ${p}`);

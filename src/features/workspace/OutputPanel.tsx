@@ -36,7 +36,7 @@ export function OutputPanel(props: {
       {isPage && (
         <div className="preview">
           <div className="preview-label">网页预览</div>
-          <div className="preview-frame" ref={previewRef}>
+          <div className={`preview-frame ${state.status === 'idle' ? 'idle' : ''}`} ref={previewRef}>
             {state.status === 'idle' && <p className="preview-empty">点击“运行”后在这里显示页面。</p>}
           </div>
         </div>

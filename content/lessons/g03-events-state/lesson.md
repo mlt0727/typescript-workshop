@@ -1,7 +1,6 @@
 ---
 version: 1
 mode: react
-representative: true
 estimatedMinutes: 35
 review: self-reviewed
 problem: 组件需要“记住”用户的操作（计数、开关、输入），并在数据变化时更新界面。普通变量做不到这一点；用 state 时又容易被“state 是快照”这一规则绊倒。
