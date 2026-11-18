@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { findLesson, lessonState, loadLesson, stageOf } from '../../content/catalog.ts';
 import type { Lesson, LessonBlock } from '../../content/types.ts';
@@ -7,6 +7,7 @@ import { Icon } from '../../ui/Icon.tsx';
 import { ExerciseCard } from './ExerciseCard.tsx';
 import { Playground } from './Playground.tsx';
 import { Quiz } from './Quiz.tsx';
+import { lessonOutline, outlineStore } from './outline.ts';
 import { FINISH_BLOCK, jumpToBlock, lessonSteps, type LessonStep } from './steps.ts';
 
 const REVIEW_LABEL = {
@@ -101,6 +102,18 @@ function Prerequisites({ lesson }: { lesson: Lesson }) {
       )}
     </div>
   );
+}
+
+/** 把这一课的提纲（小节、练习、测验）发布给目录 */
+function OutlinePublisher({ lesson, steps }: { lesson: Lesson; steps: LessonStep[] }) {
+  const done = steps.map((s) => `${s.done}:${s.detail ?? ''}`).join('|');
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- steps 每次渲染都是新数组，用 done 表示它的内容
+  const items = useMemo(() => lessonOutline(lesson, steps), [lesson, done]);
+  useEffect(() => {
+    outlineStore.publish(lesson.id, items);
+  }, [lesson.id, items]);
+  useEffect(() => () => outlineStore.clear(lesson.id), [lesson.id]);
+  return null;
 }
 
 /** 课页顶部：这一课要完成哪几项，点击跳到那里 */
@@ -266,6 +279,7 @@ export function LessonPage() {
   };
   return (
     <article className="lesson" key={lesson.id} onClick={openLessonRef}>
+      <OutlinePublisher lesson={lesson} steps={steps} />
       <header className="lesson-header">
         <p className="breadcrumb">
           {lesson.stage}. {lesson.stageTitle}

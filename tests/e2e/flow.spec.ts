@@ -138,6 +138,30 @@ test.describe('学习顺序与目录', () => {
     await expect(sidebar.getByRole('link', { name: /事件与 state/ })).toHaveCount(0);
   });
 
+  test('目录在正在学的课下面列出它的提纲：小节和练习，点击跳过去；换课之后提纲跟着换', async ({ page }) => {
+    await page.goto(A08);
+    const outline = page.locator('#sidebar .toc-outline');
+    await expect(outline.locator('li.outline-step')).toHaveText([/小任务：安全地读取收货城市/, /小任务：不要吞掉用户的设置/, /编程挑战：生成用户资料摘要/, /小测验（0\/3 题）/]);
+    // 小节的标题来自课文；“编程挑战”这样只是引出练习的标题不重复列出
+    const sections = outline.locator('li.outline-section');
+    expect(await sections.count()).toBeGreaterThanOrEqual(3);
+    await expect(outline.getByRole('button', { name: '编程挑战', exact: true })).toHaveCount(0);
+    const last = sections.last();
+    const title = (await last.innerText()).trim();
+    await last.getByRole('button').click();
+    await expect(page.locator('article.lesson h2', { hasText: title }).first()).toBeInViewport();
+    await outline.getByRole('button', { name: /编程挑战：生成用户资料摘要/ }).click();
+    await expect(block(page, 'format-profile')).toBeInViewport();
+
+    await page.locator('.lesson-finish').getByRole('link', { name: /下一课/ }).click();
+    await expect(page).toHaveURL(/a09-control-flow/);
+    await expect(page.locator('#sidebar .toc-outline')).toHaveCount(1);
+    await expect(page.locator('#sidebar .toc-outline li.outline-step').first()).not.toHaveText(/安全地读取收货城市/);
+    // 首页没有提纲
+    await page.goto('/');
+    await expect(page.locator('#sidebar .toc-outline')).toHaveCount(0);
+  });
+
   test('首页：阶段的进度是学习者完成的课时；默认展开要学的阶段，其他阶段可以展开', async ({ page }) => {
     const a01 = lessonById('a01-where-ts-runs');
     await importFinished(page, [a01]);

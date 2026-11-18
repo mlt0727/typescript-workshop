@@ -64,6 +64,14 @@
 - [x] 项目 3（Next.js 基础全栈扩展）：p3-01–p3-03 已发布
 - [x] 服务端部署边界、日志与回滚：i03 已发布
 
+## M6 学习体验复查（2026-11-18）
+
+- [x] 学习顺序与课文一致（阶段重新排序，项目分成 P1–P3 穿插在对应的阶段之后），`content:check` 检查先修课的位置
+- [x] 课页的“本课要完成”清单、课末小结与下一课按钮、练习通过后的“继续”
+- [x] 目录显示学习者的进度、只展开当前阶段、当前课时的提纲；首页的进度条与“每节课怎么学”
+- [x] 课文中的课时编号变成链接；编辑器高度随代码变化；测验选错时不直接给出答案
+- [ ] 按学习者的视角逐课复查课文（已统计全部课时，通读了 5 节；其余待做，见 STATUS“下一步”）
+
 ## 每阶段固定检查
 
 `npm run typecheck` · `npm run lint` · `npm test` · `npm run content:check` · `npm run build` · `npm run content:verify` · `npm run content:verify:webkit` · `npm run test:e2e`（含 `--project=e2e-webkit`）· 浏览器人工检查（桌面 + 窄屏）

@@ -180,6 +180,44 @@
   flex: 1;
   min-width: 0;
 }
+/* 正在学的这一课的提纲 */
+.toc-outline {
+  list-style: none;
+  margin: 0.15rem 0 0.5rem 1.05rem;
+  padding: 0 0 0 0.5rem;
+  border-left: 2px solid var(--border);
+  font-size: 0.85rem;
+}
+.toc-outline button {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.15rem 0.4rem;
+  border: none;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+}
+.toc-outline button:hover {
+  background: var(--surface-sunken);
+  color: var(--text);
+}
+.toc-outline .icon {
+  position: relative;
+  top: 0.1em;
+  color: var(--text-faint);
+}
+.toc-outline .outline-step button {
+  color: var(--text);
+}
+.toc-outline .done .icon {
+  color: var(--ok);
+}
 
 /* —— 首页 —— */
 .home {

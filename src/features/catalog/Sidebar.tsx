@@ -3,6 +3,7 @@ import { matchPath, NavLink, useLocation } from 'react-router';
 import { allLessons, catalog, lessonState, stageOf } from '../../content/catalog.ts';
 import { useProgress } from '../../storage/store.ts';
 import { Icon } from '../../ui/Icon.tsx';
+import { jumpToOutlineItem, useLessonOutline } from '../lesson/outline.ts';
 
 const STATE_ICON = { completed: 'check', 'in-progress': 'halfCircle', 'not-started': 'circle' } as const;
 const STATE_TEXT = { completed: '已完成', 'in-progress': '进行中', 'not-started': '未开始' } as const;
@@ -12,6 +13,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const progress = useProgress((s) => s.state.lessons);
   const last = useProgress((s) => s.state.meta.lastLocation);
   const location = useLocation();
+  const outline = useLessonOutline();
   const navRef = useRef<HTMLElement>(null);
   const q = query.trim().toLowerCase();
 
@@ -103,6 +105,26 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                         <span className="sr-only">（{STATE_TEXT[st]}）</span>
                         {l.status === 'draft' && <span className="badge badge-warn">草稿</span>}
                       </NavLink>
+                      {/* 正在学的这一课：列出各小节和练习，点击跳过去 */}
+                      {outline?.lessonId === l.id && l.id === currentId && outline.items.length > 0 && (
+                        <ul className="toc-outline" aria-label="这一课的提纲">
+                          {outline.items.map((item) => (
+                            <li key={item.key} className={`outline-${item.kind === 'section' ? 'section' : 'step'} ${item.done ? 'done' : ''}`}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onNavigate?.();
+                                  jumpToOutlineItem(item);
+                                }}
+                              >
+                                {item.kind !== 'section' && <Icon name={item.done ? 'check' : 'circle'} size={12} />}
+                                <span>{item.label}</span>
+                                {item.kind !== 'section' && <span className="sr-only">{item.done ? '，已完成' : '，未完成'}</span>}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   );
                 })}

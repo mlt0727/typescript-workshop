@@ -48,8 +48,9 @@
 }
 
 /* —— 本课要完成的内容、课末小结 —— */
-/* 跳到课文中的一块时，不被固定的顶栏挡住 */
-[data-block] {
+/* 跳到课文中的一块或一个小节时，不被固定的顶栏挡住 */
+[data-block],
+.prose h2 {
   scroll-margin-top: calc(var(--topbar-height) + 0.75rem);
 }
 .lesson-steps {
