@@ -11,7 +11,7 @@ const lessonById = (id: string) => {
 };
 
 /** 导入“做完了”的进度：全部练习通过过，测验全部答对过 */
-async function importFinished(page: Page, list: CatalogLesson[], quizIds: Record<string, string[]>) {
+async function importFinished(page: Page, list: CatalogLesson[]) {
   const state = {
     lessons: Object.fromEntries(
       list.map((l) => [
@@ -21,7 +21,7 @@ async function importFinished(page: Page, list: CatalogLesson[], quizIds: Record
           lessonVersion: (l as { version?: number }).version ?? 1,
           readBlocks: [],
           exercises: Object.fromEntries(((l as { exerciseIds?: string[] }).exerciseIds ?? []).map((id) => [id, { passedAt: 1, updatedAt: 1 }])),
-          quiz: Object.fromEntries((quizIds[l.id] ?? []).map((id) => [id, { selected: ['a'], correct: true, everCorrect: true, at: 1 }])),
+          quiz: Object.fromEntries(((l as { quizIds?: string[] }).quizIds ?? []).map((id) => [id, { selected: ['a'], correct: true, everCorrect: true, at: 1 }])),
           playgrounds: {},
           updatedAt: 1,
         },
@@ -79,10 +79,7 @@ test.describe('一节课怎么往下走', () => {
   test('全部做完的课：小结显示完成，下一课是主按钮；阶段的最后一课指向下一个阶段', async ({ page }) => {
     const a08 = lessonById('a08-optional-chaining-nullish');
     const b17 = lessonById('b17-enums-and-alternatives');
-    await importFinished(page, [a08, b17], {
-      [a08.id]: ['predict-or-nullish', 'which-trigger', 'short-circuit'],
-      [b17.id]: ['enum-runtime', 'erasable', 'derived-type', 'string-enum-vs-union'],
-    });
+    await importFinished(page, [a08, b17]);
     await page.goto(A08);
     const finish = page.locator('.lesson-finish');
     await expect(finish).toHaveClass(/complete/);
@@ -143,7 +140,7 @@ test.describe('学习顺序与目录', () => {
 
   test('首页：阶段的进度是学习者完成的课时；默认展开要学的阶段，其他阶段可以展开', async ({ page }) => {
     const a01 = lessonById('a01-where-ts-runs');
-    await importFinished(page, [a01], { [a01.id]: ['predict-concat', 'true-statements', 'document-in-worker'] });
+    await importFinished(page, [a01]);
     await page.goto('/');
     await expect(page.locator('.continue-card')).toContainText(`已完成 1 / ${catalog.counts.published} 节`);
     await expect(page.locator('.continue-card')).toContainText('编译期与运行期：类型擦除的边界');

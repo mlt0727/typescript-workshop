@@ -553,6 +553,7 @@ async function main() {
       mode,
       exerciseIds: Object.keys(exercises),
       quizCount: quiz.length,
+      quizIds: quiz.map((q) => q.id),
     });
   }
 

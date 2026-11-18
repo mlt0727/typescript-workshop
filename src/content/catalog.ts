@@ -30,12 +30,12 @@ export type LessonState = 'not-started' | 'in-progress' | 'completed';
  * 既没有练习也没有测验的课时，读到课末才算完成。
  */
 export function lessonState(lesson: CatalogLesson, p: LessonProgress | undefined): LessonState {
-  const quizCount = lesson.quizCount ?? 0;
+  const quizIds = lesson.quizIds ?? [];
   if (!p) return 'not-started';
   const exercises = lesson.exerciseIds ?? [];
   const exercisesDone = exercises.every((id) => p.exercises[id]?.passedAt !== undefined);
-  const quizDone = Object.values(p.quiz).filter((q) => q.everCorrect).length >= quizCount;
-  const hasWork = exercises.length > 0 || quizCount > 0;
+  const quizDone = quizIds.every((id) => p.quiz[id]?.everCorrect);
+  const hasWork = exercises.length > 0 || quizIds.length > 0;
   if (exercisesDone && quizDone && (hasWork || p.finishedReadingAt)) return 'completed';
   const any =
     p.readBlocks.length > 0 ||

@@ -21,6 +21,8 @@ export interface CatalogLesson {
   /** 本课的练习 id（用于计算进度） */
   exerciseIds?: string[];
   quizCount?: number;
+  /** 本课测验题的 id（用于计算进度） */
+  quizIds?: string[];
 }
 
 export interface CatalogStage {

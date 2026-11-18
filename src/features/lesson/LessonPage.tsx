@@ -253,6 +253,9 @@ export function LessonPage() {
 
   const review = REVIEW_LABEL[lesson.review];
   const steps = lessonSteps(lesson, progress);
+  // 这一课在所在阶段中的位置：“第 3 / 20 节”
+  const stageLessons = stageOf(lesson.id)?.lessons.filter((l) => l.status !== 'planned') ?? [];
+  const indexInStage = stageLessons.findIndex((l) => l.id === lesson.id);
   // 课文中引用其他课时的链接（构建时生成的 a.lesson-ref）：在应用内跳转，不重新加载页面
   const openLessonRef = (e: React.MouseEvent<HTMLElement>) => {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -266,6 +269,7 @@ export function LessonPage() {
       <header className="lesson-header">
         <p className="breadcrumb">
           {lesson.stage}. {lesson.stageTitle}
+          {indexInStage >= 0 && ` · 第 ${indexInStage + 1} / ${stageLessons.length} 节`}
         </p>
         <h1>{lesson.title}</h1>
         <div className="lesson-meta">

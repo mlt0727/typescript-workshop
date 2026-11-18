@@ -3,7 +3,7 @@ import type { LessonProgress } from '../storage/schema.ts';
 import { lessonState } from './catalog.ts';
 import type { CatalogLesson } from './types.ts';
 
-const lesson = { id: 'x01', title: '课', status: 'published', exerciseIds: ['task', 'challenge'], quizCount: 2 } as CatalogLesson;
+const lesson = { id: 'x01', title: '课', status: 'published', exerciseIds: ['task', 'challenge'], quizIds: ['q1', 'q2'] } as CatalogLesson;
 const progress = (patch: Partial<LessonProgress> = {}): LessonProgress => ({
   lessonId: 'x01',
   lessonVersion: 1,
@@ -33,6 +33,11 @@ describe('课时完成', () => {
     expect(lessonState(lesson, progress({ exercises: { task: passed(1), challenge: ranOnly }, quiz: { q1: answer, q2: answer } }))).toBe('in-progress');
   });
 
+  test('按题目的 id 计算：别的题目（例如课程更新前的旧题）答对过不算', () => {
+    const stale = progress({ exercises: { task: passed(1), challenge: passed(2) }, quiz: { q1: answer, old: answer } });
+    expect(lessonState(lesson, stale)).toBe('in-progress');
+  });
+
   test('没有记录是未开始；只是打开过页面（读过一段）是进行中', () => {
     expect(lessonState(lesson, undefined)).toBe('not-started');
     expect(lessonState(lesson, progress())).toBe('not-started');
@@ -40,7 +45,7 @@ describe('课时完成', () => {
   });
 
   test('既没有练习也没有测验的课时：读到课末才算完成', () => {
-    const reading = { ...lesson, exerciseIds: [], quizCount: 0 } as CatalogLesson;
+    const reading = { ...lesson, exerciseIds: [], quizIds: [] } as CatalogLesson;
     expect(lessonState(reading, progress({ readBlocks: ['p1'] }))).toBe('in-progress');
     expect(lessonState(reading, progress({ readBlocks: ['p1'], finishedReadingAt: 5 }))).toBe('completed');
   });

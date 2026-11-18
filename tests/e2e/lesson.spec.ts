@@ -180,7 +180,7 @@ test.describe('课内学习闭环', () => {
     await expect(ex.locator('.status-chips')).toContainText('已查看答案');
   });
 
-  test('测验：选错显示原因，可以重新作答，刷新后保留', async ({ page }) => {
+  test('测验：选错只解释选了的选项，不直接给出答案；可以再试一次或者看答案；刷新后保留', async ({ page }) => {
     await page.goto(A08);
     const quiz = page.locator('[data-block="quiz"]');
     await quiz.scrollIntoViewIfNeeded();
@@ -189,10 +189,19 @@ test.describe('课内学习闭环', () => {
     await q1.getByRole('button', { name: '提交答案' }).click();
     await expect(q1).toContainText('回答不正确');
     await expect(q1.locator('.quiz-option.wrong')).toContainText('只在左边为');
-    await q1.getByRole('button', { name: '重新作答' }).click();
+    // 正确的选项没有被标出来
+    await expect(q1.locator('.quiz-option.right')).toHaveCount(0);
+    await expect(q1).not.toContainText('正确选项');
+    // 看答案：标出正确的选项
+    await q1.getByRole('button', { name: '看答案' }).click();
+    await expect(q1.locator('.quiz-option.right')).toHaveCount(1);
+    await expect(q1.locator('.quiz-option.right')).toContainText('正确选项（你没有选）');
+    await q1.getByRole('button', { name: '再试一次' }).click();
+    await expect(q1.locator('.quiz-option.right')).toHaveCount(0);
     await q1.getByRole('radio').first().check();
     await q1.getByRole('button', { name: '提交答案' }).click();
     await expect(q1).toContainText('回答正确');
+    await expect(q1.locator('.quiz-option.right')).toContainText('正确选项');
     await page.reload();
     const q1b = page.locator('[data-block="quiz"] .quiz-question').first();
     await expect(q1b).toContainText('回答正确');

@@ -8,13 +8,13 @@ type CatalogLesson = (typeof catalog.stages)[number]['lessons'][number];
 /** 一节课“做完”的记录：全部练习通过过，测验全部答对过（不包括读到课末） */
 function finished(l: CatalogLesson) {
   const ids = (l as { exerciseIds?: string[] }).exerciseIds ?? [];
-  const quizCount = (l as { quizCount?: number }).quizCount ?? 0;
+  const quizIds = (l as { quizIds?: string[] }).quizIds ?? [];
   return {
     lessonId: l.id,
     lessonVersion: (l as { version?: number }).version ?? 1,
     readBlocks: [],
     exercises: Object.fromEntries(ids.map((id) => [id, { passedAt: 1, updatedAt: 1 }])),
-    quiz: Object.fromEntries(Array.from({ length: quizCount }, (_, i) => [`q${i}`, { selected: ['a'], correct: true, everCorrect: true, at: 1 }])),
+    quiz: Object.fromEntries(quizIds.map((id) => [id, { selected: ['a'], correct: true, everCorrect: true, at: 1 }])),
     playgrounds: {},
     updatedAt: 1,
   };
