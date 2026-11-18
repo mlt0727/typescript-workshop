@@ -118,7 +118,7 @@ test.describe('学习顺序与目录', () => {
     const position = new Map(lessons.map((l, i) => [l.id, i]));
     const late = lessons.flatMap((l) => l.prerequisites.filter((p) => (position.get(p) ?? -1) > (position.get(l.id) ?? 0)).map((p) => `${l.id} 的先修课 ${p}`));
     expect(late).toEqual([]);
-    expect(catalog.stages.map((s) => s.id)).toEqual(['A', 'B', 'D', 'E', 'C', 'F', 'G', 'H', 'I']);
+    expect(catalog.stages.map((s) => s.id)).toEqual(['A', 'B', 'D', 'E', 'C', 'F', 'G', 'P1', 'P2', 'H', 'P3']);
 
     await page.goto('/learn/f03-tsconfig');
     await expect(page.locator('.lesson-finish').getByRole('link', { name: /下一课：模块与 \.d\.ts 基础/ })).toBeVisible();
@@ -131,8 +131,8 @@ test.describe('学习顺序与目录', () => {
     await expect(sidebar.locator('a.active')).toBeInViewport();
     await expect(sidebar.getByRole('link', { name: /TS、JS、浏览器与 Node\.js 的关系/ })).toHaveCount(0);
 
-    // 展开 I 阶段，点最后一课
-    await sidebar.getByRole('button', { name: /I\. 项目与部署/ }).click();
+    // 展开最后一个阶段，点最后一课
+    await sidebar.getByRole('button', { name: /P3\. 项目 3/ }).click();
     await sidebar.getByRole('link', { name: /部署服务端应用/ }).click();
     await expect(page).toHaveURL(/i03-deploy-server/);
     await expect(sidebar.locator('a.active')).toHaveText(/部署服务端应用/);

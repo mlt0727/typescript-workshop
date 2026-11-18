@@ -3,7 +3,8 @@
 # 每个 draft/published 课时必须有 content/lessons/<id>/lesson.md。
 version: 1
 # 阶段和课时按学习的顺序排列：每节课的先修课都必须排在它前面（content:check 会检查）。
-# 所以 C 阶段排在 E 之后（c07、c09 用到 E 阶段的异步与运行时校验），c12、e13 排在 F 阶段中它们的先修课之后。
+# 所以 C 阶段排在 E 之后（c07、c09 用到 E 阶段的异步与运行时校验），c12、e13 排在 F 阶段中它们的先修课之后；
+# 三个项目各自排在它用到的内容之后：项目 1 在 G 之后（课文引用了 G 阶段的内容），项目 2 在 H 之前，项目 3 在 H 之后。
 stages:
   - id: A
     title: 起步与 JavaScript 共同语法
@@ -139,6 +140,30 @@ stages:
       - { id: g14-async-data, title: 异步数据与错误状态, status: published, prerequisites: [g13-routing, e08-abort-races] }
       - { id: g15-a11y-component-tests, title: 可访问性与组件测试, status: published, prerequisites: [g14-async-data, f08-dom-tests] }
 
+  - id: P1
+    title: 项目 1：原生 TypeScript 任务板
+    summary: 不用框架，把 D、E 阶段的内容综合成一个能增删改、筛选和保存的任务板；最后搬到本机，配上测试与导出。
+    lessons:
+      - { id: p1-01-plan-and-model, title: 项目 1·任务板：需求与数据模型, status: published, prerequisites: [d10-state-and-render] }
+      - { id: p1-02-render-and-add, title: 项目 1·任务板：渲染与新增, status: published, prerequisites: [p1-01-plan-and-model] }
+      - { id: p1-03-edit-delete, title: 项目 1·任务板：编辑与删除（事件委托）, status: published, prerequisites: [p1-02-render-and-add] }
+      - { id: p1-04-filters, title: 项目 1·任务板：过滤与 URL 状态, status: published, prerequisites: [p1-03-edit-delete, e10-url-routing] }
+      - { id: p1-05-persistence, title: 项目 1·任务板：持久化与数据校验, status: published, prerequisites: [p1-04-filters, e09-storage-serialization] }
+      - { id: p1-06-local-project, title: 项目 1·任务板：本地工程、测试与导出, status: published, prerequisites: [p1-05-persistence, f08-dom-tests] }
+
+  - id: P2
+    title: 项目 2：React 项目面板与静态部署
+    summary: 先分清静态站点与服务端应用、学会部署静态站点，再用 React 做一个带路由、表单、数据状态和测试的项目面板，并把它部署上线。
+    lessons:
+      - { id: i01-static-vs-server, title: 静态站点与服务端应用的区别, status: published, prerequisites: [f12-build-ci] }
+      - { id: i02-deploy-static, title: 部署静态站点：构建、路由刷新与资源路径, status: published, prerequisites: [i01-static-vs-server] }
+      - { id: p2-01-plan-and-types, title: 项目 2·项目面板：需求与类型模型, status: published, prerequisites: [g08-custom-hooks] }
+      - { id: p2-02-routes-lists, title: 项目 2·项目面板：路由与列表, status: published, prerequisites: [p2-01-plan-and-types, g13-routing] }
+      - { id: p2-03-forms, title: 项目 2·项目面板：表单与校验, status: published, prerequisites: [p2-02-routes-lists] }
+      - { id: p2-04-data-state, title: 项目 2·项目面板：数据状态与错误处理, status: published, prerequisites: [p2-03-forms, g14-async-data] }
+      - { id: p2-05-tests, title: 项目 2·项目面板：组件测试与端到端测试, status: published, prerequisites: [p2-04-data-state, g15-a11y-component-tests, f09-e2e] }
+      - { id: p2-06-deploy, title: 项目 2·项目面板：静态部署与验证, status: published, prerequisites: [p2-05-tests, i02-deploy-static] }
+
   - id: H
     title: Next.js 与基础全栈实验
     summary: 本地运行的真实 Next.js 实验：路由、服务端/客户端边界、数据读写、校验、持久化与部署边界。
@@ -153,24 +178,10 @@ stages:
       - { id: h08-env-config, title: 环境变量与配置, status: published, prerequisites: [h07-persistence, e13-env-secrets] }
       - { id: h09-auth-boundaries, title: 认证话题的安全边界, status: published, prerequisites: [h08-env-config] }
 
-  - id: I
-    title: 项目与部署
-    summary: 三个层层递进的项目，每个拆成独立里程碑；以及静态与服务端部署。
+  - id: P3
+    title: 项目 3：Next.js 全栈与服务端部署
+    summary: 把项目 2 扩展成全栈应用：服务器上的读写、校验、并发与持久化，最后部署服务端应用。
     lessons:
-      - { id: p1-01-plan-and-model, title: 项目 1·任务板：需求与数据模型, status: published, prerequisites: [d10-state-and-render] }
-      - { id: p1-02-render-and-add, title: 项目 1·任务板：渲染与新增, status: published, prerequisites: [p1-01-plan-and-model] }
-      - { id: p1-03-edit-delete, title: 项目 1·任务板：编辑与删除（事件委托）, status: published, prerequisites: [p1-02-render-and-add] }
-      - { id: p1-04-filters, title: 项目 1·任务板：过滤与 URL 状态, status: published, prerequisites: [p1-03-edit-delete, e10-url-routing] }
-      - { id: p1-05-persistence, title: 项目 1·任务板：持久化与数据校验, status: published, prerequisites: [p1-04-filters, e09-storage-serialization] }
-      - { id: p1-06-local-project, title: 项目 1·任务板：本地工程、测试与导出, status: published, prerequisites: [p1-05-persistence, f08-dom-tests] }
-      - { id: i01-static-vs-server, title: 静态站点与服务端应用的区别, status: published, prerequisites: [f12-build-ci] }
-      - { id: i02-deploy-static, title: 部署静态站点：构建、路由刷新与资源路径, status: published, prerequisites: [i01-static-vs-server] }
-      - { id: p2-01-plan-and-types, title: 项目 2·项目面板：需求与类型模型, status: published, prerequisites: [g08-custom-hooks] }
-      - { id: p2-02-routes-lists, title: 项目 2·项目面板：路由与列表, status: published, prerequisites: [p2-01-plan-and-types, g13-routing] }
-      - { id: p2-03-forms, title: 项目 2·项目面板：表单与校验, status: published, prerequisites: [p2-02-routes-lists] }
-      - { id: p2-04-data-state, title: 项目 2·项目面板：数据状态与错误处理, status: published, prerequisites: [p2-03-forms, g14-async-data] }
-      - { id: p2-05-tests, title: 项目 2·项目面板：组件测试与端到端测试, status: published, prerequisites: [p2-04-data-state, g15-a11y-component-tests, f09-e2e] }
-      - { id: p2-06-deploy, title: 项目 2·项目面板：静态部署与验证, status: published, prerequisites: [p2-05-tests, i02-deploy-static] }
       - { id: p3-01-plan, title: 项目 3·全栈扩展：需求与数据边界, status: published, prerequisites: [h07-persistence, p2-06-deploy] }
       - { id: p3-02-api-validation, title: 项目 3·全栈扩展：服务端读写与校验, status: published, prerequisites: [p3-01-plan] }
       - { id: p3-03-persistence, title: 项目 3·全栈扩展：持久化与测试, status: published, prerequisites: [p3-02-api-validation] }

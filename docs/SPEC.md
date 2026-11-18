@@ -87,7 +87,7 @@
 
 ### 4.4 课程范围（完整目标，分阶段实现）
 
-A 起步与 JS 共同语法 · B 日常 TypeScript · C 进阶类型 · D HTML/CSS/DOM · E 浏览器机制、异步与数据 · F 工程化、测试与调试 · G React + TS · H Next.js 与基础全栈 · I 项目与部署（≥ 3 个递进项目）。详细拆分见 [CURRICULUM.md](CURRICULUM.md)。学习顺序（目录和“下一课”的顺序）是 A → B → D → E → C → F → G → H → I：每节课的先修课都排在它前面（C 阶段有两节用到 E 的异步与运行时校验；c12、e13 排在 F 阶段中它们的先修课之后），`content:check` 会检查。
+A 起步与 JS 共同语法 · B 日常 TypeScript · C 进阶类型 · D HTML/CSS/DOM · E 浏览器机制、异步与数据 · F 工程化、测试与调试 · G React + TS · H Next.js 与基础全栈 · I 项目与部署（≥ 3 个递进项目）。详细拆分见 [CURRICULUM.md](CURRICULUM.md)。学习顺序（目录和“下一课”的顺序）是 A → B → D → E → C → F → G → 项目 1 → 项目 2（含 i01、i02）→ H → 项目 3（含 i03）：每节课的先修课都排在它前面（C 阶段有两节用到 E 的异步与运行时校验；c12、e13 排在 F 阶段中它们的先修课之后），`content:check` 会检查；三个项目各自排在它用到的内容之后，I 阶段的课时在图谱中分成 P1、P2、P3 三组。
 
 ## 5. 运行与判题（必须是真功能）
 

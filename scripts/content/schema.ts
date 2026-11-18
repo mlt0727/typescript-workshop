@@ -9,7 +9,7 @@ export const curriculumSchema = z.object({
   version: z.number().int(),
   stages: z.array(
     z.object({
-      id: z.string().regex(/^[A-Z]$/),
+      id: z.string().regex(/^[A-Z][0-9]?$/),
       title: z.string().min(1),
       summary: z.string().min(1),
       lessons: z.array(

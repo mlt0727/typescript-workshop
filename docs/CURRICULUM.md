@@ -153,6 +153,34 @@
 | `g14-async-data` 异步数据与错误状态 | ✅ 已发布 | `g13-routing`、`e08-abort-races` |
 | `g15-a11y-component-tests` 可访问性与组件测试 | ✅ 已发布 | `g14-async-data`、`f08-dom-tests` |
 
+## P1. 项目 1：原生 TypeScript 任务板（已发布 6 / 6）
+
+不用框架，把 D、E 阶段的内容综合成一个能增删改、筛选和保存的任务板；最后搬到本机，配上测试与导出。
+
+| 课时 | 状态 | 先修 |
+|---|---|---|
+| `p1-01-plan-and-model` 项目 1·任务板：需求与数据模型 | ✅ 已发布 | `d10-state-and-render` |
+| `p1-02-render-and-add` 项目 1·任务板：渲染与新增 | ✅ 已发布 | `p1-01-plan-and-model` |
+| `p1-03-edit-delete` 项目 1·任务板：编辑与删除（事件委托） | ✅ 已发布 | `p1-02-render-and-add` |
+| `p1-04-filters` 项目 1·任务板：过滤与 URL 状态 | ✅ 已发布 | `p1-03-edit-delete`、`e10-url-routing` |
+| `p1-05-persistence` 项目 1·任务板：持久化与数据校验 | ✅ 已发布 | `p1-04-filters`、`e09-storage-serialization` |
+| `p1-06-local-project` 项目 1·任务板：本地工程、测试与导出 | ✅ 已发布 | `p1-05-persistence`、`f08-dom-tests` |
+
+## P2. 项目 2：React 项目面板与静态部署（已发布 8 / 8）
+
+先分清静态站点与服务端应用、学会部署静态站点，再用 React 做一个带路由、表单、数据状态和测试的项目面板，并把它部署上线。
+
+| 课时 | 状态 | 先修 |
+|---|---|---|
+| `i01-static-vs-server` 静态站点与服务端应用的区别 | ✅ 已发布 | `f12-build-ci` |
+| `i02-deploy-static` 部署静态站点：构建、路由刷新与资源路径 | ✅ 已发布 | `i01-static-vs-server` |
+| `p2-01-plan-and-types` 项目 2·项目面板：需求与类型模型 | ✅ 已发布 | `g08-custom-hooks` |
+| `p2-02-routes-lists` 项目 2·项目面板：路由与列表 | ✅ 已发布 | `p2-01-plan-and-types`、`g13-routing` |
+| `p2-03-forms` 项目 2·项目面板：表单与校验 | ✅ 已发布 | `p2-02-routes-lists` |
+| `p2-04-data-state` 项目 2·项目面板：数据状态与错误处理 | ✅ 已发布 | `p2-03-forms`、`g14-async-data` |
+| `p2-05-tests` 项目 2·项目面板：组件测试与端到端测试 | ✅ 已发布 | `p2-04-data-state`、`g15-a11y-component-tests`、`f09-e2e` |
+| `p2-06-deploy` 项目 2·项目面板：静态部署与验证 | ✅ 已发布 | `p2-05-tests`、`i02-deploy-static` |
+
 ## H. Next.js 与基础全栈实验（已发布 9 / 9）
 
 本地运行的真实 Next.js 实验：路由、服务端/客户端边界、数据读写、校验、持久化与部署边界。
@@ -169,26 +197,12 @@
 | `h08-env-config` 环境变量与配置 | ✅ 已发布 | `h07-persistence`、`e13-env-secrets` |
 | `h09-auth-boundaries` 认证话题的安全边界 | ✅ 已发布 | `h08-env-config` |
 
-## I. 项目与部署（已发布 18 / 18）
+## P3. 项目 3：Next.js 全栈与服务端部署（已发布 4 / 4）
 
-三个层层递进的项目，每个拆成独立里程碑；以及静态与服务端部署。
+把项目 2 扩展成全栈应用：服务器上的读写、校验、并发与持久化，最后部署服务端应用。
 
 | 课时 | 状态 | 先修 |
 |---|---|---|
-| `p1-01-plan-and-model` 项目 1·任务板：需求与数据模型 | ✅ 已发布 | `d10-state-and-render` |
-| `p1-02-render-and-add` 项目 1·任务板：渲染与新增 | ✅ 已发布 | `p1-01-plan-and-model` |
-| `p1-03-edit-delete` 项目 1·任务板：编辑与删除（事件委托） | ✅ 已发布 | `p1-02-render-and-add` |
-| `p1-04-filters` 项目 1·任务板：过滤与 URL 状态 | ✅ 已发布 | `p1-03-edit-delete`、`e10-url-routing` |
-| `p1-05-persistence` 项目 1·任务板：持久化与数据校验 | ✅ 已发布 | `p1-04-filters`、`e09-storage-serialization` |
-| `p1-06-local-project` 项目 1·任务板：本地工程、测试与导出 | ✅ 已发布 | `p1-05-persistence`、`f08-dom-tests` |
-| `i01-static-vs-server` 静态站点与服务端应用的区别 | ✅ 已发布 | `f12-build-ci` |
-| `i02-deploy-static` 部署静态站点：构建、路由刷新与资源路径 | ✅ 已发布 | `i01-static-vs-server` |
-| `p2-01-plan-and-types` 项目 2·项目面板：需求与类型模型 | ✅ 已发布 | `g08-custom-hooks` |
-| `p2-02-routes-lists` 项目 2·项目面板：路由与列表 | ✅ 已发布 | `p2-01-plan-and-types`、`g13-routing` |
-| `p2-03-forms` 项目 2·项目面板：表单与校验 | ✅ 已发布 | `p2-02-routes-lists` |
-| `p2-04-data-state` 项目 2·项目面板：数据状态与错误处理 | ✅ 已发布 | `p2-03-forms`、`g14-async-data` |
-| `p2-05-tests` 项目 2·项目面板：组件测试与端到端测试 | ✅ 已发布 | `p2-04-data-state`、`g15-a11y-component-tests`、`f09-e2e` |
-| `p2-06-deploy` 项目 2·项目面板：静态部署与验证 | ✅ 已发布 | `p2-05-tests`、`i02-deploy-static` |
 | `p3-01-plan` 项目 3·全栈扩展：需求与数据边界 | ✅ 已发布 | `h07-persistence`、`p2-06-deploy` |
 | `p3-02-api-validation` 项目 3·全栈扩展：服务端读写与校验 | ✅ 已发布 | `p3-01-plan` |
 | `p3-03-persistence` 项目 3·全栈扩展：持久化与测试 | ✅ 已发布 | `p3-02-api-validation` |

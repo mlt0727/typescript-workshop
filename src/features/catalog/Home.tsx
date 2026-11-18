@@ -87,7 +87,7 @@ export function Home() {
       <section aria-labelledby="roadmap-title">
         <h2 id="roadmap-title">课程路线</h2>
         <p className="muted">
-          从 TypeScript 基础一路到能部署的 React 网站，再到 Next.js 基础全栈。按从上到下的顺序学（字母是章节的编号，C 排在 E 之后是因为它用到 E 的内容）；也可以跳过熟悉的章节，直接进入任意一课。
+          从 TypeScript 基础一路到能部署的 React 网站，再到 Next.js 基础全栈，中间穿插三个项目。按从上到下的顺序学（字母是章节的编号，C 排在 E 之后是因为它用到 E 的内容）；也可以跳过熟悉的章节，直接进入任意一课。
         </p>
         <ol className="roadmap">
           {catalog.stages.map((s) => {

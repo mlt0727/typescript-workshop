@@ -4854,8 +4854,8 @@
       ]
     },
     "c10-avoid-any": {
-      "verifiedAt": "2026-10-21T18:22:52.830Z",
-      "sourceHash": "0a1ae841429a8b8c",
+      "verifiedAt": "2026-11-18T11:23:35.948Z",
+      "sourceHash": "85d90d691f6c044e",
       "ok": true,
       "checks": [
         {
@@ -6098,8 +6098,8 @@
       ]
     },
     "d10-state-and-render": {
-      "verifiedAt": "2026-11-18T11:14:13.047Z",
-      "sourceHash": "4eb68c173bd02808",
+      "verifiedAt": "2026-11-18T11:23:38.423Z",
+      "sourceHash": "ca2f50e3a03a7c86",
       "ok": true,
       "checks": [
         {
