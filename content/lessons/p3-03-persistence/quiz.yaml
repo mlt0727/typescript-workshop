@@ -33,12 +33,12 @@
       explain: 迁移只在第一次用到数据库时执行一次。
 - id: sqlite-boolean
   type: single
-  prompt: tasks 表中 done 列的定义是 `INTEGER NOT NULL CHECK (done IN (0, 1))`。用 node:sqlite 读出一行，row.done 是什么？
+  prompt: tasks 表中 done 列的定义是 `INTEGER NOT NULL CHECK (done IN (0, 1))`。用 `node:sqlite` 读出一行，`row.done` 是什么？
   options:
     - text: 数字 0 或者 1，要自己转换成布尔值
       correct: true
-      explain: SQLite 没有布尔类型。实测 typeof row.done 是 'number'。
-    - text: true 或者 false，node:sqlite 会自动转换
-      explain: node:sqlite 不知道这一列表示布尔值，读出来的就是保存的整数。
+      explain: SQLite 没有布尔类型。实测 `typeof row.done` 是 `'number'`。
+    - text: "`true` 或者 `false`，`node:sqlite` 会自动转换"
+      explain: "`node:sqlite` 不知道这一列表示布尔值，读出来的就是保存的整数。"
     - text: 字符串 '0' 或者 '1'
       explain: INTEGER 列读出来是数字。

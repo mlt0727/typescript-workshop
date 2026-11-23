@@ -17,7 +17,7 @@ title: 检查构建产物中泄露的密钥
 
 **服务端环境变量的值**：名字**不以** `VITE_` 开头、并且值至少 8 个字符的变量，它的值出现在构建产物中就是泄露，`kind` 为 `'env-value'`。（`VITE_` 变量本来就是公开的。）
 
-每一处都报告一条 `{ file, line, column, kind, detail }`：`line`、`column` 是匹配开始的位置，都从 1 开始；`detail` 只显示匹配到的文字（`'env-value'` 时是变量的值）的前 4 个字符加上 `…`，`'env-value'` 时写成 `变量名（前 4 个字符…）`。同一处出现多次就报告多次。结果按文件名、行、列排序。
+每一处都报告一条 `{ file, line, column, kind, detail }`：`line`、`column` 是匹配开始的位置，都从 1 开始；`detail` 不能写出完整的密钥：已知格式的密钥写成匹配到的文字的前 4 个字符加上 `…`（例如 `ghp_…`），`'env-value'` 写成 `变量名（值的前 4 个字符…）`（例如 `DATABASE_URL（post…）`）。同一个密钥在文件中出现几次，就报告几条。结果按文件名、行、列排序。
 
 :::files{role=starter}
 ```ts file=scan.ts

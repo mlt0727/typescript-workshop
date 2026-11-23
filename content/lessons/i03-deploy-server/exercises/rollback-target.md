@@ -13,7 +13,7 @@ title: 回滚到哪一个部署
 **`pickRollbackTarget(deployments, currentId, applied)`**：从现在的部署往前，找一个可以回滚到的部署。
 
 1. 没有 `id` 是 `currentId` 的部署：`{ ok: false, reason: '没有这个部署：{currentId}' }`；
-2. 候选：`target` 是 `'production'`、`state` 是 `'READY'`、`createdAt` 早于现在的部署的部署（`createdAt` 都是同样格式的 UTC 时间，可以直接比较字符串），按 `createdAt` 从新到旧；没有候选：`{ ok: false, reason: '没有可以回滚到的生产部署' }`；
+2. 候选是同时满足三个条件的部署：`target` 是 `'production'`，`state` 是 `'READY'`，`createdAt` 早于现在的部署（`createdAt` 都是同样格式的 UTC 时间，可以直接比较字符串），按 `createdAt` 从新到旧；没有候选：`{ ok: false, reason: '没有可以回滚到的生产部署' }`；
 3. 按顺序用 `checkSchema(候选的 migrations, applied)` 检查，返回第一个可以运行的：`{ ok: true, target, warnings }`；
 4. 都不能运行：`{ ok: false, reason: '没有能在现在的数据库上运行的部署（{最新的候选的 error}），只能向前修复' }`。
 
@@ -246,7 +246,7 @@ describe('pickRollbackTarget', () => {
 
 找回滚的目标时只看生产环境中成功的部署：预览部署可能是一个没有合并的分支上的代码，失败的部署根本没有完成构建。从新到旧找，是为了尽量少丢掉中间的修复；最新的候选不能运行时继续往前找，通常也不会成功（越旧的代码认识的迁移越少），但部署之间的关系不一定这么简单。都不行时，回滚就不是办法了，只能向前修复：尽快发布一个修好的新版本。
 
-替代解把 `applied` 复制一份按 `id` 排序，逐个检查，遇到第一个不兼容的就返回；时间用 `Date.parse` 转换成数字之后比较。
+`checkSchema` 也可以把 `applied` 复制一份按 `id` 排序，逐个检查，遇到第一个代码不认识、又不兼容的迁移就返回；比较时间时，也可以先用 `Date.parse` 转换成数字。
 :::
 
 :::variant{kind=alt name=sorted-scan}

@@ -5,7 +5,7 @@ grading: tests
 ---
 `ConfirmButton.tsx`（只读）是一个“点击后弹出确认对话框”的按钮，按 APG 的 Alert Dialog 模式实现：
 
-1. 点击按钮（文字是 `label`）打开 `role="alertdialog"` 的对话框，它的名字是标题 `title`（`aria-labelledby`），说明是 `message`；
+1. 点击按钮（文字是 `label`）打开 `role="alertdialog"` 的对话框，它的名字是标题 `title`（`aria-labelledby`），描述是说明文字 `message`（`aria-describedby`）；
 2. 打开时焦点移到“取消”按钮上（最不危险的操作）；
 3. 点击“取消”或按 Esc：关闭，不调用 `onConfirm`；点击确认按钮（文字是 `confirmLabel`）：调用一次 `onConfirm`，然后关闭；
 4. 关闭之后，焦点回到打开对话框的那个按钮上。

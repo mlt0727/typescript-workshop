@@ -2,7 +2,10 @@
 kind: task
 title: 把 any 换成 unknown
 ---
-`readTheme(json)` 从 JSON 文本中读取主题设置（`json` 一定是合法的 JSON 文本）：解析结果是对象并且 `theme` 是 `'light'` 或 `'dark'` 时返回它，其他情况都返回 `'light'`。
+`readTheme(json)` 从 JSON 文本中读取主题设置（`json` 一定是合法的 JSON 文本）：
+
+- 解析结果是对象、并且它的 `theme` 属性是 `'light'` 或 `'dark'` 时，返回这个 `theme`；
+- 其他情况都返回 `'light'`：解析结果不是对象（例如 `null`、字符串 `'dark'`、数字 `42`）、没有 `theme` 属性、`theme` 是别的值（例如 `'blue'`、`1`）。
 
 起始代码用了 `any`，判题规则不允许。把 `config` 的类型改成 `unknown`，然后补上必要的检查，让类型检查和测试都通过。
 
@@ -57,15 +60,15 @@ test('不是对象', () => {
 :::
 
 :::hint{level=1}
-把 `any` 改成 `unknown` 后，`config.theme` 会报错：必须先证明 `config` 是对象。然后再检查 `theme` 的值是不是两个合法值之一。
+把 `any` 改成 `unknown` 后，`config.theme` 会报错：必须先证明 `config` 是对象（不是 `null`）、并且有 `theme` 属性，才能读取它。读出来的值类型仍是 `unknown`，再检查它是不是两个合法值之一。
 :::
 
 :::hint{level=2}
-`if (typeof config !== 'object' || config === null) return 'light';`。之后用 `'theme' in config` 判断属性是否存在（`in` 检查之后可以读取 `config.theme`，它的类型是 `unknown`）。最后 `theme === 'dark' || theme === 'light'` 把它收窄成 `Theme`。
+`if (typeof config !== 'object' || config === null) return 'light';`。之后用 `'theme' in config` 判断属性是否存在（`in` 检查之后可以读取 `config.theme`，它的类型是 `unknown`）。最后把读到的值存进变量 `theme`，用 `theme === 'dark' || theme === 'light'` 把它收窄成 `Theme`。
 :::
 
 :::explanation
-`any` 让起始代码通过了类型检查，却会把 `'blue'`、`1`、`undefined` 原样返回，违反了返回类型 `Theme` 的承诺。换成 `unknown` 后，TypeScript 强迫你逐步证明：先是对象（`typeof … === 'object'` 并排除 `null`），再是有 `theme` 属性（`in` 运算符，b07 详讲），最后值是两个合法字面量之一（相等检查把 `unknown` 收窄成 `'dark' | 'light'`）。
+`any` 让起始代码通过了类型检查，却会把 `'blue'`、`1`、`undefined` 原样返回，违反了返回类型 `Theme` 的承诺。换成 `unknown` 后，TypeScript 强迫你逐步证明：先是对象（`typeof … === 'object'` 并排除 `null`），再是有 `theme` 属性（`in` 运算符，b07 会详讲），最后值是两个合法字面量之一（相等检查把 `unknown` 收窄成 `'dark' | 'light'`）。参考解在没有 `theme` 属性时用 `undefined` 代替读到的值，这样“没有这个属性”和“值不合法”可以由最后那一次相等检查一起处理。
 
 每一步检查都对应一种真实可能出现的坏数据。`unknown` 的作用就是让你不能跳过它们。
 :::

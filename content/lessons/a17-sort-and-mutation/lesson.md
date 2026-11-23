@@ -28,7 +28,7 @@ references:
 
 不传参数时，`sort` 会把元素**转换成字符串**再按 UTF-16 编码比较。对字符串来说这还算接近字典序（但大写字母排在所有小写字母前面）；对数字来说，`10` 会排在 `9` 前面，因为字符 `'1'` 小于 `'9'`。
 
-排序数字时，**一定要传比较函数** `(a, b) => 数字`：返回负数表示 `a` 排在前面，正数表示 `b` 排在前面，`0` 表示两者相等（与 Java 的 `compareTo` 约定相同）。
+排序数字时，**一定要传比较函数** `(a, b) => 数字`：返回负数表示 `a` 排在前面，正数表示 `b` 排在前面，`0` 表示两者相等（与 Java 的 `compareTo` 约定相同；C++ 的 `std::sort` 传的是返回 `bool` 的“小于”函数，这里不能照搬）。
 
 :::playground{#default-sort}
 ```ts file=main.ts
@@ -45,15 +45,17 @@ const words = ['banana', 'apple', 'Cherry'];
 console.log(words.sort());
 console.log(words.sort((a, b) => a.localeCompare(b)));
 ```
-- 第 3 行：`[ 1, 10, 100, 9 ]`，按字符串排序的结果。
-- 第 5、7 行：`a - b` 升序，`b - a` 降序。
-- 第 11 行：大写的 `'Cherry'` 排在最前面。第 12 行的 `localeCompare` 按语言习惯比较文字，结果是 `apple`、`banana`、`Cherry`。
+- 第 3 行：`[ 1, 10, 100, 9 ]`，按字符串排序的结果。第 2 行没有类型错误：比较函数是可选参数，漏写了 TypeScript 也不会提醒。
+- 第 5、7 行：`a - b` 在 `a` 较小时是负数，`a` 排在前面，所以是升序；`b - a` 正好相反，是降序。
+- 第 11 行：大写的 `'Cherry'` 排在最前面。第 12 行的 `a.localeCompare(b)` 是字符串的方法，按语言习惯比较两段文字，返回负数、0 或正数，正好可以当作比较函数的返回值；结果是 `apple`、`banana`、`Cherry`。
 - Python 的 `sorted()` 和 Java 的 `Collections.sort()` 都按元素的自然顺序排序，JavaScript 的默认行为是少见的例外。
 :::
 
 ## sort 会修改原数组
 
-`sort` **在原数组上**排序，并且返回**同一个数组**。`const sorted = arr.sort(…)` 看起来像得到了一个新数组，其实 `sorted` 和 `arr` 是同一个对象（a11 的引用）。`reverse` 也是这样。a10 的 `splice` 同样会修改原数组，但它返回的是**被删除的元素**。
+`sort` **在原数组上**排序，并且返回**同一个数组**。`const sorted = arr.sort(…)` 看起来像得到了一个新数组，其实 `sorted` 和 `arr` 指向同一个数组（a11 讲过引用）。Python 的 `list.sort()`、Java 的 `Collections.sort()`、C++ 的 `std::sort` 也是原地排序，但都不返回数组；JavaScript 的 `sort` 把原数组又返回了一次，才容易被误当成新数组。
+
+`reverse`（把元素的顺序颠倒过来）也是原地修改并返回同一个数组。a10 讲过的 `splice` 同样会修改原数组，但它返回的是**被删除的元素**。
 
 ES2023 为它们增加了**不修改原数组**的版本：`toSorted`、`toReversed`、`toSpliced`，以及替换单个元素的 `with(下标, 值)`。注意 `toSpliced` 返回的是删除或插入**之后**的新数组：`[1, 2, 3, 4].toSpliced(1, 2)` 得到 `[1, 4]`，而 `splice(1, 2)` 返回的是被删除的 `[2, 3]`。旧代码里常见的写法是先复制再排序：`[...arr].sort(…)`。
 
@@ -69,15 +71,15 @@ console.log(scores.toReversed(), scores.with(0, 99));
 console.log(scores);
 ```
 - 第 3 行：`true [ 1, 2, 3 ]`，原数组已经被排好了序。
-- 第 8 行：`scores` 仍然是 `[ 5, 4, 6 ]`。
-- 函数修改传入的数组是很隐蔽的 bug：调用方的数据在“只是想看看排序结果”时被改掉了。在 React 里，直接 `sort` 状态数组还会导致界面不更新（G 阶段会讲）。
+- 第 6、7 行：`toSorted`、`toReversed`、`with` 各返回一个新数组（`with(0, 99)` 得到的是下标 0 换成 99 的新数组）。第 8 行：`scores` 仍然是 `[ 5, 4, 6 ]`。
+- 函数修改传入的数组是很隐蔽的 bug：调用方的数据在“只是想看看排序结果”时被改掉了。在 React 里，直接 `sort` 状态里的数组还会导致界面不更新（g04 会讲）。
 :::
 
 ## 按对象的属性排序
 
-比较函数可以比较任何东西。比较数字属性用减法；比较文字用 `localeCompare`，需要按中文拼音排序时传入 `'zh-CN'`。多个条件时，前一个条件相等再比较下一个。
+比较函数可以比较任何东西。比较数字属性用减法；比较文字用 `localeCompare`，需要按中文拼音排序时把 `'zh-CN'` 作为第二个参数传给它。多个条件时，前一个条件相等再比较下一个。
 
-`sort` 是**稳定**的（ES2019 起规范要求）：比较结果为 0 的元素保持原来的相对顺序。
+`sort` 是**稳定**的（ES2019 起规范要求，`toSorted` 也一样）：比较结果为 0 的元素保持原来的相对顺序。
 
 :::playground{#sort-objects}
 ```ts file=main.ts
@@ -107,7 +109,7 @@ console.log(['王五', '张三', '李四'].toSorted());
 
 ## 用 readonly 防止修改
 
-TypeScript 的 `readonly T[]`（也可以写作 `ReadonlyArray<T>`）表示**只读数组**：它上面没有 `sort`、`push`、`splice` 这些会修改数组的方法。把函数参数声明成只读数组，函数内部就不可能意外修改调用方的数据。`toSorted` 等不修改原数组的方法在只读数组上照样可用。
+TypeScript 的 `readonly T[]`（也可以写作 `ReadonlyArray<T>`）表示**只读数组**：它上面没有 `sort`、`push`、`splice` 这些会修改数组的方法，也不能给下标赋值。把函数参数声明成只读数组，函数内部就不会意外修改调用方的数组。`toSorted` 等不修改原数组的方法在只读数组上照样可用。
 
 :::playground{#readonly expect="2339@main.ts:2, 7006@main.ts:2, 7006@main.ts:2"}
 ```ts file=main.ts
@@ -123,8 +125,9 @@ const results = [70, 95, 88];
 console.log(topTwo(results), results);
 ```
 - 第 2 行：只读数组没有 `sort`，报 TS2339；因为找不到 `sort`，回调参数的类型也推断不出来，又带出两个 TS7006。
-- 第 6 行用 `toSorted`，类型检查通过，`results` 也没有被修改。
-- 普通的 `number[]` 可以直接传给 `readonly number[]` 参数；反过来不行。
+- 第 6 行用 `toSorted`，类型检查通过。第 10 行输出 `[ 95, 88 ] [ 70, 95, 88 ]`：`results` 没有被修改。
+- 普通的 `number[]` 可以直接传给 `readonly number[]` 参数；反过来不行：只读数组不能传给要求 `number[]` 的参数，否则对方就可以修改它了。
+- 只读只管数组本身（不能增删、替换元素）；元素如果是对象，对象的属性仍然可以修改。它也只是编译期的检查，运行时还是同一个普通数组。
 :::
 
 ::exercise{#sort-prices}
@@ -137,9 +140,9 @@ console.log(topTwo(results), results);
 
 ## 常见错误
 
-- **排序数字不写比较函数**：`[10, 9, 1].sort()` 得到 `[1, 10, 9]`。
+- **排序数字不写比较函数**：`[10, 9, 1].sort()` 得到 `[1, 10, 9]`，TypeScript 不会报错。
 - **以为 `sort` 返回新数组**：它返回的就是原数组。不想修改原数组时用 `toSorted`。
-- **比较函数返回布尔值**：`(a, b) => a > b` 是错误的，比较函数必须返回负数、0 或正数。
+- **比较函数返回布尔值**：`(a, b) => a > b` 是错误的，比较函数必须返回负数、0 或正数。这个错误 TypeScript 会报出来（`boolean` 不能当作 `number`）。
 - **用 `<`、`>` 比较中文**：按的是编码，不是拼音，用 `localeCompare(…, 'zh-CN')`。
 
 ## 下一步

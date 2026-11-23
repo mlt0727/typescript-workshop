@@ -3,7 +3,7 @@ kind: task
 title: 解析注册表单
 mode: ts
 ---
-实现 `parseSignup(data)`：把注册表单的 `FormData` 解析成类型明确的数据，或者每个字段的错误信息。规则如下（所有错误都要收集，不要遇到第一个就返回）：
+起始代码不做任何检查，直接用 `String(…)`、`Number(…)` 转换。改写 `parseSignup(data)`：把注册表单的 `FormData` 解析成类型明确的数据，或者每个字段的错误信息。规则如下（所有错误都要收集，不要遇到第一个就返回）：
 
 | 字段 | 规则（按顺序检查，每个字段只报告第一条不满足的） | 错误信息 |
 | --- | --- | --- |
@@ -18,6 +18,8 @@ mode: ts
 | `confirm` | 与 `password` 完全相同 | `两次输入的密码不一致` |
 
 “字符”按字符串的 `length` 计算（和 HTML 的 `maxlength` 一样，一个 emoji 可能算 2 个）。成功时 `value` 中是去掉首尾空白的 `name`、`email`，数字类型的 `age`，以及原样的 `password`。字段的值不是字符串（例如是文件）或者不存在时，当作空字符串处理。
+
+JavaScript 的正则表达式写在两个斜杠之间，例如 `/^\d+$/`；`/^\d+$/.test(text)` 返回布尔值，表示字符串 `text` 是否匹配。
 
 :::files{role=starter}
 ```ts file=parse.ts

@@ -22,7 +22,7 @@
   type: single
   prompt: 给联合类型新增一种情况后，下面哪种 `switch` 写法能让 TypeScript 指出“还没有处理新情况”？
   options:
-    - text: "`default: return assertNever(x);`（参数类型为 `never`）"
+    - text: "`default: return assertNever(x);`（`assertNever` 的参数类型是 `never`）"
       correct: true
       explain: 新情况会落入 `default`，它不是 `never`，于是调用处报错。
     - text: "`default: return '未知';`"

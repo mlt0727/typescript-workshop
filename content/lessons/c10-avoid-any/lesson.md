@@ -49,21 +49,42 @@ console.log(data.user.name.toUpperCase());
 | `JSON.parse(text)` | `const value: unknown = JSON.parse(text)`，再验证（e06） |
 | `await response.json()` | 同上：赋给 `unknown` |
 | `Function` 类型的值，调用结果是 `any` | 写出具体的函数类型，例如 `(x: number) => string` |
-| 没有类型声明的库（`strict` 下导入它先报 TS7016；为了消除这个错误写一行 `declare module '库名';`，导入的一切就都成了 `any`） | 在一个小的包装模块里把结果赋给 `unknown` 并验证（编程挑战）；或者写出真正的类型声明（c12） |
-| `Array.isArray(x)` 把 `unknown` 收窄成 `any[]` | 赋给 `readonly unknown[]`（p1-05） |
+| 没有类型声明的库（`strict` 下导入它先报 TS7016；为了消除这个错误写一行 `declare module '库名';`，导入的一切就都成了 `any`） | 在一个小的包装模块里把结果赋给 `unknown` 并验证（编程挑战）；或者写出真正的类型声明（c12 会讲） |
+| `Array.isArray(x)` 把 `unknown` 收窄成 `any[]` | 赋给 `readonly unknown[]`，或者把元素标注成 `unknown`（e06 讲过） |
 
 `catch (error)` 的 `error` 在 `strict` 下是 `unknown`（`useUnknownInCatchVariables`，TypeScript 4.4 起），不是 `any`：抛出的不一定是 `Error`，也可能是字符串或者任何值，读 `error.message` 之前要先检查 `error instanceof Error`。
 
-这个平台的规则检查会拦下**写出来的** `any`，但拦不住从库函数中流进来的 `any`，也拦不住没有写类型的变量：`let data; data = JSON.parse(text);` 中的 `data` 同样是 `any`。专门的工具是 typescript-eslint 的 `no-unsafe-*` 系列规则（`no-unsafe-member-access`、`no-unsafe-assignment` 等），它们会标出所有使用了 `any` 值的地方，F 阶段配置 ESLint 时会用到。
+这个平台的规则检查会拦下**写出来的** `any`，但拦不住从库函数中流进来的 `any`，也拦不住没有写类型的变量：`let data; data = JSON.parse(text);` 中的 `data` 同样是 `any`。专门的工具是 typescript-eslint 的 `no-unsafe-*` 系列规则（`no-unsafe-member-access`、`no-unsafe-assignment` 等），它们会标出所有使用了 `any` 值的地方。之后 f11 配置的 typescript-eslint 推荐规则集 `recommendedTypeChecked` 就包含这些规则。
 
 ## 双重断言与注释指令
 
-`as` 只允许在“有重叠”的类型之间断言，`'hello' as number` 报 TS2352。`'hello' as unknown as number` 却能通过：先断言成 `unknown`（任何类型都能），再从 `unknown` 断言成任何类型。代码里看到 `as unknown as`，几乎总是意味着“类型不对，但我想让它通过”。
+b16 讲过：`as` 只允许在“有重叠”的类型之间断言，`'hello' as number` 报 TS2352。`'hello' as unknown as number` 却能通过：先断言成 `unknown`（任何类型都能），再从 `unknown` 断言成任何类型。代码里看到 `as unknown as`，几乎总是意味着“类型不对，但我想让它通过”。
 
 注释指令也是同样的“开关”：
 
 - `// @ts-ignore`：忽略下一行的错误，**没有错误时也不报告**，问题修好以后它还会一直留着，悄悄地掩盖以后出现的新错误；
 - `// @ts-expect-error`：同样忽略下一行的错误，但下一行**没有错误时会报 TS2578**，提醒你删掉它。类型测试中故意写出错误时用它（本课程的类型测试一直这样做）。
+
+:::playground{#directives expect="2578@main.ts:10" run=ok}
+```ts file=main.ts
+const port: number = 8080;
+
+// @ts-ignore
+const a: string = port;
+// @ts-expect-error
+const b: string = port;
+
+// @ts-ignore
+const c: number = port;
+// @ts-expect-error
+const d: number = port;
+
+console.log(a, b, c, d);
+```
+- 第 4、6 行把 `number` 赋给 `string`，本来都会报 TS2322，两种指令都把错误藏了起来。
+- 第 9、11 行本来就没有错误：第 8 行的 `@ts-ignore` 什么也不说，第 10 行的 `@ts-expect-error` 报 TS2578，提醒你删掉它。
+- 运行结果是 4 个 `8080`：`a`、`b` 的类型写着 `string`，值却是数字，指令只是让编译器闭嘴，并没有改变运行时的值。
+:::
 
 在正常的代码中，两者都应该很少出现；如果确实需要，选 `@ts-expect-error`，并在后面写上原因。
 

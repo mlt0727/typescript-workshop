@@ -46,12 +46,13 @@ tags.push(42);
 ```
 - 第 1 行：`scores` 推断为 `number[]`。它是 `const`，但仍然可以 `push`：`const` 只禁止重新赋值（a03）。
 - 第 5 行：`indexOf` 找不到时返回 `-1`。只需要判断“有没有”时，`includes` 更直接。
+- 第 6 行：`join` 用分隔符把所有元素连成一个字符串。和 Python 的 `' / '.join(…)` 相反，它是数组的方法，分隔符是参数；元素不是字符串也会自动转换。
 - 第 10 行：`tags` 是 `string[]`，放入数字报 TS2345。
 :::
 
 ## 越界读取：undefined，而不是异常
 
-读取不存在的下标时，JavaScript 返回 `undefined`，不会抛出异常。TypeScript 默认假设下标访问总能取到值，但这并不安全，所以本平台开启了 **`noUncheckedIndexedAccess`**：`names[0]` 的类型是 `string | undefined`，使用前要检查。
+读取不存在的下标时，JavaScript 返回 `undefined`，不会抛出异常。TypeScript 默认假设下标访问总能取到值，但这并不安全，所以本平台开启了编译选项 **`noUncheckedIndexedAccess`**：`names[0]` 的类型是 `string | undefined`，使用前要检查。
 
 :::playground{#out-of-bounds expect="18048@main.ts:5"}
 ```ts file=main.ts
@@ -78,7 +79,7 @@ console.log(names.at(-1));
 - 第 16 行：`at(-1)` 取最后一个元素，类型同样是 `string | undefined`。Python 用户注意：`names[-1]` **不会**取到最后一个元素，而是得到 `undefined`（TypeScript 也不报错），要用 `at(-1)`。
 :::
 
-往超出长度的下标写入，数组会自动变长，中间留下“空位”（empty slots）。这几乎总是 bug，用 `push` 添加元素即可。
+往超出长度的下标写入（例如 `names[5] = 'Linus'`）不会报错：数组自动变长，中间留下“空位”（empty slots），读取空位得到的也是 `undefined`。这几乎总是 bug，用 `push` 添加元素即可。
 
 ## 修改原数组，还是返回新数组
 
@@ -100,8 +101,8 @@ console.log(removed, letters);
 const last = letters.pop();
 console.log(last, letters);
 ```
-- `slice(开始, 结束)` 和字符串的 `slice` 一样，不包含结束位置；原数组不变。
-- `splice(开始, 删除个数)` 从原数组里**删除**元素并返回被删除的部分。`slice` 和 `splice` 只差一个字母，作用完全不同。
+- `slice(开始, 结束)` 和字符串的 `slice` 一样，不包含结束位置；结束位置超出长度时取到末尾为止，不会报错。原数组不变。
+- `splice(开始, 删除个数)` 从原数组里**删除**元素并返回被删除的部分；后面再写上新元素，就是在这个位置插入，例如 `letters.splice(1, 0, 'x')`（删除 0 个，插入 `'x'`）。`slice` 和 `splice` 只差一个字母，作用完全不同。
 - `pop()` 的返回类型是 `string | undefined`：空数组 `pop` 得到 `undefined`。
 :::
 
@@ -116,7 +117,7 @@ console.log(last, letters);
 ## 常见错误
 
 - **以为越界会抛异常**：`arr[100]` 只会得到 `undefined`。
-- **用 `!` 消除 `T | undefined`**：`scores[0]!` 在空数组上仍然是 `undefined`。先检查长度或元素。
+- **用非空断言 `!` 消除 `T | undefined`**：`scores[0]!` 在空数组上仍然是 `undefined`，只是 TypeScript 不再提醒。先取出元素，检查它不是 `undefined` 再用；只检查 `length`，TypeScript 不会收窄 `scores[0]` 的类型。
 - **该用 `for...of` 时用下标循环**：下标访问会带来 `undefined` 检查，`for...of` 不会。
 - **混淆 `slice` 与 `splice`**：`splice` 会修改原数组。
 - **空数组不写类型**：写成 `const list: string[] = [];`。

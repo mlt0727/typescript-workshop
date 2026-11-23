@@ -31,7 +31,7 @@ references:
 | 选项 | 防止什么 | 典型的诊断 |
 | --- | --- | --- |
 | `noImplicitAny` | 推断不出类型的地方悄悄变成 `any` | TS7006：参数隐式具有 `any` 类型 |
-| `strictNullChecks` | 把可能是 `null`/`undefined` 的值当作确定的值使用 | TS18047、TS2322 |
+| `strictNullChecks` | 把可能是 `null`/`undefined` 的值当作确定的值使用 | TS18047、TS18048、TS2322 |
 | `strictFunctionTypes` | 函数类型的参数按错误的方向赋值（c03 讲过逆变） | TS2322 |
 | `strictPropertyInitialization` | 类的字段声明了却没有在构造函数中赋值 | TS2564 |
 | `useUnknownInCatchVariables` | `catch (e)` 的 `e` 被当作 `any` | TS18046（在 `e` 上读属性） |
@@ -55,8 +55,8 @@ const users: User[] = [{ name: 'Ada', nickname: null }];
 const lin = findUser(users, 'Lin');
 console.log(lin.name);
 ```
-- 关闭 `strictNullChecks` 之后，`null` 和 `undefined` 可以赋给任何类型，`User | undefined` 也就等于 `User`。第 9 行没有任何错误，运行时却抛出 `TypeError`：没有找到 `Lin`。
-- 把这一节课的设置（默认开启）放回来，第 9 行会报 TS18048：`'lin' is possibly 'undefined'`。这就是本课程所有练习一直在做的检查。
+- 关闭 `strictNullChecks` 之后，`null` 和 `undefined` 可以赋给任何类型，`User | undefined` 也就等于 `User`。第 9 行没有任何错误，运行时却抛出 `TypeError`：数组里没有 `Lin`，`findUser` 返回了 `undefined`，而 `undefined` 上没有 `name`。
+- 在本课程的默认配置（开启 `strictNullChecks`）下，第 9 行会报 TS18048：`'lin' is possibly 'undefined'`。这就是本课程所有练习一直在做的检查。
 :::
 
 ## 不在 strict 里的严格选项
@@ -64,7 +64,7 @@ console.log(lin.name);
 还有一些选项不在 `strict` 中，因为它们会让大量正确的旧代码报错，或者需要更多的书写。本课程的配置开启了其中的 `noUncheckedIndexedAccess`：
 
 - **`noUncheckedIndexedAccess`**：通过下标（`arr[i]`）和索引签名（`record[key]`）读取的值都带上 `| undefined`，数组解构 `const [first] = arr` 也一样。它防止“越界读取”这一类非常常见的错误（a10）。代价是确实存在的值也要检查，所以遍历数组时优先用 `for…of`、`map` 等不经过下标的写法，它们得到的元素不带 `undefined`；
-- **`exactOptionalPropertyTypes`**：可选属性 `bio?: string` 表示“可以没有这个属性”，但**不能**显式地写 `bio: undefined`。c06 的补丁问题（显式的 `undefined` 覆盖了原来的值）在这个选项下会被编译器拦住。需要“可以是 `undefined`”时，要明确地写成 `bio?: string | undefined`；
+- **`exactOptionalPropertyTypes`**：可选属性 `bio?: string` 表示“可以没有这个属性”，但**不能**显式地写 `bio: undefined`。c06 讲过的补丁问题（显式的 `undefined` 覆盖了原来的值）在这个选项下会被编译器拦住。需要“可以是 `undefined`”时，要明确地写成 `bio?: string | undefined`；
 - **`noPropertyAccessFromIndexSignature`**：来自索引签名的属性必须用方括号读取（`stock['apple']` 而不是 `stock.apple`），让“这个键可能不存在”在代码中一目了然；
 - **`noImplicitOverride`**：子类覆盖父类的方法时必须写 `override`，父类的方法改名或删除时，子类中失去作用的“覆盖”会报错。
 
@@ -88,7 +88,7 @@ console.log(ada, broken, applyPatch({ name: 'Ada', bio: '数学家' }, { bio: nu
 ```
 - 第 5 行报 TS2375：开启选项之后，`bio?: string` 不接受显式的 `undefined`。
 - 第 2 行用 `null` 表示“清除简介”：这样“没有给出”（属性不存在）和“要清除”（`null`）是两种不同的意思，不会混在一起。
-- 第 10 行：清除时用 `delete` 删除属性，而不是赋值 `undefined`（那样同样会报错）。
+- 第 10 行：清除时用 `delete` 运算符删除属性，而不是赋值 `undefined`（那样同样会报错）。`delete next.bio` 和 Python 的 `del` 类似，执行之后对象上就没有 `bio` 这个属性了，`'bio' in next` 是 `false`。
 :::
 
 ## 在已有的项目中打开它们

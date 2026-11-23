@@ -2,7 +2,7 @@
 kind: task
 title: 带可选信息的称呼
 ---
-用户资料中 `nickname`、`age` 和 `vip` 都是可选的。实现 `profileLabel(profile)`：
+用户资料中 `nickname`、`age` 和 `vip` 都是可选的。起始代码里的 `profileLabel(profile)` 在某些输入上结果不对。修正它，让它符合下面的规则：
 
 - 提供了昵称时显示昵称（即使是空字符串，也是用户自己设置的），没有提供时显示 `name`；
 - 有年龄时在后面加上 `（N 岁）`，0 岁也要显示；
@@ -83,7 +83,7 @@ test('空昵称也是用户设置的昵称', () => {
 :::explanation
 可选属性的类型包含 `undefined`，“没有提供”和“提供了一个 falsy 值”是两回事。规格明确了：0 岁要显示，空字符串昵称要显示（用户把昵称设成了空），所以昵称和年龄都只应该在 `undefined` 时退回默认，要用 `??` 或 `=== undefined`。
 
-`vip` 不同：`false` 和“没有提供”都表示不加星号，真假检查正好合适。判断该用哪种检查，要看 falsy 值在这个字段上有没有意义（a07）。
+`vip` 不同：`false` 和“没有提供”都表示不加星号，真假检查（`profile.vip ? '★' : ''`）正好合适，参考答案里的 `=== true` 效果相同。判断该用哪种检查，要看 falsy 值在这个字段上有没有意义（a07）。
 :::
 
 :::variant{kind=alt name=destructure-defaults}

@@ -40,14 +40,14 @@ f02 讲过：`npm run build` 生成 `dist`，`npm run preview` 用一个本地�
 
 `dist` 中只有 `index.html` 和 `assets/`，并没有 `products/205` 这个文件。在页面上点击链接时，路由在浏览器中切换页面，不会向服务器请求 `/products/205`；但**直接打开或者刷新**时，浏览器向服务器请求的就是这个路径。Python 的服务器只会按路径找文件，所以是 404。
 
-`vite preview` 返回了 `index.html`，是因为它和开发服务器一样内置了**回退**（fallback）：找不到文件、并且请求可能接受网页（`Accept` 中有 `text/html` 或者 `*/*`，或者根本没有 `Accept`）时，返回 `index.html`。实测用 `Accept: application/json` 请求同一个地址就是 404。还有一个例外：浏览器为 `<script>` 发出的请求带有 `Sec-Fetch-Dest: script`，Vite 不会对它返回网页（vite 8.3 的源码），所以下面第 3 个问题中缺失的脚本是 404；而用 `fetch` 或 curl 请求同一个地址，得到的却是 200 和网页。所以在 `vite preview` 上一切正常，不代表部署之后也正常。
+`vite preview` 返回了 `index.html`，是因为它和开发服务器一样内置了**回退**（fallback）：找不到文件、并且请求可能接受网页（`Accept` 中有 `text/html` 或者 `*/*`，或者根本没有 `Accept`）时，返回 `index.html`。实测用 `Accept: application/json` 请求同一个地址就是 404。还有一个例外：浏览器为 `<script>` 发出的请求带有 `Sec-Fetch-Dest: script`，Vite 不会对它返回网页（vite 8.3 的源码），所以下面“资源的路径”一节的第 3 个问题中，缺失的脚本是 404；而用 `fetch` 或 curl 请求同一个地址，得到的却是 200 和网页。所以在 `vite preview` 上一切正常，不代表部署之后也正常。
 
 ## 刷新之后的 404：回退
 
 单页应用要求静态服务器做一件事：**找不到文件的页面地址，返回 `index.html`**，由浏览器中的路由决定显示什么。不同的平台写法不同：
 
 - **Vercel**：在 `vercel.json` 中写改写（i01）。可以写 `{ "source": "/(.*)", "destination": "/index.html" }` 匹配一切，也可以像这个网站一样只为页面的地址写规则（`/learn/:lessonId`）。前者简单，代价是找不到的资源也得到 `index.html`（i01 的编程挑战）；
-- **GitHub Pages**：不能配置改写，只能提供一个 `404.html`：找不到文件时返回它的内容。常见的做法是把 `index.html` 复制一份成为 `404.html`，或者在 `404.html` 中放一段跳转回首页、再由首页恢复原来地址的脚本（p2-06）。无论哪一种，GitHub Pages 返回 `404.html` 时的状态码都是 404：实测一个用后一种做法部署单页应用的网站（`spa-github-pages.rafgraph.dev`），`/` 是 200，`/example/two` 返回 404（`Server: GitHub.com`），内容是它的 `404.html`。页面最终能显示，但搜索引擎和监控工具看到的是 404；
+- **GitHub Pages**：不能配置改写，只能提供一个 `404.html`：找不到文件时返回它的内容。常见的做法是把 `index.html` 复制一份成为 `404.html`，或者在 `404.html` 中放一段跳转回首页、再由首页恢复原来地址的脚本（p2-06 会讲）。无论哪一种，GitHub Pages 返回 `404.html` 时的状态码都是 404：实测一个用后一种做法部署单页应用的网站（`spa-github-pages.rafgraph.dev`），`/` 是 200，`/example/two` 返回 404（`Server: GitHub.com`），内容是它的 `404.html`。页面最终能显示，但搜索引擎和监控工具看到的是 404；
 - **Nginx、Caddy 这样的服务器**：配置“找不到时用 `/index.html`”（Nginx 中是 `try_files $uri $uri/ /index.html;`）；
 - **改用 hash 路由**：`createHashRouter` 的地址是 `/#/products/205`，`#` 之后的部分根本不会发给服务器，任何静态服务器都能用。代价是地址难看，而且服务器永远无法区分这些页面。这个网站的练习预览就是因为沙箱的限制而使用了它。
 
@@ -61,7 +61,7 @@ f02 讲过 `base`：部署在子路径（例如 GitHub Pages 的 `https://用户
 | `/shop/` | `src="/shop/assets/index-….js"` |
 | `./` | `src="./assets/index-….js"` |
 
-文件名中的哈希（这里写成 `…`）随代码和 `base` 变化，几次构建的文件名不完全相同。浏览器按**页面的地址**解析这些地址（MDN 的 `new URL(地址, 页面的地址)` 就是这个规则）：以 `/` 开头的从网站的根开始；`./` 开头的相对于页面所在的“文件夹”。这带来了三个实测到的问题：
+文件名中的哈希（这里写成 `…`）随代码和 `base` 变化，几次构建的文件名不完全相同。浏览器按**页面的地址**解析这些地址（e10 讲过的 `new URL(地址, 页面的地址)` 用的就是这个规则）：以 `/` 开头的从网站的根开始；`./` 开头的相对于页面所在的“文件夹”。先在示例中看看这两种地址在不同的页面上被解析成什么：
 
 :::playground{#resolve}
 ```ts file=main.ts
@@ -73,9 +73,11 @@ for (const page of pages) {
   console.log(page.padEnd(34), root.padEnd(22), relative);
 }
 ```
-- 第二列是 `/assets/app.js`（`base` 为 `/`）解析的结果：在任何页面上都一样，包括子路径上的 `/shop/`，那里它缺了 `/shop`；
+- 第一列是页面的地址，第二列是 `/assets/app.js`（`base` 为 `/`）解析的结果：在任何页面上都一样，包括子路径上的 `/shop/`，那里它缺了 `/shop`；
 - 第三列是 `./assets/app.js`（`base` 为 `./`）：在 `/products/205` 上变成了 `/products/assets/app.js`，在 `/shop/` 上反而是对的。
 :::
+
+这带来了三个实测到的问题：
 
 1. **部署在 `/shop/` 上，`base` 却是 `/`**：页面请求的是 `/assets/index-….js`（缺了 `/shop`），404，页面一片空白；
 2. **`base` 是 `/shop/`，路由却不知道**：资源都加载了，页面上显示的却是“页面不存在”：路由看到的地址是 `/shop/`，而路由表中只有 `/`。要告诉路由它在哪个前缀下：`createBrowserRouter(routes, { basename: '/shop' })`。用 `import.meta.env.BASE_URL` 得到 `base`，就不用在两个地方各写一遍。加上之后实测显示“首页”；
@@ -98,8 +100,8 @@ i01 中的表格就是对这个网站做的一次这样的检查（手动的）�
 1. 用“下载本地项目”下载 g13 的 `app-routes` 练习，把 `main.tsx` 中的 `createHashRouter` 换成 `createBrowserRouter`（`import` 也要改），然后 `npm install`、`npm run build`；
 2. `npm run preview`，打开 `/products/205` 并刷新：能显示；
 3. 在 `dist` 文件夹中运行 `python -m http.server 8000`（需要安装 Python），打开 `http://localhost:8000/products/205`：404。再打开 `http://localhost:8000/`，点击链接进入商品页面：能显示，但刷新之后又是 404；
-4. `npx vite build --base=./` 之后再用 `npm run preview` 打开 `/products/205`，在 DevTools 的网络面板中找到那个 404 的脚本，看它的地址；
-5. 在 `vite.config.ts` 中设置 `base: '/shop/'`，给 `createBrowserRouter` 加上 `basename`，构建之后把 `dist` 中的内容放进另一个文件夹的 `shop/` 中，在那个文件夹中运行 `python -m http.server`，打开 `http://localhost:8000/shop/`。
+4. `npx vite build --base=./` 之后再用 `npm run preview` 打开 `/products/205`，在 DevTools 的网络面板中找到那个 404 的脚本，看它的地址：是 `/products/assets/…`；
+5. 在 `vite.config.ts` 中设置 `base: '/shop/'`，给 `createBrowserRouter` 加上 `basename`，构建之后把 `dist` 中的内容放进另一个文件夹的 `shop/` 中，在那个文件夹中运行 `python -m http.server`，打开 `http://localhost:8000/shop/`：显示“首页”。
 
 ::quiz
 

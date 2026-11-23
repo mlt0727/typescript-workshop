@@ -20,7 +20,7 @@ references:
 
 ## 联合类型：A 或 B
 
-`string | number` 表示“字符串或数字”（a02、a05 已经用过）。一个联合类型的值，只能直接使用**所有成员共有**的操作：TypeScript 不知道它此刻到底是哪一种。要使用某个成员特有的操作，先用 `typeof` 等检查**收窄**（a02；b07 会系统讲解）。
+`string | number` 表示“字符串或数字”。这种用 `|` 连接的类型叫**联合类型**（a02、a05 已经用过），被连接的每个类型是它的一个**成员**。联合类型的值只能直接使用**所有成员共有**的操作，因为 TypeScript 不知道它此刻到底是哪一种。要使用某个成员特有的操作，先用 `typeof` 之类的检查**收窄**（a02 体验过，b07 会系统讲解）。
 
 :::playground{#union-basics expect="2339@main.ts:2"}
 ```ts file=main.ts
@@ -43,13 +43,13 @@ function show(value: string | number): string {
 console.log(show(42), show('x'));
 ```
 - 第 2 行：`toFixed` 只有数字才有，字符串没有，报 TS2339。
-- 第 6 行检查之后，分支里的 `value` 是 `number`；`if` 之后剩下的只能是 `string`。
+- 第 6 行检查之后，分支里的 `value` 是 `number`；`if` 之后剩下的只能是 `string`，所以第 9 行可以调用 `trim()`。
 - 第 15 行：`toString()` 是字符串和数字都有的方法，可以直接在 `string | number` 上调用。
 :::
 
 ## 字面量类型
 
-一个具体的值也可以作为类型：`'open'` 类型只有一个值，就是字符串 `'open'`。单独使用意义不大，但把几个字面量类型联合起来，就得到了一个“只能是这几个值之一”的类型——这是 TypeScript 里最常用的写法之一，可以代替很多语言里的枚举。
+一个具体的值也可以作为类型：`'open'` 类型只有一个值，就是字符串 `'open'`。单独使用意义不大，但把几个字面量类型联合起来，就得到了一个“只能是这几个值之一”的类型，下文简称**字面量联合**。这是 TypeScript 里最常用的写法之一，可以代替很多语言里的枚举。
 
 :::playground{#literal-types expect="2322@main.ts:4, 2345@main.ts:11"}
 ```ts file=main.ts
@@ -67,13 +67,13 @@ console.log(httpMessage(201));
 console.log(status);
 ```
 - 第 4 行：`'closed'` 不在 `Status` 中，报 TS2322。拼错状态名这类错误会在编译期被发现。
-- 在编辑器里输入 `status = '`，自动补全会列出三个合法的值。
+- 在代码末尾另起一行，输入 `status = 'p`：自动补全会列出 `pending` 和 `paid`。合法的值不用背，也不容易拼错。
 - 数字也可以是字面量类型（第 7 行）。第 11 行：`201` 不在 `200 | 404 | 500` 中，报 TS2345。`boolean` 其实就是 `true | false`。
 :::
 
 ## 类型拓宽：什么时候字面量变成了 string
 
-a03 讲过：`const greeting = '欢迎'` 推断为字面量类型 `'欢迎'`，`let` 则推断为 `string`，因为 `let` 以后可能被赋成别的字符串。这叫**类型拓宽**（widening）。对象的属性也会拓宽：属性以后可以被修改，所以 `{ align: 'left' }` 的 `align` 是 `string`。
+a03 讲过：`const greeting = '欢迎'` 推断为字面量类型 `'欢迎'`；换成 `let` 就推断为 `string`，因为 `let` 变量以后可能被赋成别的字符串。推断时把字面量类型换成 `string`、`number` 这样更宽的类型，叫**类型拓宽**（widening）。对象的属性也会拓宽：属性以后可以被修改，所以 `const options = { align: 'left' }` 中 `align` 的类型是 `string`。
 
 拓宽之后，值就不能传给要求字面量联合的参数了：
 
@@ -96,8 +96,10 @@ let c: Align = 'left';
 console.log(setAlign(typed.align), setAlign(c));
 ```
 - 把鼠标停在 `a`、`b` 和 `options` 上：分别是 `"left"`、`string` 和 `{ align: string; }`。所以第 8 行的 `setAlign(b)` 和第 11 行报 TS2345。
-- 最直接的修复是写出类型注解（第 13、14 行）。b16 还会介绍 `as const` 和 `satisfies`。
+- 最直接的修复是写出类型注解（第 13、14 行）：有了注解，`'left'` 就按 `Align` 检查，不再拓宽。b16 还会介绍 `as const` 和 `satisfies`。
 :::
+
+拓宽只发生在没有注解、类型要靠推断的时候。把字面量直接写在已经有类型要求的位置，它就按那个类型检查：`setAlign('left')` 没有问题；函数的返回类型声明为 `{ align: Align }` 时，直接 `return { align: 'left' };` 也没有问题（编程挑战会用到）。
 
 ## 联合类型的数组
 
@@ -110,8 +112,8 @@ const same: string[] | number[] = [1, 2, 3];
 const wrong: string[] | number[] = ['a', 1];
 console.log(mixed, same, wrong);
 ```
-- 第 3 行：数组里既有字符串又有数字，不满足任何一个成员，报 TS2322。
-- 注意括号：`string | number[]` 的意思是“字符串，或者数字数组”。
+- 第 3 行：数组里既有字符串又有数字，既不是 `string[]` 也不是 `number[]`，报 TS2322。
+- 注意括号：`[]` 的优先级比 `|` 高，所以不加括号的 `string | number[]` 是“字符串，或者数字数组”。
 :::
 
 ::exercise{#status-label}

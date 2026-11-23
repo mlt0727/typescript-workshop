@@ -58,4 +58,4 @@
     - text: "`NaN` 和 `NaN`"
       explain: "`parseInt` 会读取开头的 `12`。"
     - text: "`12` 和 `NaN`"
-      explain: 正好反了。
+      explain: "两个函数的行为说反了：`Number` 不会忽略后面的 `px`；从开头读取数字、遇到非数字字符就停止的是 `parseInt`。"

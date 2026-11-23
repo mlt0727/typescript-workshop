@@ -14,7 +14,7 @@
       explain: 普通属性的值不会被解析成 HTML。但属性名不能由用户决定，on 开头的事件属性会把值当作代码。
 - id: script-via-innerhtml
   type: single
-  prompt: 通过 `innerHTML` 插入的 `<script>` 元素不会执行。这说明什么？
+  prompt: 通过 `innerHTML` 插入的 `<script>` 元素不会执行。关于这一点，哪个说法正确？
   options:
     - text: innerHTML 仍然不安全，`<img src=x onerror=…>` 这类事件属性照样会执行代码
       correct: true
@@ -38,7 +38,7 @@
   type: single
   prompt: 关于内容安全策略（CSP），哪个说法正确？
   options:
-    - text: 它由服务器在响应头中设置，可以阻止内联脚本和事件属性执行，是正确插入数据之外的一道兜底防线
+    - text: 它通常由服务器在响应头中设置，可以阻止内联脚本和事件属性执行，是正确插入数据之外的一道兜底防线
       correct: true
       explain: 即使某处漏掉了转义，注入的代码也很可能跑不起来；但规则写得太宽就会失效，它不能代替正确的写法。
     - text: 有了 CSP，就可以放心地用 innerHTML 显示用户的输入

@@ -73,7 +73,7 @@ type B = Params<'/posts/:postId/comments/:commentId'>; // 'postId' | 'commentId'
 type C = Params<'/about'>; // never
 ```
 
-第一个分支匹配“某个 `:` 之后到下一个 `/` 之前”的一段，取出参数名，再对剩下的部分**递归**；第二个分支处理最后一个参数。`infer` 在模板中默认尽量少地匹配，所以 `${infer Name}/` 取到的是第一个 `/` 之前的部分。
+第一个分支匹配“第一个 `:` 之后到它后面第一个 `/` 之前”的一段，取出参数名，再对剩下的部分**递归**；第二个分支处理最后一个参数。`infer` 在模板中默认尽量少地匹配，所以 `${infer Name}/` 取到的是第一个 `/` 之前的部分。
 
 有了 `Params`，函数的参数就可以由路由字符串决定：
 
@@ -100,8 +100,8 @@ console.log(buildPath('/users/:id', { id: 'a b' }));
 const route: string = '/users/:id';
 console.log(buildPath(route, {}));
 ```
-- 第 16 行报 TS2345：少了 `commentId`。`R` 被推断成字面量类型 `'/posts/:postId/comments/:commentId'`，`Params<R>` 算出了两个参数名。如果仍然运行，第 11 行的检查会抛出“缺少参数：commentId”；删掉第 16 行再运行，看看后面两行的输出。
-- 第 8 行：`Record<Params<R>, string>` 可以赋值给 `Record<string, string | undefined>`，之后就能用运行时得到的 `name` 查找。运行时的检查（第 11 行）仍然要写，类型只能保证“写在代码里的字面量”是对的。
+- 第 16 行报 TS2345：少了 `commentId`。`R` 被推断成字面量类型 `'/posts/:postId/comments/:commentId'`，`Params<R>` 算出了两个参数名。如果仍然运行，第 11 行的检查会抛出“缺少参数：commentId”。删掉第 16 行再运行：第 17 行输出 `/users/a%20b`（`encodeURIComponent` 把空格编码成了 `%20`），第 20 行的情况见第三条。
+- 第 8 行：`Record<Params<R>, string>` 可以赋值给 `Record<string, string | undefined>`，之后就能用运行时得到的 `name` 查找。第 9 行的 `replace` 配合带 `g` 标志的正则，会把每一处 `:名字` 都交给回调函数，回调的第二个参数是括号捕获到的名字，返回值替换这一处（和 Python 的 `re.sub` 传入函数一样）。运行时的检查（第 11 行）仍然要写，类型只能保证“写在代码里的字面量”是对的。
 - 第 19、20 行：`route` 的类型是 `string`，不再是字面量，`Params<string>` 是 `never`，`Record<never, string>` 是空对象，**任何参数对象都能通过检查**，运行时才抛出“缺少参数”。模板字面量类型的检查只对字面量有效。
 :::
 

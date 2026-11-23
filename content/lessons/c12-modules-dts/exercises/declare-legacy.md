@@ -6,7 +6,7 @@ mode: dom
 `legacy-chart` 是一个只有 JavaScript 的旧库，没有自带类型，也没有 `@types` 包。在 `legacy-chart.d.ts` 中用 `declare module 'legacy-chart' { … }` 为它写出声明（这道题只做类型检查）。它的文档：
 
 - **默认导出** `createChart(target, options)`：`target` 是 CSS 选择器（字符串）或者一个 `HTMLElement`；`options` 有必需的 `type`（`'line'` 或 `'bar'`），可选的 `title`（字符串）和 `animate`（布尔值）。返回一个 `Chart`；
-- `Chart` 有三个方法：`setData(points)`，参数是 `{ x: number; y: number }` 组成的数组，不会修改这个数组；`on(event, handler)`，`event` 是 `'click'` 时处理函数收到被点击的点，是 `'resize'` 时收到新的宽度和高度，返回一个取消监听的函数；`destroy()`；
+- `Chart` 有三个方法：`setData(points)`，参数是 `{ x: number; y: number }` 组成的数组，不会修改这个数组；`on(event, handler)`，`event` 是 `'click'` 时处理函数收到被点击的点，是 `'resize'` 时收到两个参数：新的宽度和高度（都是数字），返回一个取消监听的函数；`destroy()`；
 - **具名导出** `version`（字符串）和 `themes`（主题名的数组，使用者不应该修改它）；
 - 同时导出类型 `Point`、`ChartOptions`、`Chart`，供使用者 `import type`。
 

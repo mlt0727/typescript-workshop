@@ -38,7 +38,7 @@
     - text: "`'light'`"
       explain: 展开不会跳过值为 `undefined` 的属性。需要跳过时，用解构默认值或 `??`。
     - text: TypeScript 报错
-      explain: 这段代码类型检查可以通过。
+      explain: "这段代码能通过类型检查：两个展开之间互相覆盖是允许的。正文里报 TS2783 的是 `{ fontSize: 18, ...defaults }` 这种写法——直接写出的属性一定会被后面的展开覆盖。"
 - id: array-destructuring-type
   type: single
   prompt: "在本平台中，`const list: number[] = [1, 2]; const [first] = list;` 之后，`first` 的类型是什么？"

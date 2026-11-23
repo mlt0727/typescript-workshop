@@ -5,7 +5,7 @@ title: 把定时器包装成 Promise
 实现两个基于 `setTimeout` 的工具函数：
 
 - `delay(ms, value)`：返回一个 Promise，`ms` 毫秒后兑现为 `value`。它是泛型函数：`delay(100, 'ok')` 的类型是 `Promise<string>`。
-- `failAfter(ms, message)`：返回一个 Promise，`ms` 毫秒后以 `new Error(message)` 拒绝。它永远不会兑现，所以类型是 `Promise<never>`。
+- `failAfter(ms, message)`：返回一个 Promise，`ms` 毫秒后以 `new Error(message)` 拒绝；调用 `failAfter` 时不能直接抛出错误。它永远不会兑现，所以类型是 `Promise<never>`。
 
 :::files{role=starter}
 ```ts file=delay.ts

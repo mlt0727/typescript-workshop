@@ -7,7 +7,7 @@ title: 用 typeof 区分字符串和数字
 - 字符串：返回 `字符串，长度 N`，`N` 是字符串长度（`value.length`）；
 - 数字：返回 `数字，两倍是 N`，`N` 是 `value * 2`。
 
-例如 `describeValue('abc')` 返回 `'字符串，长度 3'`，`describeValue(21)` 返回 `'数字，两倍是 42'`。可以用 `+` 拼接字符串，例如 `'长度 ' + 3`。
+例如 `describeValue('abc')` 返回 `'字符串，长度 3'`，`describeValue(21)` 返回 `'数字，两倍是 42'`。可以用 `+` 把字符串和数字拼接起来，例如 `'长度 ' + 3` 得到 `'长度 3'`。
 
 :::files{role=starter}
 ```ts file=describe.ts

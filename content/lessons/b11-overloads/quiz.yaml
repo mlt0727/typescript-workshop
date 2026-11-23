@@ -20,13 +20,13 @@
       explain: 符合第二个重载签名。
 - id: union-argument
   type: single
-  prompt: "`function f(x: string): number;`、`function f(x: number): string;` 之后，用 `string | number` 类型的值调用 `f` 会怎样？"
+  prompt: "`f` 有两个重载签名：`function f(x: string): number;` 和 `function f(x: number): string;`。用 `string | number` 类型的值调用 `f` 会怎样？"
   options:
     - text: 报错：没有匹配的重载（TS2769）
       correct: true
       explain: 重载逐个匹配，联合类型既不完全符合第一个，也不完全符合第二个。需要再加一个接受联合类型的签名。
     - text: 返回 `number | string`
-      explain: TypeScript 不会自动合并重载的结果。
+      explain: TypeScript 不会把几个重载签名合并起来考虑。它逐个尝试，哪个签名都不接受整个联合，结果是报错。
     - text: 使用实现签名
       explain: 实现签名对调用方不可见。
 - id: prefer-union
@@ -35,7 +35,7 @@
   options:
     - text: "一个签名 `len(x: string | unknown[]): number`"
       correct: true
-      explain: 返回类型不随参数变化时，联合类型参数更简单，也能接受联合类型的参数。这是 Handbook 的建议。
+      explain: "返回类型不随参数变化时，联合类型参数更简单；调用方手里的值是 `string | unknown[]` 类型时也能直接传入。这是 Handbook 的建议。"
     - text: 保持两个重载
       explain: 两个重载让 `len(someStringOrArray)` 这种调用无法通过检查，没有带来任何好处。
     - text: "改成 `len(x: any): number`"

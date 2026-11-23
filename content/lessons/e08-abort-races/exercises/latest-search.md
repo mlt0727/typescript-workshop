@@ -2,11 +2,11 @@
 kind: task
 title: 只显示最新的搜索结果
 ---
-实现 `createSearcher(search, onResults)`，返回一个函数 `run(query)`。每次调用 `run(query)`：
+起始代码每次都把结果直接交给 `onResults`，谁最后完成就显示谁。改写 `createSearcher(search, onResults)`，它返回一个函数 `run(query)`。每次调用 `run(query)`：
 
 1. 先取消**上一次**还没结束的搜索（调用它的 `AbortController` 的 `abort()`），再为这一次新建一个 `AbortController`，调用 `search(query, signal)`；
 2. 只有**最新**一次调用的结果才传给 `onResults(query, results)`。注意：有些 `search` 实现会忽略 `signal`，被取消后仍然返回结果，这些过时的结果也必须丢弃；
-3. `run` 返回的 Promise：这次调用被更新的调用取代后，它的任何结果或错误都被忽略，Promise 正常兑现；如果这次是最新的调用而 `search` 被拒绝，就以同样的原因拒绝。
+3. `run` 返回的 Promise：这次调用被之后的调用取代后，它的任何结果或错误都被忽略，Promise 正常兑现；如果这次是最新的调用而 `search` 被拒绝，就以同样的原因拒绝。
 
 :::files{role=starter}
 ```ts file=searcher.ts

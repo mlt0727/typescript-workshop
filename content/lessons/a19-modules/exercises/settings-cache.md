@@ -2,13 +2,15 @@
 kind: challenge
 title: 只解析一次的设置
 ---
-`settings.ts`（只读）提供了设置的类型 `Settings` 和设置文本 `RAW_SETTINGS`。在 `load.ts` 中实现三个函数：
+`settings.ts`（只读）提供了设置的类型 `Settings` 和设置文本 `RAW_SETTINGS`。起始代码的 `loadSettings` 每次调用都重新解析，`resetSettings` 还是空的，开头的 `import` 也有一处 TypeScript 报错。改写 `load.ts`，让三个函数做到：
 
 - `loadSettings()`：第一次调用时用 `JSON.parse` 解析 `RAW_SETTINGS` 并缓存结果；之后的调用**直接返回同一个对象**，不再解析。
 - `parseCount()`：返回到目前为止实际调用 `JSON.parse` 的次数（供测试检查）。
 - `resetSettings()`：清除缓存，下一次 `loadSettings()` 会重新解析；`parseCount()` 继续累加，不清零。
 
-缓存要放在模块顶层，这样无论哪个文件导入 `load.ts`，用到的都是同一份缓存。（这里的设置文本由程序自己提供，可以信任；来自外部的数据需要运行时校验，见 a02 和 E 阶段。）
+缓存要放在模块顶层，这样无论哪个文件导入 `load.ts`，用到的都是同一份缓存。（这里的设置文本由程序自己提供，可以信任；来自外部的数据需要运行时校验，a02 讲过原因，E 阶段会讲具体做法。）
+
+如果 `return` 那一行报 TS2322（`Settings | null` 不能赋给 `Settings`）：`JSON.parse` 返回的是 `any`，把它直接赋给缓存变量之后，TypeScript 仍然认为这个变量可能是 `null`。先把解析结果赋给一个带类型注解的 `const`（a02 的写法），再把它存入缓存。不要用 `!` 或 `as` 让报错消失，提交时不会通过。
 
 :::files{role=support}
 ```ts file=settings.ts readonly
@@ -100,11 +102,11 @@ expectTypeOf(loadSettings).returns.toEqualTypeOf<Settings>();
 :::
 
 :::hint{level=1}
-在模块顶层增加一个变量保存缓存，类型是 `Settings | null`（`null` 表示还没有缓存）。`loadSettings` 只在缓存为 `null` 时解析。别忘了 TypeScript 报的导入错误。
+在模块顶层增加一个变量保存缓存，类型是 `Settings | null`（`null` 表示还没有缓存）。`loadSettings` 只在缓存为 `null` 时解析。开头的 `import` 报错，是因为 `Settings` 只用作类型。
 :::
 
 :::hint{level=2}
-`let cached: Settings | null = null;`。`loadSettings` 里：`if (cached === null) { const parsed: Settings = JSON.parse(RAW_SETTINGS); count++; cached = parsed; } return cached;`。先赋给带类型注解的 `parsed` 再存入 `cached`，是因为直接把 `JSON.parse` 的结果（`any`）赋给 `cached` 时，TypeScript 不会因此认为它已经不是 `null` 了。`resetSettings` 把 `cached` 设回 `null`。
+导入改成 `import { RAW_SETTINGS, type Settings } from './settings';`。模块顶层加一行 `let cached: Settings | null = null;`。`loadSettings` 里：`if (cached === null) { const parsed: Settings = JSON.parse(RAW_SETTINGS); count++; cached = parsed; } return cached;`。先赋给带类型注解的 `parsed` 再存入 `cached`，是因为直接把 `JSON.parse` 的结果（`any`）赋给 `cached` 时，TypeScript 不会因此认为它已经不是 `null` 了。`resetSettings` 把 `cached` 设回 `null`。
 :::
 
 :::explanation

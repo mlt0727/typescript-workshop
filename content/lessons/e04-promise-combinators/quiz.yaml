@@ -4,7 +4,7 @@
   options:
     - text: "`Promise.all` 在 10 毫秒时以 `b` 的原因被拒绝；`a` 和 `c` 继续运行，但它们的结果不会被使用"
       correct: true
-      explain: 组合方法不会取消其他操作。需要真正停止请求时，要用 `AbortController`（e08）。
+      explain: 组合方法不会取消其他操作。需要真正停止请求时，要用 `AbortController`（e08 会讲）。
     - text: "`Promise.all` 等 `a` 和 `c` 完成后，在 1 秒时被拒绝"
       explain: "`Promise.all` 一遇到拒绝就立刻被拒绝，不再等待。"
     - text: "`Promise.all` 在 10 毫秒时被拒绝，同时 `a` 和 `c` 被取消"

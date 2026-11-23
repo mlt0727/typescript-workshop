@@ -2,7 +2,7 @@
 kind: task
 title: 给商品和购物车项定义类型
 ---
-`shop.ts` 中的两个函数用到了 `Product` 和 `CartItem` 两个类型，但它们还没有定义，TypeScript 报错找不到名字。定义并**导出**这两个类型：
+`shop.ts` 中的两个函数用到了 `CartItem` 类型，但它还没有定义，TypeScript 报错找不到这个名字（Cannot find name）。`CartItem` 里的商品又要用到另一个类型 `Product`。在 `shop.ts` 里定义并**导出**这两个类型：
 
 - `Product`：`id`（字符串）、`name`（字符串）、`price`（数字，单位为分）；
 - `CartItem`：`product`（一个 `Product`）、`quantity`（数字）。

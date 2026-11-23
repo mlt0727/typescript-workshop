@@ -9,7 +9,7 @@ timeoutMs: 30000
 1. 用 `useActionState(action, initialState)` 连接表单：`<form action={…}>`，表单的可访问名称是“新建待办”。两个输入框：标签是“标题”（`name="title"`）和“截止日期”（`name="due"`，`type="date"`）；一个提交按钮；
 2. **提交期间**：按钮加上 `aria-disabled="true"`（不用 `disabled`：获得焦点的按钮被禁用时，焦点会掉到 `<body>`，e07），文字是“保存中…”；这时再次提交要被忽略：在表单的 `onSubmit` 中调用 `event.preventDefault()`，React 就不会调用 action。其他时候没有 `aria-disabled`，文字是“保存”；
 3. **显示的值**：两个输入框都不受控，`defaultValue` 是 `state.values` 中对应的值。React 在 action 完成之后会**重置表单**，输入框回到 `defaultValue`：这样出错时显示的是 action 返回的值（通常就是用户提交的值），保存成功时被清空；
-4. **字段错误**：`state.errors` 中有某个字段的错误时，这个输入框加上 `aria-invalid="true"`，`aria-describedby` 指向显示这条错误信息的元素；没有错误时不加这两个属性，也不显示错误信息；
+4. **字段错误**：`state.errors` 中有某个字段的错误时，这个输入框加上 `aria-invalid="true"`，`aria-describedby` 指向显示这条错误信息的元素（元素的文字就是这条错误信息）；没有错误时不加这两个属性，也不显示错误信息；
 5. **焦点**：**每次** action 返回 `status` 为 `'error'` 的状态时（包括连续两次返回同样的错误），焦点都移到第一个出错的字段（标题在前，截止日期在后）；
 6. **消息**：一个 `role="status"` 的元素一直存在，内容是 `state.message`。
 
@@ -310,7 +310,7 @@ describe('TodoForm', () => {
 
 错误的可访问性和 g15、p2-03 中的一样：`aria-invalid` 让输入框被读作“无效”，`aria-describedby` 让它的说明就是错误信息，焦点移过去，用户马上知道要改哪里。一直存在的 `role="status"` 区域保证屏幕阅读器能听到“已保存”。
 
-替代解把“标签、输入框、错误信息”抽成一个 `Field` 组件，每个字段自己生成错误信息的 `id`。
+另一种写法是把“标签、输入框、错误信息”抽成一个 `Field` 组件，每个字段自己生成错误信息的 `id`。
 :::
 
 :::variant{kind=alt name=field-component}

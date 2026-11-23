@@ -192,7 +192,7 @@ describe('inlinePublicEnv', () => {
 
 练习还省略了两个例外：`process.env.NODE_ENV` 也会被替换成构建时的值；`next.config` 的 `env` 选项中列出的变量总是被写进代码，不管有没有前缀（正文中有说明）。
 
-替代解不用一个大正则，而是用 `indexOf` 逐个找出 `process.env`，再看它前后的字符和后面跟着的写法。
+也可以不用一个大正则，而是用 `indexOf` 逐个找出 `process.env`，再看它前后的字符和后面跟着的写法。
 :::
 
 :::variant{kind=alt name=index-scan}

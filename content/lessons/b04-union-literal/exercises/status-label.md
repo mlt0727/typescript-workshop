@@ -14,6 +14,8 @@ title: 订单状态只能是这四种
 | `'shipped'` | `'已发货'` |
 | `'cancelled'` | `'已取消'` |
 
+起始代码里还藏着一个错误：改完参数类型以后，TypeScript 会把它指出来，请按上表修正。
+
 :::files{role=starter}
 ```ts file=status.ts
 export function statusLabel(status: string): string {
@@ -79,11 +81,11 @@ statusLabel('closed');
 :::
 
 :::hint{level=1}
-`export type OrderStatus = 'pending' | 'paid' | 'shipped' | 'cancelled';`，然后把参数类型改成它。改完以后，TypeScript 会指出起始代码里一个拼写错误的 `case`。
+仿照正文里的 `type Status = …`，用 `export type` 写出四个字面量的联合，再把参数类型从 `string` 改成它。改完以后看一下编辑器里新出现的报错：TypeScript 会指出起始代码里一个拼写错误的 `case`。
 :::
 
 :::hint{level=2}
-把参数类型改成 `OrderStatus` 后，`case 'shiped'` 会报错（这个值不可能出现），改成 `'shipped'`。四种情况都 `return` 了，`default` 分支就可以删掉：TypeScript 知道 `switch` 已经覆盖了所有可能，函数不会走到末尾。
+类型写成 `export type OrderStatus = 'pending' | 'paid' | 'shipped' | 'cancelled';`。把参数类型改成 `OrderStatus` 后，`case 'shiped'` 会报错（这个值不可能出现），改成 `'shipped'`。四种情况都 `return` 了，`default` 分支就可以删掉：TypeScript 知道 `switch` 已经覆盖了所有可能，函数不会走到末尾。
 :::
 
 :::explanation

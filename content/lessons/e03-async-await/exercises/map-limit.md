@@ -7,7 +7,7 @@ title: 限制并发数量
 实现 `mapLimit(items, limit, fn)`：对 `items` 的每个元素调用异步函数 `fn(item, index)`，返回所有结果组成的数组。
 
 - 结果按 `items` 的顺序排列，与完成的先后无关；
-- 任何时刻，正在进行（已经调用、还没完成）的 `fn` 最多 `limit` 个；
+- 任何时刻，正在进行（已经调用、还没完成）的 `fn` 最多 `limit` 个，并且要用满：一开始就同时启动 `limit` 个（元素不足 `limit` 个时全部启动）；
 - 有任务完成时立刻启动下一个，不要等一整批都完成；
 - 任何一个 `fn` 被拒绝时，`mapLimit` 返回的 Promise **立即**以同样的原因被拒绝（不等其他正在进行的任务结束），并且**不再启动**新的任务（已经在进行的无法取消，不用管它们）；
 - `limit` 不是正整数时，返回的 Promise 被拒绝，原因是 `RangeError`；
@@ -176,7 +176,7 @@ describe('mapLimit', () => {
 :::
 
 :::hint{level=2}
-用 `const queue = [...items.entries()]` 得到 `[下标, 元素]` 的数组，工人用 `queue.shift()` 取任务，得到 `undefined` 表示取完了。结果写进 `results[index]`，顺序就不会乱。再用一个 `failed` 变量：工人的 `fn` 被拒绝时把它设为 `true` 再抛出，其他工人每次取任务前先检查它。最后 `await Promise.all(工人们)`：任何一个工人被拒绝，它就被拒绝。
+用 `const queue = [...items.entries()]` 得到 `[下标, 元素]` 的数组，工人用 `queue.shift()`（a10 学过：移除并返回第一个元素）取任务，得到 `undefined` 表示取完了。结果写进 `results[index]`，顺序就不会乱。再用一个 `failed` 变量：工人的 `fn` 被拒绝时把它设为 `true` 再抛出，其他工人每次取任务前先检查它。最后 `await Promise.all(工人们)`：任何一个工人被拒绝，它就被拒绝。
 :::
 
 :::explanation
@@ -189,7 +189,7 @@ describe('mapLimit', () => {
 
 多个工人共用 `queue` 和 `failed`，却不需要加锁：JavaScript 在一个线程上运行代码，两个 `await` 之间的代码不会被打断（e01）。`queue.shift()` 和检查 `failed` 都发生在 `await` 之前，不会有两个工人取到同一个任务。
 
-`queue.shift()` 返回 `[number, T] | undefined`，检查 `undefined` 之后就能安全解构。如果直接用 `items[index]`，在 `noUncheckedIndexedAccess` 下得到 `T | undefined`，而 `T` 本身也可能包含 `undefined`，不能靠检查 `undefined` 来判断“取完了”。
+`queue.shift()` 返回 `[number, T] | undefined`，检查 `undefined` 之后就能安全解构。如果改用一个共享的下标计数器、直接读 `items[index]`，在 `noUncheckedIndexedAccess` 下得到 `T | undefined`，而 `T` 本身也可能包含 `undefined`，不能靠检查 `undefined` 来判断“取完了”。
 
 已经开始的任务无法从外部停止；要真正取消请求，需要 `AbortController`（e08）。
 :::

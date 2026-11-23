@@ -129,12 +129,38 @@ try {
 ```
 - 第 2 行：服务器要 300 毫秒，50 毫秒时超时，原因是 `TimeoutError`。
 - 第 8–9 行：组合的信号中，用户在 20 毫秒时取消，原因是 `AbortError`。
-- e04 的 `withTimeout` 只能让等待提前结束，请求本身仍在进行；`AbortSignal.timeout` 真正中止了请求。
+- e04 编程挑战里写的 `withTimeout` 只能让等待提前结束，请求本身仍在进行；`AbortSignal.timeout` 真正中止了请求。
 :::
 
 ## 让自己的函数支持取消
 
 自己写的异步函数，也可以接受一个可选的 `signal` 参数：把它传给内部的 `fetch`，在耗时的步骤之间用 `signal.throwIfAborted()` 检查是否已被取消（已取消时它会抛出 `signal.reason`）。这样调用方就能用同一种方式取消一整串操作。
+
+:::playground{#own-signal}
+```ts file=main.ts
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function processAll(items: string[], signal?: AbortSignal): Promise<void> {
+  for (const item of items) {
+    signal?.throwIfAborted();
+    await wait(100); // 模拟一个耗时的步骤
+    console.log(`处理完了 ${item}`);
+  }
+}
+
+const controller = new AbortController();
+setTimeout(() => controller.abort(), 250);
+try {
+  await processAll(['a', 'b', 'c', 'd'], controller.signal);
+} catch (err) {
+  console.log('停下了：', err instanceof DOMException ? err.name : err);
+}
+```
+- 第 7 行：每处理一项之前检查一次。第 14 行在 250 毫秒时取消，这时 `c` 正在处理；等它处理完，下一轮开头的检查才发现已被取消，抛出 `AbortError`，`d` 不再处理。
+- 检查只发生在步骤之间，正在进行的 `wait` 不会被打断。如果某一步是 `fetch`，把 `signal` 也传给它，请求就能立即停下。
+:::
 
 ::exercise{#latest-search}
 

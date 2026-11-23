@@ -15,7 +15,7 @@
   options:
     - text: 结构化类型允许一个 User 类型的值在运行时带着更多的属性，TypeScript 不能保证只返回 User 声明过的键
       correct: true
-      explain: 例如把一个多了 password 字段的对象赋给 User 类型的变量是允许的（b02），Object.keys 会把 password 也返回。
+      explain: 例如先把一个多了 password 字段的对象放进变量，再赋给 User 类型的变量，这是允许的（b02），Object.keys 会把 password 也返回。
     - text: TypeScript 的标准库还没有为 Object.keys 写好类型，以后会改成 (keyof T)[]
       explain: 这是有意的设计：(keyof T)[] 会在上面那种情况下给出错误的类型。
     - text: Object.keys 返回的数组可能包含 Symbol 键

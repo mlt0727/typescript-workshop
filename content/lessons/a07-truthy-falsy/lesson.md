@@ -26,7 +26,7 @@ references:
 
 ## falsy 值只有 8 个
 
-放进 `if` 条件、`!`、`&&`、`||` 的值会被转换成布尔值。转换成 `false` 的值叫 **falsy**，一共只有这些：
+`if` 的条件、`!`、`&&`、`||` 都要判断一个值算“真”还是“假”，判断时会把它转换成布尔值。转换成 `false` 的值叫 **falsy**，一共只有这些：
 
 `false`、`0`、`-0`、`0n`（bigint 的零）、`''`（空字符串）、`null`、`undefined`、`NaN`
 
@@ -50,7 +50,7 @@ console.log(!!name, !name);
 
 ## 真假检查与收窄
 
-`if (value)` 会同时排除 `null`、`undefined` 和其他所有 falsy 值。TypeScript 理解这一点，并据此收窄类型：
+直接拿一个值当条件（`if (value)`、`if (!value)`）叫**真假检查**。`if (value)` 会同时排除 `null`、`undefined` 和其他所有 falsy 值。TypeScript 理解这一点，并据此收窄类型：
 
 :::playground{#truthy-narrowing}
 ```ts file=main.ts
@@ -80,7 +80,7 @@ console.log(stockLabel(5), stockLabel(null), stockLabel(0));
 
 ## && 与 || 返回的是值
 
-`&&` 和 `||` 不一定返回 `true`/`false`，而是返回两边中的一个：
+`&&` 和 `||` 不一定返回 `true`/`false`，而是返回两边中的一个（a06 提过，这和 Python 的 `and`/`or` 一样）：
 
 - `a && b`：`a` 是 falsy 就返回 `a`，否则返回 `b`。
 - `a || b`：`a` 是 truthy 就返回 `a`，否则返回 `b`。
@@ -109,7 +109,7 @@ console.log(enabled && loud('右边'));
 - 示例里先把值放进带类型注解的变量。如果直接写 `'猫' && '狗'`，TypeScript 会报 TS2872（“这种表达式永远是 truthy”），因为结果在写代码时就已经确定了。
 :::
 
-用 `||` 设默认值时会吞掉 `0` 和 `''`，a08 会讲专门为此设计的 `??`。
+`||` 常被用来设默认值：`a || 默认值` 在 `a` 是 falsy 时得到默认值。但 `0` 和 `''` 也是 falsy，会被一起换成默认值（上面的 `zero || 42` 就是这样）。a08 会讲专门为此设计的 `??`。
 
 ## TypeScript 能发现的“永远为真”
 
@@ -125,8 +125,8 @@ if (isWeekend) {
   console.log('今天是周末');
 }
 ```
-- 第 5 行少了 `(…)`：判断的是“函数存不存在”，而函数永远存在。TypeScript 报 TS2774。
-- 运行一下，无论哪天都会输出“今天是周末”。改成 `isWeekend(3)` 再试试。
+- 第 5 行少了 `(…)`：条件里放的是 `isWeekend` 这个函数本身，而不是它的返回值。函数不在那 8 个 falsy 值里，是 truthy，所以条件永远成立。TypeScript 报 TS2774。
+- 运行一下：总会输出“今天是周末”。把条件改成 `isWeekend(3)`（3 代表星期三）再运行：报错消失，也不再有输出。
 :::
 
 ::exercise{#is-blank}

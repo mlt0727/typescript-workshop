@@ -145,11 +145,11 @@ createRoot(container).render(<App />);
 
 ## 怎样选择 key
 
-- **用数据本身的 id**：数据库的主键、服务器返回的 `id`、本地生成数据时（例如新增一条待办）同时生成的 id（`crypto.randomUUID()`，或者一个递增的计数器）。
+- **用数据本身的 id**：数据库的主键、服务器返回的 `id`、本地生成数据时（例如新增一条待办）同时生成的 id（例如用浏览器内置的 `crypto.randomUUID()` 生成一个随机的唯一字符串，或者用一个递增的计数器）。
 - key 只需要在**同一个列表的兄弟元素之间**唯一，不同列表可以重复。
 - 不要在渲染时生成 key：`key={Math.random()}` 或 `key={crypto.randomUUID()}` 每次渲染都不一样，React 会以为所有项都是新的，每次都销毁重建，state 全部丢失，性能也很差。
 - **下标**只在列表永远不会重新排序、筛选、在中间插入或删除时才安全。只要有一种情况可能发生，就用 id。
-- 一项需要渲染成多个并列的元素时（例如 `<dt>` 和 `<dd>`），用带 key 的 `<Fragment key={item.id}>`。简写的 `<>` 不能写 key。
+- 一项需要渲染成多个并列的元素时（例如 `<dt>` 和 `<dd>`），用带 key 的 `<Fragment key={item.id}>`（`Fragment` 要先从 `'react'` 导入：`import { Fragment } from 'react';`）。简写的 `<>` 不能写 key。
 
 另外，`key` 是给 React 用的，**不会**作为 prop 传给组件：`TaskRow` 的参数里读不到 `key`。组件需要 id 时，另外传一个 prop，例如 `<TaskRow key={task.id} id={task.id} />`。
 

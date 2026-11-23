@@ -97,7 +97,7 @@ console.log(await response.text());
 第 3 到 7 步的顺序和 `fake-server.ts` 一样，项目 2 的客户端看到的就是同样的回答。415 和 400 是新的：假的服务器只会收到自己的客户端发来的请求，真的服务器会收到任何请求。要求 `Content-Type: application/json` 有两个好处：
 
 - **回答更明确**：实测 `curl -d '{"title":"上线"}'` 不加 `-H 'Content-Type: application/json'` 时，curl 默认发送 `application/x-www-form-urlencoded`，接口返回 415，调用的人马上知道哪里不对；
-- **多一层防护**：`text/plain` 和表单格式的请求是“简单请求”，别的网站的页面可以直接发过来，浏览器不先预检（e11）；`application/json` 的请求跨源时必须先通过预检。Route Handler 没有 h05 中 Server Function 那样的 `Origin` 检查，这是防止跨站请求伪造（CSRF）的一层保护（认证之后还需要 h09 中的那些措施）。
+- **多一层防护**：`text/plain` 和表单格式的请求是“简单请求”，别的网站的页面可以直接发过来，浏览器不先预检（e11）；`application/json` 的请求跨源时必须先通过预检。Route Handler 没有 h05 中 Server Function 那样的 `Origin` 检查，要求 JSON 就成了防止跨站请求伪造（CSRF）的一层保护（认证之后还需要 h09 中的那些措施）。
 
 勾选任务的接口（`PATCH /api/projects/:projectId/tasks/:taskId`，`{ "done": true }`）的写法和添加任务一样：同样的检查顺序，写入冲突时同样重试。
 
@@ -140,7 +140,7 @@ export async function GET(_request: Request, ctx: RouteContext<'/api/projects/[p
 
 两个细节：
 
-- **前提条件先于请求体检查**：RFC 9110 规定，前提条件在正常的检查之后、处理请求体之前检查：版本不对时，请求体是什么都没有意义。只看请求头就能发现的问题（415）和项目不存在（404）先回答，然后是 428/412，再解析请求体（400、422），最后是业务规则（409）；
+- **前提条件先于请求体检查**：RFC 9110 规定，前提条件在常规的检查（例如项目是否存在）之后、执行修改之前检查。版本不对时，请求体是什么都没有意义。只看请求头就能发现的问题（415）和项目不存在（404）先回答，然后是 428/412，再解析请求体（400、422），最后是业务规则（409）；
 - **服务器写入时还要再比较一次**：读取项目、检查 `If-Match`、写入之间，别的请求也可能写入。所以存储的 `replace(next, expectedVersion)` 只在保存的版本仍然是 `expectedVersion` 时才写入（h07 的乐观并发），失败时同样返回 412。
 
 ## 服务器能不能自己重试

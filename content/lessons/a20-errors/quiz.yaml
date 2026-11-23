@@ -6,9 +6,9 @@
       correct: true
       explain: 字符串、数字、对象都能被 `throw`，TypeScript 也不跟踪函数会抛出什么，所以只能是 `unknown`，使用前要检查（通常用 `instanceof Error`）。
     - text: "`Error`，因为只有 Error 能被抛出"
-      explain: "`throw '出错了'` 也是合法的 JavaScript。"
+      explain: "任何值都能被抛出，`throw '出错了'` 也是合法的 JavaScript，所以 TypeScript 不能认定 `err` 是 `Error`。"
     - text: "`any`，可以直接读取 `message`"
-      explain: 关闭 `useUnknownInCatchVariables` 时是 `any`；开启 `strict` 时是 `unknown`。
+      explain: 只有关闭 `useUnknownInCatchVariables` 时才是 `any`。`strict` 包含这个选项，所以 `err` 是 `unknown`，不能直接读取 `message`。
 - id: finally-order
   type: single
   prompt: |
@@ -41,7 +41,7 @@
       correct: true
       explain: JavaScript 只允许一个 `catch` 子句，按类型区分要自己判断。
     - text: "写两个 `catch`：`catch (err: RangeError)` 和 `catch (err)`"
-      explain: 这是 Java 风格的写法，JavaScript 不支持多个 `catch`，TypeScript 也不允许给 `catch` 变量注解为 `unknown`/`any` 以外的类型。
+      explain: 这是 Java 风格的写法。JavaScript 不支持多个 `catch`；`catch` 变量的类型注解也只能写 `unknown` 或 `any`，写 `RangeError` 会报错。
     - text: 在函数签名中声明 `throws RangeError`
       explain: JavaScript 和 TypeScript 都没有受检异常，也没有 `throws` 声明。
 - id: throw-or-null
@@ -53,6 +53,6 @@
       explain: 找不到是预料之中的结果，返回 `null` 后 TypeScript 会强迫调用方处理。
     - text: 解析用户在输入框里填的年龄，填写的内容无效
       correct: true
-      explain: 用户输入无效很常见，调用方通常会显示提示，返回 `null` 更直接（a05 的 parseAge）。
+      explain: 用户输入无效很常见，调用方通常会显示提示，返回 `null` 更直接（a05 的 `parseAge` 就是这样做的）。
     - text: 程序自带的配置文件格式损坏
       explain: 这不应该发生，当前函数也无法修复，抛出错误让上层统一处理更合适。

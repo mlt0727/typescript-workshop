@@ -31,7 +31,7 @@
     - text: "`0`"
       explain: "`0` 是 falsy，但不是 null/undefined，`??` 返回 `0` 本身。"
     - text: "`''`（空字符串）"
-      explain: 空字符串同样只是 falsy，`??` 原样返回它。
+      explain: 空字符串是 falsy，但不是 null/undefined，`??` 原样返回它。
     - text: "`NaN`"
       explain: "`NaN` 是 falsy，但不是 null/undefined，`??` 返回 `NaN`。"
 - id: short-circuit

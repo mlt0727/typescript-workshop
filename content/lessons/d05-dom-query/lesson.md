@@ -37,7 +37,7 @@ references:
 
 `querySelector` 的返回类型取决于你传入的字符串：
 
-- 如果正好是一个**标签名**，例如 `'input'`、`'button'`，TypeScript 能查到对应的类型：`HTMLInputElement | null`；
+- 如果正好是一个**标签名**，TypeScript 能查到对应的类型：`'input'` 得到 `HTMLInputElement | null`，`'button'` 得到 `HTMLButtonElement | null`；
 - 其他选择器，例如 `'#name'`、`'input.name'`、`'.card button'`，TypeScript 无法从字符串推断出元素类型，结果是笼统的 `Element | null`。
 
 每种 HTML 元素都有对应的类型（接口）：`<input>` 是 `HTMLInputElement`，`<select>` 是 `HTMLSelectElement`，`<ul>` 是 `HTMLUListElement`，`<p>` 是 `HTMLParagraphElement`……名字不必死记：把鼠标停在 `document.querySelector('select')` 上，就能看到它的类型名。
@@ -90,7 +90,7 @@ input.value; // 这里 input 已经是 HTMLInputElement
 
 为什么不用下面两种更短的写法？
 
-- `document.querySelector('#name') as HTMLInputElement`，或者 `document.querySelector<HTMLInputElement>('#name')`：前者是**类型断言**（b16），后者（泛型参数）在效果上也是一样：TypeScript 照单全收，不做任何检查。如果 `#name` 其实是一个 `<div>`，或者根本不存在，错误要到运行时才出现。本课程的判题规则把它们都当作断言拒绝。
+- `document.querySelector('#name') as HTMLInputElement`，或者 `document.querySelector<HTMLInputElement>('#name')`：前者是**类型断言**（b16），后者给 `querySelector` 传了泛型参数，效果和断言一样：TypeScript 照单全收，不做任何检查。如果 `#name` 其实是一个 `<div>`，或者根本不存在，错误要到运行时才出现。本课程的判题规则把它们都当作断言拒绝。
 - `document.querySelector('#name')!`：非空断言，同样只是让编译器闭嘴。
 
 :::playground{#assertion-danger run=error}

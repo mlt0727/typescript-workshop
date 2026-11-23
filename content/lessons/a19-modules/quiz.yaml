@@ -6,7 +6,7 @@
       correct: true
       explain: 只用作类型的导入要标明 `type`，编译时整行会被删除。也可以写成 `import { type User } from './user';`。
     - text: "`import { User } from './user';`"
-      explain: 开启 `verbatimModuleSyntax` 时，这样导入类型会报 TS1484。
+      explain: 开启 `verbatimModuleSyntax` 时，这样导入类型会报 TS1484。没有标明 `type` 的导入会原样留在编译后的 JavaScript 里，而运行时并没有 `User` 这个导出。
     - text: "`import User from './user';`"
       explain: 不带花括号是导入默认导出，而 `User` 是具名导出。
 - id: runs-once
@@ -29,7 +29,7 @@
       correct: true
       explain: 默认导出不写花括号，导入方可以自己起名字。
     - text: "`import { hello } from './greet';`"
-      explain: 花括号用于具名导出，而且名字必须和导出的名字一致。
+      explain: "花括号导入的是具名导出，而这里的 `greet.ts` 只有默认导出。写成 `import { greet }` 也不行：默认导出不会同时成为名叫 `greet` 的具名导出。"
     - text: "`import { default } from './greet';`"
       explain: "`default` 是关键字，不能这样作为变量名导入（需要写成 `import { default as hello }`）。"
 - id: import-binding

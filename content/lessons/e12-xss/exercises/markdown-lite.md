@@ -3,7 +3,7 @@ kind: challenge
 title: 安全地渲染简化的 Markdown
 mode: dom
 ---
-评论区要支持一种很小的格式。实现 `renderMarkdownLite(source)`，把用户输入的文字渲染成一个 `DocumentFragment`，**只能**产生下面这几种元素：
+评论区要支持一种很小的格式。改写 `renderMarkdownLite(source)`，把用户输入的文字渲染成一个 `DocumentFragment`，**只能**产生下面这几种元素：
 
 1. **段落**：只含空白的行（包括空行）分隔段落，每个段落是一个 `<p>`。开头、结尾和连续的空行都不产生空段落。换行可能是 `\n`，也可能是 `\r\n`；
 2. **换行**：同一个段落中的多行之间插入 `<br>`，行内的文字（包括首尾的空格）原样保留；
@@ -180,7 +180,7 @@ describe('用户输入只能是文字', () => {
 :::
 
 :::hint{level=1}
-不要拼 HTML 字符串。先把输入按行拆开（`split(/\r?\n/)`），遇到空白行就把攒下的行变成一个 `<p>`；每一行再交给一个函数处理行内的格式。所有用户的文字都通过 `append(字符串)` 或 `textContent` 放进去，结构用 `createElement` 创建。
+不要拼 HTML 字符串。用 `document.createDocumentFragment()` 创建一个空的片段作为结果；然后把输入按行拆开（`split(/\r?\n/)`），遇到空白行就把攒下的行变成一个 `<p>`；每一行再交给一个函数处理行内的格式。所有用户的文字都通过 `append(字符串)` 或 `textContent` 放进去，结构用 `createElement` 创建。
 :::
 
 :::hint{level=2}

@@ -31,7 +31,7 @@ references:
 
 `<label>` 把一段文字和一个控件关联起来。关联的方式有两种：用 `for` 属性写出控件的 `id`，或者把控件直接放在 `<label>` 里面。关联之后：
 
-- 点击标签文字，控件就获得焦点（复选框会被勾选），点击区域更大；
+- 点击标签文字，控件就获得焦点（复选框会切换勾选状态），点击区域更大；
 - 标签文字成为控件的**可访问名称**，屏幕阅读器会读出“邮箱，编辑框”；
 - 测试可以用 `getByLabelText('邮箱')` 找到它。
 
@@ -94,7 +94,7 @@ input:focus { outline: 3px solid #0a6cff; }
 
 每个控件的 `name` 属性决定了提交时这项数据的**键**，`value` 是值。单选按钮和复选框的 `value` 要自己写出来，否则勾选后提交的值是字符串 `"on"`。
 
-收集用户个人信息的输入框，还应该写上 `autocomplete` 属性说明它的用途，例如 `autocomplete="email"`、`"name"`、`"new-password"`（注册时的新密码）、`"current-password"`（登录时的密码）。浏览器和密码管理器据此自动填写，这也是 WCAG 2.2 的要求之一。
+收集用户个人信息的输入框，还应该写上 `autocomplete` 属性说明它的用途，例如 `autocomplete="email"`、`"name"`、`"new-password"`（注册时的新密码）、`"current-password"`（登录时的密码）。浏览器和密码管理器据此自动填写，这也是 WCAG 2.2（Web 内容可访问性指南，d04 会介绍）的要求之一。
 
 :::playground{#controls}
 ```html file=index.html
@@ -143,7 +143,7 @@ form.addEventListener('submit', (event) => {
 ```
 - 点击“提交”，看输出：每一项都是“`name` = `value`”。两个勾选的复选框同名，所以 `topics` 出现了两次；没有勾选的复选框根本不会出现；而空着的“备注”会出现，值是空字符串（`note =`）。
 - 改几个选项再提交一次。然后点击“恢复默认”：所有控件回到页面加载时的状态（`checked`、`selected`、`value` 属性指定的初始值）。
-- `main.ts` 中的 `event.preventDefault()` 阻止了浏览器默认的提交行为（把数据发送出去并跳转页面）。处理表单事件的细节在 d09 讲。
+- `main.ts` 现在不必细读：它在表单提交时用 `new FormData(form)` 收集表单数据，逐项打印出来。其中 `event.preventDefault()` 阻止了浏览器默认的提交行为（把数据发送出去并跳转页面）。阻止默认行为在 d08 讲，用 `FormData` 读取表单数据在 d09 讲。
 :::
 
 ## 按钮的 type

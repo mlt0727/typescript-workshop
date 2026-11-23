@@ -4,7 +4,7 @@ title: 方法里的回调
 ---
 `priceList.withTax()` 应该返回每个价格加上税之后的新数组：`价格 × (1 + taxRate)`，再用 `Math.round` 取整。例如税率 `0.1` 时，`[100, 250]` 得到 `[110, 275]`。
 
-起始代码在 `map` 里用了普通函数作为回调，TypeScript 报了 TS2683。修好它，让 `withTax` 使用对象自己的 `taxRate`（测试会修改 `taxRate`，所以不能把税率写死）。
+起始代码在 `map` 里用了普通函数作为回调，TypeScript 报了 TS2683。修好它，让 `withTax` 使用对象自己的 `taxRate`（测试会修改 `taxRate` 和 `prices`，所以不能把税率或价格写死）。
 
 :::files{role=starter}
 ```ts file=prices.ts
@@ -77,6 +77,8 @@ test('不修改原价格数组', () => {
 箭头函数没有自己的 `this`，它使用定义位置外层的 `this`，也就是 `withTax` 方法的 `this`。通过 `priceList.withTax()` 调用时，那正是 `priceList`。
 
 另一种写法是先把需要的值取出来：`const rate = this.taxRate;`，回调里只用 `rate`，回调就完全不依赖 `this` 了。
+
+如果保留普通函数，只给它加上 `.bind(this)`，或者把 `this` 作为 `map` 的第二个参数传进去，运行时也能得到正确的结果，但 TypeScript 仍然不知道回调里 `this` 的类型，TS2683 不会消失。
 :::
 
 :::variant{kind=alt name=capture-rate}

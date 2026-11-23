@@ -17,7 +17,7 @@
   options:
     - text: "`3 1`"
       correct: true
-      explain: 每次调用 `makeCounter` 都创建一个新的 `count`，`a` 和 `b` 各自记住自己的那一个。
+      explain: 每次调用 `makeCounter` 都创建一个新的 `count`，`a` 和 `b` 各自记住自己的那一个。`a` 是第三次被调用，返回 `3`；`b` 是第一次，返回 `1`。
     - text: "`3 4`"
       explain: "`a` 和 `b` 不共享 `count`，因为它们来自两次不同的调用。"
     - text: "`1 1`"
@@ -36,7 +36,7 @@
   options:
     - text: "`价格：20`"
       correct: true
-      explain: 闭包捕获的是变量本身，调用时读到变量当时的值。
+      explain: 闭包捕获的是变量本身。调用 `show()` 时才读取 `price`，这时它已经被改成 `20`。
     - text: "`价格：10`"
       explain: 闭包不会在创建时保存值的快照。
     - text: TypeScript 报错：闭包不能使用后来被修改的变量

@@ -2,14 +2,14 @@
 kind: challenge
 title: HTTP 状态码表
 ---
-不用 `enum`，实现一张 HTTP 状态码表，以及配套的查询函数。
+不用 `enum`，实现一张 HTTP 状态码表，以及配套的查询函数。起始代码里的表只有两行、没有 `as const`，类型也只是 `number`：先按第 1–3 条把它们改好，再按第 4–6 条写出三个函数（都要导出）。
 
 1. 导出常量对象 `HttpStatus`（`as const`）：`OK: 200`、`Created: 201`、`BadRequest: 400`、`NotFound: 404`、`ServerError: 500`。
 2. 导出类型 `HttpStatus`：所有状态码数字的联合（`200 | 201 | 400 | 404 | 500`）。
 3. 导出类型 `StatusName`：所有名称的联合（`'OK' | 'Created' | …`）。
-4. `isHttpStatus(code: number): code is HttpStatus`：`code` 是表中的状态码时返回 `true`。
+4. `isHttpStatus(code: number): code is HttpStatus`：`code` 是表中的状态码时返回 `true`，否则返回 `false`。
 5. `statusName(code: HttpStatus): StatusName`：根据状态码返回名称（相当于枚举的反向映射）。
-6. `category(code: HttpStatus): 'success' | 'client-error' | 'server-error'`：2xx 为 `'success'`，4xx 为 `'client-error'`，5xx 为 `'server-error'`。用 `switch` 列出每一个状态码，并用穷尽检查保证以后新增状态码时不会漏掉。
+6. `category(code: HttpStatus): 'success' | 'client-error' | 'server-error'`：2xx 为 `'success'`，4xx 为 `'client-error'`，5xx 为 `'server-error'`。用 `switch` 列出每一个状态码，并用穷尽检查（b09）保证以后新增状态码时不会漏掉。
 
 不允许使用 `enum` 和 `as` 类型断言（`as const` 除外）。
 

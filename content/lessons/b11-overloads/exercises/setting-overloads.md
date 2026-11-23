@@ -2,7 +2,7 @@
 kind: challenge
 title: 按键名返回不同类型的设置
 ---
-浏览器的 `document.createElement('img')` 返回 `HTMLImageElement`，`createElement('a')` 返回 `HTMLAnchorElement`——返回类型取决于传入的字符串。这一题用重载写一个同样风格的设置存储。
+浏览器里用来创建页面元素的函数 `document.createElement`，返回类型取决于传入的字符串：`createElement('img')` 返回 `HTMLImageElement`（图片元素），`createElement('a')` 返回 `HTMLAnchorElement`（链接元素）。这一题用重载写一个同样风格的设置存储。
 
 设置有三项：
 
@@ -11,14 +11,20 @@ type Settings = { theme: 'light' | 'dark'; fontSize: number; language: string };
 type SettingKey = 'theme' | 'fontSize' | 'language';
 ```
 
-实现 `createSettings(initial: Settings)`，返回一个对象，带有两个函数：
+改写起始代码里的 `createSettings(initial: Settings)`（现在的 `get`、`set` 没有重载，`set` 还是空的），让它返回一个对象，带有两个函数：
 
 - `get(key)`：用重载描述三种调用：`get('theme')` 返回 `'light' | 'dark'`，`get('fontSize')` 返回 `number`，`get('language')` 返回 `string`。
-- `set(key, value)`：同样用重载，值的类型必须与键对应（`set('fontSize', '16')` 应当报类型错误）。另外在运行时检查：`fontSize` 必须是 8 到 72 之间的整数，否则抛出 `RangeError`；`language` 去掉首尾空格后不能为空，否则抛出 `RangeError`；合法时保存**去掉首尾空格后**的值。`theme` 不是 `'light'` 或 `'dark'` 时也抛出 `RangeError`。
+- `set(key, value)`：同样用重载，值的类型必须与键对应（`set('fontSize', '16')` 应当报类型错误）。
+
+`set` 还要在运行时检查值，不合法时抛出 `RangeError`，原来的设置保持不变：
+
+- `theme`：只能是 `'light'` 或 `'dark'`。重载签名已经限制了它的类型，但类型只在编译时起作用（a02），运行时仍然可能收到别的值。
+- `fontSize`：必须是 8 到 72 之间的整数（包括 8 和 72）。
+- `language`：去掉首尾空格后不能为空；合法时保存**去掉首尾空格后**的值。
 
 `createSettings` 要复制一份 `initial`，之后对 `initial` 的修改不影响设置存储，`set` 也不修改 `initial`。
 
-提示：对象里的函数要有重载，可以先在 `createSettings` 内部用 `function` 声明带重载的 `get` 和 `set`，再把它们放进返回的对象里。
+提示：对象里的函数要有重载，可以先在 `createSettings` 内部用 `function` 声明带重载的 `get` 和 `set`，再把它们放进返回的对象里。`set` 的实现签名要接受三种值，`value` 的类型比较宽（例如 `string | number`），保存之前要用 `typeof` 或 `===` 收窄；和前面的练习一样，不要用类型断言 `as`。
 
 :::files{role=starter}
 ```ts file=settings.ts
@@ -160,9 +166,11 @@ s.get('color');
 :::explanation
 `get` 的三个重载签名把“键”和“返回类型”一一对应起来：调用方传 `'fontSize'` 就得到 `number`，不需要收窄。`set` 的重载签名则把键和值的类型配对，`set('fontSize', '16')` 找不到匹配的签名，在编译期就被拒绝。
 
+实现签名里看不到重载签名的配对关系：`key === 'fontSize'` 成立时，TypeScript 并不知道 `value` 一定是数字，它仍然是 `string | number`，直接赋值会报 TS2322。所以每个分支都先用 `typeof` 或 `===` 把 `value` 收窄再保存，这些判断同时也是运行时检查的一部分。
+
 为什么还要在运行时检查？类型只能保证“是数字”，保证不了“是 8 到 72 之间的整数”；另外，来自外部的数据（例如 `JSON.parse` 的结果）可以绕过类型检查。
 
-浏览器的 `createElement`、`addEventListener` 也能“根据传入的字面量返回不同类型”，效果和这里类似；不过 lib.dom 实际用的是 b15 将要学的泛型写法。b15 学了泛型约束后，可以用 `get<K extends SettingKey>(key: K): Settings[K]` 一个签名表达同样的意思，不需要逐个列出。
+浏览器的 `createElement`（按标签名决定返回类型）和 `addEventListener`（按事件名决定回调收到的事件类型）效果和这里类似；不过 TypeScript 自带的浏览器类型声明（lib.dom）实际用的是 b15 将要学的泛型写法。b15 学了泛型约束后，可以用 `get<K extends SettingKey>(key: K): Settings[K]` 一个签名表达同样的意思，不需要逐个列出。
 :::
 
 :::variant{kind=alt name=switch-based}

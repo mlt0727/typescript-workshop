@@ -6,7 +6,7 @@
       correct: true
       explain: "`typeof null` 也是 `'object'`，所以 `null` 仍然在类型里，使用前还要排除。"
     - text: "`string[]`"
-      explain: 别忘了 `typeof null === 'object'`。
+      explain: "`typeof null` 也是 `'object'`，这个检查没有把 `null` 排除掉。"
     - text: "`object`"
       explain: TypeScript 会保留联合中具体的成员，不会变成笼统的 `object`。
 - id: which-check
@@ -19,7 +19,7 @@
     - text: "`if (pet instanceof Cat)`"
       explain: "`Cat` 是类型别名，运行时不存在，不能用于 `instanceof`（会报错：它只是类型）。"
     - text: "`if (typeof pet === 'Cat')`"
-      explain: "`typeof` 只会返回 `'object'`、`'string'` 等固定的几个值。"
+      explain: "`typeof` 只会返回 `'object'`、`'string'` 等固定的几个值，不会返回类型别名的名字。`Cat` 和 `Dog` 的值得到的都是 `'object'`，区分不了。"
 - id: early-return
   type: single
   prompt: |
@@ -40,7 +40,7 @@
     - text: "`string | undefined`"
       explain: 提前 `return` 会把对应的情况从后续代码中排除。
     - text: "`undefined`"
-      explain: 正好相反。
+      explain: 正好相反：`undefined` 的情况在第 3 行已经返回了，能走到第 5 行的只有 `string`。
 - id: callback-narrowing
   type: single
   prompt: |
@@ -58,6 +58,6 @@
       correct: true
       explain: TypeScript 只在变量之后不再被赋值时，才在回调中保留收窄。这里报的是一个真实的 bug：运行时确实会抛出 `TypeError`。
     - text: TypeScript 从不在回调中保留收窄
-      explain: "`const` 在箭头函数回调中一直保留收窄；TypeScript 5.4 起，参数和 `let` 只要在创建回调后不再被赋值，也会保留。"
+      explain: "不是“从不”：`const` 在箭头函数回调中一直保留收窄；TypeScript 5.4 起，参数和 `let` 只要在创建回调后不再被赋值，也会保留。这里不保留，是因为第 5 行又给 `current` 赋了值。"
     - text: "`setTimeout` 的回调不能访问外部变量"
       explain: 回调可以访问外部变量（a14 的闭包），问题在于变量的值会变。

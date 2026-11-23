@@ -56,7 +56,7 @@ function parseJson<T>(text: string, isT: (value: unknown) => value is T): T | nu
 
 TypeScript 推断类型参数时，默认会把字面量“放宽”：传入 `['S', 'M']`，`T extends readonly string[]` 被推断成 `string[]`。在类型参数前面加上 `const`（TypeScript 5.0 起），推断就会像 `as const` 一样保留字面量，调用方不用自己写 `as const`。
 
-另一个方向的问题是“推断被带偏”。下面的 `withDefault` 希望 `fallback` 必须是 `allowed` 中的一项，但 `T` 同时从两个参数推断，`'c'` 也被加进了 `T`：
+另一个方向的问题是“推断被带偏”。下面的 `withDefaultLoose` 希望 `fallback` 必须是 `allowed` 中的一项，但 `T` 同时从两个参数推断，`'XL'` 也被加进了 `T`；改成 `withDefault` 的写法就能发现这个错误：
 
 :::playground{#inference expect="2345@main.ts:16"}
 ```ts file=main.ts

@@ -132,7 +132,7 @@ createRoot(container).render(<App />);
 
 **state 的类型**：`useState` 根据初始值推断类型。如果 state 可以取几种值，用类型参数写出联合类型，例如 `useState<'idle' | 'saving' | 'saved'>('idle')`；否则 TypeScript 会推断成宽泛的 `string`，拼错状态名也发现不了。
 
-**事件的类型**：内联写的处理函数，参数类型会自动推断。把处理函数提取出来时需要显式写出类型，它们来自 `react` 包，例如 `ChangeEvent<HTMLInputElement>`。和原生 DOM 事件（d07 课）不同，React 事件类型把元素类型作为类型参数，`currentTarget` 已经带有元素类型，可以直接读取 `value`。
+**事件的类型**：内联写的处理函数，参数类型会自动推断。把处理函数提取出来时需要显式写出参数的类型，这些类型从 `react` 包导入，例如 `ChangeEvent<HTMLInputElement>`。和原生 DOM 事件（d07 课）不同，React 事件类型把元素类型作为类型参数，`currentTarget` 已经带有元素类型，可以直接读取 `value`。
 
 :::playground{#typed-events}
 ```tsx file=App.tsx
@@ -175,7 +175,7 @@ const container = document.getElementById('root');
 if (!container) throw new Error('页面缺少 #root');
 createRoot(container).render(<App />);
 ```
-- 把第 16 行的 `'saved'` 改成 `'done'`：TypeScript 立即报错，因为 `'done'` 不在 `Status` 联合类型里。再试着把第 7 行的 `<Status>` 删掉，看看为什么这个错误就消失了。
+- 把第 16 行的 `'saved'` 改成 `'done'`：TypeScript 立即报错，因为 `'done'` 不在 `Status` 联合类型里。再试着把第 7 行的 `<Status>` 删掉：错误消失了，因为没有类型参数时 `status` 被推断成宽泛的 `string`，`'done'` 也成了合法的值。
 - 把鼠标停在 `handleChange` 的 `event.currentTarget` 上：类型是 `EventTarget & HTMLInputElement`。
 :::
 

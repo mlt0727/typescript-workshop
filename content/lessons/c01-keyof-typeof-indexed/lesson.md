@@ -42,7 +42,7 @@ const DEFAULTS = { theme: 'light', fontSize: 16, showHints: true };
 | `keyof 类型` | 对象类型所有键组成的联合类型 | `keyof Settings` 是 `'theme' \| 'fontSize' \| 'showHints'` |
 | `类型[键]` | 这个键对应的值的类型 | `Settings['fontSize']` 是 `number` |
 
-`T[K]` 中的 `K` 可以是联合类型，结果也是联合：`Settings[keyof Settings]` 是所有值的类型 `string | number | boolean`。数组和元组用 `number` 作键，得到元素的类型：`(typeof COLORS)[number]`。
+`T[K]` 中的 `K` 可以是联合类型，结果也是联合：`Settings[keyof Settings]` 是所有值的类型 `string | number | boolean`。数组和元组用 `number` 作键，得到元素的类型，例如下面示例里的 `(typeof COLORS)[number]`。
 
 :::playground{#derive}
 ```ts file=main.ts
@@ -92,12 +92,12 @@ console.log(age + 1, tags.join(','), oops);
 
 ## 两个常见的意外
 
-**索引签名的 `keyof`。**对于 `{ [key: string]: number }` 这样的索引签名，`keyof` 的结果是 `string | number`，而不是 `string`：JavaScript 会把数字键转换成字符串，`obj[0]` 和 `obj['0']` 是同一个属性，所以数字也是合法的键。`{ [key: number]: string }` 的 `keyof` 则是 `number`。而 `keyof Record<string, number>` 是 `string`。
+**索引签名的 `keyof`。**对于 `{ [key: string]: number }` 这样的索引签名，`keyof` 的结果是 `string | number`，而不是 `string`：JavaScript 会把数字键转换成字符串，`obj[0]` 和 `obj['0']` 是同一个属性，所以数字也是合法的键。`{ [key: number]: string }` 的 `keyof` 则是 `number`。而 `keyof Record<string, number>` 是 `string`：`Record` 是一种映射类型（c02 会讲），`keyof` 直接返回它声明的键类型。
 
 **`Object.keys` 返回 `string[]`。**`Object.keys(DEFAULTS)` 的类型不是 `SettingKey[]`，而是 `string[]`。原因是结构化类型（b02）：一个 `Settings` 类型的值在运行时完全可能带着更多的属性（只要它有 `Settings` 要求的那些），TypeScript 不能保证 `Object.keys` 只返回这几个键。要得到确定的键，可以：
 
 - 遍历一个自己写的键列表（例如 `as const` 数组）；
-- 写一个类型守卫（b08）：`(key: string): key is SettingKey => Object.hasOwn(DEFAULTS, key)`。这里要用 `Object.hasOwn`，不能用 `in`：`'toString' in DEFAULTS` 是 `true`，因为 `in` 也会查找原型链上继承来的属性。
+- 写一个类型守卫（b08）：`(key: string): key is SettingKey => Object.hasOwn(DEFAULTS, key)`。这里要用 `Object.hasOwn`（只检查对象自身的属性），不能用 `in`：`'toString' in DEFAULTS` 是 `true`，因为 `in` 也会查找原型链上继承来的属性。
 
 一个关于 `satisfies` 的细节：如果写成 `const DEFAULTS = { …, showHints: true } satisfies Record<string, string | number | boolean>`，推导出的 `showHints` 的类型是字面量 `true` 而不是 `boolean`。上下文类型中的 `boolean` 就是 `true | false` 这两个字面量的联合，于是 `true` 被保留为字面量。之后就不能把这个设置改成 `false` 了。所以这一课的默认值直接写成普通的对象，让 TypeScript 按常规放宽类型。
 
@@ -115,4 +115,4 @@ console.log(age + 1, tags.join(','), oops);
 - **`key: keyof T` 配上返回值 `T[keyof T]`**：返回值成了所有属性类型的联合。用一个类型参数 `K extends keyof T` 把参数和返回值连起来。
 - **以为 `Object.keys(obj)` 的类型是 `(keyof T)[]`**：它是 `string[]`，并且这样设计是有原因的。用键列表或者类型守卫，不要用 `as` 硬转。
 - **用 `in` 判断“是不是自己定义的键”**：`in` 会查到原型链上的 `toString`、`constructor`。用 `Object.hasOwn`。
-- **在类型位置写 `typeof someFunction()`**：类型位置的 `typeof` 只能用于变量和属性；要得到函数返回值的类型，用 c07 的 `ReturnType`。
+- **在类型位置写 `typeof someFunction()`**：类型位置的 `typeof` 只能用于变量和属性；要得到函数返回值的类型，用 c07 会讲的 `ReturnType`。

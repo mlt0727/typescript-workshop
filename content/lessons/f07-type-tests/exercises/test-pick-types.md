@@ -11,7 +11,7 @@ allow: [ts-directive]
 3. `keys` 可以是只读数组（例如 `as const` 得到的）；
 4. `keys` 中只能是 `obj` 的键，否则编译错误；`obj` 必须是对象，否则编译错误。
 
-在 `pick.test-d.ts` 中写类型测试。平台准备了七个“类型写错了”的 `pick.ts`（运行时的行为都一样），你的测试要发现每一个：要么某个 `expectTypeOf` 报错，要么某个 `@ts-expect-error` 下面没有了错误。
+在 `pick.test-d.ts` 中写类型测试。平台准备了七个“类型写错了”的 `pick.ts`（运行时的行为都一样），你的测试要发现每一个：要么测试中出现类型错误（某个 `expectTypeOf` 不成立，或者某个本该能通过编译的调用报错），要么某个 `@ts-expect-error` 下面没有了错误。
 
 :::files{role=support}
 ```ts file=pick.ts readonly
@@ -146,7 +146,7 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pi
 :::
 
 :::explanation
-六个错误的版本运行时完全一样，只有类型不同，所以只有类型测试能发现它们：
+七个错误的版本运行时完全一样，只有类型不同，所以只有类型测试能发现它们：
 
 | 错误的类型 | 发现它的测试 |
 | --- | --- |
@@ -156,6 +156,7 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pi
 | 可选的属性变成必需的 | 有可选属性的类型 + `toEqualTypeOf` |
 | 键可以是任意字符串 | `@ts-expect-error` 加上不存在的键 |
 | 第一个参数不限制为对象 | `@ts-expect-error` 加上 `pick(42, [])` |
+| `keys` 只接受可变的数组 | 用 `as const` 的只读数组调用（这次调用本身报错） |
 
 两类断言互相补充：`toEqualTypeOf` 检查“能通过编译的调用，类型是对的”，`@ts-expect-error` 检查“不该通过编译的调用，确实不能通过”。只写前一类，类型变宽了也发现不了；只写后一类，返回值变成 `any` 也发现不了。
 

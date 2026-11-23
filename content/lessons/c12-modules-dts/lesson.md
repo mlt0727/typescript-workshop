@@ -67,7 +67,7 @@ export declare class Polygon {
 
 （TypeScript 6.0 起，当前文件夹中有 `tsconfig.json` 时，在命令行上直接写文件名会报 TS5112，要加 `--ignoreConfig`，或者把选项写进 `tsconfig.json`。）
 
-更新的选项 `isolatedDeclarations`（TypeScript 5.5 起）要求导出的函数、方法、访问器都写出类型，这样构建工具不需要做类型推断，就能逐个文件地生成 `.d.ts`。对上面的文件实际得到 TS9007（函数需要写返回值类型）、TS9008（方法）和 TS9009（访问器）。
+较新的选项 `isolatedDeclarations`（TypeScript 5.5 起）要求导出的函数、方法、访问器都写出类型，这样构建工具不需要做类型推断，就能逐个文件地生成 `.d.ts`。对上面的文件实际得到 TS9007（函数需要写返回值类型）、TS9008（方法）和 TS9009（访问器）。
 
 ## TypeScript 从哪里找到一个包的类型
 

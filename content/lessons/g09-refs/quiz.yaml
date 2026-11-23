@@ -4,7 +4,7 @@
   options:
     - text: 修改 ref.current 不会触发重新渲染，并且立即就能读到新值
       correct: true
-      explain: ref 适合保存不显示在界面上的值；要显示的数据用 state。
+      explain: 修改 ref.current 只是改了一个对象的属性，React 不会因此重新渲染，但下一行代码就能读到新值；调用 state 的设置函数则会安排一次重新渲染。所以 ref 适合保存不显示在界面上的值，要显示的数据用 state。
     - text: ref 的值在每次渲染时都会重置
       explain: 每次渲染 useRef 返回的都是同一个对象，值会一直保留。会被重置的是普通的局部变量。
     - text: 两者没有区别，ref 只是写法更短

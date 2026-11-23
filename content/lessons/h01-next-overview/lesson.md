@@ -71,7 +71,7 @@ i01 分过三种情况：在浏览器中生成（客户端渲染），构建时�
 | Route Handlers | `app/api/…/route.ts` 导出 `GET`、`POST` 等函数，接收 `Request`、返回 `Response` | h06 |
 | Proxy | 每个请求到达页面之前运行的代码（Next.js 16 之前叫 Middleware） | h09 |
 
-Next.js 16 还有一个重要的变化：新建的项目默认开启 **Cache Components**。开启之后，所有 App Router 的页面都按“静态的外壳加上流式的内容”的方式渲染，构建时会检查每个页面能不能生成静态的外壳（下面实测）。H 阶段都按这个默认的设置来讲。
+Next.js 16 还有一个重要的变化：新建的项目默认开启 **Cache Components**。开启之后，所有 App Router 的页面都按“静态的外壳加上流式的内容”的方式渲染（整个页面都能在构建时生成的，外壳就是整个页面，也就是下面路由表中的 ○），构建时会检查每个页面能不能生成静态的外壳（下面实测）。H 阶段都按这个默认的设置来讲。
 
 ## 在自己的电脑上创建一个项目
 
@@ -88,7 +88,7 @@ npx create-next-app@16.4.2 demo --ts --app --eslint --no-tailwind --no-src-dir -
 - `app/` 中有 `layout.tsx`（所有页面共用的外框）、`page.tsx`（首页）和 CSS；
 - 还有一个 `AGENTS.md`，提醒 AI 编程助手先读 `node_modules/next/dist/docs/` 中随版本附带的文档：这个版本的 API 可能和它们“记得”的不一样。这句话对人也适用，这一课的引用就来自那里。
 
-常用的三个命令：
+先 `cd demo` 进入项目目录。常用的三个命令：
 
 | 命令 | 作用 |
 | --- | --- |
@@ -96,7 +96,7 @@ npx create-next-app@16.4.2 demo --ts --app --eslint --no-tailwind --no-src-dir -
 | `npm run build` | 生产构建（默认使用 Turbopack），并打印路由表 |
 | `npm start` | 运行构建好的生产服务器 |
 
-在实测的项目中，`npm start` 之后请求 `/projects`，返回的 HTML 中就有 `<h1>项目</h1>`：内容是服务器生成的，不需要等 JavaScript。
+在实测的项目中（加了下一节路由表中的那几个页面之后），`npm start` 之后请求 `/projects`，返回的 HTML 中就有 `<h1>项目</h1>`：内容是服务器生成的，不需要等 JavaScript。
 
 ## 读懂构建输出
 
@@ -142,6 +142,8 @@ Error: Route "/docs/[[...slug]]": Next.js encountered uncached or runtime data d
 
 下一课讲怎样修改它。
 
+下面的练习要用程序读出这张路由表。先看一行是怎样构成的：
+
 :::playground{#route-line}
 ```ts file=main.ts
 const lines = ['├ ○ /about', '│ └ ◐ /docs/[[...slug]]', '├   /projects/[id]', '└ ƒ /api/echo'];
@@ -154,7 +156,7 @@ for (const line of lines) {
 console.log([...'├○◐ƒ│'].map((c) => `${c} U+${c.codePointAt(0)?.toString(16).toUpperCase()}`).join('  '));
 ```
 - 第 4 行的正则依次匹配：可选的缩进（`│ ` 或两个空格）、树形符号 `┌├└` 和一个空格，然后是“一个符号加空格”或者“两个空格”（组标题），最后是地址；
-- 组标题那一行没有符号，所以第二个分组是 `undefined`；
+- 组标题那一行没有符号，所以第二个分组是 `undefined`，第 5 行用 `??` 把它显示成“（组标题）”；
 - 第 8 行：这些符号都不是 ASCII 字符，但每一个都只占一个 UTF-16 码元，`\S` 可以匹配它们。
 :::
 

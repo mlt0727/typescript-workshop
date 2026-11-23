@@ -13,7 +13,7 @@ title: 加载用户主页
 2. 再获取这个用户的文章；
 3. 返回 `{ name: 用户名, postCount: 文章数, latest: 最新一篇文章的标题 }`，没有文章时 `latest` 为 `null`。文章数组按时间从旧到新排列，最后一篇是最新的。
 
-用 `async`/`await` 实现。
+起始代码有错（编辑器里能看到类型错误）。用 `async`/`await` 改写 `loadProfile`，让它满足上面的规则。
 
 :::files{role=starter}
 ```ts file=profile.ts

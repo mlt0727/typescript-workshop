@@ -28,7 +28,7 @@
       correct: true
       explain: 定位器是“怎样找到元素”的描述，而不是元素本身。
     - text: 报错，因为原来的元素已经不在页面中了
-      explain: 那是直接保存元素引用（例如旧的 ElementHandle）时的问题，定位器没有这个问题。
+      explain: 那是直接保存元素本身（Playwright 中不推荐的 ElementHandle 写法）时才有的问题；定位器不保存元素，每次使用时重新查找，所以没有这个问题。
     - text: 点击原来的元素，什么也不会发生
       explain: 定位器不保存元素，每次都按描述重新查找。
 - id: webserver-ci
@@ -37,7 +37,7 @@
   options:
     - text: 构建并预览生产版本（npm run build && npm run preview）
       correct: true
-      explain: 这样构建、base、路由回退等只在生产版本中出现的问题也会被测试到。
+      explain: 这样构建、base 等只在生产版本中出现的问题也会被测试到。
     - text: 开发服务器（npm run dev）
       explain: 开发服务器不经过生产构建，构建配置的问题测不出来。
     - text: 不需要启动，直接测试线上的网站

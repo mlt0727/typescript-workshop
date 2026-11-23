@@ -5,7 +5,7 @@ title: 给 Promise 加上超时
 实现 `withTimeout(promise, ms)`：
 
 - `promise` 在 `ms` 毫秒内完成时，返回的 Promise 采用它的结果（兑现的值，或者拒绝的原因）；
-- 超过 `ms` 毫秒还没完成时，返回的 Promise 以 `new TimeoutError(ms)` 被拒绝；
+- 到了 `ms` 毫秒还没完成时，返回的 Promise 以 `new TimeoutError(ms)` 被拒绝；
 - 无论哪种情况，结束后都不能留下还在等待的计时器：`promise` 先完成时，要清除超时用的计时器；
 - 返回类型保留 `promise` 的类型：传入 `Promise<number>`，得到 `Promise<number>`。
 
@@ -140,7 +140,7 @@ expectTypeOf(withTimeout(numbers, 10)).toEqualTypeOf<Promise<number[]>>();
 
 `finally` 返回的新 Promise 通常采用原来的结果：回调的返回值被忽略，原来的值或拒绝原因原样传下去。例外是回调本身抛出错误或返回一个被拒绝的 Promise，这时新 Promise 以这个新错误拒绝；回调返回 Promise 时，会先等它完成。
 
-注意 `promise` 本身并没有被停止：超时之后它仍在运行。要真正取消一个请求，需要 `AbortController`；给 `fetch` 加超时，现代写法是传入 `AbortSignal.timeout(毫秒)`（e08）。
+注意 `promise` 本身并没有被停止：超时之后它仍在运行。要真正取消一个请求，需要 `AbortController`；给 `fetch` 加超时，现代写法是传入 `AbortSignal.timeout(毫秒)`（e08 会讲）。
 :::
 
 :::variant{kind=alt name=async-finally}

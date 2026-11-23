@@ -2,9 +2,9 @@
 kind: task
 title: 可靠的持久化值
 ---
-实现 `createPersisted(storage, key, parse, fallback)`，返回一个对象，用来读写保存在 `storage` 中 `key` 下的一个值：
+改写 `createPersisted(storage, key, parse, fallback)`。它返回一个对象，用来读写保存在 `storage` 中 `key` 下的一个值；起始代码没有处理任何出错的情况，也没有验证读到的内容。要求：
 
-- `load()`：读取并返回这个值。以下任何一种情况都返回 `fallback`：没有保存过（`getItem` 返回 `null`）、内容不是合法的 JSON、`parse` 返回 `null`（格式不对）、`getItem` 本身抛出错误；
+- `load()`：读取并返回这个值。以下任何一种情况都返回 `fallback`：没有保存过（`getItem` 返回 `null`）、内容不是合法的 JSON、`parse` 返回 `null`（格式不对）、`getItem` 本身抛出错误。其他情况返回 `parse` 的结果，保存的是 `false`、`0`、`''` 这样的值时也要原样返回，不能换成 `fallback`；
 - `save(value)`：用 `JSON.stringify` 保存，成功返回 `true`；`setItem` 抛出错误（例如空间不足）时返回 `false`，不要把错误抛出去；
 - `clear()`：删除这个键，出错时忽略。
 

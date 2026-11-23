@@ -334,7 +334,7 @@ test('撤销一步步恢复到初始状态', async () => {
 :::
 
 :::hint{level=2}
-撤销：`const previous = history.pop()`，不是 `undefined` 时 `state = previous; render();`。列表用两个委托的监听器：`change` 事件处理复选框（`dataset.id` 转成数字），`click` 事件用 `closest('button')` 处理删除按钮。复选框的可访问名称来自包住它和文字的 `<label>`。
+撤销：`const previous = history.pop()`，不是 `undefined` 时 `state = previous; render();`。列表用两个委托的监听器：`change` 事件处理复选框（`dataset.id` 转成数字），`click` 事件用 `closest('button')` 处理删除按钮。复选框的可访问名称来自包住它和文字的 `<label>`。筛选按钮的 `data-filter` 像正文示例那样用 `isFilter` 类型守卫检查，记得从 `./todos` 再导入 `Filter` 类型。
 :::
 
 :::explanation
@@ -346,7 +346,7 @@ test('撤销一步步恢复到初始状态', async () => {
 
 事件处理只负责把用户操作翻译成动作。想增加一个功能（例如“全部完成”），只需要在 `Action` 中加一种动作、在 `update` 中处理它、再加一个按钮的监听器，渲染代码不用动。
 
-这就是 React 应用的基本结构：状态 + 根据状态描述界面 + 事件触发状态更新。G 阶段会看到，React 替你完成了 `render` 中“高效地把描述同步到 DOM”的部分，`useReducer` 则对应这里的 `update` 与 `dispatch`。
+这就是 React 应用的基本结构：状态 + 根据状态描述界面 + 事件触发状态更新。G 阶段会看到，React 替你完成了 `render` 中“高效地把描述同步到 DOM”的部分；React 提供的 `useReducer` 则对应这里的 `update` 与 `dispatch`。
 :::
 
 :::variant{kind=alt name=record-of-handlers}

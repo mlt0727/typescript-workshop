@@ -78,14 +78,14 @@ f02 用 create-vite 创建的项目中，`tsconfig.json` 是这样的（create-v
 | `verbatimModuleSyntax` | 每个 `import`/`export` 原样保留到输出中，只有标记了 `type` 的才去掉（见下一节）。它同时隐含了 `isolatedModules`：每个文件都必须能单独转译 |
 | `erasableSyntaxOnly` | 只允许“去掉类型就是 JavaScript”的语法，禁止 `enum`、`namespace`、参数属性（b17） |
 | `moduleDetection: "force"` | 每个文件都当作模块，即使里面没有 `import`/`export` |
-| `skipLibCheck` | 不检查所有的 `.d.ts` 文件（`node_modules` 中的和项目自己写的都不检查；第三方声明之间的冲突往往不是你能修的，还能加快检查） |
+| `skipLibCheck` | 跳过所有 `.d.ts` 文件的检查（`node_modules` 中的和项目自己写的都跳过）。第三方声明之间的冲突往往不是你能修的，跳过还能加快检查 |
 | `noUnusedLocals` 等 | 类似 lint 的检查：未使用的变量和参数、`switch` 中漏写的 `break` |
 
-`strict` 没有写：TypeScript 6.0 起默认就是开启的。这个网站的练习使用的配置与这份模板大体一致，区别是：`target` 和 `lib` 是 `ES2025`（纯 TS 的练习运行在 Web Worker 中，`lib` 是 `ES2025` 和 `WebWorker`，没有 `DOM`）；`types` 是 `[]`，不包含 `vite/client`；额外开启了 `noUncheckedIndexedAccess`（c11）；没有开启 `noUnusedLocals`、`noUnusedParameters`，因为教学示例中常常有暂时没用到的变量。
+`strict` 没有写：TypeScript 6.0 起默认就是开启的。这个网站的练习使用的配置与这份模板大体一致，区别是：`target` 是 `ES2025`；`lib` 是 `ES2025` 加 `DOM`，纯 TS 的练习运行在 Web Worker 中，`lib` 是 `ES2025` 加 `WebWorker`，没有 `DOM`；`types` 是 `[]`，不包含 `vite/client`；额外开启了 `noUncheckedIndexedAccess`（c11）；没有开启 `noUnusedLocals`、`noUnusedParameters`，因为教学示例中常常有暂时没用到的变量。
 
 ## verbatimModuleSyntax 与 import type
 
-Vite（f02）和这个网站一样，**一次只转译一个文件**。转译 `main.ts` 时，它看不到 `types.ts`，不知道 `import { User } from './types'` 中的 `User` 是类型还是值。`verbatimModuleSyntax` 给出了简单的规则：没有标记 `type` 的导入**原样保留**；只用于类型的导入必须写出来。否则会发生下面的事：
+Vite（f02）和这个网站一样，**一次只转译一个文件**。转译 `main.ts` 时，它看不到 `types.ts`，不知道 `import { User } from './types'` 中的 `User` 是类型还是值。`verbatimModuleSyntax` 给出了简单的规则：没有标记 `type` 的导入**原样保留**；只用于类型的导入必须标记 `type`（两种写法 a19 讲过）。否则会发生下面的事：
 
 :::playground{#import-type expect="1484@main.ts:1" run=error}
 ```ts file=types.ts
@@ -102,7 +102,7 @@ const ada: User = { name: 'Ada', admin: true };
 console.log(greet(ada));
 ```
 - 第 1 行报 TS1484：`User` 是类型，在 `verbatimModuleSyntax` 下必须用只导入类型的写法。
-- 运行也失败了：`import { User, greet }` 被原样保留，而运行时的 `types.ts` 中没有 `User` 这个导出（类型已经被去掉），浏览器在连接模块时就报错。
+- 运行也失败了：`import { User, greet }` 被原样保留，而运行时的 `types.ts` 中没有 `User` 这个导出（类型已经被去掉），浏览器在加载模块时就报错。
 - 改成 `import { type User, greet } from './types';`，或者分成两行 `import type { User } from './types';` 和 `import { greet } from './types';`，错误和运行失败都消失了。点“查看 JS”看输出。
 :::
 
@@ -141,7 +141,12 @@ console.log(greet(ada));
 
 为什么在 `nodenext` 中要写 `.js`，而文件明明是 `.ts`？因为 TypeScript 默认**不改写** `import` 中的路径（只有开启 `rewriteRelativeImportExtensions` 时，才把相对路径中的 `.ts` 改写成 `.js`）：`tsc` 把 `main.ts` 编译成 `main.js` 时，`import './util.js'` 原样保留，运行时 Node.js 找的是编译出的 `util.js`。所以在源代码中就写运行时的路径，TypeScript 检查时再把 `.js` 对应回 `util.ts`。
 
-还有一种情况：Node.js 现在可以**直接运行 `.ts` 文件**（只去掉类型，不做检查）。编写本课时使用的 Node.js 24.13 中，`node main.ts` 直接就能运行；这时运行时找的是 `.ts` 文件，`import './math.js'` 反而会报 `ERR_MODULE_NOT_FOUND`，必须写 `import './math.ts'`。TypeScript 中对应的配置是 `"module": "nodenext"`、`"allowImportingTsExtensions": true`、`"noEmit": true`，再加上 `"erasableSyntaxOnly": true`（Node.js 只会去掉类型，遇到 `enum` 时报 `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX`）和 `"verbatimModuleSyntax": true`（只用于类型的导入不写 `type` 时，Node.js 去掉类型之后这个导入仍然留着，运行时报 `does not provide an export named …`）。
+还有一种情况：Node.js 现在可以**直接运行 `.ts` 文件**（只去掉类型，不做检查）。编写本课时使用的 Node.js 24.13 中，`node main.ts` 直接就能运行；这时运行时找的是 `.ts` 文件，`import './math.js'` 反而会报 `ERR_MODULE_NOT_FOUND`，必须写 `import './math.ts'`。TypeScript 中对应的配置是：
+
+- `"module": "nodenext"`：它同时把 `moduleResolution` 设为 `nodenext`；
+- `"allowImportingTsExtensions": true` 和 `"noEmit": true`：允许写出 `.ts`，`tsc` 只检查，由 Node.js 直接运行源文件；
+- `"erasableSyntaxOnly": true`：Node.js 只会去掉类型，遇到 `enum` 时报 `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX`（b17）；
+- `"verbatimModuleSyntax": true`：只用于类型的导入不写 `type` 时，Node.js 去掉类型之后这个导入仍然留着，运行时报 `does not provide an export named …`。
 
 选择的原则：**谁运行代码，就按谁的规则配置**。浏览器项目（经过 Vite）用 `bundler`；直接用 Node.js 运行或者发布给 Node.js 使用的包，用 `nodenext`。
 
@@ -149,8 +154,8 @@ console.log(greet(ada));
 
 1. 在 f02 创建的 `my-app` 中运行 `npx tsc --showConfig`，看看合并之后的配置中多了哪些推导出来的选项（`strict` 这样的默认值不会出现）；
 2. 在 `main.ts` 中写一行 `Promise.withResolvers<number>()`，运行 `npx tsc`：报 TS2550。把 `lib` 中的 `ES2023` 改成 `ES2024`，错误消失；
-3. 新建一个文件夹，`npm init -y` 之后把 `package.json` 中的 `"type"` 改成 `"module"`。写 `math.ts`（导出一个带类型注解的 `add`）和 `main.ts`（`import { add } from './math.ts'`），运行 `node main.ts`；再把导入改成 `'./math.js'` 或 `'./math'`，看 Node.js 报出的错误；
-4. 在这个文件夹中 `npm install --save-dev typescript@6.0.3`，写一个 `tsconfig.json`：`module` 为 `nodenext`，打开 `allowImportingTsExtensions`、`noEmit`、`erasableSyntaxOnly`、`verbatimModuleSyntax`，运行 `npx tsc` 检查。
+3. 新建一个文件夹，`npm init -y` 之后把 `package.json` 中的 `"type"` 改成 `"module"`。写 `math.ts`（导出一个带类型注解的 `add`）和 `main.ts`（`import { add } from './math.ts'`，再用 `console.log` 打印 `add(1, 2)`），运行 `node main.ts`，应该看到 `3`；再把导入改成 `'./math.js'` 或 `'./math'`，看 Node.js 报出的错误；
+4. 在这个文件夹中 `npm install --save-dev typescript@6.0.3`，写一个 `tsconfig.json`：`module` 为 `nodenext`，打开 `allowImportingTsExtensions`、`noEmit`、`erasableSyntaxOnly`、`verbatimModuleSyntax`，运行 `npx tsc` 检查，没有输出就表示通过。
 
 ## 编程挑战
 
@@ -163,5 +168,5 @@ console.log(greet(ada));
 - **只用于类型的导入没有写 `type`**：在 `verbatimModuleSyntax` 下是 TS1484；在没有这个选项的旧项目中，换一个只转译单个文件的工具就可能在运行时出错。
 - **用 `import type` 导入一个有副作用的模块**：整行被去掉，副作用也没了。需要副作用时写 `import { type X }`，或者另加一行 `import './plugins'`。
 - **在 Node.js 项目中省略扩展名**：TS2835。按运行方式写 `.js`（运行编译后的代码）或 `.ts`（Node.js 直接运行）。
-- **为了让 `process` 能用，在浏览器项目的 `types` 中加上 `node`**：浏览器中没有 `process`，这只会把运行时错误藏起来。前端读取配置用 `import.meta.env`（e13）。
+- **为了让 `process` 能用，在浏览器项目的 `types` 中加上 `node`**：浏览器中没有 `process`，这只会把运行时错误藏起来。前端读取配置用 `import.meta.env`（e13 会讲）。
 - **以为改了 `lib` 就能在旧浏览器中使用新 API**：`lib` 只影响类型检查，运行时有没有这个 API 取决于浏览器。

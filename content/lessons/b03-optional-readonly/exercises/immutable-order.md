@@ -2,11 +2,11 @@
 kind: challenge
 title: 不可变的订单
 ---
-订单对象会被界面的多个部分同时引用，所以它必须是**不可变**的：任何修改都返回一个新订单，原订单保持不变。
+订单对象会被界面的多个部分同时引用，所以它必须是**不可变**的：任何修改都返回一个新订单，原订单（包括里面的每一项）保持不变。
 
 1. 修改起始代码中的两个类型，让 TypeScript 在类型层面禁止修改：`OrderItem` 和 `Order` 的所有属性都是 `readonly`，`items` 是只读数组 `readonly OrderItem[]`。
 2. 修改三个函数，让它们不再修改传入的订单，而是返回新订单：
-   - `addItem(order, sku, quantity)`：`quantity` 必须是正整数，否则抛出 `RangeError`；订单已取消时抛出 `Error('订单已取消')`；已有相同 `sku` 时把数量加到那一项上（位置不变），否则添加到末尾。
+   - `addItem(order, sku, quantity)`：`quantity` 必须是正整数（判断整数可以用 `Number.isInteger`），否则抛出 `RangeError`；订单已取消时抛出 `Error('订单已取消')`；已有相同 `sku` 时把数量加到那一项上（位置不变），否则添加到末尾。
    - `removeItem(order, sku)`：去掉该 `sku` 的项；没有这一项时，返回一个内容相同的新订单。
    - `cancelOrder(order)`：返回 `cancelled` 为 `true` 的新订单。
 

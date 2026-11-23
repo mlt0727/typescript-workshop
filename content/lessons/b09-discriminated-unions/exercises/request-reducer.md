@@ -2,9 +2,9 @@
 kind: challenge
 title: 请求状态机
 ---
-用可辨识联合描述一个列表请求的状态，以及会改变状态的事件（后面 React 课的 `useReducer` 正是这种写法）。
+用可辨识联合描述一个列表请求的状态，以及会改变状态的事件（之后 d10 会用这种写法管理页面的状态，React 的 `useReducer` 也是这种写法）。
 
-**1. 定义并导出两个类型：**
+**1. 把起始代码里的 `State` 和 `RequestEvent` 改写成下面两个可辨识联合**（保留 `export`）：
 
 ```ts
 type State =
@@ -20,18 +20,20 @@ type RequestEvent =
   | { type: 'reset' };
 ```
 
-**2. 实现 `transition(state, event)`**，返回新的状态：
+**2. 实现 `transition(state, event)`**，返回事件发生后的状态：
 
 | 事件 | 规则 |
 | --- | --- |
-| `fetch` | 当前不是 `loading` 时，变成 `{ status: 'loading', startedAt: at }`；正在 `loading` 时忽略 |
+| `fetch` | 当前不是 `loading` 时，变成 `loading`，`startedAt` 为事件的 `at`；正在 `loading` 时忽略 |
 | `resolve` | 只在 `loading` 时有效：变成 `success`，`items` 复制一份，`loadedAt` 为事件的 `at` |
-| `reject` | 只在 `loading` 时有效：变成 `{ status: 'error', message }` |
+| `reject` | 只在 `loading` 时有效：变成 `error`，`message` 为事件的 `message` |
 | `reset` | 任何状态都变成新的 `{ status: 'idle' }`（即使原来就是 `idle`，也返回新对象） |
 
-“忽略”和“无效”都表示**返回原来的同一个状态对象**（不创建新对象）。不能修改传入的状态。
+`fetch` 被忽略时，以及 `resolve`、`reject` 在其他状态下无效时，都**返回原来的同一个状态对象**（不创建新对象）。不能修改传入的状态。
 
-**3. 实现 `label(state)`**：`idle` → `'未开始'`，`loading` → `'加载中…'`，`success` → `` `已加载 ${条数} 条` ``，`error` → `` `出错：${message}` ``。两个函数都用穷尽检查处理所有情况。
+**3. 实现 `label(state)`**：`idle` → `'未开始'`，`loading` → `'加载中…'`，`success` → `` `已加载 ${条数} 条` ``，`error` → `` `出错：${message}` ``。标点要和这里完全一样（`…` 是一个省略号字符，`：` 是全角冒号），可以直接复制。
+
+两个函数都用穷尽检查处理所有情况。起始代码里没有 `assertNever`，需要自己写，和正文示例里的一样。
 
 :::files{role=starter}
 ```ts file=request.ts

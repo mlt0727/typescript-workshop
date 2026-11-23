@@ -2,11 +2,11 @@
 kind: challenge
 title: 表格单元格
 ---
-表格的单元格可能是字符串、数字、布尔值或 `null`（空）。定义并导出两个类型，再实现 `formatCell(value)`：
+表格的单元格可能是字符串、数字、布尔值或 `null`（空）。起始代码没有写类型，也没有区分这几种值。定义并导出两个类型，再改写 `formatCell(value)`：
 
 - `CellValue`：`string | number | boolean | null`；
 - `Align`：`'left' | 'right' | 'center'`；
-- `formatCell(value)` 返回 `{ text: string; align: Align }`：
+- `formatCell(value)` 的参数是 `CellValue`，返回 `{ text: string; align: Align }`：
 
 | 值 | text | align |
 | --- | --- | --- |
@@ -15,7 +15,9 @@ title: 表格单元格
 | `true` / `false` | `'是'` / `'否'` | `'center'` |
 | `null` | `'—'` | `'center'` |
 
-另外实现 `formatRow(values)`：把一行单元格的 `text` 用 `' | '` 连接起来，例如 `formatRow(['Ada', 36, true])` 得到 `'Ada | 36 | 是'`。
+注意 `'—'` 是长横线，不是减号 `-`，可以直接从这里复制。
+
+另外改写 `formatRow(values)`：参数是一行单元格（`CellValue` 的数组），返回把每个单元格的 `text` 用 `' | '` 连接起来的字符串，例如 `formatRow(['Ada', 36, true])` 得到 `'Ada | 36 | 是'`。
 
 :::files{role=starter}
 ```ts file=cell.ts
@@ -105,11 +107,13 @@ formatCell(undefined);
 :::
 
 :::hint{level=1}
-先写出两个类型和函数签名。函数体里按类型逐个收窄：`value === null`、`typeof value === 'boolean'`、`typeof value === 'number'`，最后剩下的就是字符串。
+先写出两个类型和函数签名。函数体里按类型逐个收窄：`value === null`、`typeof value === 'boolean'`、`typeof value === 'number'`，最后剩下的就是字符串。数字分支里别忘了 `NaN`：用 `Number.isNaN(value)` 判断（a04 讲过，`value === NaN` 永远是 `false`）。
 :::
 
 :::hint{level=2}
-每个分支直接 `return { text: …, align: 'center' }`：对象字面量直接出现在声明了返回类型的 `return` 中，`'center'` 会按 `Align` 检查，不会被拓宽成 `string`。如果先写 `const result = { text, align: 'left' }` 再返回，`align` 已经被拓宽成 `string`，就会报错——除非给 `result` 写上类型注解。
+每个分支直接 `return { text: …, align: 'center' }`：函数声明了返回类型，直接写在 `return` 后面的对象字面量就按返回类型检查，`'center'` 不会被拓宽成 `string`。如果先写 `const result = { text, align: 'left' }` 再返回，`align` 已经被拓宽成 `string`，就会报错——除非给 `result` 写上类型注解。
+
+`formatRow` 要连接的是每个单元格的 `text`：`formatCell` 返回的是对象，先用 `map` 取出每个对象的 `text`，再 `join(' | ')`。
 :::
 
 :::explanation

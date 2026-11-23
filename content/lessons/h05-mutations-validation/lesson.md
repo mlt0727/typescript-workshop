@@ -77,7 +77,7 @@ export async function plainAdd(formData: FormData) {
 
 函数的代码没有发给浏览器，发过去的只是一个**动作 ID**。提交表单就是向当前的地址发一个 POST 请求，带上这个 ID 和表单中的字段，服务器据此找到并运行对应的函数。所以它在**没有 JavaScript** 时也能工作：实测用 curl 按这个表单的格式提交（相当于浏览器关闭了 JavaScript），返回 200 和一个新的 HTML 页面，列表中已经有了新的待办。有 JavaScript 时，React 拦下提交，自己发出一个 POST 请求（格式不同，同样发到当前的地址），不刷新页面。
 
-客户端组件不能定义 Server Function，但可以从写了 `'use server'` 的文件中导入它，或者从 props 收到它（h03 中能传给客户端组件的函数只有 Server Function）。
+客户端组件不能定义 Server Function，但可以从写了 `'use server'` 的文件中导入它，或者从 props 收到它（h03 讲过：能传给客户端组件的函数只有 Server Function）。
 
 ## 它是一个公开的接口
 
@@ -110,7 +110,7 @@ export async function plainAdd(formData: FormData) {
 
 - `formData.get(name)` 的类型是 `string | File | null`：字段可能不存在，也可能是一个上传的文件（任何人都可以把一个文本字段换成文件发来）；
 - 同名的字段可以有很多个（多选框、多个标签），`get` 只返回第一个，`getAll` 返回全部；
-- 复选框选中时发送 `on`（或者它的 `value`），**没有选中时根本不发送**；
+- 复选框选中时发送它的 `value`（没有写 `value` 时是 `on`），**没有选中时根本不发送**；
 - 文本字段的值都是字符串：数字、日期都要自己解析和检查；
 - 没有 JavaScript 时提交的表单中，还有 Next.js 自己的 `$ACTION_…` 字段：这也是“只取认识的字段”的一个理由。
 
@@ -130,7 +130,7 @@ console.log(typeof avatar, avatar instanceof File);
 console.log(String(avatar), String(form.get('missing')));
 ```
 - 第 7 行：`get` 只得到第一个 `'a'`，`getAll` 得到 `['a', 'c']`；
-- 第 8 行：没有选中的复选框就是没有这个字段：`null` 和 `false`；
+- 第 8 行：表单中没有 `done`，就像一个没有选中的复选框：`get` 得到 `null`，`has` 得到 `false`；
 - 第 11、12 行：文件的 `typeof` 是 `'object'`；用 `String()` 读字段，文件变成了 `'[object File]'`，缺少的字段变成了 `'null'`，两个都会被当成“有内容的文本”。
 :::
 

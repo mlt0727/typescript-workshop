@@ -6,7 +6,7 @@ fixtures: quick
 `render.ts`（只读）提供了小任务中的 `LoadState` 和 `renderBooks`。在 `main.ts` 中完成搜索流程：
 
 1. 提交表单（阻止默认行为）时，请求 `/api/books?topic=主题`（主题来自 `#topic`，用 `encodeURIComponent` 编码），状态依次经过 `loading` 和最终状态，每次状态改变都调用 `renderBooks(view, state, 重试函数)`（`view` 已经准备好）；
-2. 加载期间，“搜索”按钮的 `aria-disabled` 为 `"true"`，并且**忽略**这期间的提交和重试；结束后改回 `"false"`。不要设置 `disabled`：它会让按钮失去焦点；
+2. 加载期间，“搜索”按钮的 `aria-disabled` 为 `"true"`，并且**忽略**这期间的提交和重试；其他时候（包括页面刚加载时）为 `"false"`。不要设置 `disabled`：它会让按钮失去焦点；
 3. 响应的数据必须是数组，每一项是 `{ id: number, title: string }`，任何一项不合格都算作数据格式不正确。验证通过就进入 `success`；
 4. 失败时进入 `error`，`message` 按原因区分：
 

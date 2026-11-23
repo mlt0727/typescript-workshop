@@ -9,8 +9,8 @@ title: 检查传给客户端组件的 props
    - `'symbol'`：没有用 `Symbol.for` 注册的 symbol（`Symbol.keyFor` 返回 `undefined`）；
    - `'null-prototype'`：原型是 `null` 的对象（例如 `Object.create(null)`）；
    - `'class-instance'`：原型不是 `Object.prototype` 的其他对象，下面第 2、3 条列出的数组、`Set`、`Map` 和内置类型除外。`URL`、`Error`、正则这样的内置类型也算（正文中讲了它们传过去之后的样子）；
-2. **继续往里检查**：普通对象（原型是 `Object.prototype`）检查它的每个属性（`Object.entries` 的顺序）；数组检查每个元素；`Set` 按 `[...set]` 的顺序检查每个元素；`Map` 按 `[...map]` 的顺序检查每个条目，先检查键，再检查值。报告了问题的值，不再检查它里面；
-3. **不用检查的值**：字符串、数字、bigint、布尔值、`null`、`undefined`、用 `Symbol.for` 注册的 symbol，以及 `Date`、`Promise`、`ArrayBuffer` 和它的各种视图（`Uint8Array`、`DataView` 等，`ArrayBuffer.isView` 为 `true`），这些内置类型不往里检查；
+2. **继续往里检查**：普通对象（用 `{ … }` 写出来的对象，原型是 `Object.prototype`；原型用 `Object.getPrototypeOf(value)` 取得）检查它的每个属性（`Object.entries` 的顺序）；数组检查每个元素；`Set` 按 `[...set]` 的顺序检查每个元素；`Map` 按 `[...map]` 的顺序检查每个条目，先检查键，再检查值。报告了问题的值，不再检查它里面；
+3. **不用检查的值**：字符串、数字、bigint、布尔值、`null`、`undefined`、用 `Symbol.for` 注册的 symbol，以及 `Date`、`Promise`、`ArrayBuffer`（存放二进制数据的内置类型）和它的各种视图（`Uint8Array`、`DataView` 等，`ArrayBuffer.isView` 为 `true`），这些内置类型不往里检查；
 4. **路径**：顶层的属性就是属性名；对象的属性加上 `.名字`，数组和 `Set` 的元素加上 `[i]`，`Map` 的第 i 个条目的键加上 `[i][0]`、值加上 `[i][1]`。例如 `items[1].onClick`、`handlers[0][1]`；
 5. 按深度优先的顺序返回**所有**的问题。值中没有循环引用。
 
@@ -247,7 +247,7 @@ props 从服务器到浏览器，要先变成一段数据（RSC Payload）再还
 
 TypeScript 的类型在这里帮不上全部的忙：类型描述的是形状，不是原型（b02）。一个 `Money` 的实例可以赋给 `{ cents: number }` 类型的变量，类型检查不会报错，运行时它仍然是 `Money` 的实例。这种检查只能在运行时做，或者交给 Next.js 在构建和渲染时报告。
 
-替代解让每一层返回自己的问题数组，用 `flatMap` 拼起来，不需要一个共享的数组。
+另一种写法是让每一层返回自己的问题数组，用 `flatMap` 拼起来，这样就不需要一个共享的数组。
 :::
 
 :::variant{kind=alt name=flat-map}

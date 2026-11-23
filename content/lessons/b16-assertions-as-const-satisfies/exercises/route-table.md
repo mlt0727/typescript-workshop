@@ -2,18 +2,24 @@
 kind: challenge
 title: 路由表
 ---
-网站的路由集中写在一张表里。要求：表中每一项都必须符合 `Route` 类型；同时，路由名称的类型要从表中推导出来——写错名称（例如 `'profle'`）应该在编译期报错。
+网站的每个页面都有一个路径（例如 `/users/42`）。“路由”是起了名字的路径规则：`'/users/:id'` 中以 `:` 开头的段是参数，生成具体的路径时要换成真实的值。
+
+路由集中写在一张表 `ROUTES` 里。要求：表中每一项都必须符合 `Route` 类型；同时，路由名称的类型要从表中推导出来——写错名称（例如 `'profle'`）应该在编译期报错。
 
 ```ts
 type Route = { path: string; auth: boolean };
 ```
 
-1. 定义并导出 `ROUTES`，包含三条路由：`home`（`'/'`，不需要登录）、`profile`（`'/users/:id'`，需要登录）、`comment`（`'/posts/:postId/comments/:commentId'`，不需要登录）。用 `satisfies` 检查它符合 `Record<string, Route>`。
-2. 导出 `type RouteName`：`ROUTES` 的键（结果应为 `'home' | 'profile' | 'comment'`）。
-3. 实现 `buildPath(name, params)`：把路径中以 `:` 开头的段替换成 `params` 中同名的值（用 `encodeURIComponent` 编码）；缺少某个参数时抛出 `Error`，`message` 为 `` `缺少参数：${参数名}` ``。多余的参数忽略。`params` 默认为空对象。
-4. 实现 `requiresAuth(name)`：返回这条路由是否需要登录。
+起始代码的表里只有一条路由，`buildPath` 也还不会替换参数：
 
-例如 `buildPath('profile', { id: '42' })` 得到 `'/users/42'`。
+1. 补全 `ROUTES`，共三条路由：`home`（`'/'`，不需要登录）、`profile`（`'/users/:id'`，需要登录）、`comment`（`'/posts/:postId/comments/:commentId'`，不需要登录）。把类型注解改成用 `satisfies` 检查它符合 `Record<string, Route>`。
+2. `type RouteName` 应该是 `ROUTES` 的键（结果应为 `'home' | 'profile' | 'comment'`）。起始代码的 `keyof typeof ROUTES` 写法没有问题，但现在得到的是 `string`。
+3. 补全 `buildPath(name, params)`：路径由 `/` 分成若干段（`'/users/:id'.split('/')` 得到 `['', 'users', ':id']`），把以 `:` 开头的段替换成 `params` 中同名的值（`:id` 对应 `params.id`），替换前先用 `encodeURIComponent` 编码，其余的段保持不变。缺少某个参数时抛出 `Error`，`message` 为 `` `缺少参数：${参数名}` ``（例如 `'缺少参数：id'`）。多余的参数忽略。`params` 默认为空对象。
+4. 实现并导出 `requiresAuth(name: RouteName): boolean`：返回这条路由是否需要登录。
+
+`encodeURIComponent(文本)` 是内置函数：把空格、`/` 这类在地址中有特殊含义的字符换成 `%20`、`%2F` 这样的编码，参数值就不会破坏路径的结构。
+
+例如 `buildPath('profile', { id: '42' })` 得到 `'/users/42'`，`buildPath('profile', { id: 'a b/c' })` 得到 `'/users/a%20b%2Fc'`。
 
 :::files{role=starter}
 ```ts file=routes.ts

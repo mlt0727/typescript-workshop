@@ -92,12 +92,14 @@ Error: You're importing a module that depends on `useState` into a React Server 
 | `Symbol('local')` | `Only global symbols received from Symbol.for(...) can be passed to Client Components.` |
 | `[1, () => 1]`、`new Map([['k', () => 1]])` | 函数的那一条，并且指出了它在数组或 `Map` 中的位置 |
 
+两种 symbol 的区别：symbol 是 JavaScript 的一种基本类型（`typeof` 得到 `'symbol'`，b07），每次调用 `Symbol('local')` 都得到一个独一无二的新值，括号里的字符串只是说明；`Symbol.for('lab')` 则按名字在全局的注册表中查找，没有就创建，同一个名字总是得到同一个 symbol，`Symbol.keyFor(s)` 可以查回它的名字（没有注册过的 symbol 返回 `undefined`）。所以只有后者能在浏览器中按名字还原成同一个 symbol。
+
 还有两个构建成功、但值变了样的：
 
 - `new URL('https://example.com/a')`：浏览器中收到的是**字符串** `'https://example.com/a'`，不再是 `URL`。React 先调用了对象的 `toJSON` 方法（`URL` 有这个方法），传过去的是它的结果。自己定义的类只要有 `toJSON` 方法也一样：实测一个 `toJSON()` 返回 `'¥9.9'` 的 `Money` 实例，客户端组件收到的就是字符串 `'¥9.9'`，构建时没有任何提示；
 - `new Error('boom')`：浏览器中收到的是一个 `Error`，但生产构建中它的 `message` 是 `Minified React error #441…`；服务器上渲染 HTML 时则是另一段说明（“为了避免泄漏敏感的细节，生产构建中省略了具体的信息”）。两边渲染出来的文字不同，浏览器中还报了一个水合不一致的错误（React #418）。
 
-所以最稳妥的做法是：**传给客户端组件的 props 只用普通的数据**。需要 `URL` 时传 `href`，需要类的方法时传数据、在客户端组件中再创建对象。事件处理函数写在客户端组件里面；服务端组件需要“被调用”的函数是 Server Function（h05）。
+所以最稳妥的做法是：**传给客户端组件的 props 只用普通的数据**。需要 `URL` 时传 `href`，需要类的方法时传数据、在客户端组件中再创建对象。事件处理函数写在客户端组件里面；需要让浏览器调用一个在服务器上运行的函数时，用的是 Server Function（h05 讲）。
 
 TypeScript 的类型可以挡住一部分：
 
@@ -209,7 +211,7 @@ Import traces:
     ./app/h03err/page.tsx [Server Component]
 ```
 
-“Import trace” 从下往上读：页面（服务端组件）导入了 `probe.tsx`，它是一个客户端组件，在客户端中又导入了 `lib/secret.ts`。真正要改的往往是这条路径中间的某个导入，而不是报错的那个文件。在 Next.js 中不需要单独安装 `server-only`（`next` 自己带了一份）；对应的 `client-only` 用来标记只能放在客户端的模块图中的模块（例如访问 `window` 的代码）。
+`Import traces` 下面的路径从下往上读：页面（服务端组件）导入了 `probe.tsx`，它是一个客户端组件，在客户端中又导入了 `lib/secret.ts`。真正要改的往往是这条路径中间的某个导入，而不是报错的那个文件。在 Next.js 中不需要单独安装 `server-only`（`next` 自己带了一份）；对应的 `client-only` 用来标记只能放在客户端的模块图中的模块（例如访问 `window` 的代码）。
 
 练习二模拟构建的这个过程：把模块分到两张模块图中，报告越过边界的错误和它们的导入路径。
 

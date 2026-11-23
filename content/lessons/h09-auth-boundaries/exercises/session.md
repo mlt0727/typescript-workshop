@@ -8,9 +8,9 @@ title: 签名的会话
 
 1. **`timingSafeEqual(a, b)`**：两个字节数组长度相同、每个字节都相同时返回 `true`。不要在第一个不同的字节处提前返回：不管在哪里不同，都把所有的字节比较完（测试测不出花了多少时间，但这正是这个函数存在的意义）；
 2. **创建**：`secrets` 为空，或者其中任何一个少于 32 个字符时，抛出 `Error`。长度只是最低的要求，密钥本身要随机生成，例如 `openssl rand -base64 32`；
-3. **`sign(session)`**：令牌是 `payload.signature`。`payload` 是 `JSON.stringify(session)` 的 UTF-8 字节的 base64url 编码；`signature` 是用 `secrets[0]`（的 UTF-8 字节）对 **`payload` 这个字符串**（的 UTF-8 字节）计算的 HMAC-SHA256 的 base64url 编码。base64url 是把 base64 中的 `+` 换成 `-`、`/` 换成 `_`，并去掉末尾的 `=`；
+3. **`sign(session)`**：令牌是 `payload.signature`。`payload` 是 `JSON.stringify(session)` 的 UTF-8 字节的 base64url 编码；`signature` 是用 `secrets[0]`（的 UTF-8 字节）对 **`payload` 这个字符串**（的 UTF-8 字节）计算的 HMAC-SHA256 的 base64url 编码。base64url 是把 base64 中的 `+` 换成 `-`、`/` 换成 `_`，并去掉末尾的 `=`（正文示例中的 `toBase64Url` 就是这样做的）；
 4. **`verify(token, now)`**：任何不合格的情况都返回 `null`，不抛出错误：
-   - `token` 不是正好两个非空的部分（用 `.` 分隔），或者某一部分含有 base64url 以外的字符，或者不能解码；
+   - `token` 是 `undefined`（没有 cookie），或者不是正好两个非空的部分（用 `.` 分隔），或者某一部分含有 base64url 以外的字符，或者不能解码；
    - `signature` 和用 `secrets` 中**任何一个**密钥算出的签名的 base64url 字符串都不完全相同（用 `timingSafeEqual` 比较两个字符串的 UTF-8 字节）；
    - `payload` 解码之后不是 JSON，或者不是合法的会话：`userId` 是非空的字符串，`role` 是 `'admin'`、`'member'`、`'viewer'` 之一，`expiresAt` 是有限的数字；
    - 已经过期：`now` 不小于 `expiresAt`（单位都是秒；`now` 是 `NaN` 时也算过期）；
@@ -407,7 +407,7 @@ describe('createSessionCodec', () => {
 
 真实的项目中，用经过审查的库（jose、iron-session，或者 Auth.js、Better Auth 这样的完整方案），不要自己实现这些。这个练习是为了看清楚这些库在做什么。
 
-替代解的 `timingSafeEqual` 不提前比较长度，而是把较短的一边当作补了 0，再把长度的差异也记进结果中；它把签名解码成字节再比较，但先检查重新编码之后和原来的字符串完全一样（只接受规范的写法）；验证时对每一个密钥都算一遍（不在第一个通过时停下），返回时用 `now < expiresAt` 判断，`NaN` 自然就被拒绝了。
+另一种可行的写法：`timingSafeEqual` 不提前比较长度，而是把较短的一边当作补了 0，再把长度的差异也记进结果中；它把签名解码成字节再比较，但先检查重新编码之后和原来的字符串完全一样（只接受规范的写法）；验证时对每一个密钥都算一遍（不在第一个通过时停下），返回时用 `now < expiresAt` 判断，`NaN` 自然就被拒绝了。
 :::
 
 :::variant{kind=alt name=check-all-keys}

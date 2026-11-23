@@ -28,7 +28,7 @@ references:
 
 对象里可以定义**方法**：`increment() { … }` 是 `increment: function () { … }` 的简写。用 `对象.方法()` 调用时，方法里的 `this` 就是点号前面的那个对象。
 
-关键在于：`this` 是在**调用时**确定的，不是在定义时。把方法取出来单独调用，点号前面没有对象了，`this` 就是 `undefined`。（这是 JavaScript **严格模式**的规则；模块代码自动启用严格模式，本平台的代码都是模块。注意它和 TypeScript 的 `strict` 编译选项不是一回事。）
+关键在于：`this` 是在**调用时**确定的，不是在定义时。把方法取出来单独调用，点号前面没有对象了，`this` 就是 `undefined`。（这是 JavaScript **严格模式**的规则；模块代码自动启用严格模式，本平台的代码都是模块。注意它是 JavaScript 运行时的规则，和 a05 讲的 TypeScript 严格模式不是一回事。）
 
 :::playground{#method-this run=error}
 ```ts file=main.ts
@@ -46,18 +46,18 @@ const inc = counter.increment;
 console.log(inc());
 ```
 - 第 9 行：`this` 是 `counter`，输出 `1 2`。
-- 第 11–12 行：`inc` 和 `counter.increment` 是同一个函数，但这次调用时点号前面没有对象，`this` 是 `undefined`，运行时抛出 `TypeError`。
+- 第 11–12 行：`inc` 和 `counter.increment` 是同一个函数，但这次调用时点号前面没有对象，`this` 是 `undefined`，运行时抛出 `TypeError`。Python 的 `inc = counter.increment`、Java 的 `counter::increment` 都会把对象一起带上；JavaScript 取出来的只是函数本身。
 - **TypeScript 没有报错**：它不跟踪函数被取出后会怎样调用。这类错误只能靠理解规则来避免。
 :::
 
 ## 作为回调传递时丢失 this
 
-把方法直接传给 `forEach`、`map`、`setTimeout` 或事件监听器时，调用它的是别的代码，不会以 `对象.方法()` 的形式调用，`this` 由那段代码决定：`forEach`、`map` 不传 `thisArg` 时是 `undefined`，`setTimeout` 给的是全局对象，事件监听器给的是触发事件的元素。总之都不再是原来的对象。
+把方法直接当作回调传出去时，调用它的是别的代码，不会以 `对象.方法()` 的形式调用，`this` 是什么由那段代码决定。数组的 `forEach`（对每个元素调用一次传入的函数，不返回新数组）和 a13 见过的 `map` 默认给的是 `undefined`（除非用第二个参数 `thisArg` 另外指定）；浏览器的定时器 `setTimeout` 给的是全局对象（网页里是 `window`）；D 阶段要讲的事件监听器给的是注册监听器的那个元素。这些细节不用记，结论只有一个：`this` 不再是原来的对象。
 
 修复方法有两种：
 
 - 用箭头函数包一层：`(m) => logger.log(m)`，这样调用时又回到了 `logger.log(…)` 的形式。（最常用）
-- 用 `bind` 创建一个 `this` 固定的新函数：`logger.log.bind(logger)`。
+- 用 `bind` 创建一个 `this` 固定的新函数：`logger.log.bind(logger)`。`bind` 是每个函数都自带的方法，它不调用原函数，只返回新函数。
 
 :::playground{#callback run=error}
 ```ts file=main.ts
@@ -108,9 +108,9 @@ const cart = {
 
 console.log(cart.totalsWithArrow());
 ```
-- 第 4 行：箭头函数里的 `this` 来自模块顶层，是 `undefined`，TypeScript 报 TS2532。
+- 第 4 行：箭头函数里的 `this` 来自模块顶层，是 `undefined`，TypeScript 报 TS2532（“对象可能是 undefined”）。
 - 第 13 行：普通函数作为回调，有自己的 `this`，TypeScript 不知道它是什么类型，报 TS2683。
-- 第 17 行：箭头函数使用 `totalsWithArrow` 的 `this`，也就是 `cart`。输出 `[ 27, 45 ]`。
+- 第 17 行：箭头函数使用 `totalsWithArrow` 的 `this`。第 21 行以 `cart.totalsWithArrow()` 的形式调用，所以它是 `cart`，输出 `[ 27, 45 ]`。
 :::
 
 ## 给 this 声明类型
@@ -144,7 +144,7 @@ describe();
 ## 常见错误
 
 - **把方法直接作为回调传递**：`list.forEach(obj.method)` 会丢失 `this`。写成 `list.forEach((x) => obj.method(x))`。
-- **用箭头函数定义对象的方法**：箭头函数没有自己的 `this`。
+- **用箭头函数定义对象的方法**：箭头函数没有自己的 `this`，方法里的 `this` 不是这个对象。写成 `tick() { … }` 这样的方法。
 - **在方法里用 `function` 写回调**：回调有自己的 `this`。改用箭头函数。
 - **以为 TypeScript 会发现所有 `this` 错误**：取出方法后单独调用的情况，它通常发现不了。
 

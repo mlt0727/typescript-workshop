@@ -10,14 +10,14 @@
     - text: "`3.5 2`"
       explain: "`-7 % 3` 得 `2` 是 Python 的行为；JavaScript 得 `-1`。"
     - text: "`3 2`"
-      explain: 这是 Python 用 `//` 和 `%` 的结果。
+      explain: 这是 Python 用 `//` 和 `%` 的结果。JavaScript 的 `/` 不取整，`%` 的结果符号也和 Python 不同。
 - id: check-nan
   type: single
   prompt: "`const n = Number(text);` 之后，怎样正确判断转换失败（`n` 是 `NaN`）？"
   options:
     - text: "`Number.isNaN(n)`"
       correct: true
-      explain: 这是检查 `NaN` 的标准方法。
+      explain: "`NaN` 和任何值都不相等，不能用 `===` 判断，要用专门的 `Number.isNaN` 检查。"
     - text: "`n === NaN`"
       explain: "`NaN` 不等于任何值，包括它自己，这个条件永远是 `false`，TypeScript 会报 TS2845。"
     - text: "`typeof n !== 'number'`"
@@ -32,7 +32,7 @@
       correct: true
       explain: 有一边是字符串时 `+` 做拼接；`1 + 2 + '3'` 从左往右计算，先得 `3`，再拼接成 `'33'`。
     - text: "`6 6`"
-      explain: "`+` 遇到字符串时不做加法。"
+      explain: 只要有一边是字符串，`+` 就做拼接，不做加法。
     - text: "`51 123`"
       explain: 运算从左往右进行，`1 + 2` 先算出 `3`，然后才遇到字符串。
     - text: TypeScript 报错，不能把字符串和数字相加

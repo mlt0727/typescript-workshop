@@ -1021,13 +1021,13 @@ describe('导入', () => {
 :::
 
 :::hint{level=2}
-导入的步骤按顺序检查，每一步失败都直接返回要显示的文字：先看 `file.size`（在读取之前），再 `loadBoard(await file.text())`，再 `window.confirm(…)`。把它写成返回字符串的 `async` 函数，监听器中 `void importFile(file).then((message) => { status.textContent = message; })`，就不会忘记在某个分支中显示结果。数量用 `loaded.board.tasks.length`。
+导入的步骤按顺序检查，每一步失败都直接返回要显示的文字：先看 `file.size`（在读取之前），再 `loadBoard(await file.text())`，再 `window.confirm(…)`。把它写成返回字符串的 `async` 函数，监听器中 `void importFile(file).catch(() => '导入失败：无法读取这个文件').then((message) => { status.textContent = message; })`：`file.text()` 读取失败时 Promise 被拒绝，`catch` 把它变成要显示的文字；这样就不会忘记在某个分支中显示结果。数量用 `loaded.board.tasks.length`。
 :::
 
 :::explanation
 导出和导入是同一件事的两面：导出时数据离开应用，变成用户手中的一个文件；导入时一个**来历不明**的文件进入应用。
 
-导出要注意的是资源：`createObjectURL` 让 Blob 留在内存中，直到页面关闭或者 `revokeObjectURL`。参考解在下一个任务中释放（`setTimeout`），这时这一次点击引起的下载已经开始了；替代解在 `click()` 之后立即释放，在现在的浏览器中也能正常下载。
+导出要注意的是资源：`createObjectURL` 让 Blob 留在内存中，直到页面关闭或者 `revokeObjectURL`。参考解用 `setTimeout` 把释放推迟到事件循环的下一个任务（e01）中，这时这一次点击引起的下载已经开始了；在 `click()` 之后立即释放，在现在的浏览器中也能正常下载。
 
 导入要注意的是信任：
 

@@ -175,7 +175,7 @@ expectTypeOf<Params>().toEqualTypeOf<Record<string, string>>();
 - **`:名字*` 可以是零段**：`/api/:path*` 同时匹配 `/api` 和 `/api/sync`，所以一条规则就能把整个 `/api` 交给函数；
 - **`(.*)` 匹配一切**：单页应用的回退规则 `/(.*)` 靠它匹配所有的路径，包括 `/`。但它前面的 `/` 是模式的一部分：这个网站给 `/assets/(.*)` 加了“缓存一年”的响应头，实测请求 `/assets` 时返回的 404 就没有这个响应头。
 
-参考解逐段比较，替代解把模式翻译成一个正则（`:名字` 变成 `([^/]+)`，`:名字*` 变成 `((?:/[^/]+)*)`）。这正是 path-to-regexp 的做法，它的名字就是 “path to RegExp”。两种写法都和 path-to-regexp 6.3.0（`strict: true`、`sensitive: true`）对照过 32 组模式与路径，结果相同。
+参考解逐段比较；另一种写法是把模式翻译成一个正则（`:名字` 变成 `([^/]+)`，`:名字*` 变成 `((?:/[^/]+)*)`）。这正是 path-to-regexp 的做法，它的名字就是 “path to RegExp”。两种写法都和 path-to-regexp 6.3.0（`strict: true`、`sensitive: true`）对照过 32 组模式与路径，结果相同。
 :::
 
 :::variant{kind=alt name=compile-regexp}

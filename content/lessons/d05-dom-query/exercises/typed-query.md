@@ -9,7 +9,7 @@ const button = query('#save', HTMLButtonElement); // 类型是 HTMLButtonElement
 const items = queryAll('li', HTMLLIElement, list); // 类型是 HTMLLIElement[]
 ```
 
-- `query(selector, type, root?)`：在 `root`（默认是 `document`）里查找第一个匹配的元素。找不到时抛出 `Error`，消息包含选择器；找到的元素不是 `type` 的实例时，抛出 `TypeError`，消息包含选择器和期望的类型名（例如 `HTMLButtonElement`，可以用 `type.name` 取得）。
+- `query(selector, type, root?)`：在 `root` 里查找第一个匹配的元素。`root` 的类型 `ParentNode` 是文档和元素共有的接口，所以既可以传整个文档，也可以传某个元素；不传时默认是 `document`。找不到时抛出 `Error`，消息包含选择器；找到的元素不是 `type` 的实例时，抛出 `TypeError`，消息包含选择器和期望的类型名（例如 `HTMLButtonElement`，可以用 `type.name` 取得）。
 - `queryAll(selector, type, root?)`：返回所有匹配元素组成的**数组**（真正的数组，可以直接 `map`）；没有匹配时返回空数组；只要有一个元素不是 `type` 的实例，就抛出 `TypeError`，消息包含选择器。
 - 返回类型由传入的 `type` 决定。
 

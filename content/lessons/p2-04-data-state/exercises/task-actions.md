@@ -5,7 +5,7 @@ timeoutMs: 30000
 ---
 `routes.tsx` 中的详情页已经能加载项目、处理“找不到”和加载失败（可以重试）。任务的复选框现在是只读的。完成“写”的部分：
 
-1. **action**：给 `projects/:projectId` 路由加上 `action: projectAction`。表单中的 `intent` 是 `'toggle'` 时，用 `setTaskDone` 修改任务（提交 `taskId` 和 `done` 两个字段，例如 `done` 是 `'true'` 或 `'false'`）；是 `'add'` 时，用 `addTask` 添加任务（`title` 字段，去掉首尾空白之后为空时**不发请求**，直接当作“任务不能为空”的字段错误）。成功时返回 `data({ ok: true })`；失败时返回带有 4xx 状态码的 `data(…)`，其中有显示给用户的信息（用 `errorMessage`），422 时还要有 `title` 字段的错误；
+1. **action**：给 `projects/:projectId` 路由加上 `action: projectAction`。表单中的 `intent` 是 `'toggle'` 时，用 `setTaskDone` 修改任务（提交 `taskId` 和 `done` 两个字段，`done` 是字符串 `'true'` 或 `'false'`）；是 `'add'` 时，用 `addTask` 添加任务（`title` 字段，去掉首尾空白之后为空时**不发请求**，直接当作“任务不能为空”的字段错误）。成功时返回 `data({ ok: true })`；失败时返回带有 4xx 状态码的 `data(…)`，其中有显示给用户的信息（用 `errorMessage`），422 时还要有 `title` 字段的错误；
 2. **勾选任务**：每个任务用自己的 `useFetcher()` 提交。复选框的名字（标签）是任务的名称。提交期间显示提交的值（乐观更新）；失败时显示 loader 的数据，并在这个任务的 `<li>` 中用一个 `role="alert"` 的元素说明原因；
 3. **添加任务**：列表后面一个表单，输入框的标签是“新任务”，提交按钮是“添加”。提交期间（`fetcher.state` 不是 `'idle'`，包括之后重新加载数据的时候）按钮不可用：`aria-disabled="true"` 并忽略提交（e07），或者 `disabled`；文字是“添加中…”。字段错误：输入框加上 `aria-invalid="true"`，`aria-describedby` 指向显示错误的元素，焦点移到输入框，输入的内容保留；其他错误：用一个 `role="alert"` 的元素说明。成功之后清空输入框。
 
@@ -871,11 +871,11 @@ action 中 `const form = await request.formData()`，`form.get('intent')` 决定
 
 乐观更新完全是“算出来的”：提交期间 `fetcher.formData` 存在，显示提交的值；提交结束之后它消失，显示的就是 loader 的数据。成功和失败两种情况都不需要额外的代码，复选框就会停在正确的状态上。如果把勾选的状态复制进 `useState`，就要自己记得在失败时改回去，还要在 loader 的数据变化时同步，两份数据迟早会不一致。
 
-`fetcher.state` 在提交期间是 `'submitting'`，action 完成之后、loader 重新运行期间是 `'loading'`，都不是 `'idle'`。按钮在这整段时间都不可用：新任务出现在列表中之前，用户不能再提交一次（错误解 `submitting-only` 只看了 `'submitting'`）。按钮用 `aria-disabled`，焦点不会丢失（e07），提交的检查放在表单的 `onSubmit` 中。
+`fetcher.state` 在提交期间是 `'submitting'`，action 完成之后、loader 重新运行期间是 `'loading'`，都不是 `'idle'`。按钮在这整段时间都不可用：新任务出现在列表中之前，用户不能再提交一次；只看 `'submitting'` 的话，action 一完成按钮就又能点了。按钮用 `aria-disabled`，焦点不会丢失（e07），提交的检查放在表单的 `onSubmit` 中。
 
 空的任务在 action 中就拦下来：这一步运行在浏览器中，不发请求也能给出结果；服务器仍然会检查（它不能相信任何客户端），这里只是省掉一次没有意义的请求。
 
-替代解用 JSON 提交（`encType: 'application/json'`，action 中 `await request.json()`，正在提交的数据在 `fetcher.json` 中），先用一个解析函数检查提交的内容；添加任务的输入框是受控的，在渲染时根据新的结果清空它，而不是用 Effect。
+另一种写法是用 JSON 提交（`encType: 'application/json'`，action 中 `await request.json()`，正在提交的数据在 `fetcher.json` 中），先用一个解析函数检查提交的内容；添加任务的输入框是受控的，在渲染时根据新的结果清空它，而不是用 Effect。
 :::
 
 :::variant{kind=alt name=json-and-controlled}

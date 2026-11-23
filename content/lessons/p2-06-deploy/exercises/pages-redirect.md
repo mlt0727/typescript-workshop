@@ -210,9 +210,9 @@ describe('restoredPath：不安全的地址', () => {
 
 编码要交给 `URLSearchParams`：手工拼接 `?p=` 加原来的地址，原来地址中的 `&` 会把参数拆开，`#` 之后的部分根本不会出现在查询参数中。
 
-检查要在解析之后：`restoredPath` 收到的 `p` 可以是任何人构造的。`//evil.example`、`/\evil.example`、`/` 加制表符再加 `/evil.example` 解析出来是另一个网站，`../admin`、`%2e%2e/admin` 解析出来离开了应用的路径（注意 `searchParams.get` 已经解码过一次，地址中要写成 `%252e%252e` 才会读到 `%2e%2e`）；用字符串规则检查，总会漏掉某一种写法：错误解 `string-check` 只检查了开头的 `/`，`string-rules` 检查了开头的 `/`、`\` 和每一段的 `..`，仍然漏掉了制表符。解析也可能失败（例如端口超出范围），`new URL` 会抛出异常，首页的脚本就在创建路由之前中断了，所以要捕获它（错误解 `no-catch`）。让 `URL` 按浏览器的规则解析，再检查 `origin` 和 `pathname`，只有两条规则，而且它们检查的正是我们关心的东西。
+检查要在解析之后：`restoredPath` 收到的 `p` 可以是任何人构造的。`//evil.example`、`/\evil.example`、`/` 加制表符再加 `/evil.example` 解析出来是另一个网站，`../admin`、`%2e%2e/admin` 解析出来离开了应用的路径（注意 `searchParams.get` 已经解码过一次，地址中要写成 `%252e%252e` 才会读到 `%2e%2e`）；用字符串规则检查，总会漏掉某一种写法：只检查开头的 `/`，会漏掉反斜杠和 `..`；再加上检查 `\` 和每一段的 `..`，仍然漏掉了制表符。解析也可能失败（例如端口超出范围），`new URL` 会抛出异常，首页的脚本就在创建路由之前中断了，所以要捕获它。让 `URL` 按浏览器的规则解析，再检查 `origin` 和 `pathname`，只有两条规则，而且它们检查的正是我们关心的东西。
 
-替代解用 `encodeURIComponent` 编码，用 `has` 判断有没有这个参数。
+另一种写法：编码也可以用 `encodeURIComponent`，写成 `` `${base}?p=${encodeURIComponent(rest)}` ``；判断有没有参数也可以用 `current.searchParams.has('p')`。
 :::
 
 :::variant{kind=alt name=encode-uri-component}

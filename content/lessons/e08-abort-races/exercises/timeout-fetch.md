@@ -3,7 +3,7 @@ kind: challenge
 title: 可以取消、会超时的请求
 fixtures: timeout
 ---
-实现 `getJsonWithTimeout(url, options)`：
+起始代码只是发出请求、读取 JSON，没有用到 `options`。改写 `getJsonWithTimeout(url, options)`：
 
 1. `options.timeoutMs` 毫秒后请求（包括读取响应体）还没完成，就**中止请求**，并以 `RequestTimeoutError` 拒绝，消息是 `请求超过 100 毫秒`（数字换成实际的值）；
 2. `options.signal`（可选）是调用方的取消信号。调用方取消时中止请求，并以**调用方给出的取消原因**（`signal.reason`）原样拒绝；如果调用之前它就已经被取消了，也一样（这时不应该发出请求）；

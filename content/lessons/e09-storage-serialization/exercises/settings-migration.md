@@ -14,7 +14,7 @@ title: 带版本迁移的设置存储
 
 1. 没有保存过、内容不是合法的 JSON、或者存储不可用：返回默认设置；
 2. **第 2 版**（`version` 为 `2`）：`theme` 必须是 `'light'`、`'dark'`、`'system'` 之一，`fontSize` 必须是 10 到 32 之间的整数，`lastOpened` 是 `null`，或者是 `toISOString()` 格式的字符串（例如 `2026-10-20T08:00:00.000Z`），返回时转换成 `Date`。检查方法：转换成 `Date` 后先确认它有效，再调用 `toISOString()`，结果必须和原来的字符串完全相同（e06）。任何一项不合格，就返回默认设置；
-3. **第 1 版**（普通对象、没有 `version`，`darkMode` 是布尔值）：迁移成 `theme: darkMode ? 'dark' : 'light'`，`fontSize` 和 `lastOpened` 用默认值；并且**立即把迁移后的结果按第 2 版的格式写回**存储，下次就不用再迁移；
+3. **第 1 版**（普通对象、没有 `version`，`darkMode` 是布尔值）：迁移成 `theme: darkMode ? 'dark' : 'light'`，`fontSize` 和 `lastOpened` 用默认值；并且**立即把迁移后的结果按第 2 版的格式写回**存储，下次就不用再迁移（写回失败时，仍然返回迁移后的设置）；
 4. 其他任何情况（包括未知的版本号）：返回默认设置。
 
 **`saveSettings(storage, settings)`** 按第 2 版的格式保存（日期保存为 ISO 字符串）；写入失败时忽略。

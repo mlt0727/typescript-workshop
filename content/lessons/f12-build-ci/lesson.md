@@ -136,6 +136,8 @@ jobs:
       - run: npm test
 ```
 
+`${{ matrix.node-version }}` 是 GitHub Actions 的表达式，运行时替换成这一遍的参数：这个 job 会分别用 22 和 24 各运行一次。
+
 job 能同时运行，所以整个工作流的耗时不是所有 job 的耗时之和，而是**最长的那条依赖链**（关键路径）：
 
 :::playground{#critical-path}

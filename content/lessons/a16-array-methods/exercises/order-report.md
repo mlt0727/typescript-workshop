@@ -2,9 +2,9 @@
 kind: task
 title: 订单报表
 ---
-订单的类型是 `{ id: string; amount: number; paid: boolean }`（`amount` 单位为分）。实现三个函数：
+订单的类型是 `{ id: string; amount: number; paid: boolean }`（`amount` 单位为分）。起始代码已经写出了下面三个函数，但每个都有错误，其中一处 TypeScript 已经在第 4 行标了出来。对照规格把它们改对：
 
-- `paidTotal(orders)`：已付款订单的金额总和；没有订单时为 `0`。
+- `paidTotal(orders)`：已付款订单的金额总和；没有已付款的订单时（包括 `orders` 是空数组）为 `0`。
 - `unpaidIds(orders)`：未付款订单的 `id` 数组，保持原来的顺序。
 - `findLarge(orders, min)`：第一个金额**大于或等于** `min` 的订单；没有时返回 `undefined`。
 
@@ -103,7 +103,7 @@ test('不修改传入的数组', () => {
 :::
 
 :::hint{level=1}
-起始代码有三处错误：`paidTotal` 没有只统计已付款订单，`reduce` 也没有初始值；`unpaidIds` 的筛选条件反了；`findLarge` 的比较和查找方式不对。逐个对照规格检查，并运行看看。
+三个函数各有问题。`paidTotal`：没有只统计已付款订单，`reduce` 也没有初始值。第 4 行的类型错误就来自后者：没有初始值时，累计值 `sum` 是第一个订单对象，而不是数字。`unpaidIds`：筛选条件反了。`findLarge`：比较条件不对，查找也有更直接的方法。逐个对照规格检查；想看某个函数实际返回什么，可以在文件末尾加一行 `console.log(paidTotal([]))` 这样的调用再运行。
 :::
 
 :::hint{level=2}

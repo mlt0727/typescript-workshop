@@ -13,7 +13,7 @@
   type: single
   prompt: "为什么 `F extends (...args: never[]) => infer R ? R : never` 能匹配 `(a: string, b: number) => boolean`，而把 `never[]` 换成 `unknown[]` 就不行？"
   options:
-    - text: 函数的参数是逆变的：目标类型的参数是 never 时，任何函数都能接收它；是 unknown 时，只有能接收任意值的函数才能赋值过去
+    - text: 函数的参数是逆变的：目标类型的参数是 never 时，任何函数都能赋值给它；是 unknown 时，只有能接收任意值的函数才能赋值过去
       correct: true
       explain: "(a: string) => boolean 不能保证接收任意的 unknown，所以不能赋值给 (...args: unknown[]) => R。"
     - text: unknown[] 只能匹配没有参数的函数

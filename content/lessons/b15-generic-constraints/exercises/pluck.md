@@ -4,7 +4,7 @@ title: 取出某一列
 ---
 `pluck(items, key)` 从对象数组中取出某个属性组成的新数组，例如 `pluck(users, 'name')` 得到所有用户名。
 
-要求类型准确：`key` 只能是元素类型的键；返回数组的元素类型就是这个键对应的值类型。例如 `pluck(users, 'age')` 的类型是 `number[]`，`pluck(users, 'email')` 应当报错（如果用户类型里没有 `email`）。
+起始代码的类型太宽：`key` 可以是任意字符串（所以 `item[key]` 报 TS7053），返回的是 `unknown[]`。改写它的签名，让类型准确：`key` 只能是元素类型的键；返回数组的元素类型就是这个键对应的值类型。例如 `pluck(users, 'age')` 的类型是 `number[]`，`pluck(users, 'email')` 应当报错（如果用户类型里没有 `email`）。
 
 :::files{role=starter}
 ```ts file=pluck.ts

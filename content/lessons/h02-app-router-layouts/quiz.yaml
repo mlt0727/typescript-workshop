@@ -27,7 +27,7 @@
   type: single
   prompt: 开启了 Cache Components，`app/docs/[[...slug]]/page.tsx` 没有 `generateStaticParams`，在组件的顶层 `await params`。`next build` 会怎样？
   options:
-    - text: 构建失败：参数在构建时未知，是请求时的数据，必须放进 `<Suspense>`（或者提供 `generateStaticParams`）
+    - text: 构建失败：参数在构建时未知，是请求时的数据，要放进 `<Suspense>`（或者提供 `generateStaticParams` 等）
       correct: true
       explain: 实测的错误是 `Next.js encountered uncached or runtime data during prerendering`。
     - text: 构建成功，这个页面变成 ƒ

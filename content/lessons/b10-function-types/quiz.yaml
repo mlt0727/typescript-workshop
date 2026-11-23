@@ -6,9 +6,9 @@
       correct: true
       explain: 它需要第三个参数，但 `Visitor` 的调用方只会传两个。
     - text: "`(value: string) => {}`"
-      explain: 参数更少是允许的，多传的参数会被忽略。
+      explain: 可以赋值。参数更少是允许的，调用方多传的参数会被忽略。
     - text: "`() => {}`"
-      explain: 一个参数都不用也可以。
+      explain: 可以赋值。参数更少是允许的，一个参数都不写也行。
 - id: param-direction
   type: single
   prompt: "`type Handler = (value: string | number) => void;` 为什么 `const h: Handler = (text: string) => {};` 报错？"
@@ -41,6 +41,6 @@
       correct: true
       explain: 属性写法受 `strictFunctionTypes` 检查。
     - text: "方法写法：`onChange(value: string): void;`"
-      explain: 方法写法出于历史原因不按 `strictFunctionTypes` 严格检查参数类型。
+      explain: 方法写法出于历史原因不按 `strictFunctionTypes` 严格检查参数类型，只能处理更窄类型的函数也能赋给它。
     - text: 两种写法完全一样
-      explain: 它们在参数类型的检查上有区别。
+      explain: 不一样。方法写法的参数类型只做双向检查，更窄的参数类型也能通过；属性写法才严格检查。

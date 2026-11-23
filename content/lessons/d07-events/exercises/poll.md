@@ -6,7 +6,7 @@ title: 可以结束的投票卡片
 
 1. 点击三个选项按钮之一，该选项票数加 1，并把 `#result` 的文字更新为固定顺序的汇总，例如：`TypeScript 2 · JavaScript 0 · Python 1`。每个按钮的 `data-option` 属性给出选项名，在 TypeScript 中可以用 `button.dataset.option` 读取（类型是 `string | undefined`）。
 2. 选项按钮里有一个 `<span>` 图标。**点击图标也必须算作给这个按钮投票。**
-3. 点击 `#close`（结束投票）后：之后再点选项按钮不再计票；`#result` 末尾追加 `（已结束）`，例如 `TypeScript 2 · JavaScript 0 · Python 1（已结束）`；`#close` 按钮变为禁用。
+3. 点击 `#close`（结束投票）后：之后再点选项按钮不再计票；`#result` 末尾追加 `（已结束）`，例如 `TypeScript 2 · JavaScript 0 · Python 1（已结束）`；`#close` 按钮变为禁用（把它的 `disabled` 属性设为 `true`）。
 4. 页面加载后 `#result` 立即显示 `TypeScript 0 · JavaScript 0 · Python 0`。
 
 不使用 `any`、类型断言或非空断言。

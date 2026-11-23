@@ -4,7 +4,7 @@
   options:
     - text: JSON.parse 返回 any，any 的属性还是 any，可以赋给任何类型
       correct: true
-      explain: "写成 `const data: unknown = JSON.parse(text)`，之后的每一步都要先检查。"
+      explain: "对。`JSON.parse` 的返回类型是 `any`，`data.count` 也是 `any`，而 `any` 可以赋给 `number`。写成 `const data: unknown = JSON.parse(text)`，之后的每一步都要先检查。"
     - text: TypeScript 会在运行时检查 data.count 是不是数字
       explain: 类型在运行时被擦除，没有任何检查。
     - text: 因为没有开启 strict
@@ -19,7 +19,7 @@
     - text: "@ts-ignore 忽略整个文件，@ts-expect-error 只忽略下一行"
       explain: 两者都只作用于下一行；忽略整个文件的是 @ts-nocheck。
     - text: 没有区别，只是名字不同
-      explain: 区别在于没有错误时的行为。
+      explain: 有区别：下一行没有错误时，@ts-expect-error 报 TS2578，@ts-ignore 什么都不说。
 - id: legacy-any
   type: single
   prompt: 一个没有类型声明的旧库返回 any。下面哪种做法最能防止 any 扩散到整个程序？

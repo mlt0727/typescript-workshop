@@ -4,10 +4,10 @@ title: 可以取消的提醒
 ---
 `createReminder(callback, ms)` 安排在 `ms` 毫秒后调用一次 `callback`，并返回一个对象：
 
-- `cancel()`：取消提醒。如果提醒还没触发，取消它并返回 `true`；如果已经触发过、或者已经取消过，返回 `false`。
+- `cancel()`：取消提醒。如果提醒还没触发，取消它并返回 `true`；如果已经触发过或者已经取消过，返回 `false`。
 - `fired`：getter，提醒是否已经触发。
 
-起始代码能安排提醒，但没法取消。补全它。
+起始代码能按时调用 `callback`，但 `cancel()` 和 `fired` 都还没有实现，总是返回 `false`。补全它们。
 
 :::files{role=starter}
 ```ts file=reminder.ts

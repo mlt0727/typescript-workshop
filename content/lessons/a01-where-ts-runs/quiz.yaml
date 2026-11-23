@@ -42,4 +42,4 @@
     - text: 页面标题变成 `x`
       explain: 纯 TypeScript 示例没有页面。需要页面时使用“网页（DOM）”模式。
     - text: 没有类型错误，运行时什么也不发生
-      explain: TypeScript 根据 `lib` 配置知道当前环境没有 `document`，会在编译期报错。
+      explain: TypeScript 根据 `lib` 配置知道当前环境没有 `document`，会在编译期报错；运行时也确实没有 `document`，这一行会抛出 `ReferenceError`。

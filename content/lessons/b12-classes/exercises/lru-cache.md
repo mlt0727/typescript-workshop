@@ -153,7 +153,7 @@ describe('LruCache', () => {
 :::
 
 :::hint{level=2}
-“移到最后”的做法：先 `delete(key)`，再 `set(key, value)`。淘汰时取第一个键：`this.#entries.keys().next()` 返回 `{ value, done }`。注意 `get` 判断“不存在”要用 `=== undefined`，不能用真假检查——值可能是空字符串。
+“移到最后”的做法：先 `delete(key)`，再 `set(key, value)`（对已有的键直接 `set` 只会换掉值，位置不变）。淘汰时要取第一个键：可以用 `for (const key of this.#entries.keys())` 循环，删掉第一个键就 `break`；也可以直接向迭代器要第一项，`this.#entries.keys().next()` 返回 `{ value, done }`，要先确认 `done` 不是 `true`，TypeScript 才允许把 `value` 当作字符串使用。注意 `get` 判断“不存在”要用 `=== undefined`，不能用真假检查——值可能是空字符串。
 :::
 
 :::explanation

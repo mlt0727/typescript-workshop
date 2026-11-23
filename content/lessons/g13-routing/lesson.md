@@ -208,9 +208,9 @@ createRoot(container).render(<RouterProvider router={router} />);
 
 - 用户点击就能去的地方，用 `<Link>` 或 `<NavLink>`：它们是真正的链接，可以在新标签页打开、可以复制地址，读屏软件也会把它读成“链接”；
 - 不是由点击链接引起的跳转，才用 `useNavigate()` 得到的 `navigate(…)`：例如表单提交成功后转到新建的页面、操作超时后回到登录页。不要用一个按钮加 `navigate` 去模拟链接；
-- `<Link to="/products" replace>`、`navigate(-1)`：替换当前的历史记录、后退一步。
+- `<Link to="/products" replace>` 替换当前的历史记录，而不是新增一条；`navigate(-1)` 后退一步。
 
-React Router 不会在切换页面后移动焦点，也不会通知读屏软件页面变了（官方文档的“Accessibility”一节把它们留给了应用）。e10 的做法在这里同样适用：在布局中根据 `useLocation().pathname` 的变化，把焦点移到新页面的主标题上（页面刚打开时不移动）。
+React Router 不会在切换页面后移动焦点，也不会通知读屏软件页面变了（官方文档的“Accessibility”一节把它们留给了应用）。e10 的做法在这里同样适用：在布局中根据 `useLocation().pathname`（`useLocation()` 返回当前的地址）的变化，把焦点移到新页面的主标题上（页面刚打开时不移动）。
 
 ## 查询参数：把界面状态放进地址
 

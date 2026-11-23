@@ -5,8 +5,8 @@ title: 访问记录统计
 网站的访问记录是 `{ user: string; page: string }` 的数组，按时间先后排列。同一个用户可能多次访问同一个页面。实现三个函数：
 
 - `uniqueVisitors(visits)`：有多少个**不同的**用户。
-- `pagesByUser(visits)`：返回 `Map<string, string[]>`：每个用户访问过的**不同**页面，按该用户第一次访问的先后排列；Map 中用户的顺序是用户第一次出现的顺序。
-- `commonPages(visits, a, b)`：用户 `a` 和用户 `b` **都**访问过的页面，按 `localeCompare` 排序后返回数组；任一用户没有记录时返回空数组。
+- `pagesByUser(visits)`：返回 `Map<string, string[]>`，键是用户，值是这个用户访问过的**不同**页面（重复访问的只算一次），按他第一次访问各个页面的先后排列；Map 中用户的顺序是用户第一次出现的顺序。
+- `commonPages(visits, a, b)`：用户 `a` 和用户 `b` **都**访问过的页面，每个页面只出现一次，按 `localeCompare` 升序排列后返回数组；任一用户没有记录时返回空数组。
 
 都不能修改传入的数组。
 
@@ -120,11 +120,11 @@ test('不修改传入的数组', () => {
 :::
 
 :::hint{level=2}
-`pagesByUser` 里，`const seen = pages.get(user) ?? new Set<string>(); seen.add(page); pages.set(user, seen);`。`commonPages` 可以复用 `pagesByUser`，然后 `new Set(列表 ?? []).intersection(另一个集合)`，再展开成数组并用 `toSorted((x, y) => x.localeCompare(y))` 排序。
+`pagesByUser`：先建 `const pages = new Map<string, Set<string>>();`，循环里写 `const seen = pages.get(user) ?? new Set<string>(); seen.add(page); pages.set(user, seen);`，最后另建一个要返回的 Map，把每个用户的 Set 用 `[...seen]` 展开成数组放进去。`commonPages` 可以复用 `pagesByUser`：`byUser.get(a) ?? []` 取出一个用户的页面数组（没有记录时是空数组），两个用户各建一个 `new Set(...)`，用 `intersection` 求交集，再展开成数组并用 `toSorted((x, y) => x.localeCompare(y))` 排序。
 :::
 
 :::explanation
-三个函数都建立在“用合适的集合表达问题”上：
+三个函数的关键都是先选对数据结构：
 
 - “不同的用户”就是用户名的 Set，大小即答案。
 - “每个用户的不同页面”需要按用户分组（Map）并在组内去重（Set）。Set 保持插入顺序，所以转成数组后正好是首次访问的顺序。
@@ -132,7 +132,7 @@ test('不修改传入的数组', () => {
 
 `pages.get(user) ?? new Set<string>()` 处理了第一次遇到某个用户的情况。Set 是对象，`seen.add(page)` 修改的就是 Map 里保存的那一个（a11 的引用），最后的 `pages.set` 只在新建时才是必要的，写上也没有坏处。
 
-交集的结果顺序由规范规定，但取决于两个集合哪个更小，不一定是你期望的顺序，所以规格要求最后用 `toSorted` 排一次。
+交集结果里元素的顺序是确定的，但取决于两个集合哪个更小，不一定是你期望的顺序，所以规格要求最后排一次序。
 :::
 
 :::variant{kind=alt name=arrays-and-includes}

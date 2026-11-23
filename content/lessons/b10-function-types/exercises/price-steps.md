@@ -5,7 +5,7 @@ title: 价格处理流水线
 结算时，价格要依次经过若干“步骤”：打折、减券、取整……每一步都是一个接收价格、返回新价格的函数。
 
 1. 定义并导出函数类型 `Step`：接收一个 `number`，返回一个 `number`。
-2. 实现 `applySteps(price, steps)`：按数组顺序依次应用每一步，返回最终价格；没有步骤时返回原价。
+2. 给 `steps` 参数补上类型（`Step` 的数组），实现 `applySteps(price, steps)`：按数组顺序依次应用每一步，返回最终价格；没有步骤时返回原价。
 
 例如 `applySteps(100, [(p) => p * 0.8, (p) => p - 5])` 先打八折得 80，再减 5 得 75。
 
@@ -66,11 +66,11 @@ applySteps(10, [(p: number) => `${p}`]);
 :::
 
 :::hint{level=1}
-`export type Step = (price: number) => number;`，然后把 `steps` 的类型写成 `Step[]`（或 `readonly Step[]`）。
+`Step` 的写法和本课第一个示例里的 `Formatter` 一样，只是返回类型不同；“`Step` 的数组”写作 `Step[]`。应用步骤时，用一个变量保存当前的价格，每调用一步，就把它换成这一步的返回值。
 :::
 
 :::hint{level=2}
-用一个 `let result = price;`，`for (const step of steps) { result = step(result); }`，最后返回 `result`。也可以用 `reduce`：`steps.reduce((p, step) => step(p), price)`。
+类型：`export type Step = (price: number) => number;`，`steps` 的类型写成 `Step[]`（或 `readonly Step[]`）。函数体：先 `let result = price;`，再 `for (const step of steps) { result = step(result); }`，最后返回 `result`。也可以用 `reduce`：`steps.reduce((p, step) => step(p), price)`。
 :::
 
 :::explanation

@@ -149,7 +149,7 @@ console.log(built);
 const runtimeEnv = { NEXT_PUBLIC_GREETING: 'runtime-value' };
 console.log(built.includes(runtimeEnv.NEXT_PUBLIC_GREETING), built.includes('secret-value-7c1d'));
 ```
-- 第 12 行：代码中只剩下值本身（真实的 Next.js 中，`LAB_SECRET` 那一处读的是一个空的替身，结果同样是 `undefined`）；
+- 第 12 行：输出 `setup("hello-from-env", undefined);`，两处 `process.env.…` 都换成了值本身（真实的 Next.js 中，`LAB_SECRET` 那一处读的是一个空的替身，结果同样是 `undefined`）；
 - 第 16 行：`false false`：新的值不在构建好的代码中，密钥也不在。
 :::
 

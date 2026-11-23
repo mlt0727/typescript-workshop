@@ -2,9 +2,9 @@
 kind: task
 title: 两个常用的 Effect Hook
 ---
-在 `hooks.ts` 中实现两个 Hook：
+在 `hooks.ts` 中完成两个 Hook。起始代码里的 `useDocumentTitle` 在渲染时直接修改标题，需要改写；`useInterval` 还没有实现。
 
-**`useDocumentTitle(title)`**：组件显示期间，页面标题（`document.title`）是 `title`，`title` 变化时跟着变；组件消失时，恢复成使用这个 Hook 之前的标题。
+**`useDocumentTitle(title)`**：组件显示期间，页面标题（`document.title`）是 `title`，`title` 变化时跟着变；组件消失时，恢复成使用这个 Hook 之前的标题。组件渲染了却没有显示出来时（例如同一次渲染中别的组件出错），标题不能改变。
 
 **`useInterval(callback, delay)`**：
 
@@ -222,7 +222,7 @@ describe('useInterval', () => {
 
 `useInterval` 的难点在于 `callback`。调用方通常写一个内联函数，它每次渲染都是新的。把它放进依赖数组，每次渲染都会清除计时器、重新开始计时。在 `Timer` 中，每次 tick 之后才重新渲染，这个问题还不明显；但只要组件渲染得比 `delay` 更频繁（例如用户正在旁边的输入框中打字），计时器就一次也等不到（测试中“换 callback 不会重新计时”检查的就是这一点）；不放进依赖数组（直接在 `setInterval` 中调用第一次传入的 `callback`），用的就永远是第一次渲染时的函数，`Timer` 会一直显示 1 秒。`useEffectEvent` 正是为这种情况设计的：`onTick` 每次调用时都使用最新的 `callback`，而它本身不是依赖。
 
-在 `useEffectEvent` 出现之前，常见的写法是用一个 ref 保存最新的 `callback`（每次渲染后在另一个 Effect 中更新 `ref.current`），替代解就是这样写的。
+在 `useEffectEvent` 出现之前，常见的写法是用一个 ref 保存最新的 `callback`（每次渲染后在另一个 Effect 中更新 `ref.current`），计时器中调用 `ref.current()`，依赖数组同样只写 `[delay]`。
 :::
 
 :::variant{kind=alt name=latest-ref}

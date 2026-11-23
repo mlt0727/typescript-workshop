@@ -4,7 +4,7 @@ title: 安全地读取收货城市
 ---
 订单里的 `customer`（顾客）和顾客的 `address`（地址）都可能缺失。修改 `getCity`，让它在**任何一层缺失时返回 `undefined`**，而不是抛出错误。
 
-要求：返回类型保持 `string | undefined`；不要使用非空断言 `!` 或类型断言。
+要求：返回类型保持 `string | undefined`；不要使用非空断言 `!` 或类型断言 `as`。
 
 :::files{role=starter}
 ```ts file=city.ts

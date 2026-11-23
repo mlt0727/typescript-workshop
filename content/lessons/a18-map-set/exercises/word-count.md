@@ -2,10 +2,10 @@
 kind: task
 title: 统计单词出现次数
 ---
-实现 `countWords(text)`：统计每个单词出现的次数，返回 `Map<string, number>`。
+`countWords(text)` 统计每个单词出现的次数，返回 `Map<string, number>`。起始代码已经拆出单词并开始计数，但第 4 行有类型错误，下面的后两条要求也还没有做到。把它改对：
 
-- 单词之间用**一个空格**分隔（可以用 `text.split(' ')` 拆分）；
-- 不区分大小写：统一转成小写后再统计；
+- 单词之间用**一个空格**分隔，`text.split(' ')` 把文本拆成单词的数组（起始代码已经写好）；
+- 不区分大小写：统一转成小写（`toLowerCase()`）后再统计；
 - 空字符串返回空的 Map。
 
 Map 的顺序是单词第一次出现的顺序。例如 `countWords('To be or not to be')` 得到的 Map 依次是 `to → 2`、`be → 2`、`or → 1`、`not → 1`。
@@ -76,7 +76,7 @@ test('只有一个单词', () => {
 :::
 
 :::hint{level=2}
-`counts.set(word, (counts.get(word) ?? 0) + 1);`。在循环前加上 `if (text === '') { return counts; }`。
+计数写成 `counts.set(word, (counts.get(word) ?? 0) + 1);`。转小写可以在拆分之前做：`text.toLowerCase().split(' ')`。空字符串在循环前单独处理：`if (text === '') { return counts; }`。
 :::
 
 :::explanation

@@ -89,7 +89,7 @@ export default defineConfig(
 - `projectService: true`：让 typescript-eslint 读取 `tsconfig.json`，用和编辑器一样的方式得到类型信息；
 - 最后一项：`eslint .` 也会检查 `eslint.config.js` 本身，而它不在 `tsconfig.json` 的范围内，需要类型信息的规则无法运行。不加这一项时，实测 `eslint .` 报告 `Parsing error: …eslint.config.js was not found by the project service`。`disableTypeChecked` 让这些 `.js` 文件只做不需要类型信息的检查。
 
-3. 在 `package.json` 的 `scripts` 中加上 `"lint": "eslint ."`。对下面这个文件运行 `npm run lint`（编写本课时使用 ESLint 10.13、typescript-eslint 8.72）：
+3. 在 `package.json` 的 `scripts` 中加上 `"lint": "eslint ."`。对下面这个文件（`src/users.ts`）运行 `npm run lint`（编写本课时使用 ESLint 10.13、typescript-eslint 8.72）：
 
 ```ts
 type User = { id: string; name: string };
@@ -126,12 +126,12 @@ export function save(user: User) {
   1 error and 0 warnings potentially fixable with the `--fix` option.
 ```
 
-- 第 10 行：`forEach` 的回调应该返回 `void`，传入的却是返回 Promise 的 `async` 函数，正是 f05 的 bug；
+- 第 10 行：`forEach` 的回调应该返回 `void`，传入的却是返回 Promise 的 `async` 函数，正是 f05 中见过的那个 bug；
 - 第 17 行：`fetch` 返回的 Promise 没有被 `await`，也没有处理失败，请求失败时没有人知道；
 - 第 18 行的两条规则：`let` 可以改成 `const`（这一条可以自动修复，`npx eslint --fix src` 会把它改成 `const`），变量也没有被使用；
 - 注意 `==` **没有**被报告：`eqeqeq` 不在推荐的规则集中，需要时在配置中加一个对象：`{ rules: { eqeqeq: 'error' } }`。
 
-每条规则的严重程度是 `'off'`（或 `0`）、`'warn'`（`1`）、`'error'`（`2`）。`error` 让 `eslint` 以非零的退出码结束，持续集成（f12）中就会失败。
+每条规则的严重程度是 `'off'`（或 `0`）、`'warn'`（`1`）、`'error'`（`2`）。`error` 让 `eslint` 以非零的退出码结束，在持续集成（f12 会讲）中这一步就会失败。
 
 确实需要例外时，在那一行上面写 `// eslint-disable-next-line 规则名 -- 原因`，并写清楚原因；不要为了让 lint 通过而大面积关闭规则。
 
@@ -175,7 +175,7 @@ Prettier 的选项很少，常改的只有几个，写在 `.prettierrc.json` 中
 
 ## 在持续集成中检查
 
-把检查写成 `package.json` 中的脚本，持续集成（f12）中依次运行：`npm run lint`（ESLint）、`npx prettier --check .`、`npx tsc --noEmit`（或 `tsc -b`）、`npm test`。任何一步失败，这次提交就不能合并。
+把检查写成 `package.json` 中的脚本，在持续集成（f12 会讲）中依次运行：`npm run lint`（ESLint）、`npx prettier --check .`、`npx tsc --noEmit`（或 `tsc -b`）、`npm test`。任何一步失败，这次提交就不能合并。
 
 ::exercise{#lint-summary}
 

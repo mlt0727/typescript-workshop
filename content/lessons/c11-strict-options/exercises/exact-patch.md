@@ -8,7 +8,7 @@ compiler:
 本题开启了 `exactOptionalPropertyTypes`。联系人的 `email`、`phone` 是可选的：没有就是**没有这个属性**，而不是值为 `undefined`。在 `contacts.ts` 中实现：
 
 1. **`applyContactPatch(contact, patch)`**：返回新的联系人，不修改传入的对象。补丁中某一项：没有给出时不变；是字符串时改成它；是 `null` 时**删除**这一项（结果中没有这个属性）。`name` 只能修改，不能删除；
-2. **`fromForm(form)`**：表单的三个输入框都是字符串，去掉首尾空白之后：`name` 原样使用；`email`、`phone` 为空字符串时结果中**没有**这个属性。
+2. **`fromForm(form)`**：表单的三个输入框都是字符串，三项都先去掉首尾空白（`trim()`）。去掉空白后的 `name` 直接作为结果的 `name`；`email`、`phone` 去掉空白后是空字符串时，结果中**没有**这个属性，否则就是去掉空白后的值。
 
 :::files{role=starter}
 ```ts file=contacts.ts

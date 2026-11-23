@@ -708,9 +708,9 @@ describe('详情页', () => {
 
 “返回项目列表”用链接的 `state` 记住列表页当时的 `search`。它随这条历史记录保存，刷新之后还在，但不在地址中，分享出去的详情页链接很干净。读取时一定要检查：`location.state` 的类型是 `any`，直接打开的页面中它是 `null`，旧版本的应用写进去的可能是别的格式。如果把 `{ listSearch: 42 }` 直接交给 `Link`，React Router 生成地址时会出错，整个页面都显示不出来。
 
-根地址用 `<Navigate to="/projects" replace />`：`/` 这一条历史记录被 `/projects` 替换。正文比较了三种转向的写法：loader 返回 `replace(…)` 在直接打开 `/` 时没有问题，但站内导航到 `/` 时，它替换掉的是上一页（错误解 `loader-replace`）；不加 `replace` 的 `<Navigate>` 或者 loader 返回 `redirect(…)`，直接打开 `/` 之后就“后退”不出去。
+根地址用 `<Navigate to="/projects" replace />`：`/` 这一条历史记录被 `/projects` 替换。正文比较了三种转向的写法：loader 返回 `replace(…)` 在直接打开 `/` 时没有问题，但站内导航到 `/` 时，它替换掉的是上一页；不加 `replace` 的 `<Navigate>` 或者 loader 返回 `redirect(…)`，直接打开 `/` 之后就“后退”不出去。
 
-替代解换了几种写法：`projects` 路由下嵌套 index 路由和 `:projectId` 子路由，列表中用相对链接 `to={p.id}`，返回链接用 `to={{ pathname: '..', search }}`（`..` 是相对于路由的上一级，也就是 `/projects`）；`setSearchParams` 传一个函数，在地址当前的参数上修改；用类型守卫 `isFromList` 检查 `state`。
+也可以换几种写法：`projects` 路由下嵌套 index 路由和 `:projectId` 子路由，列表中用相对链接 `to={p.id}`，返回链接用 `to={{ pathname: '..', search }}`（`..` 是相对于路由的上一级，也就是 `/projects`）；`setSearchParams` 传一个函数，在地址当前的参数上修改；用类型守卫 `isFromList` 检查 `state`。
 :::
 
 :::variant{kind=alt name=navigate-nested}

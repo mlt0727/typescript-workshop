@@ -31,7 +31,7 @@
     - text: TypeScript 报错：守卫的实现与 `User` 不符
       explain: TypeScript 不检查守卫的实现是否正确。
     - text: 输出 `undefined`
-      explain: 读取 `undefined.length` 会抛出 `TypeError`，不会输出 `undefined`。
+      explain: "`data.name` 确实是 `undefined`，但代码接着读取它的 `.length`，这一步就抛出 `TypeError`，不会有输出。"
 - id: assertion
   type: single
   prompt: "`function assertIsString(v: unknown): asserts v is string`。对 `x: unknown` 调用 `assertIsString(x)` 并正常返回后，`x` 是什么类型？"
@@ -40,7 +40,7 @@
       correct: true
       explain: 断言函数正常返回就意味着断言成立，之后的代码按断言收窄。
     - text: "`unknown`"
-      explain: 这是普通函数的结果；`asserts v is string` 会让调用之后的 `v` 变成 `string`。
+      explain: "如果 `assertIsString` 是普通函数，`x` 才会仍然是 `unknown`；返回类型 `asserts v is string` 让调用之后的 `x` 收窄成 `string`。"
     - text: "`boolean`"
       explain: 断言函数不返回值（返回类型相当于 `void`），它通过“抛出或不抛出”表达结果。
 - id: arrow-assertion

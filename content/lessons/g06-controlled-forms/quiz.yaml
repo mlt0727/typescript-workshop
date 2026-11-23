@@ -30,7 +30,7 @@
     - text: 数字，在 onChange 里用 Number(e.currentTarget.value) 转换
       explain: 用户清空输入框时，Number('') 是 0，输入框会立刻显示 0，没法删干净。
     - text: 两者没有区别
-      explain: 存数字会和输入框的实际内容不一致，导致上面的问题。
+      explain: 有区别。存成数字的话，用户清空输入框时 Number('') 是 0，输入框会立刻显示 0，没法删干净；存成字符串则没有这个问题。
 - id: derived-errors
   type: single
   prompt: 表单的错误信息应该怎样得到？

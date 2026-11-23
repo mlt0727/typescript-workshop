@@ -182,7 +182,7 @@ link('profile', {});
 :::
 
 :::hint{level=2}
-`Record<Params<R>, string>` 可以赋值给 `Record<string, string | undefined>`，之后用运行时的名字查找。`matchPath` 中先建一个 `const params: Record<string, string> = {}`，逐段比较、填入，最后返回它（它可以赋值给返回类型）。`link` 的参数类型写成 `Record<Params<(typeof ROUTES)[N]>, string>`，函数体直接 `buildPath(ROUTES[name], params)`。`decodeURIComponent` 遇到不完整的 `%` 序列会抛出 `URIError`，用 `try/catch` 接住。
+`Record<Params<R>, string>` 可以赋值给 `Record<string, string | undefined>`，之后用运行时的名字查找。`matchPath` 中先建一个 `const params: Record<string, string> = {}`，逐段比较、填入，最后返回它（它可以赋值给返回类型）。`link` 对路由名泛型：`<N extends RouteName>(name: N, params: Record<Params<(typeof ROUTES)[N]>, string>)`，函数体直接 `buildPath(ROUTES[name], params)`。`decodeURIComponent` 遇到不完整的 `%` 序列会抛出 `URIError`，用 `try/catch` 接住。
 :::
 
 :::explanation

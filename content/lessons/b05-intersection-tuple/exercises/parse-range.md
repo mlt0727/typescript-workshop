@@ -2,17 +2,19 @@
 kind: challenge
 title: 解析页码范围
 ---
-打印对话框里可以输入页码范围，例如 `'3-7'`。实现两个函数，用元组 `[number, number]` 表示一个范围（第一个是起始页，第二个是结束页）：
+打印对话框里可以输入页码范围，例如 `'3-7'`。用元组 `[number, number]` 表示一个范围（第一个是起始页，第二个是结束页）。起始代码里的两个函数没有做任何检查，类型也不是元组，按下面的要求改写它们：
 
-**`parseRange(text)`**，返回 `[number, number] | null`：
+**`parseRange(text)`**，返回类型是 `[number, number] | null`：
 
 - 格式是“整数-整数”，`-` 两边可以有空格，例如 `' 3 - 7 '`；
-- 每一边去掉首尾空格后不能为空（`'-5'`、`'3-'` 都无效），用 `Number()` 转换的结果必须是非负整数；
-- 必须正好有一个 `-`（`'1-2-3'` 无效）；
+- 必须正好有一个 `-`（`'1-2-3'`、`'3'` 都无效）；
+- 每一边去掉首尾空格后不能为空（`'-5'`、`'3-'` 都无效），用 `Number()` 转换的结果必须是非负整数（判断整数用 `Number.isInteger`）；
 - 如果起始页大于结束页，交换它们：`'9-2'` 得到 `[2, 9]`；
 - 无效时返回 `null`。
 
-**`overlap(a, b)`**：两个范围（都已经是起始页 ≤ 结束页）的重叠部分，返回 `[number, number] | null`。例如 `[1, 5]` 和 `[4, 9]` 重叠部分是 `[4, 5]`；`[1, 3]` 和 `[3, 6]` 的重叠部分是 `[3, 3]`；没有重叠时返回 `null`。参数类型使用只读元组 `readonly [number, number]`。
+起始代码里的 `text.split('-')` 按 `-` 把字符串拆成数组：`'3-7'` 得到 `['3', '7']`，`'1-2-3'` 得到三项，`'-5'` 得到 `['', '5']`。它返回的是普通数组，按下标读出来的类型带有 `undefined`（a10）；和前面的练习一样，不要用非空断言 `!` 或类型断言 `as` 让报错消失。
+
+**`overlap(a, b)`**：返回两个范围（都已经是起始页 ≤ 结束页）的重叠部分，返回类型也是 `[number, number] | null`。例如 `[1, 5]` 和 `[4, 9]` 的重叠部分是 `[4, 5]`；`[1, 3]` 和 `[3, 6]` 的重叠部分是 `[3, 3]`；没有重叠时返回 `null`。函数只读取、不修改这两个范围，所以两个参数的类型都写成只读元组 `readonly [number, number]`。
 
 :::files{role=starter}
 ```ts file=range.ts
@@ -114,11 +116,17 @@ expectTypeOf(overlap).parameter(0).toEqualTypeOf<readonly [number, number]>();
 :::
 
 :::hint{level=1}
-写出返回类型 `[number, number] | null`，TypeScript 就会检查每个 `return` 是否真的是二元元组。`text.split('-')` 的长度必须正好是 2。每一边先 `trim()`，再判断是否为空、是否是非负整数（`Number('')` 是 `0`，所以空字符串要单独排除）。
+先给两个函数写出返回类型 `[number, number] | null`，TypeScript 就会检查每个 `return` 是否真的是二元元组。
+
+`parseRange`：`text.split('-')` 的长度必须正好是 2。每一边先 `trim()`，再判断是否为空、是否是非负整数（`Number('')` 是 `0`，所以空字符串要单独排除）。
+
+`overlap`：重叠部分的起点是两个起点中较大的那个，终点是两个终点中较小的那个。起点不大于终点时才有重叠。
 :::
 
 :::hint{level=2}
-`overlap`：重叠部分的起点是两个起点中较大的那个，终点是两个终点中较小的那个：`Math.max(a[0], b[0])` 和 `Math.min(a[1], b[1])`。起点不大于终点时才有重叠。注意 `a[0]` 在元组上的类型是 `number`，不需要检查 `undefined`。
+`parseRange`：检查过 `parts.length` 之后，`parts[0]` 的类型仍然是 `string | undefined`。可以用带默认值的解构得到两个 `string`：`const [left = '', right = ''] = parts;`（数组解构的默认值和 a12 的对象解构一样，只在 `undefined` 时生效）。
+
+`overlap`：起点是 `Math.max(a[0], b[0])`，终点是 `Math.min(a[1], b[1])`。注意 `a[0]` 在元组上的类型是 `number`，不需要检查 `undefined`。
 :::
 
 :::explanation

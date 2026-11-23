@@ -801,7 +801,7 @@ describe('离开之前提醒', () => {
 
 “有修改”是当前的值和 `toDraft(original)` 的比较。用一个在 `onChange` 中设置的标记，改回原来的值之后它仍然是 `true`，用户会被问一个不必要的问题。
 
-`useBlocker` 拦截 React Router 处理的导航，包括链接和“后退”。它的参数是一个函数，React Router 在每次导航之前调用它；但 React Router 是在 Effect 中更新这个函数的。保存成功时，`onSave` 中的 `navigate` 和提交在同一个事件中执行，新的渲染还没有发生。如果用 `setSaving(true)`，拦截函数看到的仍然是旧的 `false`，刚保存完就会被问“确定要离开吗”。ref 的修改立刻生效，拦截函数在导航时才读取它，所以能看到 `true`。
+`useBlocker` 拦截 React Router 处理的导航，包括链接和“后退”。它的参数是一个函数，React Router 在每次导航之前调用它；但 React Router 是在 Effect 中更新这个函数的。保存成功时，`onSave` 中的 `navigate` 和提交在同一个事件中执行，新的渲染还没有发生。如果用 `setSaving(true)`，拦截函数看到的仍然是旧的 `false`，刚保存完就会被问“离开这个页面？”。ref 的修改立刻生效，拦截函数在导航时才读取它，所以能看到 `true`。
 
 询问的对话框按 g15 的模式处理焦点：出现时焦点在最安全的“继续编辑”上，Esc 等于“继续编辑”，留下之后焦点回到原来的位置。被拦截的那一刻，焦点通常在刚才点击的链接上，拦截函数正好在这时运行，把它记下来就行。`aria-modal="true"` 告诉读屏软件对话框之外的内容暂时不可用；要让键盘用户也无法 Tab 到对话框之外，可以用原生的 `<dialog>` 加 `showModal()`，或者给其余的内容加上 `inert`。
 
@@ -809,7 +809,7 @@ describe('离开之前提醒', () => {
 
 刷新和关闭页面不经过 React Router，要用 `beforeunload`。只在有修改时监听：这是一个和浏览器窗口同步的 Effect，`dirty` 变化时 React 先运行清理函数，再根据新的值决定是否监听。
 
-替代解：拦截函数用 `useCallback` 包起来（React Router 文档的一个示例就是这样写的），`beforeunload` 的监听器用 `AbortController` 移除，焦点通过表单的 `elements.namedItem(…)` 找到输入框，标签直接包住输入框。
+另一些写法也可以：拦截函数用 `useCallback` 包起来（React Router 文档的一个示例就是这样写的），`beforeunload` 的监听器用 `AbortController` 移除，焦点通过表单的 `elements.namedItem(…)` 找到输入框，标签直接包住输入框。
 :::
 
 :::variant{kind=alt name=callback-and-signal}

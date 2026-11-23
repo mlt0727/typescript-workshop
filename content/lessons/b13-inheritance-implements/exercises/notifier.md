@@ -11,13 +11,15 @@ interface Channel {
   readonly name: string;
   send(contact: Contact, message: string): boolean;
 }
+
+type Sent = { to: string; message: string };
 ```
 
 实现三个类：
 
-**`EmailChannel implements Channel`**：`name` 为 `'email'`。`send` 在 `contact.email` 存在并且包含 `@` 时“发送”成功：把 `{ to: email, message }` 记入私有的发件箱，返回 `true`；否则返回 `false`。`sent()` 返回发件箱记录的**副本**。
+**`EmailChannel implements Channel`**：`name` 为 `'email'`。`send` 在 `contact.email` 存在并且包含 `@` 时“发送”成功：把 `{ to: email, message }` 记入私有的发件箱，返回 `true`；否则返回 `false`。`sent()` 返回发件箱记录的**副本**，类型是 `Sent[]`。
 
-**`SmsChannel implements Channel`**：`name` 为 `'sms'`。`send` 在 `contact.phone` 正好是 11 位数字、并且 `message` 不超过 70 个字符时成功：记录 `{ to: phone, message }`，返回 `true`；否则返回 `false`。同样提供 `sent()`。
+**`SmsChannel implements Channel`**：`name` 为 `'sms'`。`send` 在 `contact.phone` 正好是 11 位数字、并且 `message.length` 不超过 70 时成功：记录 `{ to: phone, message }`，返回 `true`；否则返回 `false`。同样提供 `sent()`。
 
 **`Notifier`**：构造函数接收一个渠道数组 `readonly Channel[]`，并保存它的**副本**（之后调用方修改原数组不影响 `Notifier`）。`notify(contact, message)` 依次尝试**每一个**渠道，返回发送成功的渠道名称数组（按渠道顺序）。某个渠道抛出异常时，当作发送失败，继续尝试后面的渠道。
 
@@ -213,7 +215,7 @@ describe('Notifier', () => {
 :::
 
 :::hint{level=2}
-判断“全是数字”可以用 `[...phone].every((ch) => ch >= '0' && ch <= '9')`。注意 `implements` 不会给方法参数提供类型，`send(contact: Contact, message: string): boolean` 的参数类型要自己写。`notify` 不能在第一个成功的渠道之后停下，每个渠道都要尝试。
+判断“全是数字”可以用 `[...phone].every((ch) => ch >= '0' && ch <= '9')`：字符串也可以展开，`[...phone]` 得到由单个字符组成的数组。注意 `implements` 不会给方法参数提供类型，`send(contact: Contact, message: string): boolean` 的参数类型要自己写。`notify` 不能在第一个成功的渠道之后停下，每个渠道都要尝试。
 :::
 
 :::explanation

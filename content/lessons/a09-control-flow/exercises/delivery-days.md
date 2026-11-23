@@ -98,7 +98,7 @@ TS7029 指出了哪两个 `case` 会贯穿到下一个？运行一下，看看 `
 
 `case '华北':` 和 `case '西北':` 是空的 `case`，它们叠在下一个 `case` 上表示“同样处理”，不会报错。
 
-在函数里，每个分支直接 `return` 往往更简洁，也就不存在忘写 `break` 的问题，见另一种写法。
+在函数里，每个分支直接 `return`（例如 `case '华东': return 1;`，不再需要变量 `days`）往往更简洁，也就不存在忘写 `break` 的问题。
 :::
 
 :::variant{kind=alt name=returns}

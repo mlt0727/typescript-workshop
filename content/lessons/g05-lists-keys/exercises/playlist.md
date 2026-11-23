@@ -6,7 +6,7 @@ title: 播放列表
 
 1. 用 `initialSongs` 作为 state 的初始值，用 `<ol aria-label="播放列表">` 渲染，每首歌一个 `SongRow`；
 2. `isFirst` 告诉 `SongRow` 这是不是第一首（第一首的“上移”按钮禁用）；
-3. `onMoveUp(id)`：这首歌和前一首交换位置；`onRemove(id)`：删除这首歌；
+3. 传给 `SongRow` 的 `onMoveUp(id)`：把这首歌和前一首交换位置；`onRemove(id)`：删除这首歌；
 4. 列表为空时只显示 `<p>播放列表是空的。</p>`；
 5. 上移、删除之后，每首歌的“喜欢”状态都要跟着这首歌走。
 

@@ -27,7 +27,7 @@ TypeScript 只能检查你自己写的代码。从程序**外部**进来的数�
 
 - `fetch` 得到的 JSON（服务器可能改了接口、返回了错误页面、或者被中间人篡改）；
 - `localStorage` 中保存的数据（可能是旧版本程序写的，也可能被用户手动改过）；
-- URL 中的查询参数、表单输入、`postMessage` 收到的消息；
+- URL 中的查询参数、表单输入、`postMessage` 收到的消息（其他页面或窗口发来的数据）；
 - 第三方库返回的 `any`。
 
 这些数据在类型上应该是 `unknown`（e05），在第一次使用之前验证。验证一次之后，程序内部就可以完全信任类型，不必到处防御。
@@ -83,9 +83,38 @@ for (const id of [1, 2, 3]) {
 
 ## 嵌套的数据与错误路径
 
-数据嵌套时，错误信息要指出**位置**，例如 `items[2].price`，否则面对一个很大的 JSON 很难找到问题。做法是把路径作为参数传给下一层的检查函数，或者在检查数组的每一项时把下标拼进信息里。需要一次报告**所有**问题时（例如在开发工具中显示），把错误收集到数组里，而不是遇到第一个就返回。
+数据嵌套时，错误信息要指出**位置**，例如 `items[2].price`，否则面对一个很大的 JSON 很难找到问题。做法是把路径作为参数传给下一层的检查函数，或者在检查数组的每一项时把下标拼进信息里。需要一次报告**所有**问题时（例如一次告诉用户表单里所有要改的地方），把错误收集到数组里，而不是遇到第一个就返回。
 
 检查数组时有一个陷阱：`Array.isArray(value)` 会把 `unknown` 收窄成 `any[]`，取出的元素是 `any`，TypeScript 不再要求你检查。遍历时把元素重新标注为 `unknown`，例如 `items.forEach((item: unknown, index) => …)`，才能保持检查的严格。
+
+:::playground{#item-paths run=error}
+```ts file=main.ts
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+const data: unknown = JSON.parse('{ "items": [{ "price": 3 }, { "price": "5" }, null] }');
+const errors: string[] = [];
+
+if (isRecord(data) && Array.isArray(data.items)) {
+  data.items.forEach((item: unknown, index) => {
+    const path = `items[${index}]`;
+    if (!isRecord(item)) {
+      errors.push(`${path} 应该是对象`);
+      return;
+    }
+    if (typeof item.price !== 'number') errors.push(`${path}.price 应该是数字`);
+  });
+  console.log(errors);
+
+  const second = data.items[1];
+  console.log(second.price.toFixed(2));
+}
+```
+- 第 9 行：`data.items` 经过 `Array.isArray` 之后是 `any[]`；回调的参数标注成 `unknown` 之后，TypeScript 又会要求检查：去掉第 11 行的 `isRecord`，第 15 行读取 `item.price` 就会报错。
+- 第 10 行：把下标拼进路径，错误信息直接指出是 `items[1].price` 和 `items[2]`；错误收集在数组里，两个问题一起报告。
+- 第 19–20 行：直接取出的元素是 `any`，`second.price.toFixed(2)` 没有任何类型错误，运行时却抛出 `TypeError`：`"5"` 是字符串，没有 `toFixed` 方法。
+:::
 
 ## 可选字段、null 与日期
 
@@ -160,6 +189,8 @@ if (result.success) {
   console.log(result.error.issues); // 每个问题都带有路径和说明
 }
 ```
+
+`z.infer<typeof User>` 里的 `typeof` 写在类型的位置上，意思是“取值 `User` 的类型”，c01 会详细讲；这里只要知道它从模式推导出了类型。
 
 `z.object` 默认会丢掉模式中没有声明的字段（和上面手写的解析函数一样只保留已知字段），需要把多余的字段当作错误时用 `z.strictObject`。日期可以用 `z.iso.datetime()`，它只接受完整的 ISO 格式，默认还要求以 `Z` 结尾。
 

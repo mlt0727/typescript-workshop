@@ -53,7 +53,7 @@ references:
 | `src/main.ts` | 入口模块：导入样式和 `counter.ts`，把页面内容写进 `#app` |
 | `src/counter.ts` | 一个普通的模块：`setupCounter(element)` 让按钮显示点击次数 |
 | `src/style.css` | 样式。注意它是在 `main.ts` 中用 `import './style.css'` 引入的，不是写在 `<link>` 中 |
-| `src/assets/` | 在代码中导入的图片：`import viteLogo from './assets/vite.svg'` 得到的是图片的**地址**（字符串） |
+| `src/assets/` | 在代码中导入的图片（`hero.png`、`typescript.svg`、`vite.svg`）：`import viteLogo from './assets/vite.svg'` 得到的是图片的**地址**（字符串） |
 | `public/` | 不经过处理、原样提供的文件（`favicon.svg`、`icons.svg`），用根路径引用：`/favicon.svg` |
 | `tsconfig.json` | TypeScript 的配置（f03 详细讲） |
 | `.gitignore` | 已经写好了 `node_modules`、`dist` 等不提交的内容（f10） |
@@ -93,7 +93,7 @@ export function setupCounter(element) {
 
 ## 构建与预览
 
-`npm run build` 的输出（文件名中的哈希每次内容变化都会不同）：
+先把刚才写的类型错误改回去，再运行 `npm run build`。输出如下（文件名中的哈希每次内容变化都会不同）：
 
 ```text
 dist/index.html                  0.45 kB │ gzip: 0.29 kB
@@ -110,11 +110,11 @@ dist/assets/index-wktXvZw9.js    4.49 kB │ gzip: 2.02 kB
 
 `dist` 就是要部署的全部内容，它是纯静态文件，任何静态服务器都能提供。运行 `npm run preview`，Vite 用一个本地静态服务器（默认端口 4173）提供 `dist`，在部署之前检查构建的结果。
 
-注意，Vite 自己的开发服务器和 `preview` 服务器对**不存在的路径**很宽容：只要请求接受 HTML（浏览器的地址栏、默认的 `fetch` 都是这样），就返回 200 和 `index.html`。实测 `preview` 中请求 `/does-not-exist.json` 得到的是 200 和一个 HTML 页面。所以在它们之上，用地址栏或者 `fetch` 检查时看不到“资源 404”（浏览器为 `<script>` 发出的请求是一个例外，i02 会讲到），下面的编程挑战会实现一个更严格的规则。
+注意，Vite 自己的开发服务器和 `preview` 服务器对**不存在的路径**很宽容：只要请求表示能接受 HTML（浏览器的地址栏、默认的 `fetch` 都是这样），就返回 200 和 `index.html`。实测 `preview` 中请求 `/does-not-exist.json` 得到的是 200 和一个 HTML 页面。所以在这两个服务器上，用地址栏或者 `fetch` 检查时看不到“资源 404”（浏览器为 `<script>` 发出的请求是一个例外，i02 会讲到），下面的编程挑战会实现一个更严格的规则。
 
 ## 部署到子路径：base
 
-如果网站不在域名的根路径下，例如 GitHub Pages 上的 `https://用户名.github.io/my-app/`，`/assets/index-wktXvZw9.js` 这样的地址就错了，应该是 `/my-app/assets/…`。这时设置 Vite 的 `base` 选项（在 `vite.config.ts` 中，或者 `vite build --base=/my-app/`）。在 Windows 的 Git Bash 中运行后一种写法要小心：Git Bash 会把以 `/` 开头的参数当成路径改写，实测 `--base=/repo/` 变成了 `/Program Files/Git/repo/`。写进 `vite.config.ts`、改用 PowerShell，或者在命令前加上 `MSYS_NO_PATHCONV=1` 都可以避免。
+如果网站不在域名的根路径下，例如 GitHub Pages 上的 `https://用户名.github.io/my-app/`，`/assets/index-wktXvZw9.js` 这样的地址就错了，应该是 `/my-app/assets/…`。这时设置 Vite 的 `base` 选项（写在 `vite.config.ts` 中，或者在命令行中用 `npx vite build --base=/my-app/`）。在 Windows 的 Git Bash 中运行后一种写法要小心：Git Bash 会把以 `/` 开头的参数当成路径改写，实测 `--base=/repo/` 变成了 `/Program Files/Git/repo/`。写进 `vite.config.ts`、改用 PowerShell，或者在命令前加上 `MSYS_NO_PATHCONV=1` 都可以避免。
 
 Vite 会自动改写它**知道**的地址：`index.html` 中的 `<script>`、`<link>`，导入的资源（`import viteLogo from …`），CSS 中的 `url()`。但它不会改写你写在字符串里的地址。模板的 `main.ts` 中就有这样的地址：`<use href="/icons.svg#github-icon">`。实际用 `--base=/repo/` 构建，`index.html` 中变成了 `/repo/favicon.svg`、`/repo/assets/index-…js`，导入的图片变成了 `/repo/assets/hero-…png`，而 JavaScript 中仍然是 `"/icons.svg#github-icon"`，部署之后这些图标都会显示不出来。
 
@@ -127,7 +127,7 @@ Vite 会自动改写它**知道**的地址：`index.html` 中的 `<script>`、`<
 | `/repo`（漏写了结尾的 `/`） | `/repo` |
 | `./`（相对路径，部署位置事先不知道时用） | `./` |
 
-开发服务器中略有不同：`./` 在开发时是 `/`（相对路径只对构建结果有意义）；配置中写 `base: ''` 时，构建结果中也是 `./`。注意第三行：`BASE_URL` 不一定以 `/` 结尾，直接 `BASE_URL + 'icons.svg'` 可能得到 `/repoicons.svg`。下面的示例写一个拼接函数（这个网站上没有 `import.meta.env`，所以把 `base` 作为参数传入）：
+配置中写 `base: ''` 时，构建结果中也是 `./`。开发服务器中略有不同：`./` 在开发时是 `/`（相对路径只对构建结果有意义）。注意第三行：`BASE_URL` 不一定以 `/` 结尾，直接 `BASE_URL + 'icons.svg'` 可能得到 `/repoicons.svg`。下面的示例写一个拼接函数（这个网站上没有 `import.meta.env`，所以把 `base` 作为参数传入）：
 
 :::playground{#base-url}
 ```ts file=main.ts
@@ -145,7 +145,7 @@ for (const base of ['/', '/repo/', '/repo', './']) {
   console.log(base.padEnd(7), joinNaive(base, '/icons.svg'), join(base, '/icons.svg'));
 }
 ```
-- `joinNaive` 在四种 `base` 下的结果是 `//icons.svg`、`/repo//icons.svg`、`/repo/icons.svg`、`.//icons.svg`：开头的 `//` 甚至会被浏览器当成另一个域名（`//icons.svg` 指向主机 `icons.svg`）。
+- `joinNaive` 在四种 `base` 下的结果是 `//icons.svg`、`/repo//icons.svg`、`/repo/icons.svg`、`.//icons.svg`，只有第三种碰巧是对的；开头的 `//` 甚至会被浏览器当成另一个域名（`//icons.svg` 指向主机 `icons.svg`）。
 - `join` 保证两部分之间正好有一个 `/`。下面的小任务在这个基础上处理更多的情况。
 :::
 
@@ -156,7 +156,7 @@ for (const base of ['/', '/repo/', '/repo', './']) {
 部署 `dist` 时，静态服务器（Vercel、Netlify、GitHub Pages、Nginx……）收到一个请求，要决定返回哪个文件。有两个问题和前端项目密切相关：
 
 - **前端路由与刷新**：网站用 History API 做路由（e10）时，地址 `/projects/42` 只在浏览器中存在，`dist` 里没有这个文件。在首页点链接过去没有问题，但在这个地址上刷新页面，服务器找不到文件，就返回 404。所以这类网站要配置“找不到页面时返回 `index.html`”，由前端代码根据地址显示内容。但这条规则不能用在资源上：如果 `/assets/index-旧哈希.js` 也返回了 `index.html`，浏览器会报错“期望 JavaScript 模块，服务器返回的却是 text/html”，而不是一个清楚的 404；
-- **缓存**：带哈希的文件可以缓存一年（内容变了名字就变）；`index.html` 必须每次都向服务器确认，否则用户会一直拿着旧的 `index.html`，加载旧版本的脚本。
+- **缓存**：服务器在响应头 `Cache-Control` 中告诉浏览器一个文件可以缓存多久。带哈希的文件可以缓存一年（内容变了名字就变）；`index.html` 必须每次都向服务器确认，否则用户会一直拿着旧的 `index.html`，加载旧版本的脚本。
 
 下面的编程挑战就是实现这样一个静态服务器的决策部分。
 

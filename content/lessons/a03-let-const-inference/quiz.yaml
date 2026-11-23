@@ -48,7 +48,7 @@
       explain: 初始值已经足够推断出类型，不需要注解。
     - text: 先声明、稍后才赋值的变量，并且希望它只能存字符串，例如 `let label;`
       correct: true
-      explain: "没有初始值时 TypeScript 无法从初始值推断。写成 `let label: string;`，类型就明确了，使用前未赋值也会被检查出来。"
+      explain: "没有初始值，TypeScript 就无从推断：只写 `let label;` 的话，之后赋数字还是赋字符串都不会报错。写成 `let label: string;`，类型就明确了，使用前未赋值也会被检查出来。"
     - text: 之后只会被赋成数字的计数器，例如 `let count = 0;`
       explain: "`count` 已被推断为 `number`，赋值成别的类型会报错，不需要额外注解。"
 - id: block-scope

@@ -2,7 +2,7 @@
 kind: challenge
 title: 只重新渲染需要的行
 ---
-`ProductList` 显示一个商品列表：可以按名字筛选，可以收藏商品，旁边还有一个与商品无关的“备注”框。`lib.tsx`（只读）中的 `sortByPrice` 假设很慢；`ProductRow` 用 `Tracked` 包住每一行，它用 `<Profiler>` 统计这一行被重新渲染了几次，不影响显示的内容。
+`ProductList` 显示一个商品列表：可以按名字筛选，可以收藏商品，旁边还有一个与商品无关的“备注”框。`lib.tsx`（只读）中的 `sortByPrice` 假设很慢；`ProductRow` 用 `Tracked` 包住每一行：`Tracked` 用 `<Profiler>` 统计这一行被重新渲染了几次，不影响显示的内容。
 
 现在每输入一个字，每一行都会重新渲染，商品也会重新排序一遍。优化它，**行为保持不变**：
 

@@ -4,11 +4,11 @@ title: 读取年龄输入框
 ---
 表单里的年龄输入框给你的是一段文字。实现两个函数：
 
-**`parseAge(text)`**：把文字转换成年龄，类型是 `number | null`。
+**`parseAge(text)`**：把文字转换成年龄，返回类型是 `number | null`。
 
 - 先去掉首尾空格；
 - 去掉空格后是空字符串时，返回 `null`（用户没填）；
-- 用 `Number()` 转换（整段文字必须是一个数字，例如 `'12岁'` 不算）；转换结果不是整数、小于 0 或大于 150 时，返回 `null`；
+- 用 `Number()` 转换（整段文字必须是一个数字，`'12岁'` 这样的会转换失败，得到 `NaN`）；转换结果不是整数、小于 0 或大于 150 时，返回 `null`；
 - 其他情况返回转换后的数字。例如 `parseAge(' 42 ')` 返回 `42`。
 
 **`ageLabel(text)`**：调用 `parseAge`，返回给用户看的文字：有效时返回 `'42 岁'` 这样的文字，无效或没填时返回 `'年龄无效'`。
@@ -105,11 +105,11 @@ expectTypeOf(ageLabel).toEqualTypeOf<(text: string) => string>();
 :::
 
 :::hint{level=2}
-`parseAge`：`const trimmed = text.trim();`，空字符串时返回 `null`；`const age = Number(trimmed);`，然后 `if (!Number.isInteger(age) || age < 0 || age > 150) return null;`。`ageLabel`：`if (age === null) return '年龄无效';`。（`!`、`||` 的含义与 Java/C++ 相同。）
+`parseAge`：`const trimmed = text.trim();`，空字符串时返回 `null`；`const age = Number(trimmed);`，然后 `if (!Number.isInteger(age) || age < 0 || age > 150) return null;`。`ageLabel`：先 `const age = parseAge(text);`，再 `if (age === null) return '年龄无效';`，最后返回 `` `${age} 岁` ``。（`!`、`||` 的含义与 Java/C++ 相同。）
 :::
 
 :::explanation
-`parseAge` 的返回类型 `number | null` 把“可能失败”写进了类型里。`ageLabel` 如果忘了检查，TypeScript 不一定会报错（模板字符串可以放任何值），但测试会发现它显示了 `'null 岁'`。在更常见的用法里，例如 `age + 1` 或 `age.toFixed()`，TypeScript 会直接报“可能是 null”。
+`parseAge` 的返回类型 `number | null` 把“可能失败”写进了类型里。`ageLabel` 如果忘了检查，TypeScript 在这里不会报错（模板字符串里可以放任何值），但测试会发现它显示了 `'null 岁'`。在更常见的用法里，例如 `age + 1` 或 `age.toFixed()`，TypeScript 会直接报“可能是 null”。
 
 为什么不用 `NaN` 表示失败？`NaN` 的类型也是 `number`，调用方拿到后 TypeScript 不会提醒任何检查。`null` 不同，它让失败的情况在类型上可见。
 

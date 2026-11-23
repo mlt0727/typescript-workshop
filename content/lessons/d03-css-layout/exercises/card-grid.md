@@ -138,7 +138,7 @@ test('同一行的卡片一样高', async () => {
 :::
 
 :::hint{level=2}
-`.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }`。同一行等高是 Grid 的默认行为（`align-items` 默认是 `stretch`），不需要额外设置。
+`.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }`。同一行等高是 Grid 的默认行为（`align-items` 的默认效果是 `stretch`），不需要额外设置。
 :::
 
 :::explanation

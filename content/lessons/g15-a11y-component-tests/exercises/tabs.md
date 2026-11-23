@@ -5,7 +5,7 @@ title: 可以用键盘操作的标签页
 起始的 `Tabs` 组件用鼠标可以切换，但没有任何角色，也不能用键盘操作。按 WAI-ARIA APG 的标签页模式（自动激活）重写它：
 
 1. 容器 `role="tablist"`，名字是 `label`；每个标签页是 `role="tab"` 的按钮，文字是 `tab.label`；每个面板 `role="tabpanel"`，`tabIndex={0}`；
-2. 选中的标签页 `aria-selected="true"`，其他的为 `"false"`；标签页的 `aria-controls` 是它的面板的 `id`，面板的 `aria-labelledby` 是它的标签页的 `id`（页面上有两个 `Tabs` 时，`id` 也不能重复，例如用 `useId()` 加上标签页的 `id` 组成）；
+2. 选中的标签页 `aria-selected="true"`，其他的为 `"false"`；标签页的 `aria-controls` 是它的面板的 `id`，面板的 `aria-labelledby` 是它的标签页的 `id`（页面上有两个 `Tabs` 时，`id` 也不能重复，例如用 `useId()` 加上标签页的 `id` 组成：`useId()` 为每个组件实例生成一个唯一的字符串，g07 的练习用过）；
 3. 只显示选中的面板，其他的用 `hidden` 隐藏（或者不渲染）；
 4. **roving tabindex**：选中的标签页 `tabIndex={0}`，其他的 `-1`；
 5. 一开始选中 `initialId` 对应的标签页，没有或者不存在时选中第一个；点击标签页时选中它；
@@ -261,7 +261,7 @@ describe('Tabs：操作', () => {
 :::explanation
 标签页是一个典型的“复合组件”：一组标签页在 Tab 的顺序中只占**一个**位置，组内用方向键移动。这样，键盘用户按一次 Tab 就能越过整组标签页到达内容，而不用把每个标签页都走一遍。roving tabindex 正是为此：`tabIndex` 为 0 的那一个随着选中而“移动”。
 
-所有的属性都从同一个 `selectedId` 算出来：`aria-selected`、`tabIndex`、`hidden`。这保证了视觉、键盘、读屏软件看到的状态永远一致，是 g07 中“单一数据来源”的原则在可访问性上的体现。
+所有的属性都从同一个 `selectedId` 算出来：`aria-selected`、`tabIndex`、`hidden`。这保证了视觉、键盘、读屏软件看到的状态永远一致，是 g07 中“同一份数据只存一份，其余都从它算出来”的原则在可访问性上的体现。
 
 `aria-controls` 与 `aria-labelledby` 把标签页和面板双向关联起来：读屏软件进入面板时会读出“个人资料，标签页面板”。测试中 `toHaveAccessibleName('个人资料')` 检查的就是这个关联。
 

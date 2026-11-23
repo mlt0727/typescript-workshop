@@ -663,7 +663,7 @@ export function mountCommentBox(root: HTMLElement, onSubmit: (text: string) => v
 :::
 
 :::hint{level=2}
-可以写两个小函数 `const box = () => screen.getByRole('textbox', { name: '留言' })`，每次调用都重新查找。用到的匹配器：`toBeDisabled`、`toBeEnabled`、`toBeInvalid`（检查 `aria-invalid`）、`toHaveValue('')`、`toHaveFocus()`。检查列表时，`within(list).getAllByRole('listitem')` 得到每一项，再 `.map((item) => item.textContent)` 比较其中的文字（`textContent` 保留空白）。
+可以写两个小函数 `box()`、`submit()`，例如 `const box = () => screen.getByRole('textbox', { name: '留言' })`，每次调用都重新查找。用到的匹配器：`toBeDisabled`、`toBeEnabled`、`toBeInvalid`（检查 `aria-invalid`）、`toHaveValue('')`、`toHaveFocus()`。检查列表时，`within(list).getAllByRole('listitem')` 得到每一项，再 `.map((item) => item.textContent)` 比较其中的文字（`textContent` 保留空白）。
 :::
 
 :::explanation

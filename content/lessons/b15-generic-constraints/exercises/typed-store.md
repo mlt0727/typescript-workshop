@@ -5,13 +5,19 @@ title: 类型安全的状态存储
 实现 `createStore(initial)`，返回一个通用的状态存储，适用于任何对象形状的状态：
 
 - `get(key)`：返回 `key` 当前的值，类型是该键对应的值类型；
-- `set(key, value)`：`value` 的类型必须和该键对应；值没有变化时（用 `Object.is` 判断相等：它和 `===` 基本相同，区别是 `NaN` 等于自身、`+0` 与 `-0` 不相等）什么也不做；否则保存新值，并通知订阅了这个键的监听函数 `(newValue, oldValue)`；
-- `subscribe(key, listener)`：订阅某个键的变化，返回取消订阅的函数；
+- `set(key, value)`：`value` 的类型必须和该键对应。新值和当前值相等时什么也不做；否则保存新值，再通知订阅了这个键的监听函数，调用方式是 `listener(newValue, oldValue)`；
+- `subscribe(key, listener)`：订阅某个键的变化，返回取消订阅的函数。`listener` 的两个参数也是该键对应的值类型；
 - `snapshot()`：返回当前完整状态的**浅拷贝**。
+
+`get`、`set`、`subscribe` 的 `key` 都只能是状态里有的键，传入别的键应当报类型错误。
+
+“相等”用 `Object.is(a, b)` 判断：它和 `===` 基本相同，区别是 `NaN` 等于自身、`+0` 与 `-0` 不相等。
 
 `createStore` 要复制一份 `initial`，之后修改 `initial` 不影响存储。
 
-和 b11 的挑战比较：这里不再为每个键写重载，而是用 `K extends keyof T` 一个签名描述所有键。
+和 b11 的挑战比较：这里不再为每个键写重载，而是用 `K extends keyof T` 一个签名描述所有键。起始代码只是一个架子：类型都太宽（`get` 那一行因此报 TS7053），`set` 和 `subscribe` 还是空的。
+
+保存监听函数是这道题的难点：不同键的监听函数，参数类型也不同。不要用 `any` 或类型断言 `as` 绕过去，提交检查不允许。
 
 :::files{role=starter}
 ```ts file=store.ts

@@ -19,7 +19,7 @@
     - text: 用 TypeScript 写了 props 类型的组件
       explain: 类型与“受控”无关，受控说的是 state 由谁保存。
     - text: 被父组件用 ref 直接操作的组件
-      explain: 那是另一种（应尽量少用的）方式，受控组件只通过 props 交流。
+      explain: 用 ref 直接操作组件是另一种应尽量少用的方式（g09 会讲 ref），和“受控”正相反：受控组件只通过 props 和回调交流。
 - id: selected-id
   type: single
   prompt: 列表中“选中的项”应该怎样存进 state？

@@ -144,7 +144,7 @@ expectTypeOf(errorMessage).returns.toEqualTypeOf<string>();
 :::explanation
 起始代码中的 `any` 有两个来源：一个是写出来的 `data: any`、`item: any`、`error: any`，另一个是即使不写也会出现的：`JSON.parse` 本身就返回 `any`。改写的关键是在 `any` 进入的地方立刻把它变成 `unknown`：`let data: unknown`。之后每用一步都要先检查，TypeScript 会拦下所有没检查就使用的地方。
 
-`Array.isArray(data['items'])` 收窄出来的是 `any[]`，又一个悄悄进来的 `any`。把它赋给 `readonly unknown[]`，元素才回到 `unknown`（项目 1 的 p1-05 也会这样做）。
+`Array.isArray(data['items'])` 收窄出来的是 `any[]`，又一个悄悄进来的 `any`。把它赋给 `readonly unknown[]`，元素才回到 `unknown`（e06 讲过这个陷阱）。
 
 `errorMessage` 的参数是 `unknown`，因为 `catch` 到的东西本来就可能是任何值：`throw '出错了'`、`throw { message: … }` 都是合法的 JavaScript。`instanceof Error` 涵盖了 `Error` 和它的子类（`TypeError`、`RangeError`……）。
 

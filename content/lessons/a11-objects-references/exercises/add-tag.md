@@ -8,6 +8,8 @@ title: 给文章加标签
 - **不能修改**传入的 `post`，也不能修改它的 `tags` 数组；
 - 返回的文章和它的 `tags` 都必须是新的对象和数组，即使没有添加新标签也是如此：调用方会继续修改返回的文章（例如接着添加别的标签），它必须和原数据完全独立。
 
+起始代码是一个还不满足这些要求的版本。先运行一下，看看输出里原来的 `post` 有没有变。
+
 :::files{role=starter}
 ```ts file=post.ts
 export function addTag(
@@ -92,7 +94,7 @@ describe('addTag', () => {
 :::
 
 :::hint{level=2}
-`const tags = [...post.tags];` 复制数组；不包含 `tag` 时 `tags.push(tag)`；最后 `return { ...post, tags: tags };`。在对象展开后面写的属性会覆盖展开得到的同名属性。
+`const tags = [...post.tags];` 复制数组；`tags.includes(tag)` 为 `false` 时才 `tags.push(tag)`；最后 `return { ...post, tags: tags };`。在对象展开后面写的属性会覆盖展开得到的同名属性。
 :::
 
 :::explanation

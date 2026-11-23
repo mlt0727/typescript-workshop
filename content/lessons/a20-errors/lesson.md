@@ -28,7 +28,7 @@ references:
 
 `throw new Error('说明')` 抛出一个错误，当前函数立刻停止，错误沿着调用链向上传递，直到被某个 `try/catch` 捕获；没有人捕获时，程序报“未捕获的错误”。`finally` 块无论是否出错都会执行，常用于清理工作。
 
-除了 `Error`，还有表示特定问题的内置错误类型，例如 `TypeError`、`RangeError`、`SyntaxError`（`JSON.parse` 解析失败时抛出）。
+`Error` 是内置的类，创建时传入的说明保存在 `message` 属性里。还有一些表示特定问题的内置错误类型，例如 `TypeError`、`RangeError`、`SyntaxError`（`JSON.parse` 解析失败时抛出），它们都是 `Error` 的子类。错误对象的 `name` 属性是类型的名字，例如 `'RangeError'`。
 
 :::playground{#throw-catch}
 ```ts file=main.ts
@@ -50,16 +50,18 @@ try {
   console.log('finally 总会执行');
 }
 ```
-- 第 11 行抛出错误后，`try` 块中剩下的第 12 行被跳过，直接进入 `catch`。
+- 第 11 行调用 `parsePercent('120')`，函数在第 4 行抛出错误后立刻停止；错误传到调用它的 `try` 块，剩下的第 12 行被跳过，直接进入 `catch`。
 - `Number.isFinite` 同时排除了 `NaN` 和 `Infinity`。
-- 和 Java 不同，JavaScript **没有受检异常**：函数签名里不写会抛出什么，TypeScript 也不会检查你是否处理了错误。
+- 和 Java 不同，JavaScript **没有受检异常**（checked exception）：函数签名里不写会抛出什么，TypeScript 也不会检查你是否处理了错误。
 :::
 
 ## catch 到的是 unknown
 
-JavaScript 允许 `throw` 任何值：字符串、数字、普通对象都可以。所以 `catch (err)` 里的 `err` 可能是任何东西。在 TypeScript 的 `strict` 选项下（它包含 `useUnknownInCatchVariables`），TypeScript 把它的类型定为 **`unknown`**：不能直接读取属性，必须先检查。最常用的检查是 `err instanceof Error`。
+JavaScript 允许 `throw` 任何值：字符串、数字、普通对象都可以。所以 `catch (err)` 里的 `err` 可能是任何东西。在 TypeScript 的严格模式（`strict` 选项，它包含 `useUnknownInCatchVariables`）下，`err` 的类型是 **`unknown`**：它表示“可能是任何值”。和关闭类型检查的 `any` 不同，`unknown` 类型的值不能直接读取属性，必须先检查。
 
-另外，JavaScript 既没有 Java 那样的多个 `catch (IOException e)`，也没有 Python 那样的 `except ValueError:`：只能写一个 `catch`，在里面按需判断。
+最常用的检查是 `err instanceof Error`。和 Java 的 `instanceof` 一样，它判断一个值是不是某个类（包括子类）的实例；检查通过后，TypeScript 把 `err` 收窄为 `Error`，就可以读取 `message` 了。
+
+另外，JavaScript 既没有 Java 那样的多个 `catch (IOException e)`，也没有 Python 那样的 `except ValueError:`：只能写一个 `catch`，在里面用 `instanceof` 判断，例如 `if (err instanceof RangeError) { … }`。
 
 :::playground{#unknown-catch expect="18046@main.ts:4"}
 ```ts file=main.ts
@@ -92,7 +94,7 @@ for (const kind of [1, 2]) {
 }
 ```
 - 第 4 行报 TS18046：`err` 的类型是 `unknown`。第 5 行检查之后，TypeScript 知道它是 `Error`，可以读取 `name` 和 `message`。
-- 第 14 行抛出了一个字符串。这是不好的写法（字符串没有调用栈），但别人的代码可能这样做，所以 `catch` 里要考虑这种情况。
+- 第 14 行抛出了一个字符串。这是不好的写法（`Error` 对象带有调用栈信息，能看出错误来自哪里；字符串没有），但别人的代码可能这样做，所以 `catch` 里要考虑这种情况。
 - 不需要错误对象时，可以省略变量：`catch { … }`。
 :::
 
@@ -127,10 +129,10 @@ try {
 
 不是所有失败都应该抛出错误。一个简单的判断标准：
 
-- **预料之中、调用方通常要处理的情况**（找不到用户、输入框为空）：返回 `null` 或一个表示结果的值（a05）。TypeScript 会强迫调用方检查。
+- **预料之中、调用方通常要处理的情况**（找不到用户、输入框为空）：像 a05 那样返回 `null`，或者返回一个表示结果的值。TypeScript 会强迫调用方检查。
 - **不应该发生、或者当前函数无法处理的情况**（配置文件损坏、违反了函数的前提条件）：抛出错误，让上层统一处理。
 
-无论选择哪种，都**不要悄悄吞掉错误**：空的 `catch {}` 会让 bug 变得极难排查。确实要忽略时，至少写清楚原因。
+无论选择哪种，都**不要悄悄吞掉错误**：空的 `catch {}` 会让 bug 变得极难排查。确实要忽略时，至少用注释写清楚原因。
 
 ::exercise{#error-message}
 
@@ -142,9 +144,9 @@ try {
 
 ## 常见错误
 
-- **在 `catch` 里直接用 `err.message`**：`err` 是 `unknown`，先 `instanceof Error`。
-- **用 `as Error` 消除报错**：被抛出的可能根本不是 `Error`。
-- **抛出字符串**：`throw '出错了'` 没有调用栈。始终抛出 `Error` 或它的子类。
+- **在 `catch` 里直接用 `err.message`**：`err` 是 `unknown`，先用 `instanceof Error` 检查。
+- **用类型断言 `as Error` 消除报错**：被抛出的可能根本不是 `Error`。
+- **抛出字符串**：`throw '出错了'` 不带调用栈信息。始终抛出 `Error` 或它的子类。
 - **空的 `catch`**：错误被悄悄吞掉，问题被推迟到更难排查的地方。
 - **用异常表示正常的分支**：预料之中的失败，返回 `null` 往往更清楚。
 

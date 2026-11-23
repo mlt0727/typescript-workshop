@@ -22,7 +22,7 @@
   options:
     - text: "`Promise<number>`"
       correct: true
-      explain: 每个 `then` 返回新的 Promise，类型是回调的返回值类型：`number` → `string` → `number`。
+      explain: 每个 `then` 返回新的 Promise，它兑现的值的类型就是回调的返回值类型：`number` → `string` → `number`。
     - text: "`Promise<string>`"
       explain: 最后一个 `then` 返回 `s.length`，是数字。
     - text: "`Promise<Promise<number>>`"
@@ -55,6 +55,6 @@
       correct: true
       explain: 回调没有返回值，下一步拿到的是 `undefined`，而且 `saveUser` 的失败也不会沿链传递。写成 `return saveUser(user)`。
     - text: "`saveUser` 兑现的布尔值"
-      explain: 只有把那个 Promise 返回出来，链才会等待并采用它的结果。
+      explain: 这里的回调没有 `return`。只有写成 `return saveUser(user)`，链才会等待这个 Promise，并采用它兑现的布尔值。
     - text: 一个 `Promise<boolean>`
       explain: 即使返回了 Promise，下一步拿到的也是兑现后的值；这里根本没有返回。

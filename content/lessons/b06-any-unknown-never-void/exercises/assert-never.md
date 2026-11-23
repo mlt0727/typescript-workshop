@@ -2,11 +2,11 @@
 kind: challenge
 title: 不会漏掉的单位换算
 ---
-长度单位只有四种：`type Unit = 'mm' | 'cm' | 'm' | 'km'`。实现：
+长度单位只有四种：`type Unit = 'mm' | 'cm' | 'm' | 'km'`。起始代码里三个函数的签名都已经写好，但 `assertNever` 的函数体是空的，另外两个函数只写了一半。把它们补完：
 
-1. **`assertNever(value)`**：参数类型是 `never`，返回类型也是 `never`。它在运行时抛出 `Error`，`message` 为 `` `未处理的值：${String(value)}` ``。它的作用是放在 `switch` 的 `default` 分支里做穷尽检查：如果以后给 `Unit` 加了新单位却忘了处理，`default` 里的值就不再是 `never`，TypeScript 会报错。
-2. **`toMillimeters(value, unit)`**：把某个单位的数值换算成毫米。用 `switch` 处理四种单位，`default` 分支调用 `assertNever`（用 `Record<Unit, number>` 查表也能达到同样的穷尽效果，见解释）。
-3. **`convert(value, from, to)`**：把 `from` 单位的数值换算成 `to` 单位。例如 `convert(250, 'cm', 'm')` 得到 `2.5`。
+1. **`assertNever(value)`**：参数类型是 `never`，返回类型也是 `never`。实现它：在运行时抛出 `Error`，`message` 为 `` `未处理的值：${String(value)}` ``。它的作用是放在 `switch` 的 `default` 分支里做穷尽检查：如果以后给 `Unit` 加了新单位却忘了处理，`default` 里的值就不再是 `never`，TypeScript 会报错。（函数体还空着的时候，返回类型 `never` 上会报 TS2534：返回 `never` 的函数不能正常结束。写上 `throw` 就消失了。）
+2. **`toMillimeters(value, unit)`**：把某个单位的数值换算成毫米。起始代码只处理了 `'mm'` 和 `'cm'`，其余单位在 `default` 里原样返回，结果是错的。改成用 `switch` 处理全部四种单位，`default` 分支调用 `assertNever`（用 `Record<Unit, number>` 查表也能通过，同样有穷尽的效果，做完后的解释里有说明）。
+3. **`convert(value, from, to)`**：把 `from` 单位的数值换算成 `to` 单位，例如 `convert(250, 'cm', 'm')` 得到 `2.5`。起始代码只把数值换算成了毫米，还没有换算成 `to`。
 
 换算关系：1 cm = 10 mm，1 m = 1000 mm，1 km = 1000 m。
 
@@ -111,7 +111,7 @@ assertNever('mm');
 :::
 
 :::hint{level=1}
-`assertNever` 的函数体只需要一行 `throw`：抛出错误的函数永远不会正常返回，正好符合返回类型 `never`。`toMillimeters` 的 `default` 分支现在会悄悄返回错误的结果，要补齐 `'m'` 和 `'km'`，再把 `default` 改成 `return assertNever(unit);`。
+`assertNever` 的函数体只需要一行 `throw`：抛出错误的函数永远不会正常返回，正好符合返回类型 `never`。`toMillimeters` 的 `default` 分支现在会悄悄返回错误的结果，要补齐 `'m'` 和 `'km'`，再把 `default` 改成 `return assertNever(unit);`。`convert` 可以拿毫米当中间单位：先把 `from` 换算成毫米，再换算成 `to`。
 :::
 
 :::hint{level=2}
@@ -122,6 +122,8 @@ assertNever('mm');
 起始代码的 `default: return value;` 是一个隐患：漏掉的 `'m'` 和 `'km'` 会悄悄返回错误的结果，TypeScript 也不会提醒。
 
 改成 `default: return assertNever(unit);` 后，情况就不同了：只有当所有单位都已处理、`unit` 在 `default` 里变成 `never` 时，这一行才能通过类型检查。以后有人给 `Unit` 加上 `'inch'`，这一行就会报错，直接指出需要补充的位置。万一运行时真的来了一个意料之外的值（例如来自未经校验的外部数据），`assertNever` 也会抛出清楚的错误，而不是返回错误的数字。
+
+`convert` 拿毫米当中间单位：`toMillimeters(1, to)` 是“1 个目标单位等于多少毫米”，用毫米数除以它，就得到目标单位的数值。这样只需要一套“换算成毫米”的规则，不用为每一对单位各写一条。
 
 `1_000_000` 中的下划线是数字分隔符，只为了好读，和 `1000000` 完全相同。
 

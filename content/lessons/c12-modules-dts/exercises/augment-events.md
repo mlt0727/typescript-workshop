@@ -5,7 +5,7 @@ title: 用模块扩充给事件总线加上事件
 `bus.ts`（只读）是一个通用的事件总线：`AppEvents` 是一个空的接口，`on(type, handler)` 和 `emit(type, payload)` 的事件名和数据类型都来自它。每个功能模块用**模块扩充**（`declare module './bus' { interface AppEvents { … } }`）把自己的事件加进去。
 
 1. **`cart.ts`**：加上 `'cart:add'`（数据 `{ sku: string; quantity: number }`）和 `'cart:clear'`（数据是 `undefined`）两个事件。`addToCart(sku, quantity = 1)` 在 `quantity` 不是正整数时抛出 `RangeError`（不发出事件），否则发出 `'cart:add'`；`clearCart()` 发出 `'cart:clear'`；
-2. **`toast.ts`**：加上 `'toast:show'`（数据 `{ message: string; tone: Tone }`）。`showToast(message, tone = 'info')` 发出这个事件；`connectCartToasts()` 监听购物车的两个事件，分别显示 `已加入购物车：sku × quantity` 和 `购物车已清空`（语气都是 `info`），返回一个函数，调用之后两个监听都被取消；
+2. **`toast.ts`**：加上 `'toast:show'`（数据 `{ message: string; tone: Tone }`）。`showToast(message, tone = 'info')` 发出这个事件；`connectCartToasts()` 监听购物车的两个事件，分别用 `showToast` 显示 `已加入购物车：sku × quantity`（`sku`、`quantity` 换成事件中的值）和 `购物车已清空`（语气都是 `info`），返回一个函数，调用之后两个监听都被取消；
 3. 扩充之后，`AppEvents` 中正好有这三个事件，`emit`、`on` 的参数都有准确的类型（见类型测试）。
 
 起始代码中的函数已经写好了一部分，但还没有扩充 `AppEvents`，所以 `emit('cart:add', …)` 报错：`keyof AppEvents` 还是 `never`。不能使用类型断言。

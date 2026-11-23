@@ -183,7 +183,7 @@ describe('debounce', () => {
 :::
 
 :::hint{level=2}
-`debounced(value)`：保存 `lastValue = value`；如果 `timer !== null` 就 `clearTimeout(timer)`；然后 `timer = setTimeout(run, wait)`。`run` 把 `timer` 设回 `null` 再调用 `fn(lastValue)`。`flush` 在有定时器时清除它并立刻 `run()`。起始代码中的 `Object.assign(函数, { cancel, flush, pending })` 已经把方法挂到了函数上，保留这个结构即可。
+先声明两个闭包变量：`let timer: number | null = null;`（在浏览器和本平台中，`setTimeout` 返回的编号是 `number`；只写 `let timer = null;` 时，编译器推断不出它的类型，会报错）和 `let lastValue = '';`。再定义辅助函数 `run`：把 `timer` 设回 `null`，然后调用 `fn(lastValue)`。`debounced(value)`：保存 `lastValue = value`；如果 `timer !== null` 就 `clearTimeout(timer)`；然后 `timer = setTimeout(run, wait)`。`flush` 在有定时器时清除它并立刻 `run()`。起始代码中的 `Object.assign(函数, { cancel, flush, pending })` 已经把方法挂到了函数上，保留这个结构即可。
 :::
 
 :::explanation

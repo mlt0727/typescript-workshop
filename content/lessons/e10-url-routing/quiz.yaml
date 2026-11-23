@@ -13,7 +13,7 @@
   type: multiple
   prompt: 关于 `popstate` 事件，哪些说法正确？
   options:
-    - text: 用户按后退或前进键、地址在同一个页面内变化时触发
+    - text: 用户按后退或前进键，在同一个页面内切换地址时触发
       correct: true
       explain: 监听它，从地址中重新读取状态并渲染。
     - text: 调用 `history.pushState` 时也会触发

@@ -170,11 +170,11 @@ function listSearchOf(state: unknown): string {
 }
 ```
 
-参数写成 `unknown`，传入 `any` 也可以，但函数里面就必须先检查。如果直接写 `location.state?.listSearch ?? ''`，类型检查不会报错（`any` 关闭了检查），而 `state` 是 `{ listSearch: 42 }` 时，React Router 在生成链接地址时会对数字调用字符串的方法，整个页面就出错了。
+参数写成 `unknown`：调用时把 `any` 类型的 `location.state` 传进来没有问题，而在函数里面，不检查就用不了它。如果直接写 `location.state?.listSearch ?? ''`，类型检查不会报错（`any` 关闭了检查），而 `state` 是 `{ listSearch: 42 }` 时，React Router 在生成链接地址时会对数字调用字符串的方法，整个页面就出错了。
 
 ## 根地址：转到列表页
 
-打开 `/` 时转到 `/projects`。转向时要注意历史记录：“后退”应该回到用户来的地方。有三种写法，在 React Router 8.5 中实测（历史记录中原来是 A、B 两个页面）：
+打开 `/` 时转到 `/projects`。React Router 提供两类做法：在 loader（g14）中返回 `redirect(地址)` 或 `replace(地址)`（这两个函数都从 `react-router` 导入），导航就转到那个地址；或者在页面中渲染 `<Navigate to="地址" />` 组件，它一渲染出来就跳转。转向时要注意历史记录：“后退”应该回到用户来的地方。三种写法，在 React Router 8.5 中实测（历史记录中原来是 A、B 两个页面）：
 
 | 写法 | 在地址栏打开 `/` 之后按“后退” | 从站内的页面 B 导航到 `/` 之后按“后退” |
 | --- | --- | --- |
@@ -192,7 +192,7 @@ function listSearchOf(state: unknown): string {
 { index: true, element: <Navigate to="/projects" replace /> }
 ```
 
-如果站内没有任何链接指向 `/`，`/` 只是直接访问的入口，用 loader 返回 `replace('/projects')` 也可以，它在渲染之前就转走了（g14 讲过 loader）。React Router 的文档介绍 `<Navigate>` 时，说它是为不能使用 Hook 的类组件准备的，建议尽量用 `useNavigate`。但 `useNavigate` 返回的函数只能在事件处理函数或 Effect 中调用；像这样“渲染到这里就转走”的场景，用组件最直接。
+如果站内没有任何链接指向 `/`，`/` 只是直接访问的入口，用 loader 返回 `replace('/projects')` 也可以，它在渲染之前就转走了。React Router 的文档介绍 `<Navigate>` 时，说它是为不能使用 Hook 的类组件准备的，建议尽量用 `useNavigate`。但 `useNavigate` 返回的函数只能在事件处理函数或 Effect 中调用；像这样“渲染到这里就转走”的场景，用组件最直接。
 
 ## 编程挑战
 

@@ -38,14 +38,15 @@ const user = { name: 'Ada', born: 1815 };
 console.log(user.name.toUpperCase());
 console.log(user.age);
 ```
+- 第 1 行用 `{ … }` 直接写出一个对象，它只有 `name` 和 `born` 两个属性（对象在 a11 详讲）。
 - 第 4 行：对象上没有 `age` 属性，TypeScript 报 TS2339。
-- 运行一下：第 4 行并不会抛异常，只是输出 `undefined`——在 JavaScript 里读取不存在的属性是合法的。这种“静默的错误”正是 TypeScript 最有价值的地方。
+- 运行一下：第 4 行并不会抛异常，只是输出 `undefined`（表示“没有值”的特殊值，a05 会讲）。在 JavaScript 里读取不存在的属性是合法的；能在运行之前指出这种“静默的错误”，正是 TypeScript 最有价值的地方。
 - 和 Python 不同：Python 读取对象上不存在的属性会抛出 `AttributeError`。
 :::
 
 ## 类型在运行时不存在
 
-TypeScript 的类型只在编译期存在，编译后被完全**擦除**（erased）。所以类型不能当作“值”使用：
+TypeScript 的类型只在编译期存在，编译后被完全**擦除**（erased）。所以类型不能当作“值”使用。下面第 1 行用 `type` 给一种对象的形状起了名字 `Point`（这叫类型别名，b01 详讲），第 5 行试图在运行时用到它：
 
 :::playground{#erased expect="2693@main.ts:5" run=error}
 ```ts file=main.ts
@@ -60,7 +61,7 @@ console.log(origin instanceof Point);
 - `typeof origin` 是 **JavaScript 的运行时运算符**，它检查的是值本身，结果是字符串 `'object'`。运行时只知道“这是一个对象”，不知道它曾被声明为 `Point`。
 :::
 
-这和 Java 很不一样：Java 在运行时保留了类的信息，可以用 `instanceof` 判断对象的类；TypeScript 里的 `type` 和 `interface` 在运行时什么都不剩。（`class` 是例外：类是 JavaScript 的真实语法，运行时存在，可以用 `instanceof`，后面的课会讲。）
+这和 Java 很不一样：Java 在运行时保留了类的信息，可以用 `instanceof` 判断对象的类；TypeScript 里的 `type` 和 `interface`（另一种描述对象形状的写法，b01 详讲）在运行时什么都不剩。（`class` 是例外：类是 JavaScript 的真实语法，运行时存在，可以用 `instanceof`，后面的课会讲。）
 
 ## 用 typeof 做运行时检查
 

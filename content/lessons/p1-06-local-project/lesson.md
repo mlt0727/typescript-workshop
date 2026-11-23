@@ -103,7 +103,7 @@ document.body.append(link);
 - 这个网站的预览运行在沙箱中，沙箱没有开启下载的权限（iframe 的 `sandbox` 属性中没有 `allow-downloads`），所以这里不要指望点击链接能下载文件。在本机运行（`npm run dev`）时，同样的代码可以真的下载。下面的编程挑战用测试检查生成的文件。
 :::
 
-object URL 会让 Blob 一直留在内存中，直到页面关闭。用完之后调用 `URL.revokeObjectURL(url)` 释放它。常见的写法是点击之后，用 `setTimeout` 在下一个任务中释放：
+object URL 会让 Blob 一直留在内存中，直到页面关闭。用完之后调用 `URL.revokeObjectURL(url)` 释放它。常见的写法是点击之后，用 `setTimeout` 把释放推迟到事件循环的下一个任务（e01）中，这时下载已经开始了：
 
 ```ts
 function download(blob: Blob, filename: string): void {

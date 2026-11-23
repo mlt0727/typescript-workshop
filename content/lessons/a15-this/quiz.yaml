@@ -18,9 +18,9 @@
       correct: true
       explain: "`this` 由调用方式决定。`hello()` 前面没有对象，`this` 是 `undefined`，读取 `undefined.name` 抛出 `TypeError`。TypeScript 不跟踪方法被取出后的调用方式。"
     - text: 输出 `我是 Ada`
-      explain: 在 Java 里方法总是绑定在对象上，但 JavaScript 的普通函数不是。`hello` 和 `user.hello` 是同一个函数，`this` 取决于调用时的形式。
+      explain: 在 Java 里方法总是绑定在对象上，但 JavaScript 的普通函数不是。`hello` 和 `user.hello` 是同一个函数，`this` 取决于调用时的形式。这里 `hello()` 前面没有对象，`this` 不是 `user`。
     - text: TypeScript 报错，不能把方法赋给变量
-      explain: 把方法赋给变量是合法的，问题出在之后的调用方式。
+      explain: 把方法赋给变量是合法的，TypeScript 不会报错。问题出在之后的调用方式：`hello()` 前面没有对象，要到运行时才出错。
 - id: fix-callback
   type: multiple
   prompt: "`logger.log` 是一个使用了 `this` 的方法。下列哪些写法能让 `items.forEach(…)` 正确地调用它？"
@@ -36,7 +36,7 @@
 - id: arrow-method
   type: single
   prompt: |
-    第 4 行的 `this` 指的是什么？
+    下面的代码写在模块顶层。第 4 行的 `this` 指的是什么？
 
     ```ts
     const timer = {
@@ -64,4 +64,4 @@
     - text: 普通 `function`，因为它有自己的 `this`
       explain: 回调有自己的 `this` 正是问题所在：`map` 调用它时不提供 `this`，TypeScript 会报 TS2683。
     - text: 两种都可以，`map` 会把数组作为 `this` 传给回调
-      explain: "`map` 默认不提供 `this`（只有传入第二个参数 `thisArg` 时才会提供）。"
+      explain: "`map` 默认不提供 `this`（只有传入第二个参数 `thisArg` 时才会提供），所以普通 `function` 回调里的 `this` 是 `undefined`，不是方法的 `this`。"

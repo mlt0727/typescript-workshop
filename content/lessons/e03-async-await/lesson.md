@@ -114,7 +114,7 @@ console.log(await start('{ "port": "x" }'));
 console.log(await start('{'));
 ```
 - 第 4 行的 `throw` 让 `loadConfig` 返回的 Promise 被拒绝；第 11 行的 `await` 把它变成了一个抛出的错误，被第 13 行捕获。
-- 第 22 行：`JSON.parse` 同步抛出的 `SyntaxError` 也一样：在 async 函数中，任何抛出的错误都会变成被拒绝的 Promise。
+- 第 22 行：`JSON.parse` 同步抛出的 `SyntaxError` 也同样被捕获：在 async 函数中，任何抛出的错误都会变成被拒绝的 Promise。
 - `catch` 中的 `err` 仍然是 `unknown`（a20）。
 - 看输出顺序：每次都是“检查完毕”先出现，返回值后出现。`finally` 在函数返回之前执行，而第 20–22 行要等函数返回之后才能打印返回值。
 :::
@@ -220,7 +220,7 @@ for (const item of ['c', 'd']) {
 }
 console.log('for...of 之后：', done);
 ```
-- 第 10 行：`user` 是 `Promise<User>`，没有 `name`，报 TS2339。改成 `const user = await fetchUser();`。
+- 第 10 行：`user` 是 `Promise<User>`，没有 `name`，报 TS2339。把第 9 行改成 `const user = await fetchUser();` 即可。
 - 第 11 行：Promise 对象总是 truthy，报 TS2801。
 - 第 20 行输出空数组：`forEach` 没有等待。第 26 行输出全部四项：`for...of` 中的 `await` 让循环按顺序等待，而前面 `forEach` 里的两个回调也已经在这期间完成了。
 :::

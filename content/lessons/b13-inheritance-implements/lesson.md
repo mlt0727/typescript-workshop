@@ -26,7 +26,7 @@ compiler:
 
 ## extends 与 super
 
-`class 子类 extends 父类` 继承父类的字段和方法。子类的构造函数**必须先调用 `super(…)`**（父类的构造函数），之后才能使用 `this`——这和 Java 要求先调用 `super(...)` 是同一个道理（Java 25 之前要求它写在构造函数第一行），JavaScript 允许在调用 `super` 之前执行不涉及 `this` 的代码。
+`class 子类 extends 父类` 继承父类的字段和方法。子类如果自己写构造函数，**必须先调用 `super(…)`**（父类的构造函数），之后才能使用 `this`。这和 Java 是同一个道理，但有两点不同：一是必须自己写出来，即使父类的构造函数没有参数，JavaScript 也不会像 Java 那样自动补上 `super()`；二是它不必写在第一行（Java 25 之前要求它写在构造函数第一行），在它之前可以执行不涉及 `this` 的代码。
 
 覆盖父类的方法时，写上 `override` 关键字；在方法里用 `super.方法名()` 调用父类的实现。
 
@@ -63,6 +63,7 @@ new Cat('咪咪');
 ```
 - 第 13 行：`Dog` 没有写构造函数，会自动使用父类的构造函数。
 - 第 15 行：`super.speak()` 调用父类的实现，再在后面加上自己的内容。
+- 第 20 行输出 `旺财 发出声音：汪汪 true`：`Dog` 的实例同时也是 `Animal` 的实例。
 - 第 24 行：在 `super(…)` 之前使用了 `this`，报 TS17009；运行时也确实抛出 `ReferenceError`。
 :::
 
@@ -72,13 +73,13 @@ new Cat('咪咪');
 
 `override` 关键字本身就会触发检查：写了 `override` 但父类没有这个方法，报 TS4113（如果有名字相近的方法，报 TS4117 并提示“你是不是想写……”）。最常见的原因是**拼错了方法名**：不写 `override` 时，拼错的方法会成为一个新方法，父类的方法照样被调用，bug 很难发现。
 
-本课还开启了 `noImplicitOverride` 选项（见页面上方的说明）。它增加的规则是：覆盖父类**已有实现**的方法时**必须**写 `override`，否则报 TS4114。这样一来：
+本课的示例还开启了 `noImplicitOverride` 选项（每个示例上方的“本示例的编译配置”说的就是它）。它增加的规则是：覆盖父类**已有实现**的方法时**必须**写 `override`，否则报 TS4114。这样一来：
 
 - 所有覆盖都带着 `override`，读代码的人一眼就知道；
 - 父类的方法改名或删除时，子类里的 `override` 会立刻报错；
 - 父类新增了一个和子类方法同名的方法时，“意外覆盖”也会被发现。
 
-实现父类的**抽象**方法时，`override` 可写可不写（推荐写上）。
+例外是实现父类的**抽象**方法（只有签名、没有实现的方法，本课最后一节讲）：这时 `override` 可写可不写（推荐写上）。
 
 :::playground{#override expect="4117@main.ts:8, 4114@main.ts:14"}
 ```ts file=main.ts
@@ -110,7 +111,9 @@ console.log(new PrefixLogger().format('启动'), new UpperLogger().format('ok'))
 
 `class X implements 接口` 要求类拥有接口中的全部成员，否则报 TS2420。一个类可以 `implements` 多个接口（但只能 `extends` 一个类）。
 
-和 Java 不同的是：由于结构化类型（b02），`implements` **只是一项检查**，它不会改变类本身的类型（例如接口里的可选属性不会因此加到类上）。即使不写 `implements`，形状相符的类也可以当作这个接口使用。另外，它**不会**给方法参数提供类型：方法的参数仍然要自己写类型注解。
+和 Java 不同的是：由于结构化类型（b02），`implements` **只是一项检查**，它不会改变类本身的类型（例如接口里的可选属性不会因此加到类上）。即使不写 `implements`，形状相符的类也可以当作这个接口使用。
+
+它也**不会**给方法参数提供类型。a13 讲过，回调的参数可以从上下文得到类型；类的方法没有这种推断，即使写了 `implements`，参数仍然要自己写类型注解。
 
 :::playground{#implements expect="2420@main.ts:6, 7006@main.ts:17"}
 ```ts file=main.ts
@@ -138,7 +141,7 @@ class YuanFormatter implements Formatter {
 console.log(new Square().area(), new YuanFormatter().format(5));
 ```
 - 第 6 行：缺少 `name`，报 TS2420。
-- 第 17 行：接口中 `value` 是 `number`，但类的方法参数不会继承这个类型，`value` 是隐式 `any`，报 TS7006。
+- 第 17 行：接口中 `value` 是 `number`，但类的方法参数不会从接口得到这个类型，`value` 是隐式 `any`，报 TS7006。改成 `format(value: number)` 就不报错了。
 :::
 
 ## abstract：只能被继承的基类
@@ -177,11 +180,11 @@ class EmptyReport extends Report {
 console.log(raw, EmptyReport);
 ```
 - 第 6 行：基类的 `render` 调用了子类才会实现的 `title` 和 `rows`。
-- 第 21 行：抽象类不能实例化，报 TS2511。（`abstract` 只在编译期起作用，运行时这一行其实能执行。）
+- 第 21 行：抽象类不能实例化，报 TS2511。（`abstract` 只在编译期起作用，运行时这一行其实能执行：最后一行输出的 `Report {}` 就是它创建的对象。）
 - 第 23 行：`EmptyReport` 没有实现 `rows`，报 TS2515。
 :::
 
-**继承还是组合？** JavaScript 只支持单继承，深层的继承关系也让代码难以修改。现代 TypeScript/React 代码更常用**组合**：用接口描述能力，用普通函数、对象和闭包（a14）把能力组装起来。继承适合“确实是一种”的关系，并且层次最好很浅。
+**继承还是组合？** JavaScript 只支持单继承，深层的继承关系也让代码难以修改。现代 TypeScript/React 代码更常用**组合**：用接口描述能力，用普通函数、对象和闭包（a14）把能力组装起来。后面的编程挑战就是这个思路：用接口描述“渠道”，再让一个类持有一组渠道。继承适合“子类确实是一种父类”的关系（狗是一种动物），并且层次最好很浅。
 
 ::exercise{#shape-classes}
 
@@ -194,7 +197,7 @@ console.log(raw, EmptyReport);
 ## 常见错误
 
 - **在 `super(…)` 之前使用 `this`**：TS17009，运行时 `ReferenceError`。
-- **覆盖方法时拼错了名字**：开启 `noImplicitOverride` 并写 `override`，编译期就能发现。
+- **覆盖方法时拼错了名字**：写上 `override`，编译期就能发现；不写的话，拼错的方法只是一个新方法，开启 `noImplicitOverride` 也不会报错。
 - **以为 `implements` 会给方法参数提供类型**：参数仍要自己写注解。
 - **试图 `new` 一个抽象类**：只能实例化实现了全部抽象方法的子类。
 

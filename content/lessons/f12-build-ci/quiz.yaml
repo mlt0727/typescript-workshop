@@ -17,9 +17,9 @@
       correct: true
       explain: 一个 job 失败或被跳过时，需要它的 job 都会被跳过，除非用条件表达式让它继续。
     - text: 照常运行，因为 job 之间是相互独立的
-      explain: 没有 needs 的 job 才是相互独立、同时运行的。
+      explain: deploy 写了 needs，就依赖 build 的结果，build 失败时它会被跳过。只有没有 needs 的 job 才相互独立、同时运行。
     - text: 等 build 重新运行成功后再运行
-      explain: GitHub 不会自动重试失败的 job；可以手动“重新运行失败的 job”。
+      explain: GitHub 不会自动重试失败的 job，deploy 会直接被跳过；需要时可以在网页上手动“重新运行失败的 job”。
 - id: failure-ancestor
   type: single
   prompt: "lint 失败，build（needs lint）被跳过；notify 写了 `needs: build` 和 `if: failure()`。notify 会运行吗？"
@@ -28,7 +28,7 @@
       correct: true
       explain: GitHub 文档写明，在依赖链中 failure() 检查的是所有祖先，所以失败通知不会因为中间的 job 被跳过而发不出去。
     - text: 不会：它的直接依赖 build 是被跳过，而不是失败
-      explain: failure() 不只看直接的依赖。
+      explain: failure() 不只看直接的依赖，而是看所有祖先：lint 失败了，所以 notify 会运行。
     - text: 不会：依赖被跳过时，下游总是被跳过
       explain: 这是没有写条件时的规则；写了 failure() 或 always() 的 job 可以继续。
 - id: separate-machines

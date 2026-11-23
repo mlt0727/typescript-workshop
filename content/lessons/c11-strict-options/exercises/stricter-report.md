@@ -7,7 +7,7 @@ compiler:
 ---
 `stock.ts` 是在宽松的配置下写成的。本题在课程的配置（`strict`、`noUncheckedIndexedAccess`）之上又开启了三个选项，它现在有好几处类型错误，其中有的错误背后正是真实的 bug。修改它，让它通过检查，并且符合下面的规格（不能使用类型断言和非空断言 `!`）：
 
-1. **`restock(stock, sku, amount)`**：返回新的库存，`sku` 的数量加上 `amount`（可以是负数）。库存中还没有这个 `sku` 时从 0 开始。结果小于 0 时抛出 `RangeError`，`message` 是 `库存不足：sku`；
+1. **`restock(stock, sku, amount)`**：返回新的库存，`sku` 的数量加上 `amount`（可以是负数）。库存中还没有这个 `sku` 时从 0 开始。结果小于 0 时抛出 `RangeError`，`message` 是 `库存不足：` 加上这个 `sku`（例如 `库存不足：pear`）；
 2. **`report(stock, lowThreshold)`**：`total` 是所有数量之和，`skus` 是种类数；`top` 是数量最多的 `sku`（数量相同时取字母顺序在前的那个），**库存为空时没有 `top` 这个属性**；`low` 是数量小于 `lowThreshold` 的 `sku`，按字母顺序排列；
 3. **`Formatter`** 的 `format(report)` 返回 `共 N 件，M 种`；**`CsvFormatter`** 继承它，`format` 返回两行：`total,skus,top` 和对应的值（没有 `top` 时为空）；
 4. **`describeApples(stock)`**：返回 `苹果：N 件`，`N` 是 `apple` 的数量，没有时是 0。

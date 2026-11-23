@@ -145,8 +145,8 @@ for (const base of ['1.2.3', '0.2.3', '0.0.3']) {
 2. 新建一个文件夹并初始化：`mkdir f01-lab`、`cd f01-lab`、`npm init -y`。生成的 `package.json` 中，npm 11 会写入 `"type": "commonjs"`；
 3. 安装一个开发依赖：`npm install --save-dev typescript@6.0.3`。打开 `package.json`，`devDependencies` 中是 `"typescript": "^6.0.3"`；文件夹中多了 `node_modules` 和 `package-lock.json`（`"lockfileVersion": 3`）；
 4. 运行它提供的命令：`npx tsc --version`，输出 `Version 6.0.3`；
-5. 在 `package.json` 的 `scripts` 中加一行 `"check": "tsc --version"`，然后 `npm run check`；
-6. 删除 `node_modules`，运行 `npm ci`：它按锁文件重新安装了同样的版本。
+5. 在 `package.json` 的 `scripts` 中加一行 `"check": "tsc --version"`，然后 `npm run check`：npm 先打印要执行的命令，最后一行同样是 `Version 6.0.3`；
+6. 删除 `node_modules`，运行 `npm ci`：它按锁文件重新安装了同样的版本。再运行 `npx tsc --version`，仍然输出 `Version 6.0.3`。
 
 ## 练习之前：JavaScript 的正则表达式
 

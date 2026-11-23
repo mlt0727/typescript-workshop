@@ -70,7 +70,7 @@ export default defineConfig({
 });
 ```
 
-- `webServer`：运行测试之前先执行 `npm run dev` 启动网站，等 `url` 能访问了再开始；开发时如果已经开着开发服务器，就直接用它（`reuseExistingServer`）。在持续集成中更好的做法是测试**构建后的网站**：`command` 写成 `npm run build && npm run preview`，`url` 换成预览服务器的地址（默认端口 4173），这样构建本身的问题也能被发现；
+- `webServer`：运行测试之前先执行 `npm run dev` 启动网站，等 `url` 能访问了再开始；开发时如果已经开着开发服务器，就直接用它（`reuseExistingServer`）。持续集成的环境通常会设置环境变量 `CI`，所以 `!process.env.CI` 的意思是：在本机复用，在持续集成中总是启动新的服务器。在持续集成中更好的做法是测试**构建后的网站**：`command` 写成 `npm run build && npm run preview`，`url` 换成预览服务器的地址（默认端口 4173），这样构建本身的问题也能被发现；
 - `baseURL`：测试中写 `page.goto('/')` 就够了；
 - `projects`：每个项目是一种浏览器，同一组测试在每个浏览器中各运行一遍。
 
@@ -89,7 +89,7 @@ test('点击按钮，计数加一', async ({ page }) => {
 });
 ```
 
-4. `npx playwright test`：两个浏览器中各运行一遍，实际输出是 `4 passed (3.8s)`（还有一个检查标题的测试）。
+4. `npx playwright test`：每个测试在两个浏览器中各运行一遍。只有上面这一个测试时，应该看到 `2 passed`；本机的 `e2e` 中还有一个检查页面标题的测试，所以实际输出是 `4 passed (3.8s)`（2 个测试 × 2 个浏览器）。
 
 ## 定位器与自动等待
 
@@ -167,7 +167,7 @@ console.log('重试直到成功：', await eventually(() => status.textContent =
 - `npx playwright test --ui`：UI 模式，可以单独运行某个测试，逐步查看每一个操作前后的页面；
 - `npx playwright test --headed`：显示浏览器窗口；`--debug` 逐步执行；
 - **trace**：配置中的 `trace: 'retain-on-failure'` 为每个测试记录完整的过程（每一步的截图、DOM、网络请求、控制台），只保留失败的那些。`npx playwright show-report` 打开报告，点开 trace 就能“回放”失败的那一次。`npm init playwright` 生成的模板用的是 `trace: 'on-first-retry'` 加上 `retries: process.env.CI ? 2 : 0`：只在重试时记录，所以本机（不重试）不会生成 trace，要么加上 `--retries=1`，要么像这里一样用 `retain-on-failure`；
-- **模拟网络**：测试不应该依赖真实的后端是否正常。`page.route` 拦截请求并返回准备好的数据：
+- **模拟网络**：测试不应该依赖真实的后端是否正常。`page.route` 拦截请求并返回准备好的数据（`toHaveText` 传入数组时，检查匹配到的所有元素依次是这些文字）：
 
 ```ts
 await page.route('**/api/users', (route) => route.fulfill({ json: [{ id: 1, name: 'Ada' }] }));
@@ -202,4 +202,4 @@ await expect(page.getByRole('listitem')).toHaveText(['Ada']);
 - **对一次性读取的值做断言**：`expect(await locator.textContent()).toBe(…)` 不会重试。用 `await expect(locator).toHaveText(…)`。
 - **端到端测试依赖真实的后端和数据**：数据一变测试就失败。用 `page.route` 模拟，或者为测试准备专门的数据。
 - **用端到端测试覆盖所有细节**：慢，而且失败时难以定位。细节交给单元测试和组件测试，端到端测试只走关键的流程。
-- **只在开发服务器上运行**：构建、`base`、路由回退（f02）的问题只在构建后的网站上出现。持续集成中测试 `npm run preview` 提供的网站。
+- **只在开发服务器上运行**：构建、`base`（f02）的问题只在构建后的网站上出现。持续集成中测试 `npm run preview` 提供的网站。

@@ -28,7 +28,7 @@
       correct: true
       explain: lib 只决定 TypeScript 认识哪些内置 API 的类型，不会补上运行时缺少的功能。
     - text: TypeScript 会自动为旧浏览器补上这个方法
-      explain: TypeScript 不提供 polyfill，Vite 默认也不提供。
+      explain: TypeScript 不会给运行环境补上缺少的 API（这种补丁代码叫 polyfill），Vite 默认也不会。
     - text: 没有错误，lib 只影响输出的语法
       explain: 输出的语法由 target（或 Vite 的 build.target）决定；lib 影响的是类型检查。
 - id: types-default
@@ -41,4 +41,4 @@
     - text: 能通过检查，因为装了 @types/node
       explain: 这是 6.0 以前的行为（默认自动包含所有 @types 包）。
     - text: 能通过检查，运行时 Vite 会提供 process
-      explain: Vite 不在浏览器中提供 process；前端读取配置用 import.meta.env（e13）。
+      explain: Vite 不在浏览器中提供 process；前端读取配置用 import.meta.env（e13 会讲）。

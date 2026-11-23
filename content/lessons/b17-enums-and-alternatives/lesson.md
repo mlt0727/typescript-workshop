@@ -23,11 +23,11 @@ references:
 
 ## 枚举的写法与运行时对象
 
-`enum` 定义一组有名字的常量。数字枚举的成员默认从 0 开始编号；字符串枚举的每个成员要写出值。
+`enum` 定义一组有名字的常量。数字枚举的成员默认从 0 开始编号；字符串枚举的每个成员要写出值。和 Java 的枚举不同，成员只是数字或字符串，不能带字段和方法（更接近 C++ 的 `enum`）。
 
-和 `type`、`interface` 不同，**枚举在运行时是一个真实的对象**：TypeScript 会为它生成代码。数字枚举还会生成**反向映射**（从值查名字），所以 `Object.keys` 会得到一些意外的键。（`const enum` 不生成对象，而是把值直接内联到使用的地方。但内联需要知道其他文件里枚举的定义，所以它同样不能简单地擦除。）
+和 `type`、`interface` 不同，**枚举在运行时是一个真实的对象**：TypeScript 会为它生成代码。数字枚举还会生成**反向映射**（从值查名字），所以 `Object.keys` 会得到一些意外的键。（`const enum` 不生成对象，而是把值直接内联到使用的地方：成员的名字被换成它的值。这同样是在改写代码，而且枚举的定义可能在别的文件里，所以它也不是“擦掉类型就能运行”的语法。）
 
-本平台开启了 `erasableSyntaxOnly`，所以示例中的枚举会报 TS1294。为了观察它的运行时行为，这里仍然运行一下（TypeScript 照样会生成代码）。
+本平台开启了 `erasableSyntaxOnly` 选项（下一节讲），所以示例第 1、6 行的两个枚举都会报 TS1294。为了观察枚举的运行时行为，这里仍然运行一下（有类型错误时，TypeScript 照样会生成代码）。
 
 :::playground{#enum expect="1294@main.ts:1, 1294@main.ts:6"}
 ```ts file=main.ts
@@ -46,26 +46,26 @@ console.log(Level.High);
 console.log(Object.keys(Direction), Object.keys(Level));
 ```
 - 第 11 行：`Direction.Up` 是 `0`，而 `Direction[0]` 是 `'Up'`——这就是反向映射。
-- 第 13 行：数字枚举的 `Object.keys` 是 `[ '0', '1', 'Up', 'Down' ]`，名字和数字混在一起；字符串枚举没有反向映射。
+- 第 13 行：数字枚举的 `Object.keys` 是 `[ '0', '1', 'Up', 'Down' ]`，名字和数字混在一起；字符串枚举没有反向映射，只有 `[ 'Low', 'High' ]`。
 - 点击“查看 JS”，看看 TypeScript 为这两个枚举生成了什么代码。
 :::
 
 ## 可擦除语法
 
-越来越多的工具采用“**只擦除类型**”的方式运行 TypeScript：Node.js 直接运行 `.ts` 文件（a01）时，默认只是把类型标注替换成空白，不做任何代码生成；ts-blank-space 这类工具也是如此。能这样处理的语法叫**可擦除语法**。
+越来越多的工具采用“**只擦除类型**”的方式运行 TypeScript：Node.js 直接运行 `.ts` 文件（a01）时，默认只是把类型注解等 TypeScript 专有语法替换成空白，不做任何代码生成；ts-blank-space 这类工具也是如此。能这样处理的语法叫**可擦除语法**。
 
-esbuild 和 Vite 使用的转换器会为 `enum` 等语法生成代码，但它们逐个文件处理、不做类型检查，拿不到其他文件的类型信息，所以也有自己的限制，例如处理不了跨文件的 `const enum`（`isolatedModules` 选项会提前报告这类问题）。
+另一类工具不只是擦除：a19 提到的 Vite、esbuild 这类构建工具，它们的转换器会为 `enum` 等语法生成代码。但它们逐个文件处理、不做类型检查，拿不到其他文件的类型信息，所以也有自己的限制，例如处理不了跨文件的 `const enum`（`isolatedModules` 选项会提前报告这类问题）。
 
 需要生成代码的 TypeScript 语法不多，主要是：
 
-- `enum`（包括 `const enum`；只有 `declare enum` 例外）；
-- 带有值的 `namespace`（只包含类型的 `namespace` 可以）；
+- `enum`（包括 `const enum`；只有 `declare enum` 例外：它只描述一个别处已有的枚举，自己不生成代码）；
+- 带有值的 `namespace`（ES 模块出现之前 TypeScript 用来组织代码的旧写法；只包含类型的 `namespace` 可以）；
 - 类的参数属性 `constructor(private x: number)`（b12）；
 - `import x = require('…')`、`import A = N.B`、`export = …` 这类旧的模块写法。
 
 另外，尖括号断言 `<T>x`（b16）虽然不需要生成代码，也会被下面这个选项拒绝。
 
-`erasableSyntaxOnly` 选项（TypeScript 5.8 加入）会拒绝这些语法（TS1294），保证代码里没有需要生成代码的 TypeScript 语法。项目需要兼容这类工具时，新代码就应该避免这些语法。注意这只是必要条件：要让 Node.js 直接运行，还需要别的配合，例如类型导入要写成 `import type`（a19），相对导入要写出 `.ts` 扩展名（F 阶段会讲）。
+`erasableSyntaxOnly` 选项（TypeScript 5.8 加入）会拒绝这些语法（TS1294），保证代码里没有需要生成代码的 TypeScript 语法。项目需要兼容只擦除类型的工具时，新代码就应该避免这些语法。注意这只是必要条件：要让 Node.js 直接运行，还需要别的配合，例如类型导入要写成 `import type`（a19），相对导入要写出 `.ts` 扩展名（f03 会讲）。
 
 ## 替代写法一：字面量联合
 
@@ -79,7 +79,11 @@ type Direction = 'up' | 'down' | 'left' | 'right';
 
 ## 替代写法二：as const 对象 + 推导类型
 
-如果还需要一个“运行时可以遍历、可以按名字引用”的对象，用 `as const` 对象，再从它推导出值的联合类型。这里用到的都是已经学过的类型运算：`typeof`（b16）取对象的类型，`keyof` 和索引访问（b15）取出所有值。
+如果还需要一个“运行时可以遍历、可以按名字引用”的对象，用 `as const` 对象，再从它推导出值的联合类型。推导用的都是已经学过的类型运算，下面示例第 6 行的 `(typeof Status)[keyof typeof Status]` 可以分三步读：
+
+1. `typeof Status`（b16）是这个对象的类型：`{ readonly Active: 'active'; readonly Disabled: 'disabled' }`；
+2. `keyof typeof Status`（b15）是它所有键的联合：`'Active' | 'Disabled'`；
+3. 用这个联合做索引访问（b15），得到这些键对应的值类型的联合：`'active' | 'disabled'`。
 
 :::playground{#as-const-object expect="2322@main.ts:9"}
 ```ts file=main.ts
@@ -99,7 +103,7 @@ function label(status: Status): string {
 
 console.log(a, b, label('disabled'), Object.values(Status));
 ```
-- 第 6 行：同名的值 `Status` 和类型 `Status` 可以共存（值和类型在不同的“命名空间”里）。类型展开后是 `'active' | 'disabled'`。
+- 第 6 行：同名的值 `Status` 和类型 `Status` 可以共存，TypeScript 按名字出现的位置来区分：第 8 行冒号后面的 `Status` 是类型，等号后面的 `Status.Active` 用的是值。类型展开后是 `'active' | 'disabled'`。
 - 第 8 行：既可以用 `Status.Active`，也可以直接写字符串 `'disabled'`（第 15 行）——这比字符串枚举更灵活，字符串枚举不接受普通字符串。
 - 第 9 行：不合法的值报 TS2322。
 - 第 15 行：`Object.values(Status)` 只有两个值，没有反向映射带来的多余项。

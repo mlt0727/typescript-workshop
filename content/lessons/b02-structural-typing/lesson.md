@@ -25,7 +25,7 @@ references:
 
 TypeScript 的类型系统是**结构化**的（structural typing）：判断一个值能不能当作某个类型使用时，只比较它们的**形状**——有没有需要的属性、属性的类型是否兼容。类型叫什么名字、值是怎样创建的、有没有“声明实现了”这个类型，都不重要。
 
-Java、C# 的类型系统是**名义**的（nominal）：类型必须通过 `implements`、`extends` 明确建立关系。（TypeScript 也有少数例外：带私有成员的类按声明来源比较，b12 会讲。）
+Java、C# 的类型系统是**名义**的（nominal）：类型必须通过 `implements`、`extends` 明确建立关系。（TypeScript 也有少数例外：类带有私有成员时，光是形状相同还不够，私有成员必须来自同一个类的声明。类在 b12 讲。）
 
 :::playground{#structural}
 ```ts file=main.ts
@@ -56,7 +56,7 @@ console.log(vectorLength(labeled));
 
 ## 多余属性检查：只针对对象字面量
 
-上面第 19 行的规则有一个例外：如果在需要某个类型的地方**直接写一个对象字面量**，TypeScript 会额外检查它有没有多余的属性。原因是：直接写出来的对象，多出来的属性没有任何代码会用到，几乎一定是写错了——最常见的是可选属性的拼写错误。
+“属性更多的值可以赋给要求更少的类型”有一个例外：如果在需要某个类型的地方**直接写一个对象字面量**，TypeScript 会额外检查它有没有多余的属性。原因是：直接写出来的对象刚刚创建，别处没有引用它，之后只能通过这个类型来访问，多出来的属性不会有任何代码用到，几乎一定是写错了——最常见的是拼错了可选属性的名字。先放进变量的对象则不同，别的代码可能还在按更完整的类型使用它，所以不检查。
 
 :::playground{#excess expect="2353@main.ts:8, 2561@main.ts:17"}
 ```ts file=main.ts
@@ -79,16 +79,17 @@ function draw(options: DrawOptions): string {
 console.log(draw({ width: 10, colour: 'red' }));
 console.log(p1, p2);
 ```
-- 第 7 行：先放进变量再赋值，不检查多余属性，没有错误。同理，通过展开 `{ ...ok }` 带进来的属性也不检查，多余属性检查只看字面量里**显式写出**的属性。
+- 第 7 行：先放进变量再赋值，不检查多余属性，没有错误。
 - 第 8 行：直接写对象字面量，`z` 是多余的，报 TS2353。
-- 第 17 行：`colour` 拼错了（应该是 `color`），TypeScript 报 TS2561 并给出了建议。如果没有这项检查，`color` 是可选属性，拼错的那个会被悄悄忽略，画出来的是黑色。运行一下看看。
+- 多余属性检查只看字面量里**显式写出**的属性，通过展开带进来的不算：把第 8 行等号右边改成 `{ ...ok }` 试一下，错误消失了。
+- 第 17 行：`colour` 拼错了（应该是 `color`），TypeScript 报 TS2561 并给出了建议。`color` 是可选属性，不写也合法；如果没有这项检查，拼错的 `colour` 会被悄悄忽略，画出来的是黑色。运行一下看看。
 :::
 
 ## 类型不会删除多余的属性
 
 结构化类型只是**编译期**的规则。运行时，对象上有什么属性就是什么属性：把一个带有 `password` 的对象赋给 `{ name: string }` 类型的变量，`password` 仍然在那里，`Object.keys`、`JSON.stringify`、展开语法都能看到它。
 
-这也是 a11 提到的 `Object.keys` 返回 `string[]` 的原因：TypeScript 无法保证对象只有类型里写的那些键。
+a11 提到过，`Object.keys` 的返回类型是 `string[]`，而不是只含类型里那几个键名的数组。原因就在这里：TypeScript 无法保证对象只有类型里写的那些键。
 
 :::playground{#extra-at-runtime}
 ```ts file=main.ts
@@ -104,7 +105,7 @@ const row = { name: 'Ada', password: 'hunter2' };
 console.log(show(row));
 console.log(Object.keys(row));
 ```
-- 第 10 行：`password` 被一起序列化了。类型 `PublicUser` 只限制了函数**能用**哪些属性，不会删除其他属性。
+- 第 10 行：`password` 被一起序列化了。类型 `PublicUser` 只限制了 `show` 里的代码**能按名字访问**哪些属性（写 `user.password` 会报错），不会把其他属性从对象上删掉。
 - 需要只保留某些字段时（例如返回给前端的数据），要明确地挑出来：`{ name: user.name }`。
 :::
 

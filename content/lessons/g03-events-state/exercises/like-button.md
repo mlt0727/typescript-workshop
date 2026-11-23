@@ -105,13 +105,13 @@ test('再次点击取消点赞并减 1，可以反复切换', async () => {
 :::
 
 :::hint{level=2}
-`const [liked, setLiked] = useState(false)` 与 `const [count, setCount] = useState(initialCount)`；给按钮加 `onClick`，在处理函数里根据**当前的** `liked` 决定加 1 还是减 1，然后把 `liked` 取反。
+先从 `react` 导入 `useState`，再写 `const [liked, setLiked] = useState(false)` 与 `const [count, setCount] = useState(initialCount)`；给按钮加 `onClick`，在处理函数里根据**当前的** `liked` 决定加 1 还是减 1，然后把 `liked` 取反。
 :::
 
 :::explanation
-两个 state 变量分别记住“是否已点赞”和“点赞数”。处理函数里读取的 `liked` 是本次渲染的快照，所以先用它算出新的点赞数、再把它取反，顺序无关紧要。
+两个 state 变量分别记住“是否已点赞”和“点赞数”。在这次点击的处理函数里，`liked` 的值是固定的：调用 `setLiked` 不会立刻改变它（下一节“state 是一张快照”会细讲）。所以 `setCount` 和 `setLiked` 谁先调用都一样，点赞数都按点击前的 `liked` 来算。
 
-也可以把 `count` 的计算写成更新函数，或者只存 `liked`、在渲染时用 `initialCount + (liked ? 1 : 0)` 计算出点赞数——后者更简单：能从已有数据算出的值，不必单独存成 state。
+也可以把 `count` 的计算写成更新函数（下一节讲），或者只存 `liked`、在渲染时用 `initialCount + (liked ? 1 : 0)` 计算出点赞数——后者更简单：能从已有数据算出的值，不必单独存成 state。
 :::
 
 :::variant{kind=alt name=derived-count}

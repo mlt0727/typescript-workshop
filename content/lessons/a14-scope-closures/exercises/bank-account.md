@@ -2,14 +2,14 @@
 kind: challenge
 title: 只能通过接口修改的账户
 ---
-实现 `createAccount(initial)`：创建一个账户，余额只能通过下面的函数读取和修改（单位：分，均为整数）。
+实现 `createAccount(initial)`：创建一个初始余额为 `initial` 的账户，返回一个包含下面四个函数的对象。余额只能通过这四个函数读取和修改（金额的单位是分，都是整数）。
 
 - `deposit(amount)`：存款。`amount` 必须大于 0，否则什么也不做并返回 `false`；成功时返回 `true`。
 - `withdraw(amount)`：取款。`amount` 必须大于 0 且不超过当前余额，否则什么也不做并返回 `false`；成功时返回 `true`。
 - `balance()`：返回当前余额。
-- `history()`：返回所有**成功**交易的记录数组，按发生顺序排列：存款记为正数，取款记为负数。调用方修改这个数组，不能影响账户内部的记录。
+- `history()`：返回所有**成功**交易的记录数组，按发生顺序排列：存款记为正数，取款记为负数。初始余额不算交易，新账户的记录是空数组。调用方修改这个数组，不能影响账户内部的记录。
 
-不同账户之间互不影响。起始代码里的 `type Account = { … }` 给返回值的对象类型起了一个名字，B 阶段会详细讲 `type`。
+不同账户之间互不影响。起始代码里的 `type Account = { … }` 给返回值的对象类型起了一个名字，B 阶段会详细讲 `type`。`createAccount` 的函数体还是空的，所以 TypeScript 会先报 TS2355（声明了返回类型却没有返回值），写出实现后就会消失。
 
 :::files{role=starter}
 ```ts file=account.ts
@@ -132,7 +132,7 @@ describe('createAccount', () => {
 :::
 
 :::hint{level=2}
-取款的检查是 `amount <= 0 || amount > current` 时返回 `false`。`history` 要返回副本：`() => [...records]`。返回对象里的函数参数不用写类型，TypeScript 会根据返回类型 `Account` 推断出 `amount` 是 `number`。
+假设余额变量叫 `current`，记录数组叫 `records`。取款时先检查：`amount <= 0 || amount > current` 就返回 `false`；通过检查之后再修改余额，并记下 `-amount`。`history` 要返回副本：`() => [...records]`。返回对象里的函数参数不用写类型，TypeScript 会根据返回类型 `Account` 推断出 `amount` 是 `number`（上一课讲的上下文类型）。
 :::
 
 :::explanation

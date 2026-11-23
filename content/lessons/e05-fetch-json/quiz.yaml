@@ -19,7 +19,7 @@
     - text: 根据服务器返回的内容自动推断出准确的类型
       explain: TypeScript 在编译期无法知道服务器会返回什么。
     - text: "`unknown`，TypeScript 会强制你检查"
-      explain: 它是 any，必须自己写上 unknown 注解才会受到保护。
+      explain: 标准库把它的类型写成 `any`，不是 `unknown`；要自己给变量写上 `unknown` 注解，才会受到保护。
 - id: post-json
   type: multiple
   prompt: 用 fetch 发送一个 JSON 对象创建数据，需要哪些设置？

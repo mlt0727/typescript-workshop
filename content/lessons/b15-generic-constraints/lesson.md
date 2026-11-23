@@ -50,8 +50,9 @@ const longer = longest([1, 2], [3]);
 console.log(longer);
 ```
 - 第 2 行：有了约束，`value.length` 不再报错。
+- 第 9 行：字符串、数组、带 `length` 的对象都满足约束。对象多出一个 `name` 也没关系：`T` 被推断成 `{ length: number; name: string }`，它满足约束就行。
 - 第 10 行：数字没有 `length`，报 TS2345。
-- 把鼠标停在 `longer` 上：类型是 `number[]` 而不是 `{ length: number }`。返回 `T` 保留了实参的完整类型，这正是用泛型而不是直接写 `(value: { length: number })` 的原因。
+- 把鼠标停在 `longer` 上：类型是 `number[]` 而不是 `{ length: number }`。返回类型 `T` 保留了实参的完整类型，这正是 `longest` 要用泛型的原因：如果把参数和返回值都直接写成 `{ length: number }`，调用方拿回的就只是 `{ length: number }`。（`lengthOf` 的 `T` 只出现了一次，按上一课的建议本来不必用泛型；这里沿用上一课的例子，只是为了演示约束。）
 :::
 
 ## 约束不是 T 本身
@@ -69,7 +70,7 @@ function atLeast<T extends { length: number }>(value: T, min: number): T {
 
 console.log(atLeast([1, 2, 3], 2));
 ```
-- 第 5 行报 TS2322，提示 `T` 可能是约束的“另一个子类型”。如果调用 `atLeast([1], 5)`，调用方以为拿到的是 `number[]`，实际却是 `{ length: 5 }`，调用数组方法时就会出错。
+- 第 5 行报 TS2322，错误信息里写着 `'T' could be instantiated with a different subtype of constraint`（`T` 可能是约束的另一个子类型）。如果调用 `atLeast([1], 5)`，调用方以为拿到的是 `number[]`，实际却是 `{ length: 5 }`，调用数组方法时就会出错。
 :::
 
 ## keyof 与索引访问类型
@@ -77,9 +78,9 @@ console.log(atLeast([1, 2, 3], 2));
 两个新的类型运算符：
 
 - `keyof T`：`T` 所有键组成的字面量联合。`keyof { name: string; age: number }` 就是 `'name' | 'age'`。（有索引签名的类型例外：`keyof { [k: string]: number }` 是 `string | number`，因为任意字符串都可以是键，而数字键也会被转成字符串。）
-- `T[K]`：**索引访问类型**，`T` 中键 `K` 对应的值的类型。`User['age']` 是 `number`；`K` 是联合时，结果也是联合。
+- `T[K]`：**索引访问类型**，`T` 中键 `K` 对应的值的类型。对下面示例里的 `User`，`User['age']` 是 `number`；`K` 是联合时，结果也是联合。
 
-注意它们都是**类型层面**的写法：`User['age']` 写在类型的位置，和运行时的 `user['age']` 不是一回事。类型位置只能用方括号：写成 `User.age` 会报 TS2713（Java/C++ 中常见的写法在这里行不通）。
+注意它们都是**类型层面**的写法：`User['age']` 写在类型的位置，和运行时的 `user['age']` 不是一回事。运行时 `user.age` 和 `user['age']` 都可以，类型位置却只能用方括号：写成 `User.age` 会报 TS2713。
 
 :::playground{#keyof expect="2322@main.ts:8"}
 ```ts file=main.ts
@@ -95,7 +96,7 @@ const age: Age = 36;
 const value: NameOrAge = 'Ada';
 console.log(key, age, value, wrong);
 ```
-- 把鼠标停在 `Age` 和 `NameOrAge` 上：分别是 `number` 和 `string | number`。`UserKey` 会显示为 `keyof User`，它等价于 `'name' | 'age' | 'admin'`；在第 7 行的引号里按 Ctrl+Space，补全列表会列出这三个键。
+- 把鼠标停在 `Age` 和 `NameOrAge` 上：分别是 `number` 和 `string | number`。`UserKey` 会显示为 `keyof User`，它等价于 `'name' | 'age' | 'admin'`；在第 7 行的引号里按 Ctrl+Space，补全列表会列出这三个键（快捷键被输入法占用的话，删掉引号里的 `age` 再输入一个字母，列表也会出现）。
 - 第 8 行：`'email'` 不是 `User` 的键，报 TS2322。
 :::
 
@@ -116,7 +117,7 @@ console.log(name.toUpperCase(), age + 1);
 
 getProp(user, 'email');
 ```
-- 把鼠标停在 `name` 和 `age` 上：分别是 `string` 和 `number`。
+- 把鼠标停在 `name` 和 `age` 上：分别是 `string` 和 `number`。再停在第 6 行的 `getProp` 上，可以看到这次调用的 `T` 是 `{ name: string; age: number }`，`K` 是字面量类型 `"name"`，所以返回类型 `T[K]` 是 `string`。
 - 第 10 行：`'email'` 不是 `user` 的键，报 TS2345。
 - 对比 b11 的挑战：那里为每个键写了一个重载签名，这里一个签名就够了，新增设置项时也不用修改函数。
 :::
@@ -134,7 +135,7 @@ getProp(user, 'email');
 - **在泛型函数里使用约束之外的属性**：先在约束中声明它。
 - **返回类型写 `T`，却返回了只满足约束的新对象**：TS2322。要么直接返回参数本身，要么把返回类型改成约束类型。注意不要用展开 `{ ...value, length: min }` 绕过这个错误：它能编译，但对数组和类实例，展开得到的是普通对象，数组方法和原型上的方法都丢了，而类型仍然声称它是 `T`。
 - **把 `keyof T` 当成运行时的值**：它只是类型。运行时用 `Object.keys`（返回 `string[]`，b02 解释过原因）。
-- **用 `string` 代替 `keyof T`**：任意字符串都能传入，拼错的键要到运行时才暴露。
+- **用 `string` 代替 `keyof T`**：函数里的 `obj[key]` 会报 TS7053（小任务的起始代码就是这样）。把对象的类型换成 `Record<string, …>` 虽然能通过检查，但任意字符串都能传入，拼错的键要到运行时才暴露。
 
 ## 下一步
 

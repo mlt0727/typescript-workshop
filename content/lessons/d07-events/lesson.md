@@ -31,7 +31,7 @@ references:
 
 浏览器在用户操作时**派发事件**（dispatch an event）。`element.addEventListener(type, listener)` 注册一个**监听器**（listener）：事件发生时，浏览器调用这个函数，并传入描述这次事件的**事件对象**。
 
-这和 Java Swing 的 `addActionListener`、或 Python GUI 库的回调很像，区别在于 TypeScript 会根据事件名推断参数类型：在 TypeScript 6.0 自带的 DOM 类型中，`'click'` 对应 `PointerEvent`（它继承自 `MouseEvent`，所以有 `button`、`clientX` 等鼠标属性），`'keydown'` 对应 `KeyboardEvent`，`'input'` 对应 `InputEvent`。
+这和 Java Swing 的 `addActionListener` 或 Python GUI 库的回调很像，区别在于 TypeScript 会根据事件名推断参数类型：在 TypeScript 6.0 自带的 DOM 类型中，`'click'` 对应 `PointerEvent`（它继承自 `MouseEvent`，所以有 `button`、`clientX` 等鼠标属性），`'keydown'` 对应 `KeyboardEvent`，`'input'` 对应 `InputEvent`。
 
 :::playground{#first-listener}
 ```html file=index.html
@@ -121,6 +121,8 @@ card.addEventListener('click', (event) => {
 | 只触发一次 | `addEventListener('click', fn, { once: true })` | 调用一次后自动移除 |
 | 用 signal 批量移除 | `addEventListener('click', fn, { signal: controller.signal })`，之后 `controller.abort()` | 一个 `AbortController` 可以同时移除多个监听器 |
 | 手动移除 | `removeEventListener('click', fn)` | 必须传入**同一个函数引用**；内联写的箭头函数无法这样移除 |
+
+`AbortController` 是浏览器内置的“取消开关”：用 `new AbortController()` 创建，把它的 `signal` 传给要被取消的操作；调用 `controller.abort()` 后，所有带着这个 `signal` 注册的监听器都会被移除（e08 还会用它取消网络请求）。
 
 :::playground{#remove-listeners}
 ```html file=index.html

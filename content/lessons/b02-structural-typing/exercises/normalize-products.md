@@ -27,11 +27,11 @@ interface Product {
 
 实现 `normalizeProducts(raw)`，把 `RawProduct[]` 转换成 `Product[]`：
 
-- `product_id` → `id`，`display_name` → `name`，`price_cents` → `price`；
+- `product_id` → `id`，`display_name` → `name`，`price_cents` → `price`（只改名字，值原样保留）；
 - `tags` 缺失时为空数组；存在时要**复制**一份（结果不能和原数据共享数组）；
-- 结果对象**只能**有 `id`、`name`、`price`、`tags` 四个属性（`internal_cost` 等其他字段都不能出现）；
-- `price_cents` 不是大于或等于 0 的整数的商品，视为数据错误，跳过；
-- 同一个 `product_id` 出现多次时，只保留第一次出现的那个（跳过的错误数据不算“出现过”）；
+- 结果对象**只能**有 `id`、`name`、`price`、`tags` 四个属性（`internal_cost` 以及传入对象上可能带着的其他字段都不能出现）；
+- `price_cents` 必须是大于或等于 0 的整数（判断整数可以用 `Number.isInteger`）；不满足的商品视为数据错误，跳过；
+- 同一个 `product_id` 出现多次时，只保留第一次出现的那个。因价格错误被跳过的商品不算“出现过”：它后面 `product_id` 相同的正常商品仍然要保留；
 - 不能修改传入的数据，结果保持原来的顺序。
 
 :::files{role=starter}

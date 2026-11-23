@@ -2,11 +2,11 @@
 kind: task
 title: 从任意错误中取出说明
 ---
-`catch` 到的值类型是 `unknown`。实现一个常用的小工具 `errorMessage(err)`，把它变成可以显示给用户的文字：
+`catch` 到的值类型是 `unknown`，所以起始代码里的 `err.message` 报 TS18046。把 `errorMessage(err)` 改写成一个常用的小工具：不管被抛出的是什么值，都把它变成可以显示给用户的文字。
 
 - `err` 是 `Error`（包括 `TypeError`、`RangeError` 等子类）时，返回它的 `message`；
 - `err` 是字符串时，返回这个字符串本身；
-- 其他情况（数字、`null`、普通对象……）返回 `'未知错误'`。
+- 其他情况（数字、`null`、`undefined`、普通对象……）返回 `'未知错误'`。普通对象即使有 `message` 属性，也算在这一类。
 
 :::files{role=starter}
 ```ts file=message.ts

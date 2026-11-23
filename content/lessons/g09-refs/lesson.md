@@ -217,7 +217,7 @@ ref 是 React 的“逃生口”：它让你走出 React 的数据流，直接�
 
 - **用 ref 保存要显示的数据**：修改它不会触发渲染，界面不会更新。
 - **在渲染中读写 `ref.current`**：结果不可预测。只在事件处理函数和 Effect 中使用。
-- **设置 state 之后立刻操作新的 DOM**：DOM 还没有更新。用 `flushSync`，或者在新元素上使用 ref 回调。
+- **设置 state 之后立刻操作新的 DOM**：DOM 还没有更新。用 `flushSync` 包住状态更新，让 React 先完成渲染。
 - **用 ref 删改 React 渲染的元素**：会和 React 的更新冲突。
 - **在 React 19 中仍然到处写 `forwardRef`**：函数组件可以直接接收 `ref` prop。
 

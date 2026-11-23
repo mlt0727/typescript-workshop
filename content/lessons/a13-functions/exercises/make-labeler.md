@@ -2,7 +2,7 @@
 kind: challenge
 title: 生成标签函数
 ---
-实现 `makeLabeler(prefix, options)`：它不直接返回文字，而是**返回一个函数**。返回的函数接收一个字符串 `value`，返回 `前缀 + 分隔符 + 值` 的文字。
+补全 `makeLabeler(prefix, options)`：它不直接返回文字，而是**返回一个函数**。返回的函数接收一个字符串 `value`，返回 `前缀 + 分隔符 + 值` 的文字。
 
 `options` 是可选的选项对象：
 
@@ -18,7 +18,7 @@ makeLabeler('ID', { separator: '#' })('a1');         // 'ID#a1'
 makeLabeler('code', { uppercase: true })('a1');      // 'code: A1'
 ```
 
-调用时可以不传 `options`，也可以只传其中一项。
+调用时可以不传 `options`，也可以只传其中一项。起始代码里 `options` 还是必须传的参数，返回的函数也没有用到这两个选项，这些都要你来改。
 
 :::files{role=starter}
 ```ts file=labeler.ts
@@ -106,7 +106,7 @@ expectTypeOf(makeLabeler).toBeCallableWith('ID', { uppercase: true });
 
 返回的函数在之后被调用时，仍然能使用 `prefix`、`separator`、`uppercase`，即使 `makeLabeler` 早已执行完毕。这叫**闭包**，下一课详细讲。
 
-分隔符为空字符串 `''` 时要原样使用，解构默认值只在 `undefined` 时生效，所以不会被替换成 `': '`。
+分隔符为空字符串 `''` 时要原样使用，解构默认值只在 `undefined` 时生效，所以不会被替换成 `': '`。不用解构、自己取 `options.separator` 时要用 `??`：写成 `options.separator || ': '` 的话，`''` 是 falsy，会被错误地换成 `': '`（a08）。
 :::
 
 :::variant{kind=alt name=options-object}

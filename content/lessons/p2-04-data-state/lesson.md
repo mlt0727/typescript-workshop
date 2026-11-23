@@ -121,7 +121,7 @@ export async function projectAction({ params, request }: ActionFunctionArgs) {
 提交的方式有两种：
 
 - `<Form method="post">`、`useSubmit()`：提交是一次**导航**，它的状态在 `useNavigation()` 中，同一时间只有一个。提交到当前的地址时，React Router 替换当前的历史记录；action 返回 `redirect(…)` 时，转到新的地址并新增一条（实测 React Router 8.5）。适合“提交之后去另一个页面”，例如新建项目之后转到它的详情页；
-- `useFetcher()`：提交**不导航**，页面和地址都不变。适合在一个页面上做很多小的修改，例如勾选任务、添加一个任务。每个 `useFetcher()` 有自己独立的状态，几个任务可以同时在保存；同一个 fetcher 再提交一次，会中止它上一次的提交。
+- `useFetcher()`：提交**不导航**，页面和地址都不变。适合在一个页面上做很多小的修改，例如勾选任务、添加一个任务。提交可以用 `<fetcher.Form method="post">` 包住表单，也可以在事件处理函数中调用 `fetcher.submit(数据, { method: 'post' })`，例如复选框的 `onChange`。每个 `useFetcher()` 有自己独立的状态，几个任务可以同时在保存；同一个 fetcher 再提交一次，会中止它上一次的提交。
 
 一个页面上常常有几种提交，都交给同一个 action。约定在表单中带一个 `intent` 字段，action 根据它决定做什么。
 
@@ -166,7 +166,7 @@ const busy = fetcher.state !== 'idle';
 - **操作的错误**（409、连接失败、服务器出错）：和某个输入框无关，用一个 `role="alert"` 的元素说明，屏幕阅读器会立刻读出它；
 - **某一项的错误**：勾选任务失败时，说明放在这个任务里面，用户才知道是哪一个。
 
-添加成功之后要清空输入框。如果输入框是受控的，可以在渲染时根据新的结果调整 state；如果不是受控的，可以在 Effect 中调用表单的 `reset()`：这是对 DOM 的操作，而不是 `setState`（g11）；移动焦点也一样放在这个 Effect 中。编程挑战的参考解用了后一种，替代解用了前一种。
+添加成功之后要清空输入框。如果输入框是受控的，可以在渲染时根据新的结果调整 state；如果不是受控的，可以在 Effect 中调用表单的 `reset()`：这是对 DOM 的操作，而不是 `setState`（g11）；移动焦点也一样放在这个 Effect 中。编程挑战的参考解用的是后一种。
 
 ## 编程挑战
 

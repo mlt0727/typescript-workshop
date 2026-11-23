@@ -7,7 +7,7 @@
       explain: "`interface` 只能描述对象形状，联合类型要用 `type ID = string | number;`。"
     - text: "`[number, number]` 这样的元组"
       correct: true
-      explain: 元组不是对象形状的声明，用 `type Pair = [number, number];`。
+      explain: "`interface` 的花括号里列的是对象的属性和方法，写不出 `[number, number]` 这样的元组；元组用 `type Pair = [number, number];`。"
     - text: 有 `name`、`age` 两个属性的对象
       explain: 对象形状两种写法都可以。
     - text: "带一个方法 `greet(): string` 的对象"
@@ -42,7 +42,7 @@
       correct: true
       explain: 开启 `noUncheckedIndexedAccess` 后，通过索引签名读取的结果包含 `undefined`，因为键可能不存在。
     - text: "`number`"
-      explain: 这是关闭 `noUncheckedIndexedAccess` 时的结果。
+      explain: 这是关闭 `noUncheckedIndexedAccess` 时的结果。本平台开启了它，读取结果还要加上 `undefined`，因为 `ink` 这个键可能不存在（这里确实不存在）。
     - text: 报错：属性 `ink` 不存在
       explain: 索引签名允许任意字符串键，读取不会报错，但结果可能是 `undefined`。
 - id: extends

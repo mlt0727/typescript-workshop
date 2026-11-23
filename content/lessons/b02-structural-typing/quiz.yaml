@@ -17,7 +17,7 @@
       correct: true
       explain: 第 4 行形状相同，可以赋值；第 6 行通过变量赋值，多余属性不检查；第 7 行直接写对象字面量，多余的 `age` 触发多余属性检查（TS2353）。
     - text: 第 4 行和第 7 行
-      explain: TypeScript 只看形状，`Cat` 和 `Dog` 形状相同，可以互相赋值。
+      explain: 第 4 行不会报错。TypeScript 只看形状，`Cat` 和 `Dog` 形状相同，可以互相赋值。
     - text: 第 6 行和第 7 行
       explain: 第 6 行经过变量中转，不做多余属性检查。属性更多的值可以赋给要求更少的类型。
     - text: 都不报错
@@ -53,4 +53,4 @@
     - text: 因为变量的类型在运行时才知道
       explain: 变量的类型在编译期就知道。不检查是有意的设计：结构化类型允许属性更多的值赋给要求更少的类型。
     - text: 这是 TypeScript 的 bug，新版本会修复
-      explain: 这是有意的设计，Handbook 中专门有一节解释它。
+      explain: 这是有意的设计，用来发现拼错属性名这类错误，TypeScript Handbook 里专门有一节解释它。

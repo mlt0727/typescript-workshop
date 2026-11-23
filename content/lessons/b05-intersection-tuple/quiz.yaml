@@ -6,20 +6,20 @@
       correct: true
       explain: 交叉类型要同时满足两边，对象类型的交叉就是两边属性的合集。
     - text: "`x` 或 `y` 有一个即可"
-      explain: 这是联合类型 `A | B` 的含义。
+      explain: 这是联合类型 `A | B` 的含义。交叉类型 `A & B` 要同时满足两边。
     - text: 两者共有的属性（这里没有）
       explain: 交叉类型不是取“共有部分”，而是同时满足两边的要求。
 - id: never-intersection
   type: single
-  prompt: "`type T = { id: string } & { id: number };` 中，`T['id']` 是什么类型？"
+  prompt: "`type T = { id: string } & { id: number };` 中，`T` 的 `id` 属性是什么类型？"
   options:
     - text: "`never`"
       correct: true
       explain: 一个值不可能既是 `string` 又是 `number`，所以 `id` 是 `never`，任何对象都赋不进 `T`。
     - text: "`string | number`"
-      explain: 这是联合的结果。交叉要求同时满足两边。
+      explain: "`string | number` 是“字符串或数字”，联合 `{ id: string } | { id: number }` 的 `id` 才是这个类型。交叉要求 `id` 同时是 `string` 和 `number`。"
     - text: 声明时直接报错
-      explain: 交叉不会在声明时报错，而是得到 `never`，问题会在赋值时暴露出来。
+      explain: 交叉不会在声明时报错，而是让 `id` 的类型变成 `never`，问题会在赋值时暴露出来。
 - id: tuple-access
   type: multiple
   prompt: "`const t: [string, number] = ['a', 1];` 之后，下列哪些说法正确？"

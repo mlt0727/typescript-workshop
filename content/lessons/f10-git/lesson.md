@@ -51,11 +51,23 @@ Git 管理的是项目在一个个时刻的**快照**：
 | 命令 | 作用 |
 | --- | --- |
 | `git init` | 把当前文件夹变成一个仓库（创建 `.git` 文件夹） |
-| `git status`（`-s` 是简短格式） | 哪些文件改了、哪些已暂存、哪些没有被跟踪 |
+| `git status`（`-s` 即 `--short`，简短格式） | 哪些文件改了、哪些已暂存、哪些没有被跟踪 |
 | `git add 文件`、`git add .` | 把修改放进暂存区 |
 | `git diff`、`git diff --staged` | 工作区与暂存区的差别；暂存区与上一次提交的差别 |
 | `git commit -m "说明"` | 提交暂存区的内容 |
 | `git log --oneline --graph` | 提交历史 |
+
+在 `my-app` 文件夹中依次运行：
+
+```text
+git init
+git status
+git add .
+git commit -m "初始提交"
+git log --oneline
+```
+
+`git status` 会列出一串 `??`（还没有被跟踪的文件），其中没有 `node_modules`，因为 `.gitignore` 忽略了它；提交之后 `git log --oneline` 显示一行：一个短哈希加上“初始提交”。然后随便改一个文件，用 `git status -s`、`git diff` 看看变化，再 `git add`、`git commit` 提交第二次。
 
 `git status --short` 每行两个字符的状态码，第一个是**暂存区**，第二个是**工作区**。编写本课时用 Git 2.45 实际得到的一组输出：
 
@@ -82,8 +94,8 @@ console.log(new TextDecoder().decode(bytes));
 const encoded = [...new TextEncoder().encode('新 文件')].map((b) => (b < 0x80 ? String.fromCharCode(b) : `\\${b.toString(8)}`));
 console.log(encoded.join(''));
 ```
-- 第 1、2 行：三个字节 `346`、`227`、`247`（八进制）按 UTF-8 解码是“旧”。
-- 第 4 行反过来：`TextEncoder` 把字符串编码成 UTF-8 字节，ASCII 字符（包括空格）原样保留，其余的写成 `\ooo`，得到的正是 Git 输出中的样子。下面的小任务要把这种写法还原成文件名。
+- 第 1、2 行：`0o346` 是八进制的数字字面量（和 Python 的写法一样；第 4 行的 `0x80` 是十六进制）。`Uint8Array` 是一个字节数组，`TextDecoder` 把其中的 UTF-8 字节解码成字符串：三个字节 `346`、`227`、`247`（八进制）解码是“旧”。
+- 第 4 行反过来：`TextEncoder` 把字符串编码成 UTF-8 字节，ASCII 字符（小于 `0x80` 的字节，包括空格）用 `String.fromCharCode` 原样保留，其余的用 `toString(8)` 写成 `\ooo`，得到的正是 Git 输出中的样子。下面的小任务要把这种写法还原成文件名。
 :::
 
 **提交说明**写“做了什么、为什么”，第一行简短（例如 `修复分页：第 1 页从第 0 条开始`）。一次提交只做一件事，以后回看、撤销都容易。
@@ -140,7 +152,7 @@ Automatic merge failed; fix conflicts and then commit the result.
 
 - `git remote add origin 仓库的地址`：记住远程仓库，名字叫 `origin`；
 - `git push -u origin main`：把本地的 `main` 推送上去，`-u` 让以后直接 `git push` 就行；
-- `git pull`：取回远程的新提交并合并到当前分支（设置了 `pull.rebase false` 时，相当于 `git fetch` 加 `git merge`，见上面的第 4 步）。
+- `git pull`：取回远程的新提交并合并到当前分支（设置了 `pull.rebase false` 时，相当于 `git fetch` 加 `git merge`，见上文设置 `pull.rebase` 的那一步）。
 
 团队协作时通常不直接推送到 `main`：在分支上提交，推送分支，在 GitHub 上创建**拉取请求**（pull request，PR），别人审查代码、持续集成运行测试（f12）都通过之后再合并。
 
@@ -152,7 +164,7 @@ Automatic merge failed; fix conflicts and then commit the result.
 | 取消暂存（修改保留在工作区） | `git restore --staged 文件` | 安全 |
 | 修改最后一次提交（说明或内容） | `git commit --amend` | 只用于**还没有推送**的提交 |
 | 撤销一个已经推送的提交 | `git revert 提交` | 安全：新建一个“反向”的提交，不改写历史 |
-| 回到某个提交，丢弃之后的一切 | `git reset --hard 提交` | 危险：工作区和之后的提交都会丢失 |
+| 回到某个提交，丢弃之后的一切 | `git reset --hard 提交` | 危险：没有提交的修改和之后的提交都会丢失 |
 
 规则很简单：**已经推送的提交不要改写**（`amend`、`reset`、`rebase`），别人可能已经基于它们工作了；改写之后还要强制推送（`push --force`），会覆盖别人的提交。要撤销已推送的修改，用 `revert`。
 
@@ -171,4 +183,4 @@ f05 讲过二分法排错。`git bisect` 把它用在提交历史上：告诉 Gi
 - **一次提交包含好几件不相关的修改**：以后无法单独撤销其中一件。用 `git add 文件` 分开提交。
 - **改写已经推送的历史**：用 `git revert` 撤销已推送的提交。
 - **遇到冲突就慌**：冲突只是“两边都改了同一处，请你决定”。读懂标记，留下想要的内容，`git add` 后提交；或者 `git merge --abort`。
-- **没有提交就 `git restore` 或 `reset --hard`**：没有提交过的修改无法恢复。不确定时先 `git stash` 或者提交到一个临时分支。
+- **没有提交就 `git restore` 或 `reset --hard`**：没有提交过的修改无法恢复。不确定时先 `git stash`（把没有提交的修改收起来，之后用 `git stash pop` 取回）或者提交到一个临时分支。

@@ -161,7 +161,7 @@ createRoot(container).render(<App />);
 - 把 `<AuthProvider>` 去掉再运行，看看错误信息。
 :::
 
-React 19 还提供了 `use(Context)`，作用和 `useContext` 一样，但它可以写在 `if` 之后（这是 `use` 的特殊之处，其他 Hook 不行）。日常使用 `useContext` 即可。
+React 19 还提供了 `use(Context)`，作用和 `useContext` 一样，但它可以在 `if` 和循环里调用（这是 `use` 的特殊之处，其他 Hook 都要遵守 g08 讲的规则，只能在顶层调用）。日常使用 `useContext` 即可。
 
 ## 什么时候用 Context
 

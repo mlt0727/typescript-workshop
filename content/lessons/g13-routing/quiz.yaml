@@ -37,7 +37,7 @@
   options:
     - text: 搜索框变成“te”：每个字母都新增了一条历史记录
       correct: true
-      explain: "输入时应该写 `setSearchParams(…, { replace: true })`，替换当前的历史记录，后退才会离开这个页面或者回到上一次的操作。"
+      explain: "三次调用依次新增了 ?q=t、?q=te、?q=tea 三条历史记录，后退一次回到 ?q=te。输入时应该写 `setSearchParams(…, { replace: true })`，替换当前的历史记录，后退才会离开这个页面或者回到上一次的操作。"
     - text: 回到进入这个页面之前的页面
       explain: 只有使用 replace 时才是这样；默认每次都新增一条记录。
     - text: 什么都不变，查询参数不会影响历史记录

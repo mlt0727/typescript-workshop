@@ -371,7 +371,7 @@ state 中只存“哪种商品、几件”：`readonly { id: string; quantity: n
 :::
 
 :::hint{level=2}
-修改数组用更新函数和不修改原数组的方法（g04）：加入是 `[...current, { id, quantity: 1 }]`，修改是 `map`，移除是 `filter`。`setQuantity` 也要处理“购物车中还没有这种商品”的情况：这时和加入一样，追加到最后。`lines` 可以用 `flatMap`：在 `products` 中找到对应的商品就返回 `[{ product, quantity }]`，找不到就返回 `[]`。
+修改数组用更新函数和不修改原数组的方法（g04）：加入是 `[...current, { id, quantity: 1 }]`，修改是 `map`，移除是 `filter`。`setQuantity` 也要处理“购物车中还没有这种商品”的情况：这时和加入一样，追加到最后。`lines` 可以用数组的 `flatMap` 方法：它对每个元素调用回调，再把回调返回的数组拼接成一个数组，所以返回 `[]` 就相当于跳过这个元素。在 `products` 中找到对应的商品就返回 `[{ product, quantity }]`，找不到就返回 `[]`。
 :::
 
 :::explanation

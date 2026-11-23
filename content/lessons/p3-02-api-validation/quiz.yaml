@@ -22,13 +22,13 @@
       explain: Next.js 没有这样的限制。
 - id: static-get
   type: single
-  prompt: "`app/api/projects/route.ts` 中的 `GET` 只是读取存储中的所有项目，没有读取请求，也没有 `await connection()`。部署之后修改了一个项目，再请求 `/api/projects` 会得到什么？"
+  prompt: "实测项目开启了 Cache Components。`app/api/projects/route.ts` 中的 `GET` 只是读取存储中的所有项目，没有读取请求，也没有 `await connection()`。部署之后修改了一个项目，再请求 `/api/projects` 会得到什么？"
   options:
     - text: 构建时的数据：这个 GET 在 next build 时运行了一次，结果被保存下来
       correct: true
       explain: 实测构建的输出中它是 ○，响应头是 x-nextjs-cache HIT 和 s-maxage=31536000。加上 await connection() 才会在每次请求时运行。
     - text: 最新的数据：Route Handler 每次请求都会运行
-      explain: 不读取请求的 GET 处理函数会在构建时预渲染。
+      explain: 开启 Cache Components 时，不读取请求的 GET 处理函数会在构建时预渲染，之后每次请求都返回那时的结果。
     - text: 404：静态的接口只能在开发时访问
       explain: 预渲染的结果照样可以访问，只是内容不会变。
 - id: precondition-order

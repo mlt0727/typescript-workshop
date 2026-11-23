@@ -17,7 +17,7 @@ title: 带错误路径的订单解析
 | `items[i].sku` | 非空字符串 | `items[i].sku 应该是非空字符串` |
 | `items[i].qty` | 正整数 | `items[i].qty 应该是正整数` |
 | `items[i].price` | 有限的数字，不小于 0 | `items[i].price 应该是不小于 0 的数字` |
-| `note` | 可以不存在；存在时是字符串 | `note 应该是字符串` |
+| `note` | 可以不存在；存在时是字符串（`null` 也不行） | `note 应该是字符串` |
 
 其中 `i` 是下标，例如 `items[1].qty 应该是正整数`。某一项不是对象时，不再检查它的字段。错误的顺序：`id`、`items`（各项按下标顺序，每项按 `sku`、`qty`、`price`）、`note`。
 

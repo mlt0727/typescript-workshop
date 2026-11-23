@@ -27,7 +27,7 @@
 - id: satisfies-vs-annotation
   type: single
   prompt: |
-    `type Theme = Record<string, string>`。下面两种写法中，`b.primary` 和 `b.secondary` 各会怎样？
+    `type Theme = Record<string, string>`。下面的 `a` 用类型注解，`b` 用 `satisfies`。读取 `b.primary` 和 `b.secondary` 各会怎样？
 
     ```ts
     const a: Theme = { primary: '#06c' };
@@ -51,4 +51,4 @@
     - text: 它会在运行时把字符串转换成 NaN
       explain: 断言不做任何转换，`n` 在运行时仍然是 `'hello'`。
     - text: 它没有危险，这是推荐的类型转换方式
-      explain: 需要把字符串转换成数字时用 `Number(…)`（a06），并检查结果。
+      explain: 断言不转换任何东西，只是让类型和实际的值对不上。真要把字符串转换成数字，用 `Number(…)`（a06），并检查结果。

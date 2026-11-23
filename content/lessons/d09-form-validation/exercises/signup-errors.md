@@ -5,12 +5,11 @@ title: 可访问的错误提示
 注册表单带有 `novalidate`，浏览器不再显示提示气泡，错误由你来显示。`parse.ts`（只读）提供了小任务中的 `parseSignup`。在 `main.ts` 中实现：
 
 1. **提交时**：阻止默认行为，用 `parseSignup(new FormData(form))` 解析。
-2. **有错误时**，对五个字段（`name`、`email`、`age`、`password`、`confirm`，按这个顺序）：
-   - 有错误的字段：错误信息写进 `#字段-error`（例如 `#email-error`），输入框设置 `aria-invalid="true"`；
-   - 没有错误的字段：清空 `#字段-error`，并移除输入框的 `aria-invalid`；
-   - 把焦点移到**第一个**有错误的输入框；
+2. **有错误时**：
+   - 逐个处理五个字段（`name`、`email`、`age`、`password`、`confirm`，按这个顺序）。有错误的字段：错误信息写进 `#字段-error`（例如 `#email-error`），输入框设置 `aria-invalid="true"`；没有错误的字段：清空 `#字段-error`，并移除输入框的 `aria-invalid`；
+   - 把焦点移到**第一个**有错误的输入框（按上面的顺序）；
    - `#status` 显示 `有 N 处需要修改`（N 是错误的个数）。
-3. **成功时**：清除所有错误（同上），`#status` 显示 `注册成功：昵称`，然后重置表单。
+3. **成功时**：清除所有字段的错误（同上），`#status` 显示 `注册成功：昵称`（昵称取解析结果中的 `name`，例如 `注册成功：Ada`），然后重置表单（`form.reset()`）。
 4. **边改边清**：用户在一个**当前有错误**的输入框里输入时，立即清除这个字段的错误信息和 `aria-invalid`（其他字段不变）。
 
 输入框与错误信息之间的 `aria-describedby` 关联已经写在 HTML 里了。

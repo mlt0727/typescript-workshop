@@ -37,7 +37,7 @@ references:
 | 4xx | 客户端的问题 | 400 请求格式不对、401 未登录、403 没有权限、404 不存在、409 冲突、422 数据验证失败、429 请求太频繁 |
 | 5xx | 服务器的问题 | 500 服务器内部错误、502/503/504 网关或服务暂时不可用 |
 
-**关于本平台：** 练习中的 `fetch` 由平台**模拟**：每个地址返回课程预先写好的响应（真实的 `Response` 对象），不会真的访问网络。相对地址以一个虚构的域名 `https://app.example` 为基准；在真实网页中，它们以页面所在的域名为基准。
+**关于本平台：** 本课示例和练习中的 `fetch` 都由平台**模拟**：每个地址返回课程预先写好的响应（真实的 `Response` 对象），不会真的访问网络。相对地址以一个虚构的域名 `https://app.example` 为基准；在真实网页中，它们以页面所在的域名为基准。
 
 ## fetch 不会因为 404 而失败
 
@@ -70,7 +70,9 @@ await show('/api/users/999');
 - **网络失败**：`fetch` 被拒绝，通常是 `TypeError`；
 - **HTTP 错误**：`fetch` 成功，但 `response.ok` 为 `false`。
 
-另外，响应体不一定是 JSON：服务器出错时，常常返回一段 HTML 错误页面，这时 `response.json()` 会被拒绝：Chrome、Firefox 中的拒绝原因是 `SyntaxError`，Safari 中却是一个 `name` 为 `'SyntaxError'` 的 `DOMException`。所以判断时检查 `err.name === 'SyntaxError'`，不要用 `instanceof SyntaxError`；或者先 `response.text()` 再自己 `JSON.parse`，这样在所有浏览器中都是真正的 `SyntaxError`。响应体只能读取**一次**：读过之后再调用 `json()` 或 `text()`，返回的 Promise 会以 `TypeError` 拒绝。确实需要读两次时，先用 `response.clone()` 复制一份。
+另外，响应体不一定是 JSON：服务器出错时，常常返回一段 HTML 错误页面，这时 `response.json()` 会被拒绝。Chrome、Firefox 中的拒绝原因是 `SyntaxError`，Safari 中却是一个 `name` 为 `'SyntaxError'` 的 `DOMException`。所以判断时检查 `err.name === 'SyntaxError'`，不要用 `instanceof SyntaxError`；或者先 `response.text()` 再自己 `JSON.parse`，这样在所有浏览器中都是真正的 `SyntaxError`。
+
+响应体只能读取**一次**：读过之后再调用 `json()` 或 `text()`，返回的 Promise 会以 `TypeError` 拒绝。确实需要读两次时，先用 `response.clone()` 复制一份。
 
 :::playground{#failures fixtures=users}
 ```ts file=main.ts
@@ -139,7 +141,7 @@ console.log('请求成功：', response.ok);
 ```
 - 第 5 行：`&` 被编码成 `%26`，空格编码成 `+`，中文按 UTF-8 编码。
 - 第 9 行：直接拼接时，`&` 截断了参数：`q` 的值变成了 `TypeScript `（末尾带一个空格），` React` 则变成了一个没有值的参数。
-- 第 10 行：只需要编码**一个值**、把它放进手写的地址（查询参数或者路径，例如 `/users/${encodeURIComponent(name)}`）时，用 `encodeURIComponent`。它把空格编码成 `%20`，`URLSearchParams` 编码成 `+`，在查询参数中两者都表示空格。不要用 `encodeURI`：它不编码 `&`、`=`、`?`。
+- 第 10 行：只需要编码**一个值**、把它放进手写的地址（查询参数或者路径，例如 `/users/${encodeURIComponent(name)}`）时，用 `encodeURIComponent`。它把空格编码成 `%20`，而 `URLSearchParams` 把空格编码成 `+`，在查询参数中两者都表示空格。不要用 `encodeURI`：它不编码 `&`、`=`、`?`。
 - `fetch` 可以直接接受 `URL` 对象。
 :::
 

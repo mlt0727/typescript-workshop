@@ -12,10 +12,10 @@ title: 静态服务器：找文件、前端路由与缓存
 4. 路径的最后一段（最后一个 `/` 之后的部分）中没有 `.`，说明这是前端路由的地址（`/projects/42`）：返回 `/index.html`（不存在时 404）；
 5. 其他情况（例如找不到的 `/assets/index-旧的哈希.js`）返回 404，**不要**返回 `index.html`。
 
-**缓存头** `cacheControl`，按返回的文件决定：
+**缓存头** `cacheControl`（响应头 `Cache-Control` 的值），按返回的文件决定：
 
 - `.html` 文件：`no-cache`；
-- 在 `/assets/` 中、文件名形如 `名字-哈希.扩展名` 的文件（哈希是正好 8 个字符，字母、数字、`_` 或 `-`；扩展名是字母和数字）：`public, max-age=31536000, immutable`；
+- 在 `/assets/` 中、文件名形如 `名字-哈希.扩展名` 的文件：`public, max-age=31536000, immutable`。扩展名由字母和数字组成；哈希是扩展名前面正好 8 个字符，由字母、数字、`_`、`-` 组成（所以哈希本身也可能带 `-`：`react-dom-a1-B2c3d.js` 的哈希是 `a1-B2c3d`）；哈希前面是一个 `-`，再前面是不为空的名字；
 - 其他文件（`public` 中复制过来的）：`public, max-age=3600`。
 
 返回值是 `{ status: 200, file, cacheControl }` 或 `{ status: 404 }`，类型已经给出。
@@ -179,7 +179,7 @@ describe('缓存头', () => {
     expect(serveStatic('/assets/logo.svg', dist)).toMatchObject({ cacheControl: HOUR });
     expect(serveStatic('/site-manifest.json', dist)).toMatchObject({ cacheControl: HOUR });
     expect(serveStatic('/favicon.svg', dist)).toMatchObject({ cacheControl: HOUR });
-    // 最后一个 - 之后不是正好 8 个字符
+    // 扩展名前面的 8 个字符 ckground 之前不是 -
     expect(serveStatic('/assets/my-background.png', dist)).toMatchObject({ cacheControl: HOUR });
   });
 });

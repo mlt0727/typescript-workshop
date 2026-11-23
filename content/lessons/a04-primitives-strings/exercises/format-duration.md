@@ -2,12 +2,14 @@
 kind: task
 title: 把秒数显示成 分:秒
 ---
-实现 `formatDuration(totalSeconds)`，把秒数显示成 `分:秒` 的形式：
+`formatDuration(totalSeconds)` 应该把秒数显示成 `分:秒` 的形式：
 
 - 分钟数不补零，可以超过 59；
 - 秒数总是两位，不足两位时前面补 `0`。
 
-例如 `formatDuration(125)` 返回 `'2:05'`，`formatDuration(3600)` 返回 `'60:00'`。传入的 `totalSeconds` 一定是大于或等于 0 的整数。
+例如 `formatDuration(125)` 返回 `'2:05'`，`formatDuration(5)` 返回 `'0:05'`，`formatDuration(3600)` 返回 `'60:00'`。传入的 `totalSeconds` 一定是大于或等于 0 的整数。
+
+起始代码已经写了一个版本，但结果不对：先运行，看看输出和要求差在哪里，再修改。
 
 :::files{role=starter}
 ```ts file=duration.ts
@@ -71,7 +73,7 @@ test('超过一小时仍然只显示分钟', () => {
 :::explanation
 JavaScript 的 `/` 不会取整，`125 / 60` 是 `2.0833…`，所以分钟数需要 `Math.floor`（对非负数来说，`Math.trunc` 结果相同）。`%` 得到剩下的秒数。
 
-`padStart` 是字符串的方法，数字没有这个方法，所以先用 `String(seconds)` 转换。也可以写成 `${seconds}` 再补零，或者判断 `seconds < 10` 时在前面加 `'0'`。
+`padStart` 是字符串的方法，数字没有这个方法，所以先用 `String(seconds)` 转换。也可以用模板字符串 `` `${seconds}` `` 转换后再补零，或者判断 `seconds < 10` 时在前面加 `'0'`。
 :::
 
 :::variant{kind=alt name=manual-pad}

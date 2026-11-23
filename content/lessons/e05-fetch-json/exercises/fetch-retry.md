@@ -174,7 +174,7 @@ describe('fetchWithRetry', () => {
 :::
 
 :::hint{level=2}
-第 `attempt` 次（从 0 开始）失败后的等待时间是 `baseDelayMs * 2 ** attempt`。`Retry-After`：`response.headers.get('Retry-After')` 得到字符串或 `null`，用正则 `/^\d+$/` 确认是整数秒，再乘以 1000。等待用 `new Promise((resolve) => setTimeout(resolve, ms))` 包装（e02）。
+第 `attempt` 次（从 0 开始）失败后的等待时间是 `baseDelayMs * 2 ** attempt`。`Retry-After`：`response.headers.get('Retry-After')` 得到字符串或 `null`，用 `/^\d+$/.test(value)` 确认是整数秒（正则在 d09 用过），再乘以 1000。等待用 `new Promise((resolve) => setTimeout(resolve, ms))` 包装（e02）。
 :::
 
 :::explanation

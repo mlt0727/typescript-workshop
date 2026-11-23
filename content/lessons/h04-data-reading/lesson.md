@@ -62,7 +62,7 @@ export default async function PostsPage() {
 没有 `useEffect`，没有“加载中”的状态，也没有一个给浏览器调用的接口：查询在服务器上运行，浏览器收到的就是列表。几点要注意：
 
 - **读取默认不缓存**：没有缓存的 `fetch` 或数据库查询每个请求都运行一次。开启 Cache Components 时，在 `<Suspense>` 之外直接等待这样的数据会让构建失败（h02），要么放进 `<Suspense>` 流式送出，要么用 `'use cache'` 缓存它（下面讲）；
-- **仍然要检查权限**：服务端组件可以读任何数据，读之前要确认当前的用户有权看它（h09）；
+- **仍然要检查权限**：服务端组件可以读任何数据，读之前要确认当前的用户有权看它（h09 会讲）；
 - **只把需要的字段传给客户端组件**：props 会被序列化发给浏览器（h03），把整行数据库记录传过去，可能把不该看到的字段也送了出去。
 
 ## 顺序与并行
@@ -100,7 +100,7 @@ console.log(results.map((r) => r.status), '约', round(Date.now() - start), 'ms'
 ```
 - 第 5、6 行：第二个请求等第一个完成之后才开始，一共约 400 ms；
 - 第 10 行：两个 Promise 在调用 `Promise.all` 之前就都已经开始了，一共约 200 ms；
-- 第 14 行：`Promise.all` 只要有一个失败就整个失败；需要“各自成败”时用 `Promise.allSettled`（e04）。
+- 第 14 行：`Promise.all` 只要有一个失败就整个失败；需要“各自成败”时用 `Promise.allSettled`（e04）：输出 `fulfilled` 和 `rejected`，一个失败不影响另一个的结果。
 :::
 
 页面和它所在的各层布局本身是并行渲染的，每一层都会尽早开始自己的请求。
@@ -186,7 +186,7 @@ export async function getStamp() {
 | `revalidate` | 过了这个时间，结果需要重新生成：页面缓存和共享的缓存先返回旧的结果、在后台重新生成（见下面的实测）；默认的内存缓存则直接丢掉它，下一次调用等新的结果 |
 | `expire` | 过了这个时间还没有请求来刷新它，下一个请求必须等新的结果 |
 
-也可以用预设的名字，例如 `cacheLife('hours')`（`stale` 5 分钟，`revalidate` 1 小时，`expire` 1 天）；不调用 `cacheLife` 时是 `'default'`（5 分钟、15 分钟、永不过期）。`revalidate` 为 0、`expire` 不到 5 分钟、`stale` 不到 30 秒，或者使用 `'seconds'` 的缓存太短，不会被放进构建时的静态外壳，而是变成请求时才填的“洞”。上面的例子把 `stale` 设为 30 就是这个原因；浏览器中的路由器也至少把数据保留 30 秒，实测这个页面的响应头中有 `x-nextjs-stale-time: 30`。
+也可以用预设的名字，例如 `cacheLife('hours')`（`stale` 5 分钟，`revalidate` 1 小时，`expire` 1 天）；不调用 `cacheLife` 时是 `'default'`（5 分钟、15 分钟、永不过期）。`revalidate` 为 0、`expire` 不到 5 分钟或者 `stale` 不到 30 秒的缓存（例如预设的 `'seconds'`）太短，不会被放进构建时生成的静态的外壳（h01），而是变成请求时才填上的“洞”。上面的例子把 `stale` 设为 30 就是这个原因；浏览器中的路由器也至少把数据保留 30 秒，实测这个页面的响应头中有 `x-nextjs-stale-time: 30`。
 
 实测项目中一个页面只显示 `await getStamp()` 的结果。构建时的路由表多了两列（h01 的练习遇到这种表头会报错）：
 
@@ -205,7 +205,7 @@ Route (app)                  Revalidate  Expire
 04:32:44  2026-10-21T08:32:43.533Z  HIT     ← 5 秒之内：直接返回
 ```
 
-这就是 stale-while-revalidate：过了 `revalidate`，**触发**重新生成的那个请求拿到的仍然是旧的内容，没有人需要等。注意这里观察到的是**整个页面**的缓存（`x-nextjs-cache`）。`'use cache'` 函数自己的缓存保存在哪里，由缓存处理器决定：Next.js 默认的内存处理器在过了 `revalidate` 时就丢弃条目（内存中的条目很可能在被读到之前就被清掉，提前准备新的结果是浪费），下一次调用会等新的结果；共享的存储（例如 Redis）可以一直先返回旧值到 `expire`。练习二模拟的是后一种。
+这就是 stale-while-revalidate：过了 `revalidate`，**触发**重新生成的那个请求拿到的仍然是旧的内容，没有人需要等。注意这里观察到的是**整个页面**的缓存（`x-nextjs-cache`）。`'use cache'` 函数自己的缓存保存在哪里，由缓存处理器决定：Next.js 默认的内存处理器在过了 `revalidate` 时就丢弃条目（内存中的条目很可能在被读到之前就被清掉，提前准备新的结果是浪费），下一次调用会等新的结果；共享的存储（例如 Redis）可以一直先返回旧值到 `expire`。本课的编程挑战模拟的是后一种。
 
 ## 按需失效：cacheTag 与 revalidateTag
 
@@ -218,7 +218,7 @@ POST /api/h04/revalidate → {"ok":true}
 04:32:46  2026-10-21T08:32:45.166Z  HIT     ← 新的
 ```
 
-和时间到了一样，失效之后的第一个请求仍然拿到旧的内容。这对文章列表没问题，但对“用户刚刚修改了自己的资料，页面却还显示旧的”就不行了。这时用 `updateTag(tag)`：它让缓存**立刻**过期，下一个请求等新的结果。`updateTag` 只能在作为 action 调用的 Server Function（文档中叫 Server Action，h05）中调用，`revalidateTag` 在 Server Function 和 Route Handler 中都可以。还有一个 `revalidatePath('/profile')` 按地址失效，官方文档建议优先用标签，它更精确。
+和时间到了一样，失效之后的第一个请求仍然拿到旧的内容。这对文章列表没问题，但对“用户刚刚修改了自己的资料，页面却还显示旧的”就不行了。这时用 `updateTag(tag)`：它让缓存**立刻**过期，下一个请求等新的结果。`updateTag` 只能在作为 action 调用的 Server Function（文档中叫 Server Action，h05 会讲）中调用，`revalidateTag` 在 Server Function 和 Route Handler 中都可以。还有一个 `revalidatePath('/profile')` 按地址失效，官方文档建议优先用标签，它更精确。
 
 | | `revalidateTag(tag, 'max')` | `updateTag(tag)` |
 | --- | --- | --- |

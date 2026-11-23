@@ -13,6 +13,8 @@ title: 可以拆开使用的秒表
 
 **重要**：界面代码会把方法单独取出来当作按钮的回调，例如 `const { start, stop } = watch;` 之后直接调用 `start()`。所以这些方法不能依赖 `this`。
 
+每次调用 `createStopwatch` 得到的秒表互不影响。起始代码只是一个草稿：它的方法依赖 `this`，上面的规则也只实现了一部分，需要你改写。
+
 :::files{role=starter}
 ```ts file=stopwatch.ts
 type Stopwatch = {
@@ -177,17 +179,17 @@ describe('createStopwatch', () => {
 :::
 
 :::hint{level=2}
-`let total = 0; let startedAt: number | null = null;`。`start` 只在 `startedAt === null` 时记录 `now()`；`stop` 只在 `startedAt !== null` 时把 `now() - startedAt` 加到 `total`；`elapsed` 在计时中时返回 `total + (now() - startedAt)`。
+`let total = 0; let startedAt: number | null = null;`（`null` 表示没有在计时）。`start` 只在 `startedAt === null` 时记录 `now()`；`stop` 只在 `startedAt !== null` 时把 `now() - startedAt` 加到 `total`，再把 `startedAt` 设回 `null`；`elapsed` 在计时中时返回 `total + (now() - startedAt)`，否则返回 `total`；`reset` 把两个变量都恢复成初始值。
 :::
 
 :::explanation
-起始代码能通过类型检查，但有几个问题：方法依赖 `this`，`const { start } = watch; start()` 时 `this` 是 `undefined`，运行时抛出 `TypeError`（TypeScript 发现不了）；它没有记录“是否正在计时”，重复 `start`、没开始就 `stop` 都会算错；`elapsed` 也没有包含正在进行的一段。另外，`total` 和 `startedAt` 仍然是返回对象上的属性，外部代码可以绕过方法直接修改它们。
+起始代码能通过类型检查，但有几个问题：方法依赖 `this`，`const { start } = watch; start()` 时 `this` 是 `undefined`，运行时抛出 `TypeError`（TypeScript 发现不了）；它没有记录“是否正在计时”，重复 `start`、没开始就 `stop` 都会算错；`elapsed` 也没有包含正在进行的一段。另外，`total` 和 `startedAt` 仍然是返回对象上的属性：`Stopwatch` 类型里没有写它们，但类型在运行时会被擦除（a02），它们并没有真正藏起来。
 
 参考答案改用闭包保存状态：四个箭头函数直接读写 `createStopwatch` 内部的 `total` 和 `startedAt`，完全不使用 `this`，所以无论怎样调用都正确。状态也不再暴露在返回的对象上，外部只能通过这四个函数操作它。
 
 `startedAt` 的类型是 `number | null`：`null` 表示“没有在计时”。每次使用它之前都要检查（a05），这正好也实现了“重复 `start` 无效、没开始就 `stop` 无效”的规则。
 
-把时钟作为参数 `now` 传入（而不是在函数里直接调用 `Date.now()`），测试就可以用假时钟精确控制时间。这种写法叫**依赖注入**，F 阶段的测试课还会遇到。
+把时钟作为参数 `now` 传入，而不是在函数里直接调用 `Date.now()`（JavaScript 内置的函数，返回当前时间的毫秒数），测试就可以用假时钟精确控制时间。这种写法叫**依赖注入**，e05、e10 的练习还会用到。
 :::
 
 :::variant{kind=alt name=state-object}

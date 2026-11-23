@@ -19,7 +19,7 @@
     - text: "`string | number`"
       explain: 这是 `T[keyof T]`。传入具体的键时，返回类型也是那个键的类型。
     - text: "`unknown`"
-      explain: 索引访问类型保留了准确的类型。
+      explain: "返回类型写的是 `T[K]`，不是 `unknown`。`K` 被推断为 `'label'`，所以结果是 `label` 属性的类型 `string`。"
 - id: constrained-return
   type: single
   prompt: |

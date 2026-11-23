@@ -48,9 +48,9 @@ Testing Library 的指导原则只有一句话：测试越接近软件被使用�
 | `getBy…` | 抛出错误 | 抛出错误 | 元素应该已经存在 |
 | `queryBy…` | 返回 `null` | 抛出错误 | 检查元素**不存在**：`expect(screen.queryByRole('alert')).toBeNull()` |
 | `findBy…` | 等待，超时（默认 1000 毫秒）后拒绝 | 拒绝 | 元素会在之后出现（请求完成、计时器到期），要 `await` |
-| `getAllBy…` 等 | | 返回数组 | 一组元素，例如列表中的每一项 |
+| `getAllBy…`、`queryAllBy…`、`findAllBy…` | 依次是：抛出错误、返回空数组 `[]`、拒绝 | 返回数组 | 一组元素，例如列表中的每一项 |
 
-`getBy…` 找不到元素时，错误信息会列出页面上所有可访问的元素和它们的名字。下面是本机运行时实际得到的（节选）：
+`getBy…` 找不到元素时，错误信息会列出页面上所有可访问的元素和它们的名字。下面是一次实际运行得到的错误信息（节选）：
 
 ```text
 TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "保存"
@@ -91,7 +91,7 @@ await user.tab(); // 按 Tab 键移动焦点
 | 匹配器 | 检查 |
 | --- | --- |
 | `toBeInTheDocument()`、`toBeVisible()` | 在页面中；用户能看见（没有被 `hidden`、`display: none` 隐藏） |
-| `toHaveTextContent('已保存')` | 文字（默认是“包含”，要完全相等用正则 `/^已保存$/`） |
+| `toHaveTextContent('已保存')` | 文字（默认是“包含”，并且忽略首尾的空白，`getByText` 也是这样；要完全相等用正则 `/^已保存$/`） |
 | `toHaveValue('Ada')`、`toBeChecked()` | 表单控件的值、复选框的状态 |
 | `toBeDisabled()`、`toBeEnabled()` | 是否禁用 |
 | `toHaveAccessibleName('删除 TypeScript')` | 可访问的名字 |
@@ -131,7 +131,7 @@ button.addEventListener('click', () => {
 ```
 - 找输入框：它有标签“名字”，所以是 `screen.getByRole('textbox', { name: '名字' })`（或 `getByLabelText('名字')`）；找按钮：`getByRole('button', { name: '问好' })`；提示：`getByRole('status')`。
 - “输入 Ada 后点问好，看到你好，Ada”：`await user.type(…, 'Ada')`、`await user.click(…)`、`expect(status).toHaveTextContent('你好，Ada')`。
-- 别忘了“没有输入时”的情况，以及前后的空白（` Ada `）。
+- 别忘了“没有输入时”的情况，以及输入前后带空格的情况（例如 `'  Ada  '`）。
 :::
 
 ## 测试行为，而不是实现
@@ -140,7 +140,7 @@ button.addEventListener('click', () => {
 
 - 不要读取代码内部的变量、不要按 class 名去找元素；用户点了按钮之后，检查页面上出现了什么；
 - 换一种实现（用模板字符串一次生成整个列表，或者改写成 React 组件），只要页面上的角色、名字和行为不变，测试就应该仍然通过；
-- 异步出现的内容用 `findBy…` 或 `waitFor` 等待。
+- 异步出现的内容用 `findBy…` 等待；要等的不是一个元素出现（例如等文字变化）时，用 `waitFor(() => { expect(…) })`，它会反复执行回调，直到断言通过或者超时。
 
 React 组件的测试在 g15 中讲：`@testing-library/react` 的 `render(<组件 />)` 把组件渲染进页面，之后的查找和操作与本课完全一样。
 

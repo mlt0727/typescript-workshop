@@ -5,7 +5,7 @@ title: 用可辨识联合渲染加载状态
 起始代码用三个独立的字段（`isLoading`、`error`、`data`）表示加载状态。在 `render.ts` 中：
 
 1. 把 `LoadState<T>` 改成可辨识联合，四种状态分别是：`{ status: 'idle' }`、`{ status: 'loading' }`、`{ status: 'error'; message: string }`、`{ status: 'success'; data: T }`；
-2. 实现 `renderBooks(view, state, onRetry)`。`view.status` 是页面上**一直存在**的 `<p role="status">`，只改变它的文字；`view.results` 是显示结果的区域，按下表更新：
+2. 改写 `renderBooks(view, state, onRetry)`。`view.status` 是页面上**一直存在**的 `<p role="status">`，只改变它的文字；`view.results` 是显示结果的区域，按下表更新：
 
 | 状态 | `view.status` 的文字 | `view.results` 的内容 |
 | --- | --- | --- |

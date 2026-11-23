@@ -216,11 +216,11 @@ test('标题为空时显示错误、不提交；改正后提交，错误消失',
 :::
 
 :::hint{level=1}
-用一个对象 state 保存三个字段，再用一个 state 保存错误信息（`string | null`）。文本框：`value` + `onChange`；下拉框同样是 `value` + `onChange`；复选框是 `checked` + `onChange`，读取 `e.currentTarget.checked`。
+先从 `react` 导入 `useState`。用一个对象 state 保存三个字段，再用一个 state 保存错误信息（`string | null`）。文本框：`value` + `onChange`；下拉框同样是 `value` + `onChange`；复选框是 `checked` + `onChange`，读取 `e.currentTarget.checked`。
 :::
 
 :::hint{level=2}
-本课第三个示例中的 `update<K extends keyof Form>(key, value)` 和 `isPriority` 可以直接用。提交函数：`e.preventDefault()`；`const title = form.title.trim()`；为空就 `setError('请输入标题')` 并返回；否则 `onAdd({ ...form, title })`、`setForm(EMPTY)`、`setError(null)`。
+本课“一个对象管理多个字段”那个示例中的 `update` 和 `isPriority` 可以照搬（把 `TaskForm` 换成这里的字段类型，下拉框的事件类型是 `ChangeEvent<HTMLSelectElement>`）。提交函数：`e.preventDefault()`；`const title = form.title.trim()`；为空就 `setError('请输入标题')` 并返回；否则 `onAdd({ ...form, title })`、`setForm(EMPTY)`、`setError(null)`。
 :::
 
 :::explanation

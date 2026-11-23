@@ -2,7 +2,7 @@
 kind: challenge
 title: 用断言函数校验配置
 ---
-服务启动时读取配置，配置有错就应该立刻停止并说明原因。实现断言函数 `assertConfig(value)`，返回类型为 `asserts value is Config`：
+服务启动时读取配置，配置有错就应该立刻停止并说明原因。把起始代码里的 `assertConfig(value)` 改写成断言函数，返回类型为 `asserts value is Config`：
 
 ```ts
 type Config = { name: string; port: number; tags: string[] };
@@ -17,7 +17,7 @@ type Config = { name: string; port: number; tags: string[] };
 | `port` 是 1 到 65535 的整数 | `RangeError('port 必须是 1–65535 的整数')`（为了简化，类型不是数字时也抛出这个错误） |
 | `tags` 是数组，并且每个元素都是字符串 | `TypeError('tags 必须是字符串数组')` |
 
-再实现 `loadConfig(json)`：解析 JSON，调用 `assertConfig`，返回一个**只包含** `name`、`port`、`tags` 的新对象（`name` 去掉首尾空格）。
+再改写 `loadConfig(json)`：解析 JSON，调用 `assertConfig`，返回一个**只包含** `name`、`port`、`tags` 的新对象（`name` 去掉首尾空格）。
 
 :::files{role=starter}
 ```ts file=config.ts
@@ -131,7 +131,7 @@ expectTypeOf(value).toEqualTypeOf<Config>();
 :::
 
 :::hint{level=1}
-返回类型写成 `asserts value is Config`，函数体里逐项检查，不满足就 `throw`，全部通过就什么也不返回。读取属性前先用 `'name' in value` 之类的检查（b07）；`tags` 的每个元素可以用 `every` 检查。
+返回类型写成 `asserts value is Config`，函数体里逐项检查，不满足就 `throw`，全部通过就什么也不返回。读取属性前先用 `'name' in value` 之类的检查（b07）；`port` 是不是整数用 `Number.isInteger` 判断（a20 的练习用过）；`tags` 的每个元素可以用 `every` 检查。
 :::
 
 :::hint{level=2}
@@ -143,7 +143,7 @@ expectTypeOf(value).toEqualTypeOf<Config>();
 
 和类型守卫一样，TypeScript 相信断言函数的实现：如果漏掉了对 `tags` 元素的检查，类型检查照样通过，但 `['a', 1]` 会混进来——测试才能发现。
 
-起始代码有两个问题：返回 `boolean` 的普通函数不会收窄任何东西；`loadConfig` 把 `JSON.parse` 的 `any` 直接返回，配置里多余的 `secret` 字段也被原样交了出去（b02）。参考答案把结果放进 `unknown` 变量，断言之后再明确地挑出需要的字段。
+起始代码有两个问题：返回 `boolean` 的普通函数不会收窄任何东西；`loadConfig` 把 `JSON.parse` 的 `any` 直接返回，配置里多余的字段（例如测试里的 `secret`）也被原样交了出去（b02）。参考答案把结果放进 `unknown` 变量，断言之后再明确地挑出需要的字段。
 :::
 
 :::variant{kind=alt name=helper-guards}

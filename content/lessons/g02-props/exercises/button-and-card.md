@@ -203,7 +203,7 @@ console.log(badVariant, badHandler, noTitle, noChildren, ok);
 :::
 
 :::hint{level=2}
-注意属性的顺序：`<button type={type} {...rest} className={classes} />`。合并 className：`['btn', `btn-${variant}`, className].filter(Boolean).join(' ')`，`filter(Boolean)` 去掉了 `undefined`。`children` 也在 `rest` 里，展开时会一起传给 `<button>`。
+注意属性的顺序：`<button type={type} {...rest} className={classes} />`。合并 className：`` ['btn', `btn-${variant}`, className].filter(Boolean).join(' ') ``，`filter(Boolean)` 去掉了 `undefined`。`children` 也在 `rest` 里，展开时会一起传给 `<button>`。
 :::
 
 :::explanation
@@ -212,7 +212,7 @@ console.log(badVariant, badHandler, noTitle, noChildren, ok);
 `{...rest}` 的位置很重要。JSX 中后写的属性覆盖先写的：
 
 - `type={type}` 写在前面。解构时已经把使用者传的 `type` 拿了出来（没传就是 `'button'`），所以 `rest` 里没有 `type`，写在哪里结果都一样；但如果不解构 `type`、只是写 `type="button" {...rest}`，也能做到“默认值可以被覆盖”；
-- `className={classes}` 必须写在 `{...rest}` 后面。虽然 `className` 也被解构出来了，但把它放在最后，能保证 `class` 一定是合并后的结果。
+- `className={classes}` 写在 `{...rest}` 后面。`className` 也被解构出来了，`rest` 里没有它，严格说写在哪里都一样；但放在最后，即使以后改了解构的写法，`class` 也一定是合并后的结果。
 
 `Card` 的 `footer` 是 `ReactNode`，所以使用者可以传一段文字，也可以传几个按钮组成的 Fragment（见预览）。判断有没有 footer 用的是 `footer !== undefined`。注意 `ReactNode` 也包括 `null` 和 `false`，传 `footer={null}` 时会渲染出一个空的 `<footer>`，如果想避免，可以改成 `footer != null && footer !== false` 这样的判断，题目没有要求。
 :::

@@ -6,7 +6,7 @@
       correct: true
       explain: 默认按字符串比较，`'10'` 的第一个字符 `'1'` 小于 `'9'`。
     - text: "`[ 1, 9, 10 ]`"
-      explain: 这是 `sort((a, b) => a - b)` 的结果。
+      explain: 这是按数值排序（`sort((a, b) => a - b)`）的结果；不传比较函数时按字符串比较，`'10'` 排在 `'9'` 前面。
     - text: "`[ 10, 9, 1 ]`"
       explain: "`sort` 默认是升序（按字符串），不会保持原样或降序。"
 - id: same-array
@@ -41,9 +41,9 @@
       correct: true
       explain: 返回替换了一个元素的新数组。
     - text: "`arr.reverse()`"
-      explain: "`reverse` 在原数组上反转。"
+      explain: "`reverse` 在原数组上反转，`arr` 被修改了；不修改原数组的版本是 `toReversed`。"
     - text: "`arr.splice(0, 1)`"
-      explain: "`splice` 从原数组删除元素（a10）。"
+      explain: "`splice` 直接从 `arr` 里删除元素（a10 讲过）；不修改原数组的是 `toSpliced`，还有名字相近的 `slice`。"
 - id: comparator
   type: single
   prompt: 要把 `items` 按 `price` **从高到低**排序，比较函数应该怎么写？
@@ -52,6 +52,6 @@
       correct: true
       explain: "`b` 的价格更高时返回正数，`b` 排在前面，于是得到降序。"
     - text: "`(a, b) => a.price - b.price`"
-      explain: 这是升序。
+      explain: "`a` 更便宜时返回负数，`a` 排在前面，这是从低到高（升序）。"
     - text: "`(a, b) => a.price < b.price`"
       explain: 比较函数必须返回数字，返回布尔值时 TypeScript 会报错，结果也不可靠。

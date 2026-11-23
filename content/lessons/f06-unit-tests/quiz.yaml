@@ -1,6 +1,6 @@
 - id: tobe-object
   type: single
-  prompt: "`expect(parse('{\"a\":1}')).toBe({ a: 1 })` 失败了，而 parse 返回的确实是 `{ a: 1 }`。原因是什么？"
+  prompt: "`expect(JSON.parse('{\"a\":1}')).toBe({ a: 1 })` 失败了，而 JSON.parse 返回的确实是 `{ a: 1 }`。原因是什么？"
   options:
     - text: toBe 用 Object.is 比较，两个内容相同的对象不是同一个对象
       correct: true

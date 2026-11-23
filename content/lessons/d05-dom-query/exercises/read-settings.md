@@ -199,7 +199,7 @@ test('“显示设置”按钮显示结果', async () => {
 :::
 
 :::hint{level=2}
-主题标签：先找到 `#topics`，再用 `topicsBox.querySelectorAll('input')` **只在它里面**查找（`#topics` 里只有复选框；选择器正好是标签名，元素的类型直接就是 `HTMLInputElement`），逐个检查 `checked`。滑块的数字用 `valueAsNumber`（或者 `Number(value)`）。
+主题标签：先找到 `#topics`，再用 `topicsBox.querySelectorAll('input')` **只在它里面**查找（`#topics` 里只有复选框；选择器正好是标签名，元素的类型直接就是 `HTMLInputElement`），逐个检查 `checked`。滑块的数字用 `valueAsNumber`（把输入框的值直接读成数字），或者 `Number(value)`。
 :::
 
 :::explanation

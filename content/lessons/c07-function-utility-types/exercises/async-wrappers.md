@@ -7,11 +7,11 @@ title: 重试与请求合并
 **`withRetry(fn, options)`**，`options` 是 `{ attempts: number; shouldRetry?: (error: unknown) => boolean; delay?: (attempt: number) => Promise<void> }`：
 
 1. 调用 `fn`；成功就返回它的结果；
-2. 失败（Promise 被拒绝）时，如果总共已经调用了 `attempts` 次，或者提供了 `shouldRetry` 且它对这个错误返回 `false`，就以**这次的错误**拒绝；否则（如果提供了 `delay`）先 `await delay(已经失败的次数)`，再重试。
+2. 失败（Promise 被拒绝）时：如果总共已经调用了 `attempts` 次，或者提供了 `shouldRetry` 且它对这个错误返回 `false`，就以**这次的错误**拒绝；否则重试。如果提供了 `delay`，重试之前先 `await delay(n)`，`n` 是到目前为止失败的次数。
 
 **`memoizeAsync(fn, keyOf)`**：
 
-1. 用 `keyOf(...args)` 算出缓存的键；同一个键的调用共用**同一个 Promise**：即使第一次调用还没有完成，第二次调用也不会再调用 `fn`；
+1. 用 `keyOf(...args)` 算出缓存的键（`keyOf` 的参数类型也要和 `fn` 相同）；同一个键的调用返回**同一个 Promise 对象**：即使第一次调用还没有完成，第二次调用也不会再调用 `fn`；
 2. 这个 Promise 失败后，要从缓存中移除，下一次同样的调用会重新调用 `fn`；成功的结果一直保留；
 3. 不同的键互不影响。
 

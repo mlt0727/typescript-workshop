@@ -20,6 +20,8 @@ references:
 
 ## 问题：any 会丢失类型
 
+下面两个函数都返回数组的第一个元素，函数体一模一样，区别只在类型：`firstAny` 用 `any[]`，`first` 用泛型。看调用方拿到的 `a`、`b`、`c` 分别是什么类型。
+
 :::playground{#why-generics}
 ```ts file=main.ts
 function firstAny(items: any[]): any {
@@ -38,14 +40,14 @@ console.log(a, b, c);
 - 把鼠标停在 `a` 上：类型是 `any`，之后对它做什么都不会被检查（b06）。
 - 第 5 行的 `<T>` 声明了一个**类型参数** `T`。它像函数参数一样，代表“调用时才确定的某个类型”。
 - 停在 `b`、`c` 上：分别是 `number | undefined` 和 `string | undefined`。TypeScript 根据传入的数组**推断**出 `T` 是 `number` 或 `string`，返回类型也随之确定。
-- 和 Java 的泛型方法很像：类型参数写在函数名后面；和 Java 一样会被擦除，而且更彻底（Java 还在字节码中保留签名信息并插入类型转换，TypeScript 编译后什么都不留）。另一个区别是，TypeScript 的类型参数可以是 `number` 这样的基本类型，Java 只能用包装类型。
+- 和 Java 的泛型方法很像，只是类型参数的位置不同：Java 写在返回类型前面（`static <T> T first(List<T> items)`），TypeScript 写在函数名后面。类型参数和 Java 一样会被擦除，而且更彻底（Java 还在字节码中保留签名信息并插入类型转换，TypeScript 编译后什么都不留）。另一个区别是，TypeScript 的类型参数可以是 `number` 这样的基本类型，Java 只能用包装类型。
 :::
 
 ## 类型参数的推断与显式指定
 
 大多数时候，类型参数由实参自动推断。推断不出来、或者推断的结果不是你想要的时候，可以在调用处用尖括号**显式指定**：`first<string | number>([…])`。
 
-一个函数可以有多个类型参数。习惯上用 `T`、`U`，或者有意义的名字如 `TKey`、`TValue`。
+一个函数可以有多个类型参数。习惯上用 `T`、`U`，或者有意义的名字如 `TKey`、`TValue`。箭头函数（a13）也可以有类型参数，写在参数列表的前面：`const first = <T>(items: readonly T[]): T | undefined => items[0]`。
 
 :::playground{#inference}
 ```ts file=main.ts
@@ -65,13 +67,13 @@ const mixed = identity<string | number>(42);
 console.log(p, literal, widened, mixed);
 ```
 - `p` 是 `[string, number]`。
-- `literal` 是 `"hi"`，`widened` 是 `string`。当返回类型就是 `T` 本身时，传入字面量会推断出字面量类型；而 `pair('Ada', 36)` 的 `T` 出现在元组里，结果被拓宽成了 `[string, number]`。具体规则比较细，不必记住，需要时把鼠标停上去看一看即可。
+- `literal` 是 `"hi"`，`widened` 是 `string`。当返回类型就是 `T` 本身时，传入字面量会推断出字面量类型；`text` 用 `let` 声明，本身已经是 `string`（b04 的类型拓宽），所以 `identity(text)` 的 `T` 是 `string`。而 `pair('Ada', 36)` 的 `A`、`B` 出现在元组里，结果被拓宽成了 `[string, number]`。具体规则比较细，不必记住，需要时把鼠标停上去看一看即可。
 - 第 13 行显式指定了 `T` 为 `string | number`，所以 `mixed` 的类型是 `string | number`。
 :::
 
 ## 泛型类型与泛型类
 
-类型别名、接口和类也可以有类型参数。使用时在名字后面写尖括号给出**类型实参**。`Array<number>`、`Map<string, number[]>`、`Record<string, number>`、`Partial<User>` 都是这样的泛型类型。
+类型别名、接口和类也可以有类型参数：声明时写在名字后面，例如 `type Box<T> = { value: T }`。使用时在名字后面写尖括号给出**类型实参**，例如 `Box<number>`。你用过的 `Array<number>`、`Map<string, number[]>`、`Record<string, number>`、`Partial<User>` 都是这样的泛型类型。
 
 类型参数还可以有**默认值**：`type Result<T, E = string>` 在只写一个实参时，`E` 就是 `string`。
 
@@ -109,15 +111,16 @@ words.push(42);
 console.log(numberBox, wrongBox, parsed, failed, words.pop());
 ```
 - 第 4 行：`Box<number>` 的 `value` 必须是数字，报 TS2322。
-- 第 6 行：b09 的结果类型变成了通用的 `Result<T, E>`，`E` 默认为 `string`。
-- 第 25 行：`new Stack<string>()` 创建了只能放字符串的栈，第 27 行放入数字报 TS2345。
+- 第 6 行：b09 的结果类型变成了通用的 `Result<T, E>`，`E` 默认为 `string`。第 10、11 行的 `Result<number>` 只写了一个类型实参，`E` 就取默认值。
+- 第 13 行：类型参数 `T` 在整个类里都能用：字段、方法的参数和返回值。
+- 第 25 行：`new Stack<string>()` 创建了只能放字符串的栈，第 27 行放入数字报 TS2345。这里的构造函数没有实参可供推断，所以要写出 `<string>`；省略的话，`T` 会被推断成 `unknown`。
 :::
 
 ## 好的泛型：把输入和输出联系起来
 
-Handbook 给出了几条写泛型函数的建议（尽量少用类型参数、尽量让类型参数直接出现在参数中等），其中一条是：**类型参数应该出现在至少两个位置**，把参数之间、或者参数和返回值之间联系起来。只出现一次的类型参数没有意义，直接写具体类型（或 `unknown`）就行。
+Handbook 给出了几条写泛型函数的建议（例如类型参数能少用就少用），其中一条是：**类型参数应该出现在至少两个位置**，把参数之间、或者参数和返回值之间联系起来。只出现一次的类型参数没有意义，直接写具体类型（或 `unknown`）就行。
 
-另外，在函数体内，`T` 可能是任何类型，所以**不能对它做任何假设**：例如 `value.length` 会报错，因为 `T` 可能是数字。需要“具有某些属性的任何类型”时，用下一课的**泛型约束**。
+另外，在函数体内，`T` 可能是任何类型，所以**不能对它做任何假设**：例如 `value.length` 会报错，因为 `T` 可能是数字。这一点和 Java 相同，和 C++ 的模板不同：C++ 为每种实际用到的类型各生成一份代码，到那时才检查 `value.length` 是否存在；TypeScript 的泛型函数只有一份，函数体只检查一次，必须对所有可能的 `T` 都成立。需要“具有某些属性的任何类型”时，用下一课的**泛型约束**。
 
 :::playground{#guidelines expect="2339@main.ts:6"}
 ```ts file=main.ts

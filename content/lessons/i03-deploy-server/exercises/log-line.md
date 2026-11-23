@@ -401,7 +401,7 @@ describe('formatLog：更多的输入', () => {
 
 这里没有记录调用栈（`stack`）。它对调试很有用，但很长；而且构建之后的代码中，文件和行号已经变了样（正文中实测是 `…\server\chunks\_0vj2gv73mjph5._.js:1:113`），要配合 source map 才有意义。需要的话，通常交给专门的错误追踪服务。
 
-替代解把这一次格式化的状态（要隐藏的值、路径上的对象）放在一个类中，用 `switch (typeof value)` 分派，路径用一个数组，深度就是路径的长度。
+也可以把这一次格式化的状态（要隐藏的值、路径上的对象）放在一个类中，用 `switch (typeof value)` 分派；路径用一个数组记录，深度就是路径的长度。
 :::
 
 :::variant{kind=alt name=cleaner-class}

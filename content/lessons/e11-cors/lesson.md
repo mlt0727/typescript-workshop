@@ -45,11 +45,13 @@ for (const target of targets) {
 - 第 5–7 行：子域名不同、协议不同、端口不同，都是跨源。
 :::
 
+地址里没写端口时，用的是协议的默认端口：`https` 是 443，`http` 是 80。所以 `https://app.example.com:443` 和 `https://app.example.com` 是同一个来源。
+
 浏览器的**同源策略**并不禁止页面向别的来源**发出**请求（`<img>`、`<form>` 一直都可以），它禁止的是页面上的脚本**读取**跨源请求的响应，除非对方明确允许。
 
 ## CORS 保护的是谁
 
-为什么要限制读取？因为请求是从**用户的浏览器**发出的，带着这个用户的身份。假设你登录了银行网站，又打开了一个恶意网页；如果恶意网页的脚本可以用 `fetch('https://bank.example/account', { credentials: 'include' })` 带上你的 cookie 请求账户信息，并且读到结果，它拿到的就是**你的**账户信息。同源策略阻止了这件事。
+为什么要限制读取？因为请求是从**用户的浏览器**发出的，带着这个用户的身份。假设你登录了银行网站，又打开了一个恶意网页；如果恶意网页的脚本可以用 `fetch('https://bank.example/account', { credentials: 'include' })` 带上你的 cookie（浏览器为某个网站保存的小段数据，登录状态通常就存在里面，发往这个网站的请求会自动带上）请求账户信息，并且读到结果，它拿到的就是**你的**账户信息。同源策略阻止了这件事。
 
 （现代浏览器默认把没有声明 `SameSite` 的 cookie 当作 `SameSite=Lax`，跨站的 `fetch` 通常不会带上它们；只有服务器明确设置了 `SameSite=None; Secure` 的 cookie 才会被带上。但同源策略保护的不只是 cookie：公司内网中的服务、家里路由器的管理页面、只按 IP 地址认证的接口，都只有“在用户的网络里”才能访问，同样不能让任意网页读取。）
 
@@ -89,22 +91,21 @@ for (const target of targets) {
 `fetch` 默认只在同源请求中带上 cookie。跨源请求要带 cookie，需要写 `fetch(url, { credentials: 'include' })`，并且服务器必须：
 
 - 返回 `Access-Control-Allow-Credentials: true`；
-- `Access-Control-Allow-Origin` 写出**具体的来源**，不能是 `*`；
-- 不允许把 `Access-Control-Allow-Credentials: true` 和 `*` 一起使用，浏览器会拒绝。
+- `Access-Control-Allow-Origin` 写出**具体的来源**，不能是 `*`：`*` 和 `Access-Control-Allow-Credentials: true` 一起出现时，浏览器会拒绝。
 
 另外，只要 `Access-Control-Allow-Origin` 的值会**随请求的来源变化**（例如按白名单返回请求方的来源，不管带不带凭据），服务器就应该在响应中加上 `Vary: Origin`，包括不放行的响应。否则中间的缓存可能把给 A 的响应交给 B。
 
 ## 正确的解决方式
 
 - **你能控制这个服务器**：在服务器上为你的前端来源配置 CORS 响应头（挑战题就是实现这部分逻辑）；
-- **你不能控制它**（第三方接口）：由你自己的后端去请求它，前端只请求自己的后端（同源，或者你自己配置了 CORS）。这样还能把第三方的密钥留在服务器上（e13）；
-- **本地开发**：前端开发服务器（例如 Vite 的 `server.proxy`）把 `/api` 转发给后端，浏览器看到的就是同源请求（F 阶段）。
+- **你不能控制它**（第三方接口）：由你自己的后端去请求它，前端只请求自己的后端（同源，或者你自己配置了 CORS）。这样还能把第三方的密钥留在服务器上（e13 会讲）；
+- **本地开发**：让前端开发服务器把 `/api` 转发给后端（例如 F 阶段会用到的 Vite，它的 `server.proxy` 配置），浏览器看到的就是同源请求。
 
 不要做的事：
 
 - `fetch(url, { mode: 'no-cors' })` 并不能“关掉”CORS：它得到的是一个**不透明**的响应，状态码是 0，内容读不到；
 - 关闭浏览器安全设置或装插件“解决”CORS：只在你自己的浏览器里生效，你的用户仍然会被拦下；
-- 以为 CORS 能防止 CSRF（跨站请求伪造）：简单请求不预检，带着 cookie 的表单提交仍然会到达服务器。防 CSRF 要靠 `SameSite` cookie 和 CSRF 令牌（H 阶段）。
+- 以为 CORS 能防止 CSRF（跨站请求伪造）：简单请求不预检，带着 cookie 的表单提交仍然会到达服务器。防 CSRF 要靠 `SameSite` cookie 和 CSRF 令牌（H 阶段会讲）。
 
 **关于本平台：** 平台的 `fetch` 是模拟的，不会执行 CORS 检查，所以本课的练习用纯函数实现判断规则和服务器端的响应头。
 

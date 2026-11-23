@@ -2,13 +2,13 @@
 kind: challenge
 title: 结果类型的工具函数
 ---
-把 b09 的结果类型写成泛型，再实现一组工具函数。类型已经给出：
+为泛型版的结果类型（b09）实现一组工具函数。类型已经给出，和正文示例里的一样：
 
 ```ts
 type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E };
 ```
 
-实现以下泛型函数（类型参数要准确，测试会检查推断出的类型）：
+起始代码里只有一个还不是泛型的 `ok`：先把它改成泛型函数，再补上其余四个。五个函数都要 `export`，类型参数要准确，测试会检查推断出的类型：
 
 | 函数 | 作用 |
 | --- | --- |
@@ -16,7 +16,9 @@ type Result<T, E = string> = { ok: true; value: T } | { ok: false; error: E };
 | `err(error)` | 返回 `{ ok: false, error }`，类型为 `Result<never, E>` |
 | `map(result, fn)` | 成功时用 `fn` 转换值，返回新的成功结果；失败时返回失败结果（错误不变，不调用 `fn`）。类型：`Result<T, E>` → `Result<U, E>` |
 | `unwrapOr(result, fallback)` | 成功时返回值，失败时返回 `fallback`。返回类型为 `T` |
-| `all(results)` | 全部成功时返回 `ok(所有值组成的数组)`；否则返回**第一个**失败结果（错误相同）。类型：`readonly Result<T, E>[]` → `Result<T[], E>` |
+| `all(results)` | 全部成功时（空数组也算）返回 `ok(所有值组成的数组)`；否则返回**第一个**失败结果（错误相同）。类型：`readonly Result<T, E>[]` → `Result<T[], E>` |
+
+`ok` 的错误类型、`err` 的值类型写 `never`（b06）：成功的结果里不会有错误，失败的结果里不会有值。
 
 :::files{role=starter}
 ```ts file=result.ts

@@ -5,10 +5,10 @@ title: 按字段校验表单
 在 `validate.ts` 中：
 
 1. 导出两个映射类型：`Validators<T>`，每个字段**可以**有一个校验函数，参数是这个字段的值（类型与字段一致），返回错误信息或 `null`；`Errors<T>`，每个字段**可以**有一条错误信息（`string`）；
-2. 实现 **`validateForm(values, validators)`**：对每一个提供了的校验函数，用对应字段的值调用它；返回所有的错误，没有错误的字段不出现在结果中（不是值为 `undefined`，而是没有这个属性）；
+2. 实现 **`validateForm(values, validators)`**：对每一个提供了的校验函数，用对应字段的值调用它；返回所有的错误，没有错误的字段不出现在结果中（不是值为 `undefined`，而是没有这个属性）。只有返回 `null` 才表示没有错误，空字符串 `''` 也算一条错误信息；
 3. 实现 **`hasErrors(errors)`**：有没有任何错误。
 
-调用时，校验函数的参数不需要写类型：`validateForm({ age: 16 }, { age: (v) => … })` 中 `v` 应该被推断为 `number`。不能使用类型断言。
+调用时，校验函数的参数不需要写类型：`validateForm({ age: 16 }, { age: (v) => … })` 中 `v` 应该被推断为 `number`；校验函数写在不存在的字段上（例如把 `email` 拼成 `emial`）要在编译期报错。不能使用类型断言。
 
 :::files{role=starter}
 ```ts file=validate.ts

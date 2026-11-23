@@ -30,7 +30,7 @@ references:
 ## 两种“没有值”
 
 - `undefined`：**“还没有值”**。通常是语言自动给的：声明了但没赋值的变量、读取对象上不存在的属性、没有 `return` 的函数的返回值、调用时没传的参数。
-- `null`：**“明确地表示空”**，通常是代码主动返回的。例如浏览器里 `document.querySelector` 找不到元素时返回 `null`。
+- `null`：**“明确地表示空”**，通常是代码主动返回的。例如浏览器里用来查找页面元素的 `document.querySelector`，找不到时返回 `null`。
 
 Python 只有 `None`，Java 只有 `null`。在 JavaScript 里两者都会遇到，下面先看 `undefined` 从哪里来：
 
@@ -48,15 +48,15 @@ console.log(result);
 console.log('hi'.at(5));
 console.log(typeof undefined, typeof null);
 ```
-- 第 1 行的 `number | undefined` 读作“数字或 undefined”，这种用 `|` 连接的类型叫**联合类型**（union type），B 阶段详讲。
+- 第 1 行的 `number | undefined` 读作“数字或 undefined”，这种用 `|` 连接的类型叫**联合类型**（union type），B 阶段详讲。`notYet` 声明了但还没赋值，所以第 2 行打印出 `undefined`。
 - 第 7 行：没有 `return` 的函数返回 `undefined`。把鼠标停在 `result` 上，TypeScript 显示它的类型是 `void`，意思是“这个函数不返回有用的值”。
-- 第 10 行：`at(5)` 超出了字符串的范围，返回 `undefined`（不会像 Java 那样抛出越界异常）。
+- 第 10 行：`at(i)` 取字符串里位置 `i` 上的字符（从 0 数起）。`'hi'` 只有位置 0 和 1，`at(5)` 超出了范围，返回 `undefined`（不会像 Java 那样抛出越界异常）。
 - 第 11 行：`typeof null` 是 `'object'`，这是 a02 讲过的历史遗留问题。
 :::
 
 ## 严格模式：string 不包含 null
 
-在本平台（以及所有新项目推荐的）严格模式下，TypeScript 开启了 `strictNullChecks`：`string` 类型**只**包含字符串，不包含 `null` 和 `undefined`。一个值可能缺失时，类型必须写出来，例如 `string | null`。
+本平台使用 TypeScript 的严格模式：一组更严格的检查，也是所有新项目推荐的设置（c11 会细讲）。其中的 `strictNullChecks` 规定：`string` 类型**只**包含字符串，不包含 `null` 和 `undefined`。一个值可能缺失时，类型必须写出来，例如 `string | null`。
 
 这和 Java 不同：Java 里任何对象引用都可能是 `null`，编译器不会提醒你。
 
@@ -107,11 +107,13 @@ console.log(cityLabel('BJ'));
 - 检查要和类型对应：`at()` 返回的是 `string | undefined`，就要检查 `=== undefined`；检查 `=== null` 不能排除 `undefined`。
 :::
 
+检查也可以反过来写：`if (city !== null) { … }`（`!==` 是“不等于”，和 `===` 相反）。这时在大括号里面，`city` 的类型是 `string`。
+
 a08 会讲 `?.` 和 `??`，它们是处理可能缺失的值的简写。在那之前，用 `if` 检查是最清楚的写法。
 
 ## null 还是 undefined？
 
-两者都能表示“没有值”，团队通常会约定一种。一个实际的区别是 JSON：JSON 有 `null`，但没有 `undefined`。
+两者都能表示“没有值”，团队通常会约定一种。一个实际的区别是 JSON：JSON 有 `null`，但没有 `undefined`。下面的 `JSON.stringify` 把值转换成 JSON 文本，和 a02 见过的 `JSON.parse` 方向相反：
 
 :::playground{#json-null}
 ```ts file=main.ts
@@ -135,8 +137,8 @@ console.log(String(undefined), `${null}`);
 ## 常见错误
 
 - **只检查 `null`，忘了 `undefined`**（或者反过来）：先看清楚类型里写的是哪一个。
-- **用 `!` 或 `as` 让错误消失**：`city!.length` 只是告诉 TypeScript“相信我”，运行时仍然会抛出 `TypeError`。本课程的练习禁止这样做。
-- **用 `NaN`、`''`、`-1` 之类的“特殊值”表示缺失**：调用方很容易忘记检查。返回 `null` 时，TypeScript 会强迫调用方处理。
+- **用 `!` 或 `as` 让错误消失**：在值后面加 `!`（非空断言，例如 `city!.length`），或者写 `(city as string).length`（类型断言），都只是告诉 TypeScript“相信我，它不是 `null`”，并不做任何检查；`city` 是 `null` 时，运行时仍然会抛出 `TypeError`。本课程的练习禁止这样做。
+- **用 `NaN`、`''`、`-1` 之类的“特殊值”表示缺失**：调用方很容易忘记检查。返回 `null` 时，返回类型里有 `| null`，调用方不检查就拿去计算或调用方法，TypeScript 会报错。
 - **把 `null`/`undefined` 拼进文字**：用户会看到“你好，undefined”。
 
 ## 下一步

@@ -94,7 +94,7 @@ console.log(sizeLabel('S'), sizeLabel('XL'), sizeLabel('s'));
 ```
 - 第 4 行报 TS7029：`case 'S'` 后面没有 `break`，会贯穿到 `case 'M'`。运行一下，`sizeLabel('S')` 得到的是“中”。在第 5 行后面加上 `break;` 修复它。
 - 第 9–10 行：空的 `case 'L'` 叠在 `case 'XL'` 上，这是允许的。
-- `sizeLabel('s')` 得到“未知”：`===` 区分大小写。
+- `sizeLabel('s')` 得到“未知”：`===` 区分大小写，没有一个 `case` 匹配，`label` 保持初始值。需要处理“其他情况”时写 `default:` 分支，和 Java/C++ 一样。
 - 在函数里，每个 `case` 直接 `return` 往往比先赋值再 `break` 更简洁。
 :::
 
@@ -126,13 +126,14 @@ for (const key in user) {
 ```
 - 第 3–5 行：`for...of` 得到元素。
 - 第 7–9 行：`for...in` 得到的是字符串 `'0'` 和 `'1'`。
-- 第 12–14 行：遍历普通对象的属性名是 `for...in` 的正常用途（不过更常用的是 a11 会讲的 `Object.keys`、`Object.entries`）。注意两点：在循环里写 `user[key]` 读取值会报 TS7053，因为 `key` 的类型只是 `string`，原因 a11 会讲；普通对象不能用 `for...of` 遍历（TS2488），它不是可迭代对象。
-- 循环变量用 `const` 声明：每一轮循环都是一个新的变量，在循环体里不需要重新赋值。
+- 第 12–14 行：遍历普通对象的属性名是 `for...in` 的正常用途（不过更常用的是 a11 会讲的 `Object.keys`、`Object.entries`）。
+- 有两个限制，可以动手试一下：把第 13 行改成 `console.log(user[key]);` 会报 TS7053，因为 `key` 的类型只是 `string`，原因 a11 会讲；把第 12 行的 `in` 改成 `of` 会报 TS2488，因为普通对象不是可迭代对象，不能用 `for...of` 遍历。
+- 循环变量用 `const` 声明：每一轮循环都是一个新的变量，循环体里不需要给它重新赋值（经典 `for` 的 `i` 每一轮都要 `i++`，所以用 `let`）。
 :::
 
 ## 遍历字符串：for...of 按字符，下标按编码单元
 
-a04 讲过，`length` 统计的是 UTF-16 编码单元，😀 这样的字符占 2 个。用下标遍历会把它拆成两半；`for...of` 则按 **Unicode 码点**遍历，一个码点就是一个完整的单位：
+a04 讲过，`length` 统计的是 UTF-16 编码单元，😀 这样的字符占 2 个，用下标遍历会把它拆成两半。`for...of` 则按 **Unicode 码点**遍历：码点是 Unicode 给每个字符分配的编号，😀 占 2 个编码单元，但只是 1 个码点，不会被拆开（Python 的 `len` 和 `for ch in s` 也是按码点算的）。
 
 :::playground{#string-iteration}
 ```ts file=main.ts
@@ -146,8 +147,8 @@ for (let i = 0; i < text.length; i++) {
   console.log('下标', i, text.charAt(i));
 }
 ```
-- `for...of` 输出两次：`好` 和 `😀`。
-- 下标循环执行了 3 次，后两次各得到半个 emoji，显示成乱码。
+- 第 3–5 行：`for...of` 输出两次：`好` 和 `😀`。
+- 第 7–9 行：`text.charAt(i)` 取出下标 `i` 处的那一个编码单元（和 Java 的 `charAt` 一样）。循环执行了 3 次，后两次各得到半个 emoji，显示成乱码。
 - 处理用户输入的文字时，优先用 `for...of`。
 - 边界：`for...of` 按码点遍历，😀 这种单个码点的 emoji 不会被拆开；但由多个码点组合成的 emoji（带肤色的 👍🏽、国旗 🇨🇳、家庭组合等）仍会被拆成几部分。要按“用户看到的字符”切分，需要 `Intl.Segmenter`，超出了本课范围。
 :::

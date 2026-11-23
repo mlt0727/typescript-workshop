@@ -11,18 +11,18 @@
     - text: "`u.name`"
       explain: "`unknown` 必须先收窄才能读取属性（TS18046）。"
     - text: "`const n: number = u;`"
-      explain: "`unknown` 只能赋给 `unknown` 和 `any`，要先检查是数字。"
+      explain: "`unknown` 只能赋给 `unknown` 和 `any`。要先用 `typeof u === 'number'` 把它收窄成 `number`，才能赋给 `n`。"
 - id: never-function
   type: single
   prompt: 下列哪个函数的返回类型应该写成 `never`？
   options:
     - text: "`function fail(msg: string) { throw new Error(msg); }`"
       correct: true
-      explain: 它总是抛出错误，永远不会正常返回。
+      explain: "它总是抛出错误，永远不会正常返回。不写返回类型的话，这种用 `function` 声明的函数会被推断成返回 `void`。"
     - text: "`function log(msg: string) { console.log(msg); }`"
       explain: 它会正常返回（只是没有返回值），返回类型是 `void`。
     - text: "`function maybe(n: number) { if (n < 0) throw new Error('负数'); return n; }`"
-      explain: 它在大多数情况下正常返回数字，返回类型是 `number`。
+      explain: "只有永远不会正常返回的函数才是 `never`。它只在 `n` 是负数时抛出错误，其他时候正常返回数字，返回类型是 `number`。"
 - id: exhaustive
   type: single
   prompt: |
@@ -45,7 +45,7 @@
       correct: true
       explain: 加入 `'blue'` 后，`default` 里的 `c` 类型变成 `'blue'`，不能赋给 `never`。这就是穷尽检查。
     - text: 没有任何报错，运行时返回 `undefined`
-      explain: 正是 `never` 赋值让 TypeScript 能发现遗漏。
+      explain: "会报错。加上 `'blue'` 后，`default` 里的 `c` 是 `'blue'`，不能赋给 `never` 类型的 `unreachable`。写这个赋值，就是为了让 TypeScript 发现遗漏。"
     - text: TypeScript 在 `type Color` 的声明处报错
       explain: 联合类型可以随意增加成员，报错出现在没有处理新成员的地方。
 - id: void-callback
@@ -56,6 +56,6 @@
       correct: true
       explain: 这让 `list.forEach((x) => other.push(x))` 这样的回调可以通过检查。不要使用 `void` 函数的返回值。
     - text: 箭头函数不检查返回类型
-      explain: 箭头函数同样检查返回类型，区别在于 `void` 出现在函数类型中还是函数声明中。
+      explain: "箭头函数同样检查返回类型，`const h = (): void => { return 42; };` 也会报错。区别在于 `void` 是写在变量的函数类型 `() => void` 里，还是写在函数自己的返回类型上。"
     - text: 这是 TypeScript 的 bug
-      explain: 这是有意的设计，Handbook 中有专门说明。
+      explain: "这是有意的设计：有了它，`forEach` 这类不关心返回值的地方才能直接传入有返回值的回调。"

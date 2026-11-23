@@ -215,7 +215,7 @@ test('更新为空数组时清空列表', () => {
 :::
 
 :::hint{level=2}
-先删除不再需要的元素。然后按 `items` 的顺序逐个检查第 `index` 个位置：`list.children.item(index)` 已经是这个元素，就什么都不做；不是，就用 `list.insertBefore(li, 那个位置上的元素)` 把它放过来（新元素同样这样插入）。不要用 `replaceChildren(...全部元素)` 一次性重排：它会把每个元素都移走再插回来，焦点就丢了。`li.dataset.id` 的类型是 `string | undefined`，放进 Map 之前检查一下。
+先删除不再需要的元素（Map 里有、`items` 里没有的）。然后按 `items` 的顺序逐个检查第 `index` 个位置：`list.children.item(index)` 已经是这个元素，就什么都不做；不是，就用 `list.insertBefore(li, 那个位置上的元素)` 把它放过来（新元素同样这样插入）。`parent.insertBefore(新节点, 参照节点)` 把新节点插到参照节点前面；参照节点是 `null`（这个位置还没有元素）时，就加到末尾。不要用 `replaceChildren(...全部元素)` 一次性重排：它会把每个元素都移走再插回来，焦点就丢了。`li.dataset.id` 的类型是 `string | undefined`，放进 Map 之前检查一下。
 :::
 
 :::explanation

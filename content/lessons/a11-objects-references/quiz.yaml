@@ -59,7 +59,7 @@
   options:
     - text: TypeScript 报错：类型上不存在属性 `z`
       correct: true
-      explain: "TypeScript 根据字面量推断出形状 `{ x: number; y: number }`，不允许添加不存在的属性（TS2339）。JavaScript 本身允许，所以这是 TypeScript 帮你拦下的问题。"
+      explain: "TypeScript 根据字面量推断出形状 `{ x: number; y: number }`，不允许添加形状里没有的属性（TS2339）。JavaScript 本身允许，所以这是 TypeScript 帮你拦下的问题。"
     - text: 没有问题，对象会多一个属性 `z`
       explain: 运行时确实会这样，但 TypeScript 会先报错。
     - text: 运行时抛出 `TypeError`

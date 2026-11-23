@@ -5,8 +5,8 @@ title: 添加任务
 `main.ts` 中已经把示例数据渲染到了页面上。完成添加任务的表单（`index.html` 只读）：
 
 1. 提交表单（按回车或点“添加”）时，阻止浏览器默认的提交，用 `parseTaskInput` 解析输入框的内容；
-2. 解析成功：用 `reduce` 添加任务（`now` 是 `Date.now()`），重新渲染任务板；清空输入框，焦点留在输入框；在 `#announce`（`role="status"`）中写入“已添加：标题”；
-3. 解析失败：在 `#new-task-error` 中显示错误的消息并让它显示出来（去掉 `hidden`），给输入框加上 `aria-invalid="true"`；保留输入的文字，焦点留在输入框，任务板不变；
+2. 解析成功：用 `reduce` 添加任务（`now` 是 `Date.now()`），重新渲染任务板；清空输入框，焦点留在输入框；在 `#announce`（`role="status"`）中写入“已添加：”加上解析出的标题（不含标签），例如“已添加：写周报”；
+3. 解析失败：把 `parseTaskInput` 返回的错误消息写进 `#new-task-error` 并让它显示出来（去掉 `hidden`），给输入框加上 `aria-invalid="true"`；保留输入的文字，焦点留在输入框，任务板不变；
 4. 用户修改输入框时，或者下一次添加成功之后，错误提示消失（重新隐藏、清空文字），输入框去掉 `aria-invalid`。
 
 `#new-task-error` 有 `role="alert"`，显示出来时读屏软件会立刻读出；输入框的 `aria-describedby` 已经指向它和提示文字。
@@ -366,7 +366,7 @@ test('用户输入的 HTML 只作为文字显示', async () => {
 :::
 
 :::hint{level=2}
-写两个小函数 `showError(message)`、`clearError()`：前者设置文字、`hidden = false`、`setAttribute('aria-invalid', 'true')`，后者反过来（`removeAttribute`）。输入框的 `input` 事件调用 `clearError`。点“添加”按钮提交时，焦点可能已经移到了按钮上（按回车提交时它还在输入框中），所以处理完之后调用 `input.focus()` 把焦点放回输入框。
+写两个小函数 `showError(message)`、`clearError()`：前者设置文字、`hidden = false`、`setAttribute('aria-invalid', 'true')`，后者反过来（`removeAttribute`）。输入框的 `input` 事件调用 `clearError`，添加成功时也调用它。点“添加”按钮提交时，焦点可能已经移到了按钮上（按回车提交时它还在输入框中），所以处理完之后调用 `input.focus()` 把焦点放回输入框。
 :::
 
 :::explanation

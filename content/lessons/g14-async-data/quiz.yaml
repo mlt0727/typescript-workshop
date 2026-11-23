@@ -45,4 +45,4 @@
     - text: use 只能读取 Context，不能读取 Promise
       explain: React 19 的 use 可以读取 Promise，也可以读取 Context。
     - text: 没有用 await
-      explain: 组件函数不能是 async 的（客户端组件），use 正是在渲染中读取 Promise 的方式。
+      explain: 浏览器中运行的组件函数不能写成 async 的，没法在里面 await；use 正是在渲染中读取 Promise 的方式。

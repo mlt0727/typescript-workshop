@@ -8,14 +8,14 @@
     - text: "`HTMLInputElement | null`"
       explain: 只有选择器正好是标签名（例如 `'input'`）时，TypeScript 才能查到具体类型。
     - text: "`HTMLInputElement`"
-      explain: TypeScript 不知道页面上有什么，结果总是可能为 `null`。
+      explain: TypeScript 不知道页面上有什么，结果总是可能为 `null`；而且选择器不是标签名，只能得到笼统的 `Element`。
 - id: why-not-assert
   type: single
   prompt: "为什么本课程推荐 `if (!(el instanceof HTMLInputElement)) throw …`，而不是 `document.querySelector<HTMLInputElement>('#email')`？"
   options:
     - text: 泛型参数只是让 TypeScript 相信结果是输入框，不做任何检查；instanceof 在运行时真正检查了
       correct: true
-      explain: "元素不存在或者不是输入框时，前者会把错误推迟到后面某个地方，后者在查询的地方就给出清楚的错误。"
+      explain: "元素不存在或者不是输入框时，泛型参数的写法会把错误推迟到后面某个地方，instanceof 检查在查询的地方就给出清楚的错误。"
     - text: 泛型参数的写法在新版 TypeScript 中已经被删除了
       explain: 它仍然可以用，只是和 `as` 一样属于不做检查的断言。
     - text: instanceof 的运行速度更快

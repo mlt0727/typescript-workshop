@@ -264,7 +264,7 @@ counter.set('1');
 
 `slice(-limit)` 只保留最后 `limit` 项，实现“最多保留多少条”。所有数组操作都返回新数组（g04），`History<T>` 中的 `readonly` 让修改原数组的写法无法通过编译。
 
-取出最后一项时，不能用 `h.past.at(-1) === undefined` 判断“有没有记录”：如果 `T` 本身包含 `undefined`（例如 `useUndoable<string | undefined>(undefined)`），记录的值就可能是 `undefined`。参考解用两个小函数 `firstOf`、`lastOf` 把元素包进对象，`null` 才表示“没有”。`firstOf` 用的就是 `for…of`：只有数组非空时才会进入循环体，循环变量的类型就是 `T`（替代解直接这样写）。
+取出最后一项时，不能用 `h.past.at(-1) === undefined` 判断“有没有记录”：如果 `T` 本身包含 `undefined`（例如 `useUndoable<string | undefined>(undefined)`），记录的值就可能是 `undefined`。参考解用两个小函数 `firstOf`、`lastOf` 把元素包进对象，`null` 才表示“没有”。`firstOf` 用的就是 `for…of`：只有数组非空时才会进入循环体，循环变量的类型就是 `T`。
 
 这个 Hook 是泛型的：`useUndoable({ title: '草稿', words: 0 })` 中，`T` 被推断为 `{ title: string; words: number }`，`set` 也就只接受这种对象。
 :::

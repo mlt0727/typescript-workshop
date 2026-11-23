@@ -6,7 +6,7 @@ title: 修正四个泛型签名
 
 1. **`logValue(label, value)`**：把 `label: value` 记录到数组 `log` 中（值用 `JSON.stringify`）。它的类型参数 `T` 只出现了一次，去掉它，`value` 改成 `unknown`；
 2. **`parseJson(text, isT)`**：原来的 `parseJson<T>(text): T` 让调用方随意指定返回值类型。改成接收一个类型守卫 `isT`：JSON 不合法或者守卫返回 `false` 时返回 `null`，否则返回解析出的值，类型由守卫决定；
-3. **`enumValues(values)`**：返回 `{ values, is }`。调用时不写 `as const`，`values` 的类型也要保留字面量（`enumValues(['S', 'M'])` 的 `values` 是 `readonly ['S', 'M']`），`is(x)` 是类型守卫；
+3. **`enumValues(values)`**：返回 `{ values, is }`。调用时不写 `as const`，`values` 的类型也要保留字面量（`enumValues(['S', 'M'])` 的 `values` 是 `readonly ['S', 'M']`），`is(x)` 是类型守卫：返回 `true` 时把 `x` 收窄成 `values` 中的某一项（例如 `'S' | 'M'`）；
 4. **`withDefault(allowed, fallback)`**：返回一个函数，输入是 `allowed` 中的一项时返回它，否则返回 `fallback`。`fallback` 必须是 `allowed` 中的一项：`withDefault(['S', 'M'], 'XL')` 要报错。
 
 :::files{role=starter}
@@ -153,7 +153,7 @@ withDefault(['S', 'M'], 'XL');
 :::
 
 :::explanation
-四个修改分别对应正文的四条规则：
+四个修改用到的是正文的前三条规则：
 
 - `logValue<T>` 的 `T` 只出现一次，它和 `unknown` 没有区别，去掉之后签名更诚实；
 - 原来的 `parseJson<T>(text): T` 能编译，只是因为 `JSON.parse` 返回 `any`，`any` 可以赋给任何类型。调用方写 `parseJson<User>(text)` 时，什么都没有检查。加上守卫参数之后，`T` 有了真正的来源，返回的值也确实被检查过；

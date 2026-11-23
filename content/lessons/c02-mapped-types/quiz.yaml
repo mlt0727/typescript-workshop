@@ -8,7 +8,7 @@
     - text: "`{ id: string; note: string }`，修饰符都被去掉了"
       explain: 映射不会自动去掉修饰符，-readonly 和 -? 要明确写出来。
     - text: "`{ id: string; note: string | undefined }`"
-      explain: 同态映射保留了可选；只有 -? 才会把可选和其中的 undefined 一起去掉。
+      explain: 这个选项把 readonly 和可选都去掉了。同态映射两者都会保留；只有写 -readonly 才去掉只读，写 -? 才会把可选和其中的 undefined 一起去掉。
 - id: value-position
   type: single
   prompt: "`type Validators<T> = { [K in keyof T]: (value: ???) => boolean }`，问号处写什么，才能让每个校验函数的参数类型与对应的字段一致？"
@@ -22,7 +22,7 @@
       explain: K 是键本身（例如 'email'），不是字段值的类型。
 - id: readonly-runtime
   type: single
-  prompt: "`const saved: Readonly<Profile> = draft;` 之后，下面哪个说法正确？"
+  prompt: "`draft` 是一个可以修改的对象（例如示例中的 `Editable<Profile>`）。执行 `const saved: Readonly<Profile> = draft;` 之后，下面哪个说法正确？"
   options:
     - text: 通过 saved 修改属性会在编译期报错，但 draft 仍然可以修改，运行时对象也没有被冻结
       correct: true

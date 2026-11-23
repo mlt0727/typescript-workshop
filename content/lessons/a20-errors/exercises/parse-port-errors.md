@@ -2,18 +2,18 @@
 kind: challenge
 title: 带说明的配置错误
 ---
-a02 的挑战里，读不到合法端口时返回默认值。这一次换一种设计：端口是必填的，配置有问题时要**抛出错误**，并说明原因。实现两个函数：
+a02 的挑战里，读不到合法端口时返回默认值。这一次换一种设计：端口是必填的，配置有问题时要**抛出错误**，并说明原因。起始代码里的两个函数什么都没有检查，按下面的要求改写它们：
 
 **`parsePort(text)`**：`text` 是 JSON 配置文本。
 
 - 不是合法的 JSON：抛出 `Error`，`message` 为 `'配置不是合法的 JSON'`，并把 `JSON.parse` 抛出的原始错误放在 `cause` 中；
 - 是合法的 JSON，但解析结果不是对象（例如 `'42'`、`'null'`、`'"x"'`、`'[1]'`）：抛出 `TypeError`，`message` 为 `'配置必须是一个对象'`；
-- 是对象，但 `port` 不是 1 到 65535 之间的整数（包括缺失）：抛出 `RangeError`，`message` 为 `` `端口无效：${String(port)}` ``，例如 `'端口无效：70000'`、`'端口无效：undefined'`；
+- 是对象，但 `port` 不是 1 到 65535 之间的整数（和 a02 的挑战一样，缺失、`null`、字符串 `"8080"`、小数都算无效）：抛出 `RangeError`，`message` 为 `` `端口无效：${String(port)}` ``，例如 `'端口无效：70000'`、`'端口无效：undefined'`；
 - 否则返回端口号。
 
 **`portOrNull(text)`**：调用 `parsePort`；成功时返回端口号，抛出任何错误时返回 `null`。
 
-提示：判断“是对象”可以用 `typeof value === 'object' && value !== null && !Array.isArray(value)`（a02 讲过 `typeof null` 和数组的特殊情况）；读取属性时，把解析结果先放进类型为 `{ port?: unknown }` 的变量里。
+提示：判断“是对象”可以用 `typeof value === 'object' && value !== null && !Array.isArray(value)`（a02 讲过 `typeof null` 和数组的特殊情况）。`JSON.parse` 返回的是 `any`，漏掉哪一项检查 TypeScript 都不会提醒；更稳妥的做法是把结果存进 `unknown` 类型的变量，确认它是对象之后，再赋给类型为 `{ port?: unknown }` 的变量来读取 `port`。
 
 :::files{role=starter}
 ```ts file=port.ts
@@ -129,7 +129,7 @@ expectTypeOf(portOrNull).toEqualTypeOf<(text: string) => number | null>();
 :::
 
 :::hint{level=2}
-把解析结果存进 `let data: unknown;`（`JSON.parse` 返回 `any`，存进 `unknown` 变量后就必须先检查才能用）。对象检查通过后，`const config: { port?: unknown } = data;` 就可以读取 `config.port` 了。端口检查与 a02 相同：`typeof port !== 'number' || !Number.isInteger(port) || port < 1 || port > 65535` 时抛出 `RangeError`。
+在 `try` 之前声明 `let data: unknown;`，`try` 里只写 `data = JSON.parse(text);` 这一句（`JSON.parse` 返回 `any`，存进 `unknown` 变量后就必须先检查才能用；后面的检查都写在 `try/catch` 之后）。对象检查通过后，`const config: { port?: unknown } = data;` 就可以读取 `config.port` 了。端口检查与 a02 相同：`typeof port !== 'number' || !Number.isInteger(port) || port < 1 || port > 65535` 时抛出 `RangeError`。
 :::
 
 :::explanation

@@ -324,7 +324,7 @@ import type { Project, Task } from './model';
  *   GET   /api/projects/:projectId
  *   POST  /api/projects/:projectId/tasks           { title }
  *   PATCH /api/projects/:projectId/tasks/:taskId   { done }
- * 预览和测试都用它；p3 会换成真正的服务器。
+ * 预览和测试都用它；项目 3 会换成真正的服务器。
  */
 export type FakeServer = {
   fetch: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
@@ -1923,9 +1923,7 @@ export const routes: RouteObject[] = [
 - `no-optimistic`：最终的结果完全正确，差别只在“服务器回应之前”的那 200 毫秒。测试要在那段时间里检查，所以要同时断言一个“服务器还没回应”的标志；
 - `not-disabled`：按钮在提交期间可以点，但如果测试只点一次，一切正常。
 
-另外三个是失败和成功之后的状态：`no-revert` 在服务器拒绝之后停在了错误的状态，`error-as-field` 把错误显示在了错误的位置，`no-revalidate` 在成功之后没有显示新的数据。只测“点一下，结果对了”的测试会漏掉它们，见错误解 `success-only`。
-
-替代解用键盘操作（空格勾选、回车提交），用 `within(li)` 在一个任务的范围内查找，三个测试各覆盖一条完整的路径。
+另外三个是失败和成功之后的状态：`no-revert` 在服务器拒绝之后停在了错误的状态，`error-as-field` 把错误显示在了错误的位置，`no-revalidate` 在成功之后没有显示新的数据。只测“点一下，结果对了”的测试会漏掉它们。
 
 这些测试不依赖固定的等待时间：`findBy`、`waitFor` 在条件成立时立刻继续，最多等 1 秒。模拟服务器的 200 毫秒延迟是为了让“提交期间”的状态持续一段时间，测试可以观察到它。
 :::

@@ -3,7 +3,7 @@ version: 1
 mode: ts
 estimatedMinutes: 35
 review: self-reviewed
-problem: JavaScript 有三种写函数的方式，现代代码里箭头函数最常见。函数还是“值”，可以赋给变量、作为参数传递——后面的数组方法、事件处理、React 组件都建立在这一点上。另外，JavaScript 本身不检查参数个数，这件事完全交给了 TypeScript。
+problem: JavaScript 有三种写函数的方式，现代代码里箭头函数最常见。函数也是“值”，可以赋给变量、作为参数传递——后面的数组方法、事件处理、React 组件都建立在这一点上。另外，JavaScript 本身不检查参数个数，这件事完全交给了 TypeScript。
 objectives:
   - 写出函数声明、函数表达式和箭头函数，知道箭头函数返回对象字面量要加括号
   - 使用可选参数、默认参数和剩余参数，知道 TypeScript 会检查参数个数和类型
@@ -52,11 +52,11 @@ console.log(add(1, 2), subtract(5, 3), multiply(4, 5), square(6));
 - 返回类型可以省略，由 TypeScript 推断（`square` 推断为返回 `number`）。独立声明的函数，参数通常要写类型：既没有默认值、也无法从上下文推断时，省略会报 TS7006（隐式 any）。下面会看到这两种例外。
 :::
 
-现代代码中，短小的函数、回调通常写成箭头函数；模块里导出的具名函数两种写法都很常见。箭头函数和普通函数在 `this` 上有重要区别，a15 再讲。
+现代代码中，短小的函数、回调通常写成箭头函数；模块里导出的具名函数，写成函数声明或箭头函数都很常见。箭头函数和普通函数在 `this` 上有重要区别，a15 再讲。
 
 ## 箭头函数返回对象：加括号
 
-简洁写法里，`=>` 后面的 `{` 会被当成**函数体**的开始，而不是对象字面量。要返回对象，用圆括号包起来：
+`=>` 后面紧跟的 `{` 总是被当成**函数体**的开始，而不是对象字面量。想用简洁写法直接返回对象，要用圆括号把对象包起来：
 
 :::playground{#arrow-object expect="2695@main.ts:1"}
 ```ts file=main.ts
@@ -65,7 +65,7 @@ const makePointFixed = (x: number, y: number) => ({ x, y });
 
 console.log(makePoint(1, 2), makePointFixed(1, 2));
 ```
-- 第 1 行：`{ x, y }` 被当成了函数体，里面是一个没有意义的逗号表达式，TypeScript 报 TS2695。函数没有 `return`，返回 `undefined`。
+- 第 1 行：`{ x, y }` 被当成了函数体，里面的 `x, y` 是一个逗号表达式（依次计算 `x` 和 `y`，和 C++ 的逗号运算符一样，不是 Python 的元组），算出的值没有被用到，TypeScript 报 TS2695。函数没有 `return`，返回 `undefined`。
 - 第 2 行：加上圆括号后，返回的是对象 `{ x: 1, y: 2 }`。（`{ x, y }` 是 `{ x: x, y: y }` 的简写，属性名和变量名相同时可以这样写。）
 :::
 
@@ -73,8 +73,8 @@ console.log(makePoint(1, 2), makePointFixed(1, 2));
 
 JavaScript 本身不检查调用时传了几个参数：少传的是 `undefined`，多传的被忽略。TypeScript 会严格检查个数和类型。需要灵活的参数时，明确地声明出来：
 
-- **可选参数** `greeting?: string`：可以不传，类型包含 `undefined`。
-- **默认参数** `times = 2`：不传（或传 `undefined`）时使用默认值；TypeScript 根据默认值推断类型。
+- **可选参数** `greeting?: string`：可以不传，类型包含 `undefined`（即 `string | undefined`）。
+- **默认参数** `times = 2`：不传（或传 `undefined`）时使用默认值；TypeScript 根据默认值推断类型。默认值在每次调用时重新计算，所以 `= []`、`= {}` 这样的默认值是安全的，不会像 Python 的可变默认参数那样被各次调用共用。
 - **剩余参数** `...numbers: number[]`：把剩下的所有参数收集成一个数组，类似 Python 的 `*args`、Java 的 `int... numbers`。
 
 :::playground{#parameters expect="2554@main.ts:17, 2554@main.ts:18, 2345@main.ts:19"}
@@ -100,15 +100,15 @@ console.log(repeat('ha', 3, 4));
 console.log(repeat('ha', '3'));
 console.log(greet('Ada'), greet('Ada', '早上好'), repeat('ha'), sum(), sum(1, 2, 3));
 ```
-- 第 17–18 行：参数个数不对，报 TS2554。
-- 第 19 行：`times` 根据默认值推断为 `number`，传字符串报 TS2345。
-- 可选参数（`?`）必须放在必需参数后面。默认参数虽然可以放在前面，但调用者必须显式传 `undefined` 才能用到默认值，所以通常也放在后面。剩余参数必须是最后一个。
+- 第 17–18 行：参数个数不对，报 TS2554。运行一下，可以看到 JavaScript 自己并不检查：`greet()` 少传的 `name` 是 `undefined`，输出 `你好，undefined`；`repeat('ha', 3, 4)` 多传的 `4` 被忽略，输出 `hahaha`。
+- 第 19 行：`times` 根据默认值推断为 `number`，传字符串报 TS2345。（运行时 JavaScript 把 `'3'` 转换成了数字，所以也输出 `hahaha`。）
+- 可选参数（`?`）必须放在必需参数后面。默认参数虽然可以放在前面，但 JavaScript 只按位置传参（没有 Python 那样的关键字参数），调用者必须显式传 `undefined` 才能用到默认值，所以通常也放在后面。剩余参数必须是最后一个。
 - JavaScript 没有 Java 那样按参数类型区分的“重载”：同一作用域里只能有一个同名函数的实现。需要多种调用方式时，用可选参数、默认参数或联合类型。（TypeScript 另有只存在于类型层面的“重载签名”，b11 会讲，但实现仍然只有一个。）
 :::
 
 ## 提升：函数声明可以先调用后定义
 
-**函数声明**会被提升（hoisting）：在同一作用域里，可以在定义之前调用。用 `const` 保存的函数表达式和箭头函数则不行：a03 提到 `var` 在声明之前就能访问，而 `let`/`const` 声明的变量在声明之前不能使用：
+**函数声明**会被提升（hoisting）：在同一作用域里，可以在定义之前调用。用 `const` 保存的函数表达式和箭头函数则不行：和 a03 提到的 `var` 不同（它在声明之前就能访问），`let`/`const` 声明的变量在声明之前不能使用。
 
 :::playground{#hoisting expect="2448@main.ts:2, 2454@main.ts:2" run=error}
 ```ts file=main.ts
@@ -125,9 +125,11 @@ const triple = (n: number): number => n * 3;
 - 第 2 行：TypeScript 报 TS2448 和 TS2454（在声明之前使用）。运行时抛出 `ReferenceError`。
 :::
 
+这里的“之前”指执行的先后，不是代码的上下位置：在另一个函数的函数体里调用写在后面的 `triple` 没有问题，只要那个函数被调用时，`triple` 这一行已经执行过了（Python 也是这样）。
+
 ## 函数也是值
 
-函数可以作为参数传给另一个函数。参数的**函数类型**写作 `(参数: 类型) => 返回类型`：
+函数和数字、字符串一样是值：可以赋给变量，可以作为参数传给另一个函数（这样传进去的函数常叫**回调**），也可以作为返回值（编程挑战会用到）。参数或返回值是函数时，它的**函数类型**写作 `(参数: 类型) => 返回类型`：
 
 :::playground{#functions-as-values}
 ```ts file=main.ts
@@ -156,7 +158,7 @@ console.log(names.map((name) => name.toUpperCase()));
 
 ## 常见错误
 
-- **箭头函数返回对象时忘了括号**：`() => { ok: true }` 返回的是 `undefined`。
+- **箭头函数返回对象时忘了括号**：`() => { ok: true }` 返回的是 `undefined`。这种错误 TypeScript 不一定在这一行报：`{ x, y }` 会报 TS2695，`{ ok: true }` 这一行却没有任何错误，要到使用返回值的地方才会发现类型不对。
 - **在 `const` 箭头函数定义之前调用它**：会抛出 `ReferenceError`。
 - **把可选参数放在必需参数前面**：TypeScript 会报错，调整顺序或改用选项对象。
 - **想写 Java 式的重载**：在模块里重复声明同名函数，TypeScript 报 TS2393，运行时也是语法错误。

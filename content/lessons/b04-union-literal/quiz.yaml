@@ -11,7 +11,7 @@
     - text: "`value.toFixed(2)`"
       explain: 只有数字有 `toFixed`，需要先用 `typeof value === 'number'` 收窄。
     - text: "`value.length`"
-      explain: 只有字符串有 `length`。
+      explain: 只有字符串有 `length`，数字没有，需要先用 `typeof value === 'string'` 收窄。
 - id: widening
   type: single
   prompt: |
@@ -30,7 +30,7 @@
     - text: 只有 `setMode(b)`
       explain: "对象属性也会被拓宽：`c` 的类型是 `{ mode: string }`。"
     - text: 四个都不会报错
-      explain: "`string` 不能赋给 `'light' | 'dark'`。"
+      explain: "`b` 和 `c.mode` 的类型已经被拓宽成 `string`，而 `string` 不能赋给 `'light' | 'dark'`。"
     - text: 四个都会报错
       explain: "`a` 推断为 `'dark'`，`d.mode` 的类型是 `Mode`，它们都可以传入。"
 - id: array-union
@@ -43,7 +43,7 @@
     - text: "`['a', 1]`"
       explain: 混合了字符串和数字，既不是 `string[]` 也不是 `number[]`。它可以赋给 `(string | number)[]`。
     - text: "`'abc'`"
-      explain: 这是 `string | number[]` 才接受的值，注意括号的位置。
+      explain: "`'abc'` 是字符串，不是数组。接受它的是 `string | number[]`（字符串，或者数字数组），和题目里的 `string[] | number[]` 只差一个 `[]`。"
 - id: boolean-literal
   type: single
   prompt: "`boolean` 类型等价于下面哪个类型？"

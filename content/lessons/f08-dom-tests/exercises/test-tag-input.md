@@ -12,7 +12,7 @@ grading: tests
 5. 标签数达到 `max`（默认 5）时禁用输入框，状态区域显示 `最多 N 个标签`；
 6. 每次标签变化，调用 `onChange(新的标签数组)`。
 
-在 `tag-input.test.ts` 中写测试。`test-utils.ts`（只读）中的 `render(options)` 清空页面上的 `#app`，在其中挂载一个新的标签输入框（每个测试开始前，页面会恢复成 `index.html` 的初始状态，`main.ts` 也会重新运行，`render` 把它挂载的那个清除掉），作用相当于 React 测试中的 `render(<组件 />)`（g15）。平台准备了十一个错误的版本，你的测试要发现每一个。
+在 `tag-input.test.ts` 中写测试。`test-utils.ts`（只读）中的 `render(options)` 先清空页面上的 `#app`（`main.ts` 挂载的那个标签输入框也一起清除），再用你传入的 `options` 在其中挂载一个新的标签输入框，作用相当于 React 测试中的 `render(<组件 />)`（g15 会讲）。每个测试开始前，页面会恢复成初始状态，所以每个测试都先调用 `render`。平台准备了十一个错误的版本，你的测试要发现每一个。
 :::files{role=support}
 ```html file=index.html readonly
 <!doctype html>

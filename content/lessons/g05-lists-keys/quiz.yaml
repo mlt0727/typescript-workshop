@@ -37,7 +37,7 @@
   options:
     - text: "`<Fragment key={term.id}>…</Fragment>` 上"
       correct: true
-      explain: 带 key 的 Fragment 要写成 Fragment 的完整形式，简写的 <>…</> 不能写 key。
+      explain: 带 key 的 Fragment 要写成 Fragment 的完整形式，简写的 `<>…</>` 不能写 key。
     - text: "`<dt>` 和 `<dd>` 上各写一个相同的 key"
       explain: key 要写在 map 直接返回的那个元素上，并且兄弟之间不能重复。
     - text: "`<>` 上：`<key={term.id}>`"

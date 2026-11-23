@@ -4,7 +4,7 @@ title: 修好只导入类型的 import
 ---
 `registry.ts` 维护一张“格式化函数”的表；`plugins.ts` 在**被加载时**向表中注册三个函数（`upper`、`reverse`、`trim`），并导出它们的名字组成的类型 `PluginName`。这两个文件是只读的。
 
-`app.ts` 在开启了 `verbatimModuleSyntax` 的配置下有两个 TS1484 错误。只修改 `app.ts` 开头的 `import`，让它通过类型检查，并且 `pipeline` 能正常工作（不要修改 `pipeline` 的签名和实现，也不要在 `app.ts` 中自己注册格式化函数）。
+`app.ts` 在开启了 `verbatimModuleSyntax` 的配置下有两个 TS1484 错误。只修改 `app.ts` 开头的 `import`，让它通过类型检查，并且 `pipeline` 能正常工作：点“运行”时 `main.ts` 应该输出 `DESSERTS`（不要修改 `pipeline` 的签名和实现，也不要在 `app.ts` 中自己注册格式化函数）。
 
 :::files{role=support}
 ```ts file=registry.ts readonly
@@ -111,7 +111,7 @@ pipeline(['shout']);
 
 依赖副作用时，更清楚的写法是把它单独写出来：`import './plugins';`，再用 `import type` 导入类型。读代码的人一眼就能看出“这里需要加载这个模块”。
 
-更好的设计是让依赖显式化（例如导出一个 `registerDefaultPlugins()` 函数，由入口调用），而不是依靠导入的副作用。但很多库（样式、polyfill、插件）就是靠导入的副作用工作的，所以要知道这两种 `type` 写法的区别。
+更好的设计是让依赖显式化（例如导出一个 `registerDefaultPlugins()` 函数，由入口调用），而不是依靠导入的副作用。但很多库就是靠导入的副作用工作的（样式、插件，以及为旧环境补上缺少的 API 的 polyfill），所以要知道这两种 `type` 写法的区别。
 :::
 
 :::variant{kind=alt name=explicit-side-effect}

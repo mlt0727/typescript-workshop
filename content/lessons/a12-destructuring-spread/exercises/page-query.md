@@ -10,7 +10,7 @@ title: 分页查询的默认值
 
 例如 `pageQuery({ keyword: 'ts' })` 返回 `'q=ts&page=1&size=20'`，`pageQuery({ keyword: 'ts', size: 0 })` 返回 `'q=ts&page=1&size=0'`。
 
-起始代码在没有提供 `page` 时生成了 `page=undefined`。用解构默认值修好它。
+起始代码在没有提供 `page`、`size` 时生成了 `page=undefined&size=undefined`。用解构默认值修好它。
 
 :::files{role=starter}
 ```ts file=query.ts

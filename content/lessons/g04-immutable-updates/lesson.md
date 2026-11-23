@@ -26,7 +26,7 @@ references:
 
 ## 修改原对象，React 看不到
 
-调用 `setX(新值)` 时，React 用 `Object.is(旧值, 新值)` 比较两者。对象和数组比较的是**引用**（a11）：如果你修改了原来的数组，再把**同一个数组**交给 `setX`，在 React 看来什么都没有变，它会跳过这次更新（有时 React 仍会先调用一次组件函数，但不会更新界面）。
+调用 `setX(新值)` 时，React 用 `Object.is(旧值, 新值)` 比较两者（`Object.is` 和 `===` 几乎一样，只在 `NaN`、`+0` 与 `-0` 上有区别）。对象和数组比较的是**引用**（a11）：如果你修改了原来的数组，再把**同一个数组**交给 `setX`，在 React 看来什么都没有变，它会跳过这次更新（有时 React 仍会先调用一次组件函数，但不会更新界面）。
 
 :::playground{#mutation-bug}
 ```tsx file=App.tsx
@@ -87,7 +87,7 @@ setProfile({ ...profile, name: '韩梅梅' });
 setProfile({ ...profile, address: { ...profile.address, city: '上海' } });
 ```
 
-这样得到的新对象中，**没有改变的部分仍然是原来的对象**（改名字的那一行中，`address` 还是同一个）。这不是缺点，而是优点：复制的东西少，而且之后可以用引用是否相同，快速判断某一部分有没有变化（g12）。
+这样得到的新对象中，**没有改变的部分仍然是原来的对象**（改名字的那一行中，`address` 还是同一个）。这不是缺点，而是优点：复制的东西少，而且之后可以用引用是否相同，快速判断某一部分有没有变化（g12 会讲）。
 
 要改的属性名放在变量里时，可以用**计算属性名**：`{ ...profile, [key]: value }`，方括号中的表达式的值就是属性名（g06、g07 会用到）。
 
@@ -105,7 +105,7 @@ setProfile({ ...profile, address: { ...profile.address, city: '上海' } });
 | 在中间插入 | `splice(i, 0, x)` | `toSpliced(i, 0, x)` |
 | 排序 / 反转 | `sort`、`reverse` | `toSorted`、`toReversed` |
 
-`toSorted`、`toReversed`、`toSpliced`、`with` 是 ES2023 加入的方法，现代浏览器都已支持。在它们出现之前，常见的写法是先复制再排序：`[...arr].sort(…)`。
+`toSorted`、`toReversed`、`toSpliced`、`with` 是 a17 讲过的 ES2023 方法，现代浏览器都已支持。在它们出现之前，常见的写法是先复制再排序：`[...arr].sort(…)`。
 
 修改数组中的某个**对象**时，要同时创建新数组和新对象：
 
@@ -117,7 +117,7 @@ setTodos(todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
 
 ## 让 TypeScript 阻止修改
 
-规则靠记忆很容易忘，交给类型检查更可靠。把 state 的类型写成**只读**的：
+规则靠记忆很容易忘，交给类型检查更可靠。把 state 的类型写成**只读**的（a17、b03 讲过）：
 
 - `readonly Todo[]`（或 `ReadonlyArray<Todo>`）：没有 `push`、`splice`、`sort` 这些方法，也不能 `arr[i] = x`；
 - `Readonly<Todo>`：对象的属性都变成只读的，`todo.done = true` 会报错（只作用于一层，嵌套的对象需要分别处理）。

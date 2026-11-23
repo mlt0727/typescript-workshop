@@ -343,7 +343,7 @@ describe('截止日期', () => {
 
 `errors` 的类型 `Partial<Record<keyof ProjectDraft, string>>` 让 `errors.name = …` 这样的写入受到检查：字段名写错就是类型错误。
 
-替代解把每个字段的检查写成一个返回 `string | undefined` 的函数，最后用 `Object.entries` 和 `filter` 去掉没有错误的字段；日期用 `setUTCFullYear` 设置年、月、日，再比较它们（`Date.UTC` 会把 0–99 年当作 1900 年以后）。
+也可以把每个字段的检查写成一个返回 `string | undefined` 的函数，最后用 `Object.entries` 和 `filter` 去掉没有错误的字段；日期用 `setUTCFullYear` 设置年、月、日，再比较它们（`Date.UTC` 会把 0–99 年当作 1900 年以后）。
 :::
 
 :::variant{kind=alt name=per-field-functions}

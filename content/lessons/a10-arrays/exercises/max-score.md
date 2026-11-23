@@ -4,7 +4,9 @@ title: 找出最高分
 ---
 实现 `maxScore(scores)`：返回数组中的最大值；数组为空时返回 `null`。
 
-分数可能是负数（例如扣分制），所以不能假设最大值至少是 0。本题请用循环实现。
+分数可能是负数（例如扣分制），所以不能假设最大值至少是 0。
+
+起始代码已经写好了循环，但有类型错误，空数组时也没有返回 `null`。在它的基础上修改，保留循环；不要用非空断言 `!` 让报错消失。
 
 :::files{role=starter}
 ```ts file=max.ts
@@ -71,15 +73,15 @@ test('空数组返回 null', () => {
 :::
 
 :::hint{level=2}
-在循环之前加上 `if (max === undefined) { return null; }`。检查之后，TypeScript 知道 `max` 是 `number`，后面的比较和赋值就都没有问题了。也可以先检查 `scores.length === 0`，不过那样 TypeScript 不会因此收窄 `scores[0]` 的类型。
+在循环之前加上 `if (max === undefined) { return null; }`。检查之后，TypeScript 知道 `max` 是 `number`，后面的比较和 `return max` 就都没有问题了。注意：只检查 `scores.length === 0` 消除不了报错，TypeScript 不会因为长度检查而收窄 `scores[0]` 的类型。
 :::
 
 :::explanation
-`scores[0]` 在空数组上是 `undefined`。开启 `noUncheckedIndexedAccess` 后，TypeScript 把这个可能性写进了类型（`number | undefined`），所以起始代码里 `score > max` 报错。
+`scores[0]` 在空数组上是 `undefined`。开启 `noUncheckedIndexedAccess` 后，TypeScript 把这个可能性写进了类型（`number | undefined`），所以起始代码里 `score > max` 和 `return max` 都报错。
 
 参考答案先检查 `max === undefined`：空数组直接返回 `null`；否则 `max` 被收窄为 `number`，循环里的比较是安全的。用第一个元素作为初始值，也避免了“初始值设为 0”在全是负数时出错的问题。
 
-注意：只检查 `scores.length === 0` 并不能让 TypeScript 收窄 `scores[0]` 的类型——它不会把长度和下标访问联系起来。这时要么像参考答案那样，在取出 `scores[0]` 之后检查它是不是 `undefined`；要么像另一种写法那样完全不用下标，以 `-Infinity` 作为初始值。
+注意：只检查 `scores.length === 0` 并不能让 TypeScript 收窄 `scores[0]` 的类型——它不会把长度和下标访问联系起来。这时要么像参考答案那样，在取出 `scores[0]` 之后检查它是不是 `undefined`；要么完全不用下标：检查长度之后，以 `-Infinity`（负无穷，比任何数都小）作为 `max` 的初始值。
 :::
 
 :::variant{kind=alt name=length-check}

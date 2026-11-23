@@ -107,8 +107,8 @@ export default function ProjectsLayout({ children }: LayoutProps<'/projects'>) {
 
 `Counter` 是一个客户端组件（文件开头是 `'use client'`，h03 详细讲），里面用 `useState` 记录按钮被点了几次。在浏览器中实测：
 
-1. 打开 `/projects`，点两次按钮，按钮上显示“布局中的计数：2”；
-2. 点布局中的链接 `p1`：地址变成 `/projects/p1`，标题变成了这个项目的名字，**按钮上仍然是 2**，之前在 `window` 上设置的一个标记也还在：浏览器没有加载新的页面，只有 `children` 换了；
+1. 打开 `/projects`，点两次按钮，按钮上显示“布局中的计数：2”；再给 `window` 设置一个标记（例如在 DevTools 的控制台中执行 `window.mark = 1`），用来判断浏览器有没有加载新的页面；
+2. 点布局中的链接 `p1`：地址变成 `/projects/p1`，标题变成了这个项目的名字，**按钮上仍然是 2**，`window` 上的标记也还在：浏览器没有加载新的页面，只有 `children` 换了；
 3. 用 `location.assign('/projects/p2')` 跳转：浏览器加载了新的页面，按钮回到 0，标记也没有了。
 
 这就是官方文档说的：导航时布局保留状态、保持可交互、不重新渲染。导航栏、侧栏、播放器这类要在页面之间保持的东西，适合放在布局中。反过来，需要每个页面都重新开始的状态不要放在布局中。
@@ -126,7 +126,7 @@ export default function ProjectsLayout({ children }: LayoutProps<'/projects'>) {
 | 文件夹 | 地址 | `params` |
 | --- | --- | --- |
 | `[id]` | `/api/one/p1` | `{ id: 'p1' }` |
-| `[...slug]`（捕获段） | `/api/params/a/b` | `{ slug: ['a', 'b'] }`；没有段时 404（实测 `/shop`） |
+| `[...slug]`（捕获段） | `/api/params/a/b` | `{ slug: ['a', 'b'] }`；没有段时 404（实测 `app/shop/[...slug]` 下的 `/shop`） |
 | `[[...slug]]`（可选的捕获段） | `/api/r/a` | `{ slug: ['a'] }` |
 | `[[...slug]]` | `/api/r` | `{}`：`'slug' in params` 是 `false` |
 

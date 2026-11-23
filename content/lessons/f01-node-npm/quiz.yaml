@@ -35,7 +35,7 @@
     - text: "`\"typescript\": \"6.0.3\"`"
       explain: 只有加了 --save-exact 才会写入不带 ^ 的精确版本。
     - text: "`\"typescript\": \"~6.0.3\"`"
-      explain: npm 默认的前缀是 ^。create-vite 模板中的 ~6.0.3 是模板作者手动写的。
+      explain: npm 默认的前缀是 ^。本课开头那个 Vite 项目的 package.json 中的 ~6.0.3 是模板作者手动写的。
 - id: npm-ci
   type: single
   prompt: 持续集成和部署时为什么用 `npm ci` 而不是 `npm install`？

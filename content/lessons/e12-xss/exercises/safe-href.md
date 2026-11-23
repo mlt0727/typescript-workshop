@@ -3,7 +3,7 @@ kind: task
 title: 只放行安全的链接
 mode: ts
 ---
-用户可以在个人资料中填写“个人主页”。实现 `safeHref(input, base)`，决定这个地址能不能放进 `<a href>`：
+用户可以在个人资料中填写“个人主页”。改写 `safeHref(input, base)`，决定这个地址能不能放进 `<a href>`：
 
 1. 去掉首尾空白之后是空字符串，返回 `null`；
 2. 以 `base`（当前页面的地址）为基准解析 `input`，相对地址也可以；解析失败返回 `null`；

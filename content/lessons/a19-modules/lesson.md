@@ -28,7 +28,7 @@ references:
 
 在声明前加上 `export`，它就成为模块对外公开的一部分；没有 `export` 的内容只在本文件内可见。导入时用花括号列出名字，可以用 `as` 改名。
 
-导入路径以 `./` 或 `../` 开头表示项目里的其他文件；`'react'` 这样不带路径的名字表示安装的包。本平台和 Vite 等构建工具允许省略 `.ts` 扩展名。
+导入路径以 `./`（当前文件所在的文件夹）或 `../`（上一级文件夹）开头，表示项目里的其他文件；`'react'` 这样不带路径的名字表示安装的包。本平台和 Vite 等构建工具允许省略 `.ts` 扩展名。
 
 下面的示例有两个文件，点击编辑器上方的文件名切换：
 
@@ -51,12 +51,12 @@ function secret(): number {
 ```
 - `geometry.ts` 里的 `secret` 没有导出，`main.ts` 导入它时报 TS2459。运行一下：浏览器在加载模块时就报错 `SyntaxError`（模块没有提供名为 `secret` 的导出），一行代码都不会执行。删掉 `, secret` 再运行。
 - `PI as pi` 把导入的名字改成了 `pi`。
-- 和 Java 的 `public` 类似，但单位是文件：一个文件就是一个模块，模块顶层的变量不会泄漏到全局。
+- `export` 和 Java 的 `public` 类似，但单位是文件：一个文件就是一个模块，模块顶层的变量不会泄漏到全局。
 :::
 
 ## 默认导出与命名空间导入
 
-一个模块可以有**一个**默认导出 `export default`。导入默认导出时不写花括号，名字由导入方自己决定。`import * as 名字` 把模块的所有具名导出收集到一个对象里。
+一个模块可以有**一个**默认导出 `export default`。导入默认导出时不写花括号，名字由导入方自己决定。`import * as 名字` 叫命名空间导入，它把模块的所有具名导出收集到一个对象里。
 
 很多团队更推荐具名导出：名字在导出处就确定了，改名和自动补全都更可靠。React 组件和框架约定的文件（例如 Next.js 的页面）常用默认导出。
 
@@ -83,11 +83,14 @@ export function whisper(s: string): string {
 }
 ```
 - 第 1 行：默认导出的名字叫 `greet`，导入时起名为 `sayHello` 也可以。
+- 第 2 行：`text` 是一个对象，`text.ts` 的导出是它的属性，用 `text.shout` 访问。它相当于 Python 的 `import text`，不是 `from text import *`：`shout`、`whisper` 这些名字不会直接进入当前文件。
 :::
 
 ## 导入类型：import type
 
-TypeScript 的类型也可以导出和导入。本平台开启了 `verbatimModuleSyntax`（新项目推荐的设置）：**只用作类型的导入必须写成 `import type`**，或者在名字前加 `type`。原因是编译时 TypeScript 只删除标明了 `type` 的导入，其余导入原样保留；如果一个类型被当作普通导入保留下来，运行时就会去找一个并不存在的值。为什么要这样设计？Vite、esbuild 这类工具逐个文件转换代码，看不到其他文件，无法判断一个导入的名字是不是类型，所以要求源码自己标明。（不开启这个选项时，`tsc` 会自动删除只作类型用的导入。）
+TypeScript 的类型也可以导出和导入。本平台开启了 `verbatimModuleSyntax`（新项目推荐的设置）：**只用作类型的导入必须写成 `import type`**，或者在名字前加 `type`。原因是编译时 TypeScript 只删除标明了 `type` 的导入，其余导入原样保留；如果一个类型被当作普通导入保留下来，运行时就会去找一个并不存在的值。
+
+为什么要这样设计？Vite、esbuild 这类构建工具逐个文件转换代码，看不到其他文件，无法判断一个导入的名字是不是类型，所以要求源码自己标明。（不开启这个选项时，`tsc` 会自动删除只作类型用的导入。）
 
 :::playground{#import-type expect="1484@main.ts:1" run=error}
 ```ts file=main.ts
@@ -112,7 +115,7 @@ export function describeUser(user: User): string {
 
 一个模块无论被导入多少次，它的顶层代码**只执行一次**，所有导入方拿到的是同一份导出。所以模块顶层的变量就是被所有导入方共享的状态。
 
-导入得到的绑定是**只读**的：导入方不能给它重新赋值（TS2632），只能调用模块提供的函数去修改。不过它是“活的”：模块内部修改后，导入方读到的是新值。
+导入得到的名字叫作绑定（binding），它是**只读**的：导入方不能给它重新赋值（TS2632），只能调用模块提供的函数去修改。不过它是“活的”：模块内部修改后，导入方读到的是新值。
 
 :::playground{#runs-once expect="2632@main.ts:8" run=error}
 ```ts file=main.ts
@@ -143,7 +146,7 @@ export function useCounterTwice(): void {
 }
 ```
 - 运行时“counter 模块执行了”只输出一次，尽管 `main.ts` 和 `other.ts` 都导入了它。
-- `main.ts` 读到的 `count` 是 `3`：三次 `increment` 修改的是同一个变量。
+- `main.ts` 读到的 `count` 是 `3`：三次 `increment` 修改的是同一个变量，导入方读到的是它现在的值。这和 Python 不同：Python 的 `from counter import count` 拿到的是导入那一刻的值，同样的程序会读到 `0`。
 - 第 8 行：导入的绑定不能重新赋值，TypeScript 报 TS2632，运行时也会抛出 `TypeError`。
 :::
 
@@ -159,7 +162,7 @@ export function useCounterTwice(): void {
 
 ## 常见错误
 
-- **忘了 `export`**：其他文件导入时报 TS2459（或 TS2305）。
+- **忘了 `export`**：其他文件导入时报 TS2459（名字在模块里，但没有导出）。如果报的是 TS2305，说明模块里根本没有这个名字。
 - **导入类型时不写 `type`**：开启 `verbatimModuleSyntax` 时报 TS1484。
 - **给导入的变量赋值**：导入的绑定是只读的，通过模块导出的函数修改。
 - **以为每次导入都会重新执行模块**：模块只执行一次，顶层状态是共享的。

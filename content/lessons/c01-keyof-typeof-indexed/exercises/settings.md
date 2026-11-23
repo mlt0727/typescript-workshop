@@ -6,7 +6,7 @@ title: 从默认值推导设置的类型
 
 1. 导出 `type Settings`（`DEFAULTS` 的类型）、`type SettingKey`（所有设置项的名字组成的联合类型）；
 2. 导出 `LABELS`：每个设置项的中文名称（`theme` 是“主题”，`fontSize` 是“字号”，`showHints` 是“显示提示”，`language` 是“语言”）。给它加上类型注解 `Record<SettingKey, string>`，这样少写一项或者写错名字都会报错；
-3. **`setSetting(settings, key, value)`**：返回一个新的设置对象，`key` 改成 `value`，不修改传入的对象。`value` 的类型必须和这一项的类型一致：`setSetting(s, 'fontSize', '18')` 要在编译期报错；
+3. **`setSetting(settings, key, value)`**：返回一个新的设置对象，`key` 改成 `value`，不修改传入的对象。`value` 的类型必须和这一项的类型一致：`setSetting(s, 'fontSize', '18')` 要在编译期报错，传入不存在的设置项名也要报错；
 4. **`isSettingKey(key)`**：类型守卫，判断一个字符串是不是设置项的名字。只认 `DEFAULTS` **自己的**属性：`'toString'` 不是设置项；
 5. **`changedKeys(settings)`**：和默认值不同的设置项，按 `DEFAULTS` 中的顺序返回，类型是 `SettingKey[]`。
 
@@ -165,7 +165,7 @@ if (isSettingKey(raw)) {
 :::
 
 :::hint{level=1}
-`type Settings = typeof DEFAULTS`，`type SettingKey = keyof Settings`。`setSetting` 需要一个类型参数 `K extends SettingKey`，值的类型写成 `Settings[K]`；返回 `{ ...settings, [key]: value }`。
+`type Settings = typeof DEFAULTS`，`type SettingKey = keyof Settings`。`setSetting` 需要一个类型参数 `K extends SettingKey`，值的类型写成 `Settings[K]`；返回 `{ ...settings, [key]: value }`（属性名写在方括号里时，用的是变量 `key` 的值，而不是字面上的 `key`）。
 :::
 
 :::hint{level=2}

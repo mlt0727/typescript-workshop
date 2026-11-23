@@ -6,7 +6,7 @@ title: 泛型的分段选择器
 
 **`SegmentedControl.tsx`**：保留这个结构，改成**泛型的受控组件**。
 
-- 类型：`Option<T extends string> = { value: T; label: string }`；props 是 `label`、`options: readonly Option<T>[]`、`value` 和 `onChange`。`T` 只从 `options` 推断：`value` 必须是选项的值之一，`onChange` 收到的参数类型恰好是选项值的联合类型（用 `NoInfer`）；
+- 类型：`Option<T extends string> = { value: T; label: string }`；props 是 `label`、`options: readonly Option<T>[]`、`value` 和 `onChange`。`T` 只从 `options` 推断：`value` 必须是选项的值之一，`onChange` 收到的参数类型恰好是选项值的联合类型（用 `NoInfer`）。`onChange` 用属性写法声明（`onChange: (value: …) => void`）：b10 讲过，方法写法只做双向检查，参数类型更窄的处理函数也会被接受；
 - `value` 对应的单选框选中（`checked`）；
 - 用户选中另一个选项时（点击或者方向键）调用 `onChange(选项的值)`；点击已经选中的选项什么都不做。组件自己不保存 state。
 
@@ -314,7 +314,7 @@ console.log(wrongValue, ok, narrowHandler);
 
 **泛型**：`SegmentedControl` 不知道选项具体是什么，但它保证 `value` 和 `onChange` 的类型与 `options` 一致。`ReportPanel` 中可以直接写 `onChange={setPeriod}`：`setPeriod` 接收 `Period`，`onChange` 传出的也正是 `Period`。
 
-**`NoInfer`**：如果 props 写成 `value: T`，TypeScript 会同时根据 `options` 和 `value` 推断 `T`。把 `value` 写错成 `"year"`，`T` 就被推断成 `'day' | 'week' | 'year'`，错误被悄悄地接受了。`NoInfer<T>` 让 `T` 只从 `options` 推断，`value` 和 `onChange` 只是“使用” `T`，写错的值就会报错。类型测试中的第一个检查就是这个。
+**`NoInfer`**：如果 props 写成 `value: T`，TypeScript 会同时根据 `options` 和 `value` 推断 `T`。把 `value` 写错成 `"year"`，`T` 就被推断成 `'day' | 'week' | 'year'`，错误被悄悄地接受了。`NoInfer<T>` 让 `T` 只从 `options` 推断，`value` 和 `onChange` 只是“使用” `T`，写错的值就会报错。类型测试中的第一个检查就是这个。类型测试的最后一个检查传入只接收 `'day'` 的处理函数：`onChange` 用属性写法声明时，参数按严格规则检查，这样的函数会被拒绝；写成方法写法 `onChange(value: NoInfer<T>): void` 就会被放过（b10）。
 
 **为什么用单选框，而不是一排按钮？** “几个选项中选一个”正是单选框的含义，原生的单选框自带很多行为：`<fieldset>` 和 `<legend>` 给这一组起了名字，读屏软件会告诉用户这是一组互斥的选项、当前选中的是哪一个；Tab 键在这一组上只停一次，用方向键在选项之间移动并选中；点击已经选中的单选框不会触发 `change`，所以 `onChange` 只在值真的变化时才被调用。外观可以完全用 CSS 改成分段按钮的样子。用 `<button aria-pressed>` 也能做出来，但 `aria-pressed` 表示每个按钮各自“按下 / 弹起”，读屏软件不会说明它们是互斥的，方向键的行为也要自己实现。
 

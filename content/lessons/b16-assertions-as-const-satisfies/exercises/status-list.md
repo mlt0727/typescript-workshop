@@ -2,13 +2,13 @@
 kind: task
 title: 从常量数组推导状态类型
 ---
-文章的状态只有三种。为了让“状态列表”和“状态类型”永远一致，类型要从数组推导出来，而不是再手写一遍：
+文章的状态只有三种。为了让“状态列表”和“状态类型”永远一致，类型要从数组推导出来，而不是再手写一遍。起始代码里 `Status` 只是 `string`，按下面三步改写：
 
 1. 把 `STATUSES` 改成只读元组（`as const`）；
-2. 定义并导出 `type Status`：由 `STATUSES` 的元素推导出来（结果应为 `'draft' | 'published' | 'archived'`）；
-3. 实现类型守卫 `isStatus(value: string): value is Status`：`value` 是三种状态之一时返回 `true`。
+2. 把 `type Status` 改成由 `STATUSES` 的元素推导出来的类型（结果应为 `'draft' | 'published' | 'archived'`）；
+3. 把 `isStatus` 改成类型守卫 `isStatus(value: string): value is Status`：`value` 是三种状态之一时返回 `true`。
 
-注意：不允许使用 `as` 类型断言（`as const` 除外）。
+注意：做完第 1 步，原来的 `STATUSES.includes(value)` 会报错（TS2345）。这是预期的，需要换一种写法；不允许用 `as` 类型断言绕过去（`as const` 除外）。
 
 :::files{role=starter}
 ```ts file=status.ts

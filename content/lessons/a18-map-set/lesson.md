@@ -3,9 +3,9 @@ version: 1
 mode: ts
 estimatedMinutes: 35
 review: self-reviewed
-problem: 统计每个单词出现了几次、按城市给用户分组、给一列标签去重——这些任务需要“字典”和“集合”。a11 讲过，普通对象当字典用有不少限制。JavaScript 提供了专门的 Map 和 Set，相当于 Python 的 dict / set、Java 的 LinkedHashMap / LinkedHashSet（保持插入顺序），但有几处容易踩的不同。
+problem: 统计每个单词出现了几次、按城市给用户分组、给一列标签去重——这些任务需要“字典”和“集合”。a11 讲过，普通对象当字典用有不少限制。JavaScript 提供了专门的 Map 和 Set，相当于 Python 的 dict / set、Java 的 LinkedHashMap / LinkedHashSet（保持插入顺序），但有几处不同容易踩坑。
 objectives:
-  - 用 Map 存取键值对，知道 get 返回 V | undefined，会用 ?? 处理不存在的键
+  - 用 Map 存取键值对，知道 get 可能返回 undefined，会用 ?? 处理不存在的键
   - 用 Set 去重和判断成员，认识 union、intersection、difference 等集合方法
   - 知道对象作为键时按引用比较，以及 Map 不能直接 JSON.stringify
   - 用 Map.groupBy 分组，并能判断什么时候该用 Map、什么时候用普通对象
@@ -26,10 +26,10 @@ references:
 
 ## Map：真正的字典
 
-`new Map<键类型, 值类型>()` 创建一个空的 Map。尖括号里写键和值的类型（这种写法叫泛型，b14 详讲）；有初始数据时可以由 TypeScript 推断。
+`new Map<键类型, 值类型>()` 创建一个空的 Map。尖括号里写键和值的类型（这种写法叫泛型，b14 会详细讲）。也可以传入一组 `[键, 值]` 作为初始数据，例如 `new Map([['苹果', 3], ['香蕉', 0]])`，这时键和值的类型由 TypeScript 推断，不用写尖括号。
 
 - `set(键, 值)` 添加或覆盖，返回 Map 本身，所以可以连着写；
-- `get(键)` 读取，**不存在时返回 `undefined`**，类型是 `V | undefined`；
+- `get(键)` 读取，**不存在时返回 `undefined`**，类型是 `V | undefined`（`V` 是值的类型）；
 - `has`、`delete`、`size`（属性，不是方法）；
 - 用 `for (const [键, 值] of map)` 遍历，顺序就是**插入的顺序**。
 
@@ -72,13 +72,16 @@ console.log(countWords(['to', 'be', 'or', 'not', 'to', 'be']));
 - 第 4 行报 TS2532：`counts.get(word)` 可能是 `undefined`。运行一下：`undefined + 1` 是 `NaN`，所有计数都变成了 `NaN`。
 - 改成 `(counts.get(word) ?? 0) + 1` 再运行。
 - 不要写成 `counts.get(word)! + 1`：第一次遇到某个单词时，值确实是 `undefined`。
+- 按 Java 的 `containsKey`、Python 的 `in` 的习惯，先判断 `counts.has(word)` 再 `get` 也不行：`has` 为真并不会让 TypeScript 收窄 `get` 的类型，照样报 TS2532。
 :::
 
 ## Set：去重与集合运算
 
 `new Set(可迭代对象)` 创建集合，重复的值只保留一个，并保持第一次出现的顺序。`[...new Set(arr)]` 是数组去重的常用写法。
 
-ES2025 为 Set 增加了集合运算方法：`union`（并集）、`intersection`（交集）、`difference`（差集）、`symmetricDifference` 返回新的 Set；`isSubsetOf`、`isSupersetOf`、`isDisjointFrom` 返回布尔值。它们都不修改原集合。
+空集合写 `new Set<元素类型>()`。常用操作和 Map 相似：`add(值)` 添加（已有的值不会重复添加），`has(值)` 判断值在不在集合里，`delete(值)` 删除，`size` 是元素个数，`for (const 值 of set)` 按插入顺序遍历。
+
+ES2025 为 Set 增加了集合运算方法：`union`（并集）、`intersection`（交集）、`difference`（差集）、`symmetricDifference`（对称差集）返回新的 Set；`isSubsetOf`、`isSupersetOf`、`isDisjointFrom` 返回布尔值。它们都不修改原集合。
 
 :::playground{#set}
 ```ts file=main.ts
@@ -97,9 +100,9 @@ console.log(new Set([1, 1, '1', NaN, NaN]).size);
 
 ## 对象作为键：按引用比较
 
-Map 的键和 Set 的值可以是任何类型，包括对象。但比较用的是和 `===` 几乎相同的规则：**对象按引用比较**（a06），内容相同的两个对象字面量是不同的键。需要按 id 查找时，就用 id 作为键。
+Map 的键和 Set 的值可以是任何类型，包括对象。但比较用的是和 `===` 几乎相同的规则（唯一的区别是上面看到的 `NaN`）：**对象按引用比较**（a06），内容相同的两个对象字面量是不同的键。需要按 id 查找时，就用 id 作为键。
 
-还有一个实际的坑：`JSON.stringify` 不认识 Map，结果是 `{}`。需要发送或保存时，先转换成普通对象或数组。
+还有一个实际的坑：`JSON.stringify`（a05）不认识 Map，结果是 `{}`。需要发送或保存时先转换：`Object.fromEntries(map)` 把 Map 转成普通对象（方向和 a11 的 `Object.entries` 相反），`[...map]` 把它转成由 `[键, 值]` 组成的数组。
 
 :::playground{#pitfalls}
 ```ts file=main.ts

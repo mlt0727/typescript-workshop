@@ -115,7 +115,7 @@ console.log('安全上下文：', globalThis.isSecureContext, '；crypto.subtle�
 ```ts file=hmac-sha256.ts readonly
 /**
  * SHA-256（FIPS 180-4）和 HMAC-SHA256（RFC 2104）的一个简短的实现。
- * 只是因为练习的沙箱不是安全上下文、没有 crypto.subtle（见正文）；真实的项目中用 crypto.subtle 或者 node:crypto。
+ * 只是因为练习的沙箱在某些浏览器中不是安全上下文、没有 crypto.subtle（见正文）；真实的项目中用 crypto.subtle 或者 node:crypto。
  */
 const K = [
   0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -196,7 +196,7 @@ export function hmacSha256(key: Uint8Array, message: Uint8Array): Uint8Array<Arr
   return sha256(outer);
 }
 ```
-- 第 8 行：令牌的第一部分只是 base64 编码，解码就是 JSON；
+- 第 8 行：`atob` 把 base64 解码成字符串（第 6 行的 `btoa` 是反过来的编码）。令牌的第一部分只是 base64 编码，解码就是 JSON；
 - 第 11、14 行：用密钥对 `payload` 重新计算签名，和令牌中的签名比较；
 - 第 16 行：`false`：内容改了一个词，签名就对不上了；
 - 第 18 行：实测 Chromium 中打印 `false` 和 `undefined`，WebKit 中打印 `true` 和 `object`。

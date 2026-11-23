@@ -98,7 +98,7 @@ console.log(sum);
 ```
 - 第 1 行：`A extends unknown[]` 是参数元组，`R` 是返回值。传入 `add` 时，`A` 被推断为 `[a: number, b: number]`，`R` 为 `number`。
 - 第 13 行：`loggedAdd` 的类型是 `(a: number, b: number) => number`，连参数名都保留了下来；`loggedAdd('2', 3)` 会报错。
-- 没有 `any`，也不需要 `Parameters`、`ReturnType`。只有在**拿不到函数本身**、只有它的类型时，才需要那两个工具。
+- 没有 `any`，也不需要 `Parameters`、`ReturnType`：`A` 和 `R` 直接从传入的函数推断出来。那两个工具用在上一节那种场合：不调用函数，只想把它的参数或返回值类型取出来单独命名。
 :::
 
 异步的包装函数同理，把签名写成 `fn: (...args: A) => Promise<R>`，返回 `(...args: A) => Promise<R>`。编程挑战要写两个：失败时自动重试的 `withRetry`，以及把同样参数的请求合并、只发一次的 `memoizeAsync`。后者有两个容易出错的地方：缓存的应该是 **Promise** 本身（这样并发的两次调用共享同一个请求），以及失败的 Promise 不能一直留在缓存里。

@@ -6,14 +6,14 @@ title: 一个小型前端路由
 
 **`matchRoute(pattern, pathname)`**：路径模式由 `/` 分隔的若干段组成，以 `:` 开头的段是参数。匹配时返回参数对象，不匹配时返回 `null`：
 
-- 段数必须相同，普通段必须完全相等；参数段匹配任意非空的一段，值要用 `decodeURIComponent` 解码，**解码失败**（例如残缺的 `%E0%A4%A`）也算不匹配；
+- 段数必须相同，普通段必须完全相等；参数段匹配任意非空的一段，值要用 `decodeURIComponent`（e05 讲过的 `encodeURIComponent` 的反操作）解码，**解码失败**（例如遇到残缺的 `%E0%A4%A`，`decodeURIComponent` 会抛出错误）也算不匹配；
 - `pathname` 末尾多一个 `/` 也算匹配（`/users/42/` 匹配 `/users/:id`）；`/` 只匹配 `/`。
 
 **`createRouter({ outlet, routes, history })`** 返回 `{ navigate, start }`。路由**只通过 `history` 读写地址**（类型见只读的 `history.ts`），不直接使用 `location.pathname` 和 `window.history`：
 
-1. **渲染**：从 `history.location` 中取出路径部分（`new URL(地址, 任意基准地址).pathname`），找到第一个匹配的路由，调用它的 `render(params)` 得到 `{ title, content }`。把 `outlet` 的内容换成 `<h1 tabindex="-1">标题</h1><p>内容</p>`（文字用 `textContent` 设置），把 `document.title` 设为 `标题 · 示例站`，并把焦点移到这个 `<h1>`（`start()` 中的第一次渲染除外）。没有匹配的路由时，标题是 `页面不存在`，内容是 `没有 /路径 这个页面`；
+1. **渲染**：从 `history.location` 中取出路径部分（`new URL(地址, 任意基准地址).pathname`），找到第一个匹配的路由，调用它的 `render(params)` 得到 `{ title, content }`。把 `outlet` 的内容换成 `<h1 tabindex="-1">标题</h1><p>内容</p>`（文字用 `textContent` 设置），把 `document.title` 设为 `标题 · 示例站`，并把焦点移到这个 `<h1>`（`start()` 中的第一次渲染除外）。没有匹配的路由时，标题是 `页面不存在`，内容是 `没有 路径 这个页面`（路径本身以 `/` 开头，例如 `没有 /nowhere 这个页面`）；
 2. `navigate(path)`：`history.push(path)`，然后渲染；
-3. `start()`：渲染一次；用 `history.listen` 在后退、前进时重新渲染；在 `document` 上委托 `click`，拦截**站内链接**：`<a>` 的地址与当前页面同源，没有 `target`、`download` 属性，点击的是左键，并且没有按住 Ctrl、⌘（`metaKey`）、Shift、Alt。拦截时阻止默认行为，然后 `navigate(路径 + 查询参数 + 片段)`。其他链接一律交给浏览器。`start()` 返回一个函数，调用它会停止监听（包括 `history.listen`）。
+3. `start()`：渲染一次；用 `history.listen` 在后退、前进时重新渲染；在 `document` 上委托 `click`，拦截**站内链接**：`<a>` 的地址与当前页面同源（`origin` 相同，即协议、域名、端口都一样），没有 `target`、`download` 属性，点击的是左键，并且没有按住 Ctrl、⌘（`metaKey`）、Shift、Alt。拦截时阻止默认行为，然后 `navigate(路径 + 查询参数 + 片段)`。其他链接一律交给浏览器。`start()` 返回一个函数，调用它会停止监听（包括 `history.listen`）。
 
 为什么要把 `history` 作为参数传入？测试用一个只存在于内存中的历史记录（`createMemoryHistory`），不受浏览器的影响；部署到服务器上时用真正的 `createBrowserHistory()`；不能配置服务器的静态网站可以用 `createHashHistory()`，把路径放在 `#` 之后。路由的代码一行都不用改。（本题的预览只显示页面的结构，路由的行为由测试检查。）
 
@@ -409,7 +409,7 @@ describe('createRouter', () => {
 - **地址是唯一的数据来源**：`render` 只看 `history.location`，所以无论是点击链接、调用 `navigate`、还是按后退键，最后都走同一条渲染路径；
 - **拦截链接要克制**：只有普通的左键点击、同源、没有 `target` 和 `download` 的链接才由路由处理；用户按住 Ctrl/⌘ 或 Shift 想在新标签页、新窗口中打开，按住 Alt 想下载，或者要去别的网站时，都要交给浏览器，否则就破坏了用户熟悉的操作；
 - **可访问性**：真实的页面跳转时，屏幕阅读器会读出新页面的标题；前端路由切换内容时它什么都不知道。更新 `document.title`，并把焦点移到新内容的主标题（`tabindex="-1"` 让标题可以被脚本聚焦，但不会出现在 Tab 顺序中），用户就能感知到“页面”变了。页面刚打开时则不要移动焦点：这时浏览器本来就从页面的开头开始，把焦点移到标题反而让用户跳过了导航；
-- **路径参数来自地址，也就是来自用户**：任何人都可以构造一个 `/users/<img src=x onerror=…>` 的链接发给别人。用 `textContent` 显示，它只是一串文字（e12）。
+- **路径参数来自地址，也就是来自用户**：任何人都可以构造一个 `/users/<img src=x onerror=…>` 的链接发给别人。用 `textContent` 显示，它只是一串文字（d06 讲过，e12 会专门讲 XSS）。
 
 把 `history` 作为参数传入，是 e05 讲过的**依赖注入**：路由只依赖一个小小的接口（`location`、`push`、`listen`），不关心地址实际存在哪里。React Router 也是这样设计的：同一套路由，可以配合 `createBrowserRouter`（真实地址）、`createHashRouter`（`#` 之后的地址）或 `createMemoryRouter`（测试等没有浏览器地址栏的环境）使用。
 

@@ -127,7 +127,7 @@ describe('summarize', () => {
 :::
 
 :::hint{level=2}
-先用 `for...of` 把 `score !== null` 的记录整理成元素类型为 `{ name: string; score: number }` 的新数组，后面就不用再处理 `null`。平均分：用 `reduce` 求和（初始值 `0`），人数为 0 时返回 `null`。最高分：遍历时只在“严格大于”当前最高分时才替换，这样并列时保留先出现的。不及格：`filter` 出分数小于 60 的，再 `map` 出名字。
+先用 `for...of` 把参加考试的记录整理成一个新数组，元素类型是 `{ name: string; score: number }`：在 `if (r.score !== null)` 的分支里 `push({ name: r.name, score: r.score })`，后面就不用再处理 `null`。（`filter((r) => r.score !== null)` 检查的是属性，结果里 `score` 的类型仍然是 `number | null`。）平均分：用 `reduce` 求和（初始值 `0`），人数为 0 时返回 `null`。最高分：遍历时只在“严格大于”当前最高分时才替换，这样并列时保留先出现的。不及格：`filter` 出分数小于 60 的，再 `map` 出名字。
 :::
 
 :::explanation

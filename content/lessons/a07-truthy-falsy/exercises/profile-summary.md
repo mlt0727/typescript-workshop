@@ -102,7 +102,7 @@ expectTypeOf(profileSummary).toEqualTypeOf<
 :::
 
 :::hint{level=2}
-年龄用 `if (age !== null)` 判断；订阅分三种情况：`subscribed === true`、`subscribed === false`、其余（`null`）。姓名先排除 `null`，再用 `name.trim()` 判断是不是空的。
+年龄用 `if (age !== null)` 判断，要把数字放进 `string` 变量时用 `String(age)` 转换；订阅分三种情况：`subscribed === true`、`subscribed === false`、其余（`null`）。姓名先排除 `null`，再用 `name.trim()` 判断是不是空的。
 :::
 
 :::explanation

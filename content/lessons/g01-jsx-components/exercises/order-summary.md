@@ -2,7 +2,7 @@
 kind: challenge
 title: 订单摘要
 ---
-JSX 是表达式，普通的函数也可以返回它。在 `order.tsx` 中实现 `orderSummary(order)`，返回一个订单的摘要：
+JSX 是表达式，普通的函数也可以返回它。在 `order.tsx` 中实现 `orderSummary(order)`，返回一个订单的摘要。预览中第一个订单（A1001）渲染出来的 HTML 应该是这样的，元素的顺序和 `class` 都要一致：
 
 ```html
 <article class="order">
@@ -10,7 +10,7 @@ JSX 是表达式，普通的函数也可以返回它。在 `order.tsx` 中实现
   <p class="meta">韩梅梅 · 3 件商品</p>
   <p class="total">合计 ¥128.50</p>
   <p class="status status-pending">待发货</p>
-  <p>含 2 件赠品</p>
+  <p>含 1 件赠品</p>
   <p class="note">备注：请尽快发货</p>
 </article>
 ```

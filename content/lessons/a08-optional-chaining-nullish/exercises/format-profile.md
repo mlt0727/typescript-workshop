@@ -21,7 +21,7 @@ title: 生成用户资料摘要
 
 示例：`{ id: 7, name: 'Ada', stats: { posts: 0 }, contact: null }` → `Ada · 帖子 0 · 关注者 未知 · 未填写邮箱`
 
-要求：不使用 `any`、类型断言或非空断言；返回类型为 `string`。
+要求：不使用 `any`、类型断言 `as` 或非空断言 `!`；返回类型为 `string`。
 
 :::files{role=starter}
 ```ts file=profile.ts
@@ -146,7 +146,7 @@ expectTypeOf(formatProfile).returns.toEqualTypeOf<string>();
 :::explanation
 参考答案对每个字段选择了不同的运算符：
 
-- `user.name || \`用户#${user.id}\``：规则要求空字符串也算缺失，`||` 正好把 `''`、`null`、`undefined` 都替换掉。
+- `` user.name || `用户#${user.id}` ``：规则要求空字符串也算缺失，`||` 正好把 `''`、`null`、`undefined` 都替换掉。
 - `user.stats?.posts ?? '未知'`：`?.` 处理 `stats` 缺失；`??` 只替换 `null`/`undefined`，保留 `0`。
 - `user.contact?.email || '未填写邮箱'`：`?.` 同时能处理 `contact` 为 `undefined` 和 `null` 的情况；空邮箱也算未填写，所以用 `||`。
 

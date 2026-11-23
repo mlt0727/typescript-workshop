@@ -4,17 +4,17 @@ title: 带校验的收货表单
 ---
 完成 `ShippingForm`。`validate(form)`、`parseQuantity(text)` 和几个常量已经写好，直接使用。
 
-**字段**（都要受控）：收件人、手机号、数量（`type="number"`，state 中存字符串，初始为 `'1'`）、配送方式（两个单选框，初始为标准配送）、备注（多行文本）。
+**字段**（都要受控）：收件人、手机号、数量（`type="number"`，state 中存字符串，初始为 `'1'`）、配送方式（两个单选框，初始为标准配送）、备注（多行文本）。起始代码里的 `defaultValue`、`defaultChecked` 是非受控的写法，要换成 `value`、`checked` 加 `onChange`。
 
-**实时显示**：
+**实时显示**（这两个元素起始代码里还没有，需要你加上）：
 
 - 备注下面的 `<span id="note-count">` 显示 `还可以输入 N 字`（N = 100 − 备注的长度，可以是负数）；
-- `<output aria-label="合计">` 显示合计：数量合法时为 `¥` + (单价 × 数量 + 加急的 12 元) 保留两位小数，否则为 `—`。
+- `<output aria-label="合计">` 显示合计：数量合法时为 `¥` + (单价 × 数量，选了加急再加 12 元) 保留两位小数，否则为 `—`。
 
 **提交**（阻止默认行为）：
 
 1. 第一次点“提交订单”之前，不显示任何错误；
-2. 校验不通过时不调用 `onSubmit`，把**焦点移到第一个出错的字段**（按收件人、手机号、数量、备注的顺序；字段名也是输入框的 `id`，可以用 `document.getElementById`），并且从此以后（直到提交成功）实时显示错误：每个出错的字段，在输入框后面显示 `<p id="字段名-error" class="error">错误信息</p>`，输入框加上 `aria-invalid="true"` 和 `aria-describedby="字段名-error"`；备注的 `aria-describedby` 始终包含 `note-count`，出错时是 `"note-count note-error"`。字段名就是 `name`、`phone`、`quantity`、`note`；
+2. 校验不通过时不调用 `onSubmit`，把**焦点移到第一个出错的字段**（按收件人、手机号、数量、备注的顺序；字段名也是输入框的 `id`，可以用 `document.getElementById`），并且从此以后（直到提交成功）实时显示错误：每个出错的字段，在输入框后面显示 `<p id="字段名-error" class="error">错误信息</p>`（JSX 中写 `className`），输入框加上 `aria-invalid="true"` 和 `aria-describedby="字段名-error"`；备注的 `aria-describedby` 始终包含 `note-count`，出错时是 `"note-count note-error"`。字段名就是 `name`、`phone`、`quantity`、`note`；
 3. 校验通过时，调用 `onSubmit`，传入整理好的数据：收件人、手机号、备注去掉首尾空白，数量转换成数字；然后把表单恢复成初始状态，并回到“还没有尝试提交”的状态。
 
 :::files{role=starter}

@@ -781,7 +781,7 @@ export function listProjects(projects: readonly Project[], filters: Filters, tod
 
 `toSearchParams` 的测试只检查“写进去再读出来还是一样”是不够的：`status=all` 读出来也是 `all`。要直接检查生成的字符串。
 
-替代解把用例写成表格（`test.each`）：一组精心挑选的项目（输入的顺序故意打乱），配上不同的筛选条件和期望的结果。错误解 `happy-path` 只测了正常的情况，所有的测试都通过了，却一个变异体也没有发现。
+反过来，如果只测正常的情况（读出参数、按状态筛选、按名称搜索、按截止日期排序），测试会全部通过，却一个变异体也发现不了。
 :::
 
 :::variant{kind=alt name=table-driven}

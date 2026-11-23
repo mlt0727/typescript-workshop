@@ -5,7 +5,7 @@ mode: ts
 ---
 列表页的筛选条件要保存在地址的查询参数中。实现两个函数：
 
-**`parseFilters(search)`**：`search` 是 `location.search` 这样的字符串（可能以 `?` 开头，也可能为空），返回 `Filters`：
+**`parseFilters(search)`**：`search` 是 `location.search` 这样的字符串（可能以 `?` 开头，也可能为空），返回 `Filters`。用 `URLSearchParams` 解析，`+` 和 `%26` 这样的编码会被自动还原：
 
 - `q`：参数 `q` 的值去掉首尾空白；没有时为 `''`；
 - `status`：参数 `status` 是 `'all'`、`'active'`、`'done'` 之一时取它，否则为 `'all'`；

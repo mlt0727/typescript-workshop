@@ -19,7 +19,7 @@ title: 模拟 TypeScript 的模块解析
    - `nodenext`：不查找。`路径.ts` 或 `路径.tsx` 存在时返回 2835，建议在说明符后面加上 `.js`（只有 `jsx` 为 `preserve`、并且只有 `.tsx` 存在时，`tsc` 才建议 `.jsx`，本题不考虑）；其他情况（包括以 `/` 结尾）返回 2834。简化：以 `/` 结尾而 `路径.ts` 存在时（例如 `./lib/` 和 `lib.ts`），实测 `tsc` 给出 2835 和一个没有意义的建议 `./lib/.js`，本题按 2834 处理；
 5. 要查找的文件都不存在时返回 2307。
 
-返回值的类型已经给出：只有 2835 带有 `suggestion`。
+返回值的类型已经给出：找到时 `file` 是 `files` 中的那一项（例如 `src/util.ts`）；只有 2835 带有 `suggestion`。
 
 :::files{role=starter}
 ```ts file=resolve.ts

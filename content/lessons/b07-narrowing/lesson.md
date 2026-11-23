@@ -65,7 +65,7 @@ console.log(sizeFixed('abc'), sizeFixed(['a', 'b']), sizeFixed(7), sizeFixed(nul
 
 - `=== null`、`!== undefined` 等相等检查，排除或保留特定的值（a05）。
 - 两个联合类型的值用 `===` 比较时，相等的分支里两者都会被收窄到它们的**共同部分**。
-- 真假检查 `if (x)` 排除 `null`、`undefined`，也会排除 `0`、`''`、`false`（a07）——在类型上，TypeScript 也会把它们从字面量类型中去掉。
+- 真假检查 `if (x)` 排除 `null`、`undefined`，也会排除 `0`、`''`、`false`（a07）。类型里的字面量类型 `0`、`''`、`false` 也会一起去掉：`0 | 1 | 2` 收窄成 `1 | 2`，`boolean`（也就是 `true | false`，b04）收窄成 `true`。
 
 :::playground{#equality}
 ```ts file=main.ts
@@ -91,7 +91,7 @@ console.log(compare('Hi', 'Hi'), compare(1, true), greet('Ada'), greet(''));
 
 ## in：按属性区分对象类型
 
-`'属性名' in 对象` 检查对象（或它的原型链）上是否有这个属性。对**对象类型的联合**，它是最直接的区分方法：
+`'属性名' in 对象` 检查对象上是否有这个属性（b03 用过）。继承来的属性也算，例如每个对象都有的 `toString`（JavaScript 里对象的继承链叫原型链）。对**对象类型的联合**，它是最直接的区分方法：
 
 :::playground{#in-operator}
 ```ts file=main.ts
@@ -110,15 +110,17 @@ const tweety: Bird = { name: 'Tweety', fly: () => '飞翔' };
 console.log(move(nemo), move(tweety));
 ```
 - 第 5 行的检查之后，`animal` 是 `Fish`；第 8 行剩下的是 `Bird`。
-- 注意前提：对象类型是开放的（b02），一个带有额外 `swim` 属性的对象也可以赋给 `Bird`，这时 `'swim' in animal` 会把它误判成 `Fish`。需要可靠区分时，用 b09 的可辨识联合。
+- 注意前提：对象可以带有类型里没写的属性（b02），所以一个多带了 `swim` 属性的对象也可以赋给 `Bird`，这时 `'swim' in animal` 会把它误判成 `Fish`。需要可靠区分时，用可辨识联合（之后 b09 会讲）。
 - `in` 也能用在 `unknown` 收窄出的 `object` 上：`'theme' in config` 之后可以读取 `config.theme`（类型是 `unknown`，b06 的练习用过）。
 :::
 
 ## instanceof：类的实例
 
-`x instanceof C` 检查 `x` 是否是类 `C`（或其子类）的实例。适用于 `Date`、`Error`、`Map` 以及自己定义的类（b12）。它**不能**用于 `type` 和 `interface`：它们在运行时不存在（a02）。
+`x instanceof C` 检查 `x` 是否是类 `C`（或其子类）的实例，a20 用过 `err instanceof Error`。它适用于 `Error`、`Map`、`Date` 这些内置的类，以及自己定义的类（之后 b12 会讲）。它**不能**用于 `type` 和 `interface`：它们在运行时不存在（a02）。
 
-`Array.isArray(x)` 是检查数组的专用方法，比 `instanceof Array` 更可靠：在另一个 iframe 或 Worker 中创建的数组，`instanceof Array` 会得到 `false`。
+`Date` 是 JavaScript 内置的日期时间类，前面只提到过名字：一个 `Date` 对象表示一个时刻，内部保存的是从 1970 年 1 月 1 日 0 点（UTC）算起的毫秒数。`new Date(毫秒数)` 创建对象，`getTime()` 取回这个毫秒数，`toISOString()` 返回 `'1970-01-01T00:00:00.000Z'` 这种格式的字符串。下面的示例和练习会用到它。
+
+`Array.isArray(x)` 是检查数组的专用方法（a02），比 `instanceof Array` 更可靠：每个页面都有自己的一份 `Array`，从网页里内嵌的另一个页面（iframe）拿到的数组，`instanceof Array` 会得到 `false`。
 
 :::playground{#instanceof}
 ```ts file=main.ts
@@ -134,13 +136,20 @@ function stamp(when: Date | string | number[]): string {
 
 console.log(stamp(new Date(0)), stamp('今天'), stamp([2026, 10, 20]));
 ```
+- 第 2 行的检查之后，`when` 是 `Date`，可以调用 `toISOString()`；第 5 行的检查之后是 `number[]`；到第 8 行只剩 `string`。
+- `new Date(0)` 是毫秒数为 0 的那个时刻，所以第一项输出 `1970-01-01T00:00:00.000Z`。
 :::
 
 ## 控制流分析：类型随代码位置变化
 
 TypeScript 沿着代码的执行路径计算每个位置上变量的类型：提前 `return`（或 `throw`、`continue`）会把对应的情况从后面的代码中排除；给变量**赋值**也会改变它此后的类型。
 
-**回调里的陷阱**：回调函数可能在很久以后才执行。如果变量在检查之后**还会被重新赋值**，回调执行时它可能已经变了，所以 TypeScript 不允许回调依赖之前的检查。对箭头函数这类回调，`const` 一直能保留之前的收窄；TypeScript 5.4 起，参数和 `let` 只要在创建回调之后不再被赋值，也能保留。用 `function` 声明的内部函数不适用这条规则。最稳妥的做法是先把检查过的值存进一个 `const`。
+**回调里的陷阱**：回调函数可能在很久以后才执行。如果变量在检查之后**还会被重新赋值**，回调执行时它可能已经变了，所以 TypeScript 不允许回调依赖之前的检查。具体来说：
+
+- 在箭头函数和函数表达式里，`const` 变量一直保留之前的收窄；参数和 `let` 变量只要在创建回调之后不再被赋值，也会保留（TypeScript 5.4 起）。
+- 用 `function` 声明的内部函数里不保留：函数声明会被提升（a13），可能在检查之前就被调用。
+
+最稳妥的做法是先把检查过的值存进一个 `const`，回调里用这个 `const`。
 
 :::playground{#control-flow expect="18047@main.ts:16" run=error}
 ```ts file=main.ts
@@ -165,7 +174,8 @@ current = null;
 ```
 - 第 2、4 行：赋值让 `value` 的类型先是 `string`，后是 `number`。
 - 第 10 行：`prefix` 是参数，检查之后没有再被赋值，回调里仍然是 `string`。
-- 第 16 行报 TS18047：`current` 在第 18 行被改成了 `null`，回调执行时（下一轮事件循环）它确实已经是 `null`。运行一下，真的抛出了 `TypeError`。TypeScript 在这里发现的是一个真实的 bug。
+- 第 16 行报 TS18047：`setTimeout(回调, 0)` 不会立刻调用回调，而是等当前这段代码全部执行完之后再调用（之后 e01 会讲）。那时第 18 行已经把 `current` 改成了 `null`。运行一下，真的抛出了 `TypeError`：TypeScript 在这里发现的是一个真实的 bug。
+- 修正的办法：在第 16 行之前加一行 `const checked = current;`，回调里改用 `checked.length`。`checked` 是 `const`，类型是 `string`，之后不会再变。动手试一试。
 :::
 
 ::exercise{#describe-input}
@@ -179,7 +189,7 @@ current = null;
 ## 常见错误
 
 - **`typeof x === 'object'` 之后直接使用 `x`**：别忘了 `null`。
-- **对 `type`/`interface` 用 `instanceof`**：它们在运行时不存在，用 `in` 或 b09 的“可辨识联合”。
+- **对 `type`/`interface` 用 `instanceof`**：它们在运行时不存在，用 `in`，或者之后 b09 会讲的可辨识联合。
 - **用真假检查收窄可能为 `0`、`''` 的值**：会把有效值一起排除。
 - **在回调里依赖之前的检查**：如果变量之后还会被赋值，先把检查过的值存进 `const`。
 

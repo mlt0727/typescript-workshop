@@ -17,7 +17,7 @@ references:
 
 ## 给每种情况一个标签
 
-**可辨识联合**（discriminated union）是若干对象类型的联合，它们都有一个**同名、类型为不同字面量**的属性（常叫 `kind`、`type` 或 `status`），称为**判别属性**。检查这个属性，TypeScript 就能确定是哪一种，进而知道有哪些其他属性。
+**可辨识联合**（discriminated union）是若干对象类型的联合，它们都有一个**同名、类型为不同字面量**的属性（常叫 `kind`、`type` 或 `status`），称为**判别属性**，也就是每种情况的“标签”。检查这个属性，TypeScript 就能确定是哪一种，进而知道有哪些其他属性。
 
 :::playground{#shapes expect="2339@main.ts:15"}
 ```ts file=main.ts
@@ -78,7 +78,7 @@ function render(state: RequestState): string {
 
 console.log(confusing, render({ status: 'success', data: ['a', 'b'] }), render({ status: 'error', error: '超时' }));
 ```
-- 第 6 行：`LooseState` 允许“正在加载、已有数据、又出了错”同时成立——这在业务上没有意义，但类型挡不住。使用它的代码每次都要猜。
+- 第 6 行：`LooseState` 允许“正在加载、已有数据、又出了错”同时成立——这在业务上没有意义，但类型挡不住。使用它的代码每次都要猜哪些属性有值。
 - `RequestState` 只允许三种合法的组合：`data` 只在成功时存在，`error` 只在失败时存在。
 - 第 20 行：前两种情况都返回了，剩下的只能是 `success`，可以直接读取 `data`。
 :::
@@ -111,14 +111,17 @@ function describe(payment: Payment): string {
 
 console.log(describe({ method: 'card', last4: '1234' }));
 ```
-- 假设 `wechat` 是刚加进 `Payment` 的新支付方式。`describe` 还没有处理它，所以 `default` 分支里的 `payment` 是微信支付的类型而不是 `never`，第 17 行报 TS2345。
+- 第 6–8 行：`assertNever`（b06 的编程挑战写过）的参数类型是 `never`，所以只有当所有情况都处理完、`default` 分支里的值已经收窄成 `never` 时，调用它才能通过类型检查。万一运行时真的走到这里，它会抛出错误。
+- 假设 `wechat` 是刚加进 `Payment` 的新支付方式。`describe` 还没有处理它，所以 `default` 分支里的 `payment` 是微信支付的类型而不是 `never`，不能传给 `assertNever`，第 17 行报 TS2345。
 - 在第 15 行后面加上 `case 'wechat': return '微信支付';`，错误消失。
 - 如果 `default` 写的是 `return '其他';`，新增的情况会被悄悄当成“其他”，编译器什么也不会说。
 :::
 
+不写 `default` 行不行？第一个示例的 `area` 就没有写。给 `Shape` 新增一种图形时它也会报错，但报的是“函数缺少返回语句”（TS2366），没有指出漏了哪一种；如果 `case` 里不 `return`、只是打印，就什么错都不报。在 `default` 里调用 `assertNever`，这两种 `switch` 都查得出遗漏，报错信息里还写着没处理的那种类型。
+
 ## 表示“可能失败”的结果
 
-a05 用 `null` 表示失败，但 `null` 说不出**为什么**失败。判别属性也可以是布尔值：`{ ok: true; value: … } | { ok: false; error: … }` 是表示“成功时有值、失败时有原因”的常见写法。和抛出错误（a20）相比，它把失败写进了返回类型，调用方不检查 `ok` 就拿不到值。
+a05 用 `null` 表示失败，但 `null` 说不出**为什么**失败。判别属性也可以是布尔字面量类型 `true` 和 `false`（写成 `ok: boolean` 就无法区分了）：`{ ok: true; value: … } | { ok: false; error: … }` 是表示“成功时有值、失败时有原因”的常见写法。和抛出错误（a20）相比，它把失败写进了返回类型，调用方不检查 `ok` 就拿不到值。
 
 :::playground{#result}
 ```ts file=main.ts
@@ -148,7 +151,7 @@ for (const input of ['3', '', '2.5']) {
 }
 ```
 - 第 19 行检查 `result.ok` 之后，`if` 分支里可以读取 `value`，`else` 分支里可以读取 `error`。
-- B 阶段的泛型（b14）学完后，可以把它写成通用的 `Result<T, E>`。
+- 学了泛型（b14）之后，可以把它写成通用的 `Result<T, E>`。
 :::
 
 ::exercise{#shape-perimeter}

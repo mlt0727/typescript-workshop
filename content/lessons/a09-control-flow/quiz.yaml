@@ -14,7 +14,7 @@
       correct: true
       explain: "`for...in` 遍历的是键，数组的键是下标字符串。要遍历元素请用 `for...of`。"
     - text: "`红` 和 `绿`"
-      explain: 这是 `for...of` 的结果（也是 Python `for c in colors` 的结果）。
+      explain: 这是 `for...of` 的结果（也是 Python `for c in colors` 的结果）。`for...in` 遍历的是键，不是元素。
     - text: TypeScript 报错，数组不能用 `for...in`
       explain: TypeScript 允许对数组使用 `for...in`，所以这个错误不会被编译器发现，需要你自己注意。
 - id: switch-fallthrough
@@ -55,7 +55,7 @@
     - text: 执行 2 次；`length` 是 2
       explain: 按下标循环才会执行 2 次。`for...of` 不会拆开 😀 这种单个码点的字符。
     - text: 执行 1 次；`length` 是 1
-      explain: "`length` 统计 UTF-16 编码单元，这个 emoji 是 2。"
+      explain: "`length` 统计 UTF-16 编码单元，这个 emoji 占 2 个，所以 `length` 是 2。"
 - id: do-while
   type: single
   prompt: |

@@ -5,8 +5,8 @@ title: 属性名与 CSS 长度
 在 `strings.ts` 中：
 
 1. **`EventProp<E>`**：事件名对应的属性名，`'click'` 是 `'onClick'`，`'keyDown'` 是 `'onKeyDown'`（`on` 加上首字母大写的事件名）；
-2. **`Setters<T>`**：为 `T` 的每个**字符串**键 `k` 生成一个 `set` 加首字母大写的 `k` 的方法，参数是这个属性的类型，返回 `void`。数字键、symbol 键不生成；
-3. **`DataKeys<T>`**：`T` 中值**不是函数**的键组成的联合；
+2. **`Setters<T>`**：为 `T` 的每个**字符串**键 `k` 生成一个 `set` 加首字母大写的 `k` 的方法，参数是这个属性的类型，返回 `void`，例如 `{ name: string }` 得到 `{ setName: (value: string) => void }`。数字键、symbol 键不生成；
+3. **`DataKeys<T>`**：`T` 中值**不是函数**的键组成的联合，例如 `{ name: string; save(): void }` 得到 `'name'`；
 4. **`CssLength`**：数字加上单位 `px`、`rem` 或 `%` 的字符串，例如 `'12px'`、`'1.5rem'`、`'-2px'`、`'50%'`；
 5. **`isCssLength(value)`**：运行时的类型守卫，判断一个字符串是不是 `CssLength`。运行时只接受：可选的负号、整数部分、可选的小数部分（`.` 加数字），紧接着单位，前后没有空白。
 

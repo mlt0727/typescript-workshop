@@ -116,7 +116,7 @@ console.log([...list.children].map((li) => li.textContent));
 ## 更新元素：class、dataset、属性
 
 - **class**：`el.classList.add('done')`、`remove`、`toggle('done', 条件)`、`contains`。比直接改 `el.style` 更好：样式留在 CSS 里，代码只负责切换状态。
-- **data-* 属性**：`el.dataset.id = 't1'` 会在 HTML 上写出 `data-id="t1"`（d05 讲过读取）。
+- **`data-*` 属性**：`el.dataset.id = 't1'` 会在 HTML 上写出 `data-id="t1"`（d05 讲过读取）。
 - **hidden**：`el.hidden = true` 隐藏元素（等同于 HTML 的 `hidden` 属性）。注意：如果 CSS 给这个元素写了 `display: flex` 之类的规则，它会盖过 `hidden` 的效果，元素仍然显示。
 - **DOM 属性与 HTML 属性**：HTML 中写的 `value="Ada"`、`checked` 是**属性**（attribute），表示**初始值**；`input.value`、`input.checked` 是 DOM 对象上的**属性**（property），表示**当前值**。用户输入之后，`input.value` 变了，`getAttribute('value')` 仍然是初始值。读写当前状态时用 DOM 属性；需要初始值时，也有对应的 DOM 属性 `input.defaultValue`、`input.defaultChecked`。`aria-*` 属性多数也有对应的 DOM 属性（例如 `el.ariaPressed`，值同样是字符串），但用 `setAttribute` 更常见；`aria-describedby` 这类引用元素 `id` 的属性只能这样写。
 
@@ -155,7 +155,7 @@ star.addEventListener('click', () => {
 
 ## template：重复的结构
 
-每一项结构比较复杂时，用代码一个个 `createElement` 会很长。`<template>` 元素里的内容不会显示，专门用来被复制：
+每一项结构比较复杂时，用代码一个个 `createElement` 会很长。`<template>` 元素里的内容不会显示，专门用来被复制。
 
 模板的内容在 `template.content` 中，它是一个 `DocumentFragment`（一个不在页面上的“节点片段”）。`document.importNode(template.content, true)` 深拷贝出一份新的片段，类型仍然是 `DocumentFragment`；在片段里查询、填入数据，再把它插入页面，片段里的节点就被移动到了页面上。
 

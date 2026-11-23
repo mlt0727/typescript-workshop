@@ -367,7 +367,7 @@ describe('errorMessage', () => {
 :::
 
 :::hint{level=2}
-请求的选项可以这样写：`{ method, signal, ...(body === undefined ? {} : { body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } }) }`。422 的响应体要逐个检查：先确认它是对象、`errors` 也是对象，再用 `Object.entries` 检查每个值都是字符串。
+请求的选项可以这样写：`{ method, signal, ...(body === undefined ? {} : { body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } }) }`。422 的响应体要逐个检查：先确认它是对象、`errors` 也是对象，再用 `Object.entries` 检查每个值都是字符串。读 JSON 的小函数会把“读取时被中止”也变成 `undefined`，所以读完响应体之后再看一次 `signal?.aborted`，是的话抛出 `signal.reason`（e08）。
 :::
 
 :::explanation
@@ -377,7 +377,7 @@ describe('errorMessage', () => {
 
 中止和失败要分开。请求被中止，是因为调用方已经不需要它了，网络并没有问题。在路由的 loader、action 中，React Router 本来就会丢弃被中止的请求的结果；但如果客户端把中止变成 `{ kind: 'network' }`，在其他地方使用它的代码（Effect、重试、错误上报）就会以为连接失败了。继续抛出原来的 `AbortError`，结果的含义才是对的。注意判断的依据是 `signal.aborted`，而不是“有没有传入 signal”：loader 总会传入 signal，真正的连接失败仍然是 `{ kind: 'network' }`。读取响应体的时候也可能被中止，所以读完之后还要再检查一次。
 
-替代解先用 `response.text()` 读出文字再 `JSON.parse`，失败的响应按状态码 `switch`；`errorMessage` 先处理带数据的三种错误，剩下的三种用一张表，表的类型 `Record<typeof error.kind, string>` 正好是收窄之后剩下的三个键。
+另一种写法：先用 `response.text()` 读出文字再 `JSON.parse`，失败的响应按状态码 `switch`；`errorMessage` 先处理带数据的三种错误，剩下的三种用一张表，表的类型 `Record<typeof error.kind, string>` 正好是收窄之后剩下的三个键。
 :::
 
 :::variant{kind=alt name=text-then-parse}

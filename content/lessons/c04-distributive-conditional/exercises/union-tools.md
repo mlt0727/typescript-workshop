@@ -101,7 +101,7 @@ console.log(missing);
 :::
 
 :::hint{level=2}
-`IsNever` 和 `ToArrayAll` 需要关掉分布：把两边都包进元组，`[T] extends [never] ? true : false`。如果写成 `T extends never ? …`，`T` 是 `never` 时分布出零个成员，结果是 `never`；`T` 是联合时又会对每个成员分别得出 `false`。
+`IsNever` 和 `ToArrayAll` 需要关掉分布：把两边都包进元组，`[T] extends [never] ? true : false`。如果写成 `T extends never ? …`，`T` 是 `never` 时分布出零个成员，结果是 `never`；`ToArrayAll` 不关掉分布的话，`string | number` 会被拆开，得到的是 `string[] | number[]`。
 :::
 
 :::explanation

@@ -57,7 +57,7 @@ console.log(`MODE`,`production`,!1,!0,`/`)
 - 值被**原样写进**了打包后的代码，`import.meta.env` 这个对象在运行时并不存在；
 - 没有 `VITE_` 前缀的 `SECRET_TOKEN` 被换成了 `void 0`（`undefined`），它的值没有出现在任何构建产物中。这个前缀就是 Vite 的保护措施：只有明确标记为“可以给前端”的变量才会被替换进去（前缀可以用 `envPrefix` 选项修改）；
 - `.env.local` 覆盖了 `.env` 中的 `VITE_API_BASE`；生产构建时 `.env.production` 覆盖了 `.env` 中的 `VITE_MODE_NOTE`；
-- 内置的变量：`MODE`（`production`、`development` 或者 `--mode` 指定的名字）、`DEV`、`PROD`（布尔值）、`BASE_URL`（f02）、`SSR`。
+- 内置的变量：`MODE`（`production`、`development` 或者 `--mode` 指定的名字）、`DEV`、`PROD`（布尔值）、`BASE_URL`（f02）、`SSR`。最后一行依次输出的是 `MODE`、`DEV`、`PROD`、`BASE_URL`，其中 `!1`、`!0` 是压缩后的 `false`、`true`。
 
 加载的顺序（后面的覆盖前面的）：`.env`、`.env.local`、`.env.[mode]`、`.env.[mode].local`。以 `.local` 结尾的文件是你自己电脑上的设置，create-vite 模板的 `.gitignore` 中已经有 `*.local`，它们不会被提交。另外，启动 Vite 时操作系统中已经存在的同名环境变量优先级最高。
 
@@ -91,11 +91,11 @@ console.log(replaceEnv(source, env));
 
 需要密钥的调用必须经过**服务端**：前端请求你自己的接口，服务端带上密钥去调用第三方服务，再把结果返回给前端。这个网站的“问 AI”就是这样做的：Anthropic 的 API 密钥只保存在 Vercel 的服务端环境变量 `ANTHROPIC_API_KEY` 中，浏览器只和 `/api/ai` 通信，从来看不到密钥（H 阶段会讲服务端的环境变量）。
 
-“可公开的密钥”本身也要配合限制使用：例如只允许你的域名使用、只给最小的权限，并在服务端的控制台中设置。
+“可公开的密钥”本身也要配合限制使用：例如只允许你的域名使用、只给最小的权限。这些限制在服务商（例如 Stripe）的控制台中设置。
 
 ## 给 import.meta.env 加上类型
 
-`vite/client` 中已经声明了 `MODE`、`DEV` 等内置变量。自己的变量用 b01 讲的接口声明合并补上，例如在 `src/vite-env.d.ts` 中：
+Vite 的 `vite/client` 中已经声明了 `MODE`、`DEV` 等内置变量。自己的变量用 b01 讲的接口声明合并补上，例如在 `src/vite-env.d.ts` 中（第一行以 `///` 开头的是三斜线指令，作用是让 TypeScript 加载 `vite/client` 中的类型声明）：
 
 ```ts
 /// <reference types="vite/client" />

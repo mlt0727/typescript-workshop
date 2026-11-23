@@ -3,7 +3,7 @@ version: 1
 mode: ts
 estimatedMinutes: 45
 review: self-reviewed
-problem: '有了 keyof 和映射类型，我们能按“键”生成类型；但很多时候需要按“情况”决定类型：如果是数组，取元素的类型；如果是 Promise，取它完成时的值；如果是函数，取返回值；如果表单字段是数字输入框，值就是 number。条件类型 T extends U ? X : Y 就是类型层面的 if，配合 infer，还能从一个类型的“内部”取出一部分。这一课学会读写条件类型和 infer，并知道它的一个重要限制：在泛型函数的实现中，TypeScript 不会根据条件类型去检查你返回的值。'
+problem: '有了 keyof 和映射类型，我们能按“键”生成类型；但很多时候需要按“情况”决定类型：如果是数组，取元素的类型；如果是 Promise，取它完成时的值；如果是函数，取返回值；如果表单字段是数字输入框，值就是 number。条件类型 T extends U ? X : Y 就是类型层面的 if，配合 infer，还能从一个类型的“内部”取出一部分。这一课学会读写条件类型和 infer，并知道它的一个重要限制：泛型函数的返回值写成条件类型时，TypeScript 不会因为你在实现里做了判断就认为条件成立，返回语句通常无法通过检查。'
 objectives:
   - '读懂并写出 T extends U ? X : Y 形式的条件类型，以及多个条件串联的写法'
   - 用 infer 从数组、Promise、函数、对象类型中取出一部分类型，并用 infer X extends 约束取出的类型
@@ -45,7 +45,7 @@ type Kind<T> = T extends string ? 'text' : T extends number ? 'number' : 'other'
 | `T extends (...args: never[]) => infer R ? R : never` | 函数的返回值类型 |
 | `T extends { ok: true; data: infer D } ? D : never` | 对象中某个属性的类型 |
 
-匹配不上时走 `:` 后面的分支，通常写 `never`（“没有这样的类型”）或者原样返回 `T`。
+匹配不上时走 `:` 后面的分支，通常写 `never`（“没有这样的类型”）或者原样返回 `T`。表中的 `PromiseLike<V>` 是标准库中的类型，表示任何带有 `then` 方法的对象（这样的对象叫 thenable），`Promise<V>` 当然也符合。
 
 :::playground{#infer}
 ```ts file=main.ts
@@ -66,11 +66,11 @@ const role: Role = 'viewer';
 console.log(user, role);
 ```
 - 第 9 行：`typeof loadUser` 是函数的类型，`ResultOf` 取出返回值 `Promise<{ … }>`，`Unwrap` 再取出 Promise 里面的对象。`loadUser` 的返回值改了，`User` 自动跟着变。
-- 第 3 行的参数写成 `never[]`：任何函数都能赋值给“参数是 `never`”的函数类型（参数类型是逆变的，`never` 能赋值给任何类型），所以它能匹配所有的函数，又不需要写 `any`。
-- `Unwrap` 只取一层：`Unwrap<Promise<Promise<number>>>` 是 `Promise<number>`。内置的 `Awaited` 会一直取到底（c07）。
+- 第 3 行的参数写成 `never[]`：函数 A 能赋值给函数类型 B，要求 B 的参数能传给 A，方向和返回值相反，这叫参数类型是“逆变”的。`never` 能赋值给任何类型，所以任何函数都能赋值给“参数是 `never`”的函数类型。这样能匹配所有的函数，又不需要写 `any`。
+- `Unwrap` 只取一层：`Unwrap<Promise<Promise<number>>>` 是 `Promise<number>`。内置的 `Awaited` 会一直取到底，之后 c07 会讲。
 :::
 
-`infer` 还可以带约束：`infer X extends string` 表示“取出来的类型必须是 `string`，否则这个分支不匹配”。例如 `T extends [infer H extends string, ...unknown[]] ? H : never` 只在元组的第一项是字符串时取出它。
+`infer` 还可以带约束：`infer X extends string` 表示“取出来的类型必须是 `string`，否则这个分支不匹配”。例如 `T extends [infer H extends string, ...unknown[]] ? H : never` 只在元组的第一项是字符串时取出它（`...unknown[]` 表示后面还可以有任意多项）。
 
 ## 从描述推导值的类型
 
@@ -90,7 +90,7 @@ type ValueOf<F> = F extends { kind: 'text' } ? string
 type FormValues<S> = { [K in keyof S]: ValueOf<S[K]> };
 ```
 
-用 `as const satisfies Record<string, Field>` 写出具体的字段（b16），`FormValues<typeof SIGNUP>` 就是这个表单的值的类型；下拉框的值还会精确到 `'free' | 'pro'`。编程挑战就做这件事。
+用 `as const satisfies Record<string, Field>` 写出具体的字段（b16），例如一个注册表单 `SIGNUP`，`FormValues<typeof SIGNUP>` 就是这个表单的值的类型；下拉框的值还会精确到 `'free' | 'pro'`。编程挑战就做这件事。
 
 ## 一个重要的限制：泛型函数的返回值
 
@@ -131,7 +131,7 @@ console.log(n + 1, s.padStart(4, '0'));
 ## 常见错误
 
 - **把 `extends` 读成“继承”**：在条件类型中它的意思是“能不能赋值给”。`'a' extends string` 成立，`string extends 'a'` 不成立。
-- **用 `(...args: any[]) => infer R` 匹配函数**：`any` 会悄悄扩散。参数写成 `never[]` 一样能匹配所有函数。
+- **用 `(...args: any[]) => infer R` 匹配函数**：能用，但没有必要引入 `any`（本课程的判题也默认禁止它）。参数写成 `never[]` 一样能匹配所有函数。
 - **以为 `Unwrap<Promise<Promise<T>>>` 会取到底**：`infer` 只匹配一层，要递归或者用内置的 `Awaited`。
 - **把条件类型写成自己实现的泛型函数的返回值，再用 `as` 让实现通过**：断言让检查失去意义。用重载或者拆分函数。
 - **条件的顺序写反**：`F extends { kind: string } ? string : …` 写在最前面，所有字段都会匹配它。更具体的条件要写在前面。

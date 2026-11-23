@@ -6,12 +6,12 @@ title: 给没有类型的旧库加一层外壳
 
 1. **`parseSettings(value)`**：`value` 是 `unknown`，逐个字段检查，不合法的字段用默认值代替（其他合法的字段保留）：
    - `theme`：`'light'` 或 `'dark'`；
-   - `fontSize`：12 到 24 之间的整数；
+   - `fontSize`：12 到 24 之间的整数（包括 12 和 24）；
    - `recent`：数组，只保留其中的字符串，最多保留前 5 个；不是数组时为 `[]`；
    - `value` 不是普通对象时，所有字段都用默认值。
-   返回的总是一个**新的**对象（`recent` 也是新的数组），修改它不能影响 `DEFAULT_SETTINGS`；
+   返回的总是一个**新的**对象，只包含这三个字段（`value` 中多余的字段不带进来）；`recent` 也是新的数组，修改返回值不能影响 `DEFAULT_SETTINGS`；
 2. **`loadSettings()`**：从 `legacyStorage.read('settings')` 读取并解析；**`saveSettings(settings)`**：用 `legacyStorage.write('settings', settings)` 保存；
-3. **`addRecent(settings, path)`**：返回新的设置，`path` 放在 `recent` 的最前面，去掉重复的旧记录，最多保留 5 个。
+3. **`addRecent(settings, path)`**：返回新的设置（不修改传入的 `settings`），`path` 放在 `recent` 的最前面，去掉重复的旧记录，最多保留 5 个。
 
 不能写 `any`，也不能使用类型断言。注意：规则检查只能拦下**写出来的** `any`，`legacyStorage.read(…)` 返回的 `any` 需要你自己挡住。
 
@@ -222,7 +222,7 @@ expectTypeOf(loadSettings().recent).toEqualTypeOf<string[]>();
 
 “外壳”的做法是：旧库的值一进来就赋给 `unknown`，这一步之后 TypeScript 重新开始检查；`parseSettings` 把 `unknown` 解析成真正的 `Settings`。程序的其他部分只调用 `loadSettings`、`saveSettings`，它们的类型都是准确的，旧库的 `any` 被关在了 `settings.ts` 这一个文件里。
 
-逐字段地回退到默认值，而不是“一个字段不对就整个丢弃”，是设置这类数据的常见选择：用户改坏了一项，其他的设置仍然保留。p1-05 的任务板则相反，数据损坏时整个备份并提示，因为任务是用户的数据，悄悄丢掉一部分是不能接受的。
+逐字段地回退到默认值，而不是“一个字段不对就整个丢弃”，是设置这类数据的常见选择：用户改坏了一项，其他的设置仍然保留。之后 p1-05 中的任务板则相反，数据损坏时整个备份并提示，因为任务是用户的数据，悄悄丢掉一部分是不能接受的。
 
 返回新的对象和新的数组，避免了一个隐蔽的问题：如果不合法时直接返回 `DEFAULT_SETTINGS`，调用方修改返回的设置（例如往 `recent` 里 `push`）就会改掉默认值本身。
 :::

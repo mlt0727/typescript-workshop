@@ -294,7 +294,7 @@ test('切换联系人时，“已保存”的提示不会带到另一个联系�
 :::
 
 :::hint{level=2}
-`const fullName = \`${lastName.trim()}${firstName.trim()}\`;`。在 `ContactPage` 中写 `<ContactEditor key={selected.id} … />`，然后删掉重置用的 Effect。`onSubmit` 中直接调用一个 `save()`：先 `onSave(…)`，再 `setSaved(true)`；`submitted` 这个 state 就不需要了。
+`` const fullName = `${lastName.trim()}${firstName.trim()}`; ``。在 `ContactPage` 中写 `<ContactEditor key={selected.id} … />`，然后删掉重置用的 Effect。`onSubmit` 中直接调用一个 `save()`：先 `onSave(…)`，再 `setSaved(true)`；`submitted` 这个 state 就不需要了。
 :::
 
 :::explanation
@@ -308,7 +308,7 @@ test('切换联系人时，“已保存”的提示不会带到另一个联系�
 
 另一种同样能通过测试的写法，是把全名存进 state，在两个输入框的 `onChange` 中同步更新它。它没有多余的渲染，但仍然是一份多余的 state：每个修改姓名的地方都要记得同时更新全名。能算出来的，就不要存。
 
-另一种重置的写法见替代解：在渲染期间比较 `contact.id` 和上一次的 id，不同时直接调整 state。它同样只提交一次，但需要额外保存“上一次的 id”，所以能用 `key` 时优先用 `key`。
+重置还有另一种写法，就是正文“props 变化时重置 state：用 key”一节最后介绍的那种：在渲染期间比较 `contact.id` 和上一次的 id，不同时直接调整 state。它同样只提交一次，但需要额外用一个 state 保存“上一次的 id”，所以能用 `key` 时优先用 `key`。
 :::
 
 :::variant{kind=alt name=adjust-during-render}

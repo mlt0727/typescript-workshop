@@ -83,7 +83,7 @@ createRoot(container).render(<App />);
 几条规则：
 
 - **props 是只读的**。组件不应该修改收到的 props（也不应该修改其他外部的变量），而是根据它们算出要显示的 JSX：同样的 props 总是得到同样的界面。React 把这叫作组件的**纯粹性**。需要“变化”的数据是 state（下一课）；
-- `key` 不会作为 props 传给组件，它有特殊用途（g05）；`ref` 在 React 19 中可以像普通的 prop 一样传给函数组件（g09）。
+- `key` 不会作为 props 传给组件，它有特殊用途，g05 会讲；`ref` 在 React 19 中可以像普通的 prop 一样传给函数组件，g09 会讲。
 
 ## children：包装其他内容的组件
 
@@ -93,7 +93,7 @@ createRoot(container).render(<App />);
 
 ## 把事件交给父组件
 
-组件内部发生的事（按钮被点击、选中了某一项），常常要由**使用它的组件**来决定怎么处理。做法是接收一个函数类型的 prop，按习惯命名为 `onXxx`，例如 `onSelect`、`onClose`：
+组件内部发生的事（按钮被点击、选中了某一项），常常要由**使用它的组件**（父组件）来决定怎么处理。做法是接收一个函数类型的 prop，按习惯命名为 `onXxx`，例如 `onSelect`、`onClose`：
 
 :::playground{#children-and-callbacks}
 ```tsx file=App.tsx
@@ -167,7 +167,8 @@ function Button({ variant = 'primary', type = 'button', className, ...rest }: Bu
 ```
 
 - 解构时用 `...rest` 收集其余的属性（a12），再用 `{...rest}` **展开**到 `<button>` 上，使用者传的 `onClick`、`disabled`、`children` 都原样传了下去；
-- 展开的**位置**决定了谁覆盖谁：写在后面的属性覆盖前面的。例如不解构 `type`，直接写 `<button type="button" {...rest}>`，`'button'` 就成了一个可以被使用者覆盖的默认值；而写成 `<button {...rest} type="button">`，使用者传的 `type` 永远不起作用。上面的代码把 `type` 和 `className` 都从 `rest` 中解构了出来，`rest` 里没有它们，位置也就不再影响结果；但把 `className={classes}` 写在最后，能保证 `class` 一定是合并后的结果；
+- 展开的**位置**决定了谁覆盖谁：写在后面的属性覆盖前面的。例如不解构 `type`，直接写 `<button type="button" {...rest}>`，`'button'` 就成了一个可以被使用者覆盖的默认值；而写成 `<button {...rest} type="button">`，使用者传的 `type` 永远不起作用。上面的代码先把 `type` 和 `className` 解构了出来，`rest` 里没有它们，位置其实不影响结果；不过习惯上仍把 `className={classes}` 写在最后，这样即使以后改了解构的写法，`class` 也一定是合并后的结果；
+- `classes` 这一行把类名放进数组，用 `filter(Boolean)` 去掉其中的 `undefined`（使用者没传 `className` 时），再用 `join(' ')` 以空格连接。`filter(Boolean)` 就是把 `Boolean` 当作判断函数，只留下转换为 `true` 的元素（a07 讲过 `Boolean(x)`）；
 - 原生 `<button>` 的 `type` 默认是 `submit`，在表单里会意外地提交表单（d09）。组件把默认值改成 `'button'`，需要提交时再显式写 `type="submit"`。
 
 挑战题会完整地实现这个组件。

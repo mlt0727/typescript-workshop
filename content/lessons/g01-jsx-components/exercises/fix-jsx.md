@@ -5,7 +5,7 @@ title: 把 HTML 改成 JSX
 `Newsletter` 组件的代码是从一个 HTML 页面直接复制过来的，现在既编译不过，也运行不了。把它改成正确的 JSX：
 
 - 页面上的结构保持不变：标题 `<h2>` 和表单 `<form>` 是**并列**的两个元素，不要额外添加包裹它们的元素；
-- 原来的 class、`style` 都要保留下来（改成 JSX 的写法）；“邮箱”标签和输入框之间的关联也要保留（用 `htmlFor`，或者把输入框放进 `<label>` 里）；
+- 原来的 `class`、`style` 都要保留下来（改成 JSX 的写法）；“邮箱”标签和输入框之间的关联也要保留（用 `htmlFor`，或者把输入框放进 `<label>` 里）；
 - 每个标签都要正确闭合。
 
 :::files{role=starter}
@@ -106,7 +106,7 @@ test('分隔线和订阅按钮都在表单里', () => {
 :::
 
 :::explanation
-JSX 最终会变成 JavaScript 对象（g01 正文），属性名就是对象的键：`class` 和 `for` 是 JavaScript 的保留字，所以沿用 DOM 中对应属性的名字 `className`、`htmlFor`；其他属性名大多用驼峰写法（`tabIndex`、`onClick`）；`style` 接收一个对象。`aria-*`、`data-*` 例外，保持原样。
+JSX 最终会变成 JavaScript 对象（见本课正文），属性名就是对象的键：`class` 和 `for` 是 JavaScript 的保留字，所以沿用 DOM 中对应属性的名字 `className`、`htmlFor`；其他属性名大多用驼峰写法（`tabIndex`、`onClick`）；`style` 接收一个对象。`aria-*`、`data-*` 例外，保持原样。
 
 Fragment（`<>…</>`）解决了“只能返回一个值”的限制，又不会在页面中多出一层元素。多一层 `<div>` 往往会破坏 CSS 布局（例如 Grid 和 Flexbox 只对直接子元素生效），或者让 HTML 结构不再合法（例如 `<ul>` 里只能放 `<li>`）。
 

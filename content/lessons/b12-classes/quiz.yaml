@@ -28,7 +28,7 @@
     - text: 类必须有构造函数
       explain: 没有构造函数是允许的；问题在于字段没有被初始化。
     - text: 字段必须写 `public`
-      explain: 不写访问修饰符时默认就是 `public`。
+      explain: 不写访问修饰符时默认就是 `public`，写不写都一样。报错是因为字段没有被初始化。
 - id: parameter-property
   type: single
   prompt: "为什么本平台不允许 `constructor(private name: string) {}` 这样的参数属性？"
@@ -38,8 +38,8 @@
       explain: Node.js 直接运行 `.ts` 时也不支持它。显式声明字段并在构造函数中赋值即可。
     - text: TypeScript 已经删除了这个功能
       explain: 这个功能仍然存在，只是在开启 `erasableSyntaxOnly` 时被禁止。
-    - text: 构造函数的参数不能有访问修饰符是 JavaScript 的规定
-      explain: 参数属性本来就是 TypeScript 特有的语法，JavaScript 没有它。
+    - text: JavaScript 规定构造函数的参数不能带访问修饰符
+      explain: JavaScript 根本没有 `private` 这类访问修饰符，它们都是 TypeScript 加的。字段前面的 `private` 照样能用，因为擦掉它代码就能运行；参数属性被拒绝，是因为擦掉修饰符以后还缺声明字段和赋值的代码。
 - id: getter
   type: single
   prompt: "`class Circle { radius = 1; get area() { return Math.PI * this.radius ** 2; } }`。怎样读取面积？"

@@ -2,8 +2,8 @@
   "tsVersion": "6.0.3",
   "lessons": {
     "a01-where-ts-runs": {
-      "verifiedAt": "2026-10-21T18:22:33.000Z",
-      "sourceHash": "96f2639660bdcf67",
+      "verifiedAt": "2026-11-23T01:20:47.387Z",
+      "sourceHash": "5900910880d35e38",
       "ok": true,
       "checks": [
         {
@@ -109,8 +109,8 @@
       ]
     },
     "a02-compile-vs-runtime": {
-      "verifiedAt": "2026-10-21T18:22:33.382Z",
-      "sourceHash": "673bb373ab3c3a80",
+      "verifiedAt": "2026-11-23T01:20:48.087Z",
+      "sourceHash": "45b989bce2027ef5",
       "ok": true,
       "checks": [
         {
@@ -211,8 +211,8 @@
       ]
     },
     "a03-let-const-inference": {
-      "verifiedAt": "2026-10-21T18:22:33.785Z",
-      "sourceHash": "08c74ac95adc45b5",
+      "verifiedAt": "2026-11-23T01:20:48.786Z",
+      "sourceHash": "111b6bf9aa0a2613",
       "ok": true,
       "checks": [
         {
@@ -328,8 +328,8 @@
       ]
     },
     "a04-primitives-strings": {
-      "verifiedAt": "2026-10-21T18:22:34.187Z",
-      "sourceHash": "d4e98392db010a70",
+      "verifiedAt": "2026-11-23T01:20:49.617Z",
+      "sourceHash": "ea15c32c272243b8",
       "ok": true,
       "checks": [
         {
@@ -371,6 +371,16 @@
           "target": "playground:template:run",
           "ok": true,
           "detail": "期望 done，实际 done；输出：[log] 2 杯咖啡，共 36 元 | [log] 第一行\n第二行 | [log] 51 33 | [log] 4"
+        },
+        {
+          "target": "playground:capital-types:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:capital-types:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 你好，Ada"
         },
         {
           "target": "exercise:format-duration:starter:starter",
@@ -440,8 +450,8 @@
       ]
     },
     "a05-null-undefined": {
-      "verifiedAt": "2026-10-21T18:22:34.600Z",
-      "sourceHash": "f5b91e119d9913ae",
+      "verifiedAt": "2026-11-23T01:20:50.288Z",
+      "sourceHash": "53c0b0701100404b",
       "ok": true,
       "checks": [
         {
@@ -552,8 +562,8 @@
       ]
     },
     "a06-operators-equality": {
-      "verifiedAt": "2026-10-21T18:22:34.985Z",
-      "sourceHash": "e4efaae6b72a7c46",
+      "verifiedAt": "2026-11-23T01:20:50.873Z",
+      "sourceHash": "58b5d775e06a59fe",
       "ok": true,
       "checks": [
         {
@@ -659,8 +669,8 @@
       ]
     },
     "a07-truthy-falsy": {
-      "verifiedAt": "2026-10-21T18:22:35.399Z",
-      "sourceHash": "ce981082c8a7ab3f",
+      "verifiedAt": "2026-11-23T01:20:51.578Z",
+      "sourceHash": "cba0be687459a574",
       "ok": true,
       "checks": [
         {
@@ -766,8 +776,8 @@
       ]
     },
     "a08-optional-chaining-nullish": {
-      "verifiedAt": "2026-11-18T11:14:04.486Z",
-      "sourceHash": "ab4c8575a2a86d66",
+      "verifiedAt": "2026-11-23T01:20:52.611Z",
+      "sourceHash": "438613bacc8bfef8",
       "ok": true,
       "checks": [
         {
@@ -918,8 +928,8 @@
       ]
     },
     "a09-control-flow": {
-      "verifiedAt": "2026-10-21T18:22:36.339Z",
-      "sourceHash": "d0adb89f20612ea7",
+      "verifiedAt": "2026-11-23T01:20:53.177Z",
+      "sourceHash": "4a93836d2cd01903",
       "ok": true,
       "checks": [
         {
@@ -1025,8 +1035,8 @@
       ]
     },
     "a10-arrays": {
-      "verifiedAt": "2026-10-21T18:22:36.729Z",
-      "sourceHash": "cb81fe04cae4ff08",
+      "verifiedAt": "2026-11-23T01:20:53.787Z",
+      "sourceHash": "5139f9508f1e5e9c",
       "ok": true,
       "checks": [
         {
@@ -1127,8 +1137,8 @@
       ]
     },
     "a11-objects-references": {
-      "verifiedAt": "2026-10-21T18:22:37.130Z",
-      "sourceHash": "9c6e39e4993e3a91",
+      "verifiedAt": "2026-11-23T01:20:54.386Z",
+      "sourceHash": "73e4537df7dab344",
       "ok": true,
       "checks": [
         {
@@ -1229,8 +1239,8 @@
       ]
     },
     "a12-destructuring-spread": {
-      "verifiedAt": "2026-10-21T18:22:37.528Z",
-      "sourceHash": "2920a1138db44b85",
+      "verifiedAt": "2026-11-23T01:20:54.979Z",
+      "sourceHash": "40f43a664afab572",
       "ok": true,
       "checks": [
         {
@@ -1336,8 +1346,8 @@
       ]
     },
     "a13-functions": {
-      "verifiedAt": "2026-10-21T18:22:37.976Z",
-      "sourceHash": "c030cb3dec600d6e",
+      "verifiedAt": "2026-11-23T01:20:55.729Z",
+      "sourceHash": "992be63b1cb849a5",
       "ok": true,
       "checks": [
         {
@@ -1453,8 +1463,8 @@
       ]
     },
     "a14-scope-closures": {
-      "verifiedAt": "2026-10-21T18:22:38.453Z",
-      "sourceHash": "2ae5b2e3638a5b49",
+      "verifiedAt": "2026-11-23T01:20:56.436Z",
+      "sourceHash": "216acf2b8c559bcc",
       "ok": true,
       "checks": [
         {
@@ -1575,8 +1585,8 @@
       ]
     },
     "a15-this": {
-      "verifiedAt": "2026-10-21T18:22:38.741Z",
-      "sourceHash": "a880078bef84a31e",
+      "verifiedAt": "2026-11-23T01:20:56.911Z",
+      "sourceHash": "d90cc65226474408",
       "ok": true,
       "checks": [
         {
@@ -1677,8 +1687,8 @@
       ]
     },
     "a16-array-methods": {
-      "verifiedAt": "2026-10-21T18:22:39.215Z",
-      "sourceHash": "9011a3f39f0b8a88",
+      "verifiedAt": "2026-11-23T01:20:57.604Z",
+      "sourceHash": "8c5c66515a8d5de6",
       "ok": true,
       "checks": [
         {
@@ -1799,8 +1809,8 @@
       ]
     },
     "a17-sort-and-mutation": {
-      "verifiedAt": "2026-10-21T18:22:39.635Z",
-      "sourceHash": "e93fd6b7286514ce",
+      "verifiedAt": "2026-11-23T01:20:58.205Z",
+      "sourceHash": "b82cb82cd6b25e42",
       "ok": true,
       "checks": [
         {
@@ -1911,8 +1921,8 @@
       ]
     },
     "a18-map-set": {
-      "verifiedAt": "2026-10-21T18:22:40.132Z",
-      "sourceHash": "4394bd40180ec60d",
+      "verifiedAt": "2026-11-23T01:20:58.882Z",
+      "sourceHash": "5f73f2c592b6113b",
       "ok": true,
       "checks": [
         {
@@ -2028,8 +2038,8 @@
       ]
     },
     "a19-modules": {
-      "verifiedAt": "2026-10-21T18:22:40.489Z",
-      "sourceHash": "d867938cbbec323c",
+      "verifiedAt": "2026-11-23T01:20:59.430Z",
+      "sourceHash": "c3ffa723d9e4cd6e",
       "ok": true,
       "checks": [
         {
@@ -2135,8 +2145,8 @@
       ]
     },
     "a20-errors": {
-      "verifiedAt": "2026-10-21T18:22:40.889Z",
-      "sourceHash": "23006d6d51a93994",
+      "verifiedAt": "2026-11-23T01:21:00.048Z",
+      "sourceHash": "a2cc2969a97b3e07",
       "ok": true,
       "checks": [
         {
@@ -2237,8 +2247,8 @@
       ]
     },
     "b01-type-alias-interface": {
-      "verifiedAt": "2026-10-21T18:22:41.327Z",
-      "sourceHash": "a2ba11985f662cf0",
+      "verifiedAt": "2026-11-23T01:21:00.701Z",
+      "sourceHash": "f49e53122eace284",
       "ok": true,
       "checks": [
         {
@@ -2344,8 +2354,8 @@
       ]
     },
     "b02-structural-typing": {
-      "verifiedAt": "2026-10-21T18:22:41.673Z",
-      "sourceHash": "e3b05a429f1ffaa8",
+      "verifiedAt": "2026-11-23T01:21:01.208Z",
+      "sourceHash": "fddebd263c1b262b",
       "ok": true,
       "checks": [
         {
@@ -2436,8 +2446,8 @@
       ]
     },
     "b03-optional-readonly": {
-      "verifiedAt": "2026-10-21T18:22:42.073Z",
-      "sourceHash": "88f063b369af4012",
+      "verifiedAt": "2026-11-23T01:21:01.886Z",
+      "sourceHash": "b7a28e888308a693",
       "ok": true,
       "checks": [
         {
@@ -2469,6 +2479,16 @@
           "target": "playground:freeze:run",
           "ok": true,
           "detail": "期望 error，实际 error（TypeError: Cannot assign to read only property 'theme' of object '#<Object>'）；输出：[error] Uncaught TypeError: Cannot assign to read only property 'theme' of object '#<Object>'\n    at main.ts:3:15"
+        },
+        {
+          "target": "playground:readonly-assign:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:readonly-assign:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 2"
         },
         {
           "target": "playground:utility-types:types",
@@ -2543,8 +2563,8 @@
       ]
     },
     "b04-union-literal": {
-      "verifiedAt": "2026-10-21T18:22:42.521Z",
-      "sourceHash": "16d820d8c2581d32",
+      "verifiedAt": "2026-11-23T01:21:02.577Z",
+      "sourceHash": "5e1ceb4bc03e8c42",
       "ok": true,
       "checks": [
         {
@@ -2645,8 +2665,8 @@
       ]
     },
     "b05-intersection-tuple": {
-      "verifiedAt": "2026-10-21T18:22:43.001Z",
-      "sourceHash": "4142cea7107ead35",
+      "verifiedAt": "2026-11-23T01:21:03.385Z",
+      "sourceHash": "c77ae8ec14b5c55e",
       "ok": true,
       "checks": [
         {
@@ -2752,8 +2772,8 @@
       ]
     },
     "b06-any-unknown-never-void": {
-      "verifiedAt": "2026-10-21T18:22:43.397Z",
-      "sourceHash": "cc371768db05441b",
+      "verifiedAt": "2026-11-23T01:21:04.003Z",
+      "sourceHash": "30b7b00d44433024",
       "ok": true,
       "checks": [
         {
@@ -2775,6 +2795,16 @@
           "target": "playground:unknown:run",
           "ok": true,
           "detail": "期望 done，实际 done；输出：[log] HELLO | [log] 3"
+        },
+        {
+          "target": "playground:unknown-property:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:unknown-property:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] Ada | [log] ADA"
         },
         {
           "target": "playground:never:types",
@@ -2859,8 +2889,8 @@
       ]
     },
     "b07-narrowing": {
-      "verifiedAt": "2026-10-21T18:22:43.813Z",
-      "sourceHash": "11b9c7c5911ecd78",
+      "verifiedAt": "2026-11-23T01:21:04.620Z",
+      "sourceHash": "9225cc5d378fa183",
       "ok": true,
       "checks": [
         {
@@ -2971,8 +3001,8 @@
       ]
     },
     "b08-type-guards": {
-      "verifiedAt": "2026-10-21T18:22:44.206Z",
-      "sourceHash": "60f6d3b91e78c8b3",
+      "verifiedAt": "2026-11-23T01:21:05.314Z",
+      "sourceHash": "36c0ddf974c0d032",
       "ok": true,
       "checks": [
         {
@@ -2984,6 +3014,16 @@
           "target": "playground:type-guard:run",
           "ok": true,
           "detail": "期望 done，实际 done；输出：[log] [ { x: 1, y: 2 } ]"
+        },
+        {
+          "target": "playground:inferred-guard:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:inferred-guard:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] [ 3, 0, 7 ] [ 3, 7 ]"
         },
         {
           "target": "playground:lying-guard:types",
@@ -3068,8 +3108,8 @@
       ]
     },
     "b09-discriminated-unions": {
-      "verifiedAt": "2026-10-21T18:22:44.643Z",
-      "sourceHash": "49752a141ce3f081",
+      "verifiedAt": "2026-11-23T01:21:06.014Z",
+      "sourceHash": "46d82d63ca898904",
       "ok": true,
       "checks": [
         {
@@ -3175,8 +3215,8 @@
       ]
     },
     "b10-function-types": {
-      "verifiedAt": "2026-10-21T18:22:45.111Z",
-      "sourceHash": "ae90adddb616d52c",
+      "verifiedAt": "2026-11-23T01:21:06.783Z",
+      "sourceHash": "2cae0282a1178a16",
       "ok": true,
       "checks": [
         {
@@ -3287,8 +3327,8 @@
       ]
     },
     "b11-overloads": {
-      "verifiedAt": "2026-10-21T18:22:45.509Z",
-      "sourceHash": "2dfe447caed64048",
+      "verifiedAt": "2026-11-23T01:21:07.484Z",
+      "sourceHash": "eb31f5ea96244059",
       "ok": true,
       "checks": [
         {
@@ -3309,7 +3349,7 @@
         {
           "target": "playground:return-depends:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 43 2 | [log] 7"
+          "detail": "期望 done，实际 done；输出：[log] 43 2 | [log] [ '7' ]"
         },
         {
           "target": "playground:prefer-union:types",
@@ -3319,7 +3359,7 @@
         {
           "target": "playground:prefer-union:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 2 3 | [log] 3"
+          "detail": "期望 done，实际 done；输出：[log] 2 3 | [log] 2"
         },
         {
           "target": "exercise:first-item:starter:starter",
@@ -3389,8 +3429,8 @@
       ]
     },
     "b12-classes": {
-      "verifiedAt": "2026-10-21T18:22:45.970Z",
-      "sourceHash": "245eb61998874571",
+      "verifiedAt": "2026-11-23T01:21:08.202Z",
+      "sourceHash": "8a7e764fddad2304",
       "ok": true,
       "checks": [
         {
@@ -3516,8 +3556,8 @@
       ]
     },
     "b13-inheritance-implements": {
-      "verifiedAt": "2026-10-21T18:22:46.370Z",
-      "sourceHash": "652eb5e170b7822f",
+      "verifiedAt": "2026-11-23T01:21:08.831Z",
+      "sourceHash": "78baf1e8a843155a",
       "ok": true,
       "checks": [
         {
@@ -3623,8 +3663,8 @@
       ]
     },
     "b14-generics": {
-      "verifiedAt": "2026-10-21T18:22:47.149Z",
-      "sourceHash": "138f1f959f851ed4",
+      "verifiedAt": "2026-11-23T01:21:10.299Z",
+      "sourceHash": "a606ae4a0786c6ba",
       "ok": true,
       "checks": [
         {
@@ -3725,8 +3765,8 @@
       ]
     },
     "b15-generic-constraints": {
-      "verifiedAt": "2026-10-21T18:22:47.616Z",
-      "sourceHash": "528259f2d604df0a",
+      "verifiedAt": "2026-11-23T01:21:11.075Z",
+      "sourceHash": "bbce49d6482fe845",
       "ok": true,
       "checks": [
         {
@@ -3832,8 +3872,8 @@
       ]
     },
     "b16-assertions-as-const-satisfies": {
-      "verifiedAt": "2026-10-21T18:22:48.003Z",
-      "sourceHash": "dcf8757a3213b05e",
+      "verifiedAt": "2026-11-23T01:21:11.650Z",
+      "sourceHash": "97fe51c061c5f239",
       "ok": true,
       "checks": [
         {
@@ -3929,8 +3969,8 @@
       ]
     },
     "b17-enums-and-alternatives": {
-      "verifiedAt": "2026-11-18T11:14:04.934Z",
-      "sourceHash": "8dd128f6b8062c05",
+      "verifiedAt": "2026-11-23T01:21:12.258Z",
+      "sourceHash": "59cc85f1c74e0089",
       "ok": true,
       "checks": [
         {
@@ -4016,8 +4056,8 @@
       ]
     },
     "c01-keyof-typeof-indexed": {
-      "verifiedAt": "2026-10-21T18:22:48.988Z",
-      "sourceHash": "c94d3b65688e89ce",
+      "verifiedAt": "2026-11-23T01:21:13.582Z",
+      "sourceHash": "0a21e81b003995f6",
       "ok": true,
       "checks": [
         {
@@ -4113,8 +4153,8 @@
       ]
     },
     "c02-mapped-types": {
-      "verifiedAt": "2026-10-21T18:22:49.426Z",
-      "sourceHash": "3e331f9035244218",
+      "verifiedAt": "2026-11-23T01:21:14.422Z",
+      "sourceHash": "745cc9868afed0da",
       "ok": true,
       "checks": [
         {
@@ -4210,8 +4250,8 @@
       ]
     },
     "c03-conditional-infer": {
-      "verifiedAt": "2026-10-21T18:22:49.861Z",
-      "sourceHash": "d6fbae4eb6cd79cf",
+      "verifiedAt": "2026-11-23T01:21:15.148Z",
+      "sourceHash": "a9780e8f1e102e03",
       "ok": true,
       "checks": [
         {
@@ -4307,8 +4347,8 @@
       ]
     },
     "c04-distributive-conditional": {
-      "verifiedAt": "2026-10-21T18:22:50.272Z",
-      "sourceHash": "7fddb18d8c0e99d8",
+      "verifiedAt": "2026-11-23T01:21:15.916Z",
+      "sourceHash": "788af3770be8f84a",
       "ok": true,
       "checks": [
         {
@@ -4399,8 +4439,8 @@
       ]
     },
     "c05-template-literal-types": {
-      "verifiedAt": "2026-10-21T18:22:50.662Z",
-      "sourceHash": "1052f6b29027f6a9",
+      "verifiedAt": "2026-11-23T01:21:16.618Z",
+      "sourceHash": "4d63d38ccc9264b1",
       "ok": true,
       "checks": [
         {
@@ -4491,8 +4531,8 @@
       ]
     },
     "c06-utility-types": {
-      "verifiedAt": "2026-10-21T18:22:51.066Z",
-      "sourceHash": "d3b81e1964ee6f29",
+      "verifiedAt": "2026-11-23T01:21:17.364Z",
+      "sourceHash": "165636141ae3a5e2",
       "ok": true,
       "checks": [
         {
@@ -4578,8 +4618,8 @@
       ]
     },
     "c07-function-utility-types": {
-      "verifiedAt": "2026-10-21T18:22:51.667Z",
-      "sourceHash": "33baa1e8834acf80",
+      "verifiedAt": "2026-11-23T01:21:18.491Z",
+      "sourceHash": "89ce13679b0f74d6",
       "ok": true,
       "checks": [
         {
@@ -4680,8 +4720,8 @@
       ]
     },
     "c08-generic-api-design": {
-      "verifiedAt": "2026-10-21T18:22:52.090Z",
-      "sourceHash": "1a7a384ba34a441e",
+      "verifiedAt": "2026-11-23T01:21:19.333Z",
+      "sourceHash": "9598677e27efc290",
       "ok": true,
       "checks": [
         {
@@ -4767,8 +4807,8 @@
       ]
     },
     "c09-boundary-modeling": {
-      "verifiedAt": "2026-10-21T18:22:52.491Z",
-      "sourceHash": "9a1e12943d295d36",
+      "verifiedAt": "2026-11-23T01:21:20.154Z",
+      "sourceHash": "930ea08cf5a491aa",
       "ok": true,
       "checks": [
         {
@@ -4854,8 +4894,8 @@
       ]
     },
     "c10-avoid-any": {
-      "verifiedAt": "2026-11-18T11:23:35.948Z",
-      "sourceHash": "85d90d691f6c044e",
+      "verifiedAt": "2026-11-23T01:21:20.918Z",
+      "sourceHash": "f2cd471227a5df84",
       "ok": true,
       "checks": [
         {
@@ -4867,6 +4907,16 @@
           "target": "playground:contagious:run",
           "ok": true,
           "detail": "期望 error，实际 error（TypeError: Cannot read properties of null (reading 'name')）；输出：[log] light | [log] null | [error] Uncaught TypeError: Cannot read properties of null (reading 'name')\n    at main.ts:9:23"
+        },
+        {
+          "target": "playground:directives:types",
+          "ok": true,
+          "detail": "诊断符合预期（1 个故意的错误）"
+        },
+        {
+          "target": "playground:directives:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 8080 8080 8080 8080"
         },
         {
           "target": "exercise:remove-any:starter:starter",
@@ -4941,8 +4991,8 @@
       ]
     },
     "c11-strict-options": {
-      "verifiedAt": "2026-10-21T18:22:53.191Z",
-      "sourceHash": "a5898858c07bb390",
+      "verifiedAt": "2026-11-23T01:21:21.676Z",
+      "sourceHash": "c95a0edbe5740f3a",
       "ok": true,
       "checks": [
         {
@@ -5038,8 +5088,8 @@
       ]
     },
     "c12-modules-dts": {
-      "verifiedAt": "2026-10-21T18:22:53.553Z",
-      "sourceHash": "980a4970a5bd5ebd",
+      "verifiedAt": "2026-11-23T01:21:22.437Z",
+      "sourceHash": "629305e7abc2de5d",
       "ok": true,
       "checks": [
         {
@@ -5125,8 +5175,8 @@
       ]
     },
     "d01-html-semantics": {
-      "verifiedAt": "2026-10-21T18:22:55.306Z",
-      "sourceHash": "35c36f09a41f3c03",
+      "verifiedAt": "2026-11-23T01:21:24.991Z",
+      "sourceHash": "9e2ddc05062b6510",
       "ok": true,
       "checks": [
         {
@@ -5232,8 +5282,8 @@
       ]
     },
     "d02-html-forms": {
-      "verifiedAt": "2026-10-21T18:23:00.886Z",
-      "sourceHash": "31169b0fc9ebd3f0",
+      "verifiedAt": "2026-11-23T01:21:31.589Z",
+      "sourceHash": "d4b0fd9a03b6c4ce",
       "ok": true,
       "checks": [
         {
@@ -5344,8 +5394,8 @@
       ]
     },
     "d03-css-layout": {
-      "verifiedAt": "2026-10-21T18:23:02.542Z",
-      "sourceHash": "da6de6699f6b7807",
+      "verifiedAt": "2026-11-23T01:21:33.944Z",
+      "sourceHash": "5ef058e8fbce1e46",
       "ok": true,
       "checks": [
         {
@@ -5451,8 +5501,8 @@
       ]
     },
     "d04-responsive-a11y": {
-      "verifiedAt": "2026-10-21T18:23:04.395Z",
-      "sourceHash": "d5c55e9c8683225e",
+      "verifiedAt": "2026-11-23T01:21:36.508Z",
+      "sourceHash": "cb7386a346c33fb2",
       "ok": true,
       "checks": [
         {
@@ -5563,8 +5613,8 @@
       ]
     },
     "d05-dom-query": {
-      "verifiedAt": "2026-10-21T18:23:07.043Z",
-      "sourceHash": "b7b85ddfec4b1f46",
+      "verifiedAt": "2026-11-23T01:21:39.965Z",
+      "sourceHash": "2ff2f67126c4d990",
       "ok": true,
       "checks": [
         {
@@ -5670,8 +5720,8 @@
       ]
     },
     "d06-dom-create-update": {
-      "verifiedAt": "2026-10-21T18:23:09.687Z",
-      "sourceHash": "ebe5cad9ffb7f976",
+      "verifiedAt": "2026-11-23T01:21:43.798Z",
+      "sourceHash": "be69aca6ed60d211",
       "ok": true,
       "checks": [
         {
@@ -5792,8 +5842,8 @@
       ]
     },
     "d07-events": {
-      "verifiedAt": "2026-11-18T11:14:10.670Z",
-      "sourceHash": "343d90f01fb49af4",
+      "verifiedAt": "2026-11-23T01:21:50.070Z",
+      "sourceHash": "64c44d8e4d73aa9c",
       "ok": true,
       "checks": [
         {
@@ -5899,8 +5949,8 @@
       ]
     },
     "d08-bubbling-delegation": {
-      "verifiedAt": "2026-10-21T18:23:19.313Z",
-      "sourceHash": "845d7d4b1dee89fc",
+      "verifiedAt": "2026-11-23T01:21:55.186Z",
+      "sourceHash": "40d568fa24ce8eda",
       "ok": true,
       "checks": [
         {
@@ -6006,8 +6056,8 @@
       ]
     },
     "d09-form-validation": {
-      "verifiedAt": "2026-10-21T18:23:25.728Z",
-      "sourceHash": "01065e1fc63010b6",
+      "verifiedAt": "2026-11-23T01:22:02.342Z",
+      "sourceHash": "0e49c717100b79fd",
       "ok": true,
       "checks": [
         {
@@ -6098,8 +6148,8 @@
       ]
     },
     "d10-state-and-render": {
-      "verifiedAt": "2026-11-18T11:23:38.423Z",
-      "sourceHash": "ca2f50e3a03a7c86",
+      "verifiedAt": "2026-11-23T01:22:05.093Z",
+      "sourceHash": "4ce41fb4e5cf9f5e",
       "ok": true,
       "checks": [
         {
@@ -6190,8 +6240,8 @@
       ]
     },
     "e01-event-loop": {
-      "verifiedAt": "2026-10-21T18:23:28.544Z",
-      "sourceHash": "883cb12fb24c3566",
+      "verifiedAt": "2026-11-23T01:22:06.149Z",
+      "sourceHash": "52a36ab9d867556d",
       "ok": true,
       "checks": [
         {
@@ -6287,8 +6337,8 @@
       ]
     },
     "e02-promises": {
-      "verifiedAt": "2026-10-21T18:23:29.205Z",
-      "sourceHash": "8f3e67a17837ffc3",
+      "verifiedAt": "2026-11-23T01:22:07.277Z",
+      "sourceHash": "ead78ca4e0ac4350",
       "ok": true,
       "checks": [
         {
@@ -6404,8 +6454,8 @@
       ]
     },
     "e03-async-await": {
-      "verifiedAt": "2026-10-21T18:23:33.173Z",
-      "sourceHash": "1b2f511ac620deb4",
+      "verifiedAt": "2026-11-23T01:22:11.731Z",
+      "sourceHash": "500be22fddd5b010",
       "ok": true,
       "checks": [
         {
@@ -6551,8 +6601,8 @@
       ]
     },
     "e04-promise-combinators": {
-      "verifiedAt": "2026-10-21T18:23:34.332Z",
-      "sourceHash": "e48032b238bce25f",
+      "verifiedAt": "2026-11-23T01:22:13.332Z",
+      "sourceHash": "a6bd8c7594215357",
       "ok": true,
       "checks": [
         {
@@ -6673,8 +6723,8 @@
       ]
     },
     "e05-fetch-json": {
-      "verifiedAt": "2026-10-21T18:23:38.214Z",
-      "sourceHash": "211dbf9d411ce153",
+      "verifiedAt": "2026-11-23T01:22:17.703Z",
+      "sourceHash": "d1a279dec3458192",
       "ok": true,
       "checks": [
         {
@@ -6790,8 +6840,8 @@
       ]
     },
     "e06-runtime-validation": {
-      "verifiedAt": "2026-10-21T18:23:38.585Z",
-      "sourceHash": "f26e78e8606f3117",
+      "verifiedAt": "2026-11-23T01:22:18.490Z",
+      "sourceHash": "703106c8ad102df2",
       "ok": true,
       "checks": [
         {
@@ -6803,6 +6853,16 @@
           "target": "playground:parse-user:run",
           "ok": true,
           "detail": "期望 done，实际 done；输出：[log] 用户 1： { id: 1, name: 'Ada', email: 'ada@example.com' } | [log] 用户 2 的数据有问题：id 应该是整数 | [log] 用户 3 的数据有问题：用户应该是对象"
+        },
+        {
+          "target": "playground:item-paths:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:item-paths:run",
+          "ok": true,
+          "detail": "期望 error，实际 error（TypeError: second.price.toFixed is not a function）；输出：[log] [ 'items[1].price 应该是数字', 'items[2] 应该是对象' ] | [error] Uncaught TypeError: second.price.toFixed is not a function\n    at main.ts:20:28"
         },
         {
           "target": "playground:optional-and-dates:types",
@@ -6887,8 +6947,8 @@
       ]
     },
     "e07-loading-states": {
-      "verifiedAt": "2026-10-21T18:24:07.512Z",
-      "sourceHash": "88e28d8c7211e9c1",
+      "verifiedAt": "2026-11-23T01:22:48.744Z",
+      "sourceHash": "6dfd8fdfea25f95c",
       "ok": true,
       "checks": [
         {
@@ -6984,8 +7044,8 @@
       ]
     },
     "e08-abort-races": {
-      "verifiedAt": "2026-10-21T18:24:18.776Z",
-      "sourceHash": "0f3928890be14e34",
+      "verifiedAt": "2026-11-23T01:23:00.804Z",
+      "sourceHash": "62673753f84274d9",
       "ok": true,
       "checks": [
         {
@@ -7017,6 +7077,16 @@
           "target": "playground:timeout:run",
           "ok": true,
           "detail": "期望 done，实际 done；输出：[log] 超时： TimeoutError | [log] 用户取消： AbortError"
+        },
+        {
+          "target": "playground:own-signal:types",
+          "ok": true,
+          "detail": "诊断符合预期（0 个故意的错误）"
+        },
+        {
+          "target": "playground:own-signal:run",
+          "ok": true,
+          "detail": "期望 done，实际 done；输出：[log] 处理完了 a | [log] 处理完了 b | [log] 处理完了 c | [log] 停下了： AbortError"
         },
         {
           "target": "exercise:latest-search:starter:starter",
@@ -7101,8 +7171,8 @@
       ]
     },
     "e09-storage-serialization": {
-      "verifiedAt": "2026-10-21T18:24:20.172Z",
-      "sourceHash": "237ffd886ed726ca",
+      "verifiedAt": "2026-11-23T01:23:02.932Z",
+      "sourceHash": "3421823786346750",
       "ok": true,
       "checks": [
         {
@@ -7193,8 +7263,8 @@
       ]
     },
     "e10-url-routing": {
-      "verifiedAt": "2026-10-21T18:24:25.066Z",
-      "sourceHash": "34a7b0289d2c3a57",
+      "verifiedAt": "2026-11-23T01:23:08.859Z",
+      "sourceHash": "83c7f33a19e23b99",
       "ok": true,
       "checks": [
         {
@@ -7310,8 +7380,8 @@
       ]
     },
     "e11-cors": {
-      "verifiedAt": "2026-10-21T18:24:25.361Z",
-      "sourceHash": "ceca70dde8708dad",
+      "verifiedAt": "2026-11-23T01:23:09.468Z",
+      "sourceHash": "944032490d54fb99",
       "ok": true,
       "checks": [
         {
@@ -7392,8 +7462,8 @@
       ]
     },
     "e12-xss": {
-      "verifiedAt": "2026-11-18T11:14:14.672Z",
-      "sourceHash": "8aa70fe1d2ce4807",
+      "verifiedAt": "2026-11-23T01:23:11.620Z",
+      "sourceHash": "e5541d039e138e63",
       "ok": true,
       "checks": [
         {
@@ -7499,8 +7569,8 @@
       ]
     },
     "e13-env-secrets": {
-      "verifiedAt": "2026-10-21T18:24:27.106Z",
-      "sourceHash": "e99b89a0e95eda8f",
+      "verifiedAt": "2026-11-23T01:23:12.450Z",
+      "sourceHash": "c018619d714e949d",
       "ok": true,
       "checks": [
         {
@@ -7596,8 +7666,8 @@
       ]
     },
     "f01-node-npm": {
-      "verifiedAt": "2026-10-21T18:24:27.698Z",
-      "sourceHash": "e98e748be682d1ae",
+      "verifiedAt": "2026-11-23T01:23:13.600Z",
+      "sourceHash": "ad17850fddb4e8cd",
       "ok": true,
       "checks": [
         {
@@ -7713,8 +7783,8 @@
       ]
     },
     "f02-vite-project": {
-      "verifiedAt": "2026-10-21T18:24:28.036Z",
-      "sourceHash": "913c57c7230bf3f2",
+      "verifiedAt": "2026-11-23T01:23:14.322Z",
+      "sourceHash": "4cb8242a6e25c52c",
       "ok": true,
       "checks": [
         {
@@ -7805,8 +7875,8 @@
       ]
     },
     "f03-tsconfig": {
-      "verifiedAt": "2026-10-21T18:24:28.458Z",
-      "sourceHash": "ec989902c16a7771",
+      "verifiedAt": "2026-11-23T01:23:15.325Z",
+      "sourceHash": "9974383c65b7cb7d",
       "ok": true,
       "checks": [
         {
@@ -7902,8 +7972,8 @@
       ]
     },
     "f04-devtools": {
-      "verifiedAt": "2026-10-21T18:24:28.922Z",
-      "sourceHash": "61a9f4ccc40ac058",
+      "verifiedAt": "2026-11-23T01:23:16.340Z",
+      "sourceHash": "798d40d8f933ed17",
       "ok": true,
       "checks": [
         {
@@ -8004,8 +8074,8 @@
       ]
     },
     "f05-debugging-practice": {
-      "verifiedAt": "2026-10-21T18:24:29.450Z",
-      "sourceHash": "fc38483e929227e9",
+      "verifiedAt": "2026-11-23T01:23:17.320Z",
+      "sourceHash": "32b5deae0fd8dff8",
       "ok": true,
       "checks": [
         {
@@ -8101,8 +8171,8 @@
       ]
     },
     "f06-unit-tests": {
-      "verifiedAt": "2026-10-21T18:24:30.567Z",
-      "sourceHash": "db44114ac732e363",
+      "verifiedAt": "2026-11-23T01:23:19.804Z",
+      "sourceHash": "d20be1cc2fa77c3b",
       "ok": true,
       "checks": [
         {
@@ -8183,8 +8253,8 @@
       ]
     },
     "f07-type-tests": {
-      "verifiedAt": "2026-10-21T18:24:31.421Z",
-      "sourceHash": "7b8dbf2dab087350",
+      "verifiedAt": "2026-11-23T01:23:21.662Z",
+      "sourceHash": "e5ce350bfc991393",
       "ok": true,
       "checks": [
         {
@@ -8260,8 +8330,8 @@
       ]
     },
     "f08-dom-tests": {
-      "verifiedAt": "2026-10-21T18:24:43.455Z",
-      "sourceHash": "3298ef82da499d59",
+      "verifiedAt": "2026-11-23T01:23:39.002Z",
+      "sourceHash": "dbb7e340c5f0d3ce",
       "ok": true,
       "checks": [
         {
@@ -8327,8 +8397,8 @@
       ]
     },
     "f09-e2e": {
-      "verifiedAt": "2026-10-21T18:24:54.928Z",
-      "sourceHash": "4bb10e5cca7f7934",
+      "verifiedAt": "2026-11-23T01:23:52.463Z",
+      "sourceHash": "a337c761b63ba72a",
       "ok": true,
       "checks": [
         {
@@ -8404,13 +8474,13 @@
         {
           "target": "exercise:poll:wrong:sleep-first",
           "ok": true,
-          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 第一次就成功时立即完成，而且是立刻尝试的 ⟶ expect(…).toEqual([ 1792607091748 ]),poll › 每隔 interval 重试，直到成功 ⟶ TimeoutError: 测试 超过 3000 ms 仍未完成：可能有 Promise 永远不会 resolve，或忘记 await。,poll › 超时后以最后一次的错误拒绝；最后一次尝试正好在截止时间 ⟶ expect(…).toMatchObject({ message: '第 21 次失败' }),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
+          "detail": "被拒绝（tests）；types=ok rules=ok tests=fail(poll › 第一次就成功时立即完成，而且是立刻尝试的 ⟶ expect(…).toEqual([ 1795397029281 ]),poll › 每隔 interval 重试，直到成功 ⟶ TimeoutError: 测试 超过 3000 ms 仍未完成：可能有 Promise 永远不会 resolve，或忘记 await。,poll › 超时后以最后一次的错误拒绝；最后一次尝试正好在截止时间 ⟶ expect(…).toMatchObject({ message: '第 21 次失败' }),poll › 自定义 timeout 与 interval：截止时间不是 interval 的整数倍 ⟶ expect(…).toEqual([ 0, 50, 100, 120 ]),poll › 异步的 check：等它完成之后再开始计算下一次的间隔，不会重叠 ⟶ expect(…).toEqual([ 0, 130, 260 ]))"
         }
       ]
     },
     "f10-git": {
-      "verifiedAt": "2026-10-21T18:24:55.349Z",
-      "sourceHash": "f092527e90c1b536",
+      "verifiedAt": "2026-11-23T01:23:53.453Z",
+      "sourceHash": "8d89d9cc2a557b28",
       "ok": true,
       "checks": [
         {
@@ -8511,8 +8581,8 @@
       ]
     },
     "f11-lint-format": {
-      "verifiedAt": "2026-10-21T18:24:55.762Z",
-      "sourceHash": "effb16dd6794e8bd",
+      "verifiedAt": "2026-11-23T01:23:54.264Z",
+      "sourceHash": "ff7b2609ba67bef4",
       "ok": true,
       "checks": [
         {
@@ -8613,8 +8683,8 @@
       ]
     },
     "f12-build-ci": {
-      "verifiedAt": "2026-10-21T18:24:56.109Z",
-      "sourceHash": "17390357c8b1016d",
+      "verifiedAt": "2026-11-23T01:23:55.060Z",
+      "sourceHash": "7db29922ee7a90d2",
       "ok": true,
       "checks": [
         {
@@ -8710,8 +8780,8 @@
       ]
     },
     "g01-jsx-components": {
-      "verifiedAt": "2026-10-21T18:24:58.459Z",
-      "sourceHash": "5d8c2030fa5446fd",
+      "verifiedAt": "2026-11-23T01:23:58.995Z",
+      "sourceHash": "c0a12443abafe8ea",
       "ok": true,
       "checks": [
         {
@@ -8812,8 +8882,8 @@
       ]
     },
     "g02-props": {
-      "verifiedAt": "2026-10-21T18:25:00.773Z",
-      "sourceHash": "853cbe3532944ac6",
+      "verifiedAt": "2026-11-23T01:24:02.815Z",
+      "sourceHash": "a5af1efb69feaaec",
       "ok": true,
       "checks": [
         {
@@ -8914,8 +8984,8 @@
       ]
     },
     "g03-events-state": {
-      "verifiedAt": "2026-11-18T11:14:18.279Z",
-      "sourceHash": "61df8a56bfd85c56",
+      "verifiedAt": "2026-11-23T01:24:06.913Z",
+      "sourceHash": "caa180b454951678",
       "ok": true,
       "checks": [
         {
@@ -9006,8 +9076,8 @@
       ]
     },
     "g04-immutable-updates": {
-      "verifiedAt": "2026-10-21T18:25:07.261Z",
-      "sourceHash": "189224b1be89db30",
+      "verifiedAt": "2026-11-23T01:24:11.753Z",
+      "sourceHash": "667dd6cf6ea8073f",
       "ok": true,
       "checks": [
         {
@@ -9108,8 +9178,8 @@
       ]
     },
     "g05-lists-keys": {
-      "verifiedAt": "2026-10-21T18:25:10.654Z",
-      "sourceHash": "43cb5b39f6d96bea",
+      "verifiedAt": "2026-11-23T01:24:16.733Z",
+      "sourceHash": "2619970e8afa78a0",
       "ok": true,
       "checks": [
         {
@@ -9210,8 +9280,8 @@
       ]
     },
     "g06-controlled-forms": {
-      "verifiedAt": "2026-10-21T18:25:21.468Z",
-      "sourceHash": "da7f9a37b76fb57a",
+      "verifiedAt": "2026-11-23T01:24:30.133Z",
+      "sourceHash": "609202c5cf1b548e",
       "ok": true,
       "checks": [
         {
@@ -9327,8 +9397,8 @@
       ]
     },
     "g07-lifting-state": {
-      "verifiedAt": "2026-10-21T18:25:25.476Z",
-      "sourceHash": "ae3e7ea05ac3dd88",
+      "verifiedAt": "2026-11-23T01:24:36.034Z",
+      "sourceHash": "3adcbf80b13d2ea4",
       "ok": true,
       "checks": [
         {
@@ -9444,8 +9514,8 @@
       ]
     },
     "g08-custom-hooks": {
-      "verifiedAt": "2026-10-21T18:25:28.045Z",
-      "sourceHash": "c95260d1b89831e9",
+      "verifiedAt": "2026-11-23T01:24:40.190Z",
+      "sourceHash": "44da1e76b40777ef",
       "ok": true,
       "checks": [
         {
@@ -9556,8 +9626,8 @@
       ]
     },
     "g09-refs": {
-      "verifiedAt": "2026-10-21T18:25:33.913Z",
-      "sourceHash": "9c6fe568c2cc6506",
+      "verifiedAt": "2026-11-23T01:24:47.784Z",
+      "sourceHash": "a20c375c90bbde8b",
       "ok": true,
       "checks": [
         {
@@ -9653,8 +9723,8 @@
       ]
     },
     "g10-context": {
-      "verifiedAt": "2026-10-21T18:25:37.583Z",
-      "sourceHash": "cbfb66a1a083c9bf",
+      "verifiedAt": "2026-11-23T01:24:53.352Z",
+      "sourceHash": "0f6e469ce011ab8d",
       "ok": true,
       "checks": [
         {
@@ -9755,8 +9825,8 @@
       ]
     },
     "g11-effects": {
-      "verifiedAt": "2026-10-21T18:26:16.250Z",
-      "sourceHash": "d2ae4e6d97bb6588",
+      "verifiedAt": "2026-11-23T01:25:33.855Z",
+      "sourceHash": "9442cf9c00bd9e74",
       "ok": true,
       "checks": [
         {
@@ -9867,8 +9937,8 @@
       ]
     },
     "g12-effect-pitfalls": {
-      "verifiedAt": "2026-10-21T18:26:22.511Z",
-      "sourceHash": "b55f6bd650208eaf",
+      "verifiedAt": "2026-11-23T01:25:42.272Z",
+      "sourceHash": "b6680829f37fc08f",
       "ok": true,
       "checks": [
         {
@@ -9989,8 +10059,8 @@
       ]
     },
     "g13-routing": {
-      "verifiedAt": "2026-10-21T18:26:28.609Z",
-      "sourceHash": "f75220ce94f23502",
+      "verifiedAt": "2026-11-23T01:25:50.677Z",
+      "sourceHash": "3e3abd45c172c8ad",
       "ok": true,
       "checks": [
         {
@@ -10106,8 +10176,8 @@
       ]
     },
     "g14-async-data": {
-      "verifiedAt": "2026-10-21T18:27:23.264Z",
-      "sourceHash": "648b42b191539ad3",
+      "verifiedAt": "2026-11-23T01:26:47.838Z",
+      "sourceHash": "0afffc69c378408e",
       "ok": true,
       "checks": [
         {
@@ -10228,8 +10298,8 @@
       ]
     },
     "g15-a11y-component-tests": {
-      "verifiedAt": "2026-10-21T18:27:30.264Z",
-      "sourceHash": "854e4057fa6d3ab5",
+      "verifiedAt": "2026-11-23T01:26:59.258Z",
+      "sourceHash": "7fecbdb490a416d9",
       "ok": true,
       "checks": [
         {
@@ -10310,8 +10380,8 @@
       ]
     },
     "h01-next-overview": {
-      "verifiedAt": "2026-10-27T16:05:23.263Z",
-      "sourceHash": "cfec494fd6770d17",
+      "verifiedAt": "2026-11-23T01:27:00.246Z",
+      "sourceHash": "448e31824cba75e1",
       "ok": true,
       "checks": [
         {
@@ -10407,8 +10477,8 @@
       ]
     },
     "h02-app-router-layouts": {
-      "verifiedAt": "2026-10-21T18:27:31.131Z",
-      "sourceHash": "89811f8a94016aff",
+      "verifiedAt": "2026-11-23T01:27:01.200Z",
+      "sourceHash": "e368c05f107df26d",
       "ok": true,
       "checks": [
         {
@@ -10524,8 +10594,8 @@
       ]
     },
     "h03-server-client-components": {
-      "verifiedAt": "2026-10-21T18:27:31.639Z",
-      "sourceHash": "6ab664f82671c963",
+      "verifiedAt": "2026-11-23T01:27:02.284Z",
+      "sourceHash": "e77624d8c6730c7c",
       "ok": true,
       "checks": [
         {
@@ -10641,8 +10711,8 @@
       ]
     },
     "h04-data-reading": {
-      "verifiedAt": "2026-10-21T18:27:45.173Z",
-      "sourceHash": "42f0264391ac5a91",
+      "verifiedAt": "2026-11-23T01:27:16.548Z",
+      "sourceHash": "8e0319880ed71ec2",
       "ok": true,
       "checks": [
         {
@@ -10743,8 +10813,8 @@
       ]
     },
     "h05-mutations-validation": {
-      "verifiedAt": "2026-10-21T18:28:06.060Z",
-      "sourceHash": "f1c4be91a3ff5003",
+      "verifiedAt": "2026-11-23T01:27:39.155Z",
+      "sourceHash": "dd12302920f0776c",
       "ok": true,
       "checks": [
         {
@@ -10860,8 +10930,8 @@
       ]
     },
     "h06-server-errors": {
-      "verifiedAt": "2026-10-21T18:28:06.630Z",
-      "sourceHash": "1c497d35da29b0a3",
+      "verifiedAt": "2026-11-23T01:27:40.383Z",
+      "sourceHash": "1bcba288bca5a6bd",
       "ok": true,
       "checks": [
         {
@@ -10967,8 +11037,8 @@
       ]
     },
     "h07-persistence": {
-      "verifiedAt": "2026-10-21T18:28:12.063Z",
-      "sourceHash": "255a91a9b4cc7d84",
+      "verifiedAt": "2026-11-23T01:27:46.567Z",
+      "sourceHash": "00d7047ea8604e02",
       "ok": true,
       "checks": [
         {
@@ -10979,7 +11049,7 @@
         {
           "target": "playground:lost-update:run",
           "ok": true,
-          "detail": "期望 done，实际 done；输出：[log] 同时修改 20 次： 2 | [log] 排队修改 20 次： 20"
+          "detail": "期望 done，实际 done；输出：[log] 同时修改 20 次： 3 | [log] 排队修改 20 次： 20"
         },
         {
           "target": "exercise:todo-repo:starter:starter",
@@ -11079,8 +11149,8 @@
       ]
     },
     "h08-env-config": {
-      "verifiedAt": "2026-10-21T18:28:12.594Z",
-      "sourceHash": "272bed04f3b6c469",
+      "verifiedAt": "2026-11-23T01:27:47.843Z",
+      "sourceHash": "a3f92b600d56995c",
       "ok": true,
       "checks": [
         {
@@ -11211,8 +11281,8 @@
       ]
     },
     "h09-auth-boundaries": {
-      "verifiedAt": "2026-10-21T18:28:13.287Z",
-      "sourceHash": "a20485cf0cf58409",
+      "verifiedAt": "2026-11-23T01:27:49.465Z",
+      "sourceHash": "c46b48570485d9c5",
       "ok": true,
       "checks": [
         {
@@ -11353,8 +11423,8 @@
       ]
     },
     "i01-static-vs-server": {
-      "verifiedAt": "2026-10-21T18:28:13.686Z",
-      "sourceHash": "369fce9321180dab",
+      "verifiedAt": "2026-11-23T01:27:50.317Z",
+      "sourceHash": "09d7762fc516445f",
       "ok": true,
       "checks": [
         {
@@ -11440,8 +11510,8 @@
       ]
     },
     "i02-deploy-static": {
-      "verifiedAt": "2026-10-21T18:28:14.100Z",
-      "sourceHash": "4f55a9533c829aac",
+      "verifiedAt": "2026-11-23T01:27:51.169Z",
+      "sourceHash": "6b58461532b8eeb2",
       "ok": true,
       "checks": [
         {
@@ -11537,8 +11607,8 @@
       ]
     },
     "i03-deploy-server": {
-      "verifiedAt": "2026-10-27T04:32:06.426Z",
-      "sourceHash": "09a88781f8b0baae",
+      "verifiedAt": "2026-11-23T01:27:52.766Z",
+      "sourceHash": "1c0c2db8549e8904",
       "ok": true,
       "checks": [
         {
@@ -11669,8 +11739,8 @@
       ]
     },
     "p1-01-plan-and-model": {
-      "verifiedAt": "2026-10-21T18:28:15.089Z",
-      "sourceHash": "c8c207d111027106",
+      "verifiedAt": "2026-11-23T01:27:53.679Z",
+      "sourceHash": "94e305ec84bdc43d",
       "ok": true,
       "checks": [
         {
@@ -11766,8 +11836,8 @@
       ]
     },
     "p1-02-render-and-add": {
-      "verifiedAt": "2026-10-21T18:48:47.248Z",
-      "sourceHash": "504e512aeb36386e",
+      "verifiedAt": "2026-11-23T01:27:59.638Z",
+      "sourceHash": "07edee77ef7130fe",
       "ok": true,
       "checks": [
         {
@@ -11868,8 +11938,8 @@
       ]
     },
     "p1-03-edit-delete": {
-      "verifiedAt": "2026-10-21T18:28:28.305Z",
-      "sourceHash": "84398ba21ad54376",
+      "verifiedAt": "2026-11-23T01:28:11.836Z",
+      "sourceHash": "ed054ff33c93e908",
       "ok": true,
       "checks": [
         {
@@ -11975,8 +12045,8 @@
       ]
     },
     "p1-04-filters": {
-      "verifiedAt": "2026-10-21T18:28:38.471Z",
-      "sourceHash": "6cbda18b79dd0ca0",
+      "verifiedAt": "2026-11-23T01:28:24.206Z",
+      "sourceHash": "661d040afb6a0c11",
       "ok": true,
       "checks": [
         {
@@ -12082,8 +12152,8 @@
       ]
     },
     "p1-05-persistence": {
-      "verifiedAt": "2026-10-21T18:28:49.256Z",
-      "sourceHash": "eab4fe6387b226b4",
+      "verifiedAt": "2026-11-23T01:28:38.605Z",
+      "sourceHash": "ed1e8526dc4f5f5b",
       "ok": true,
       "checks": [
         {
@@ -12199,8 +12269,8 @@
       ]
     },
     "p1-06-local-project": {
-      "verifiedAt": "2026-10-21T18:29:03.879Z",
-      "sourceHash": "ae4bbeb31178e043",
+      "verifiedAt": "2026-11-23T01:28:55.293Z",
+      "sourceHash": "d8e5f3a5acd218a8",
       "ok": true,
       "checks": [
         {
@@ -12281,8 +12351,8 @@
       ]
     },
     "p2-01-plan-and-types": {
-      "verifiedAt": "2026-10-21T18:29:04.327Z",
-      "sourceHash": "a96ef6e2a65a24ec",
+      "verifiedAt": "2026-11-23T01:28:56.230Z",
+      "sourceHash": "dcf3b675a75d9021",
       "ok": true,
       "checks": [
         {
@@ -12373,8 +12443,8 @@
       ]
     },
     "p2-02-routes-lists": {
-      "verifiedAt": "2026-10-21T18:29:10.204Z",
-      "sourceHash": "20bb3266144ec2b2",
+      "verifiedAt": "2026-11-23T01:29:04.633Z",
+      "sourceHash": "46153b7b0dd6df51",
       "ok": true,
       "checks": [
         {
@@ -12500,8 +12570,8 @@
       ]
     },
     "p2-03-forms": {
-      "verifiedAt": "2026-10-21T18:29:29.375Z",
-      "sourceHash": "49b51f13c3e22b36",
+      "verifiedAt": "2026-11-23T01:29:26.163Z",
+      "sourceHash": "29524f8e572fb8ac",
       "ok": true,
       "checks": [
         {
@@ -12612,8 +12682,8 @@
       ]
     },
     "p2-04-data-state": {
-      "verifiedAt": "2026-10-21T18:31:00.189Z",
-      "sourceHash": "877c7001dda0695b",
+      "verifiedAt": "2026-11-23T01:30:59.143Z",
+      "sourceHash": "ab5991813afdd088",
       "ok": true,
       "checks": [
         {
@@ -12729,8 +12799,8 @@
       ]
     },
     "p2-05-tests": {
-      "verifiedAt": "2026-10-21T18:31:58.093Z",
-      "sourceHash": "4fa684d07ba38cdb",
+      "verifiedAt": "2026-11-23T01:31:58.942Z",
+      "sourceHash": "e1a255e3c9533f5f",
       "ok": true,
       "checks": [
         {
@@ -12796,8 +12866,8 @@
       ]
     },
     "p2-06-deploy": {
-      "verifiedAt": "2026-10-21T18:31:58.517Z",
-      "sourceHash": "148897dfc9cf333e",
+      "verifiedAt": "2026-11-23T01:31:59.371Z",
+      "sourceHash": "7e4274ae3f77a3cd",
       "ok": true,
       "checks": [
         {
@@ -12903,8 +12973,8 @@
       ]
     },
     "p3-01-plan": {
-      "verifiedAt": "2026-10-21T18:31:59.103Z",
-      "sourceHash": "3f8aa0723e266dc4",
+      "verifiedAt": "2026-11-23T01:31:59.972Z",
+      "sourceHash": "a7fe5b9af063d2db",
       "ok": true,
       "checks": [
         {
@@ -13040,8 +13110,8 @@
       ]
     },
     "p3-02-api-validation": {
-      "verifiedAt": "2026-10-21T18:31:59.853Z",
-      "sourceHash": "95de057bd6ecbc55",
+      "verifiedAt": "2026-11-23T01:32:00.809Z",
+      "sourceHash": "71f507148217e94e",
       "ok": true,
       "checks": [
         {
@@ -13167,8 +13237,8 @@
       ]
     },
     "p3-03-persistence": {
-      "verifiedAt": "2026-10-21T18:48:47.737Z",
-      "sourceHash": "2365b63c286469f9",
+      "verifiedAt": "2026-11-23T01:32:01.284Z",
+      "sourceHash": "55e900851a3aed0e",
       "ok": true,
       "checks": [
         {

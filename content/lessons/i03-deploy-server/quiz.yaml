@@ -6,7 +6,7 @@
       correct: true
       explain: 无服务器平台的实例分布在不同的机器上，函数的文件系统只有 /tmp 可写，而且属于一个实例（h07）。要保存的数据放进托管的数据库或者对象存储。
     - text: 没有问题，Vercel 会把每个实例写的文件同步起来
-      explain: 平台不会同步实例的本地文件。
+      explain: 平台不会同步实例的本地文件：每个实例写的文件只有它自己看得到，实例被回收时文件也就没了。
     - text: SQLite 在 Vercel 上会自动换成 Postgres
       explain: 平台不会替你换数据库，要自己写一个新的存储实现。
 - id: rollback-then-push
@@ -17,7 +17,7 @@
       correct: true
       explain: 这是 Vercel 文档中的说明。撤销回滚之后，推送到 main 的提交才会重新自动上线。
     - text: 会，推送到 main 总是会自动上线
-      explain: 回滚之后不是这样。
+      explain: 平时是这样，回滚之后不是：Vercel 关闭了生产域名的自动分配，推送生成的新部署不会自动上线，要先撤销回滚。
     - text: 不会，回滚之后这个项目再也不能部署了
       explain: 可以部署，只是要先撤销回滚，或者手动把一个部署提升为生产部署。
 - id: rollback-migration

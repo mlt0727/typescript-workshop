@@ -7,7 +7,7 @@ problem: 检查“这个 unknown 是不是一个合法的用户对象”往往�
 objectives:
   - 写出返回类型为 value is T 的类型守卫，并在 if 和 filter 中使用
   - 知道 TypeScript 5.5 起，满足条件的简单函数会被自动推断为类型守卫
-  - 理解类型守卫的实现错了，TypeScript 不会发现，它和类型断言一样“相信你”
+  - 理解 TypeScript 不检查类型守卫的实现：守卫写错了它也不会发现，和类型断言一样“相信你”
   - 写出 asserts value is T 和 asserts condition 断言函数，知道调用时被调用的名字必须有明确的类型注解
 references:
   - title: Narrowing（Using type predicates、Assertion functions）— TypeScript Handbook
@@ -23,7 +23,7 @@ references:
 
 ## 类型守卫：value is T
 
-把检查写进函数后，返回类型写成 `参数名 is 类型`，这个函数就成了**类型守卫**（type guard）：它返回 `true` 时，TypeScript 把参数收窄成该类型；返回 `false` 时，从参数的类型中去掉它。
+把检查写进函数后，返回类型写成 `参数名 is 类型`，这个函数就成了**类型守卫**（type guard）：它返回 `true` 时，TypeScript 把参数收窄成该类型；返回 `false` 时，从参数的类型中去掉该类型。
 
 :::playground{#type-guard expect="2322@main.ts:21"}
 ```ts file=main.ts
@@ -55,11 +55,26 @@ console.log(points);
 - 第 21 行：`looksLikePoint` 做的事情完全相同，但返回类型只是 `boolean`，TypeScript 不知道它的含义，结果仍然是 `unknown[]`，报 TS2322。
 :::
 
-TypeScript 5.5 起，没有写返回类型的简单函数（例如 `(x: unknown) => typeof x === 'string'`）会被**自动推断**为类型守卫（a16 中 `filter((n) => n !== null)` 就是这样）。条件是：函数返回 `true` 时能确定参数是某个类型，**返回 `false` 时也能确定参数不是这个类型**。所以 `(x: number | undefined) => x !== undefined` 会被推断，`(x: number | undefined) => !!x` 不会——返回 `false` 时 `x` 也可能是数字 `0`。逻辑稍复杂、或者要在多处复用的检查，还是应该写成有明确返回类型的守卫函数。
+TypeScript 5.5 起，没有写返回类型的简单函数（例如 `(x: unknown) => typeof x === 'string'`）会被**自动推断**为类型守卫（a16 中 `filter((n) => n !== null)` 就是这样）。条件是：函数返回 `true` 时能确定参数是某个类型，**返回 `false` 时也能确定参数不是这个类型**。
+
+:::playground{#inferred-guard expect="2322@main.ts:4"}
+```ts file=main.ts
+const readings: (number | undefined)[] = [3, undefined, 0, 7];
+
+const defined: number[] = readings.filter((x) => x !== undefined);
+const truthy: number[] = readings.filter((x) => !!x);
+console.log(defined, truthy);
+```
+- 第 3 行：回调 `x !== undefined` 被推断为类型守卫，`filter` 的结果是 `number[]`。
+- 第 4 行：`!!x` 没有被推断，结果仍然是 `(number | undefined)[]`，报 TS2322。原因是它返回 `false` 时，`x` 可能是 `undefined`，也可能是数字 `0`，不能确定 `x` 不是 `number`。
+- 运行一下：输出 `[ 3, 0, 7 ] [ 3, 7 ]`。`!!x` 把 `0` 也筛掉了，所以它不能当作“是不是 `number`”的守卫。
+:::
+
+逻辑稍复杂或者要在多处复用的检查，还是应该写成有明确返回类型的守卫函数。
 
 ## TypeScript 完全相信你的守卫
 
-TypeScript 不会检查守卫的实现是否真的和返回类型相符。一个写错的守卫，和 `as` 类型断言一样危险：类型检查通过，错误推迟到运行时。
+TypeScript 不会检查守卫的实现是否真的和返回类型相符。一个写错的守卫，和 `as` 类型断言（a05 提过，b16 会细讲）一样危险：类型检查通过，错误推迟到运行时。
 
 :::playground{#lying-guard run=error}
 ```ts file=main.ts
@@ -76,14 +91,14 @@ if (isUser(data)) {
 ```
 - `isUser` 只检查了“是对象”，没有检查 `name`。TypeScript 照样信任它，第 9 行没有任何报错。
 - 运行一下：`data.name` 是 `undefined`，抛出 `TypeError`。
-- 守卫的实现要检查返回类型里承诺的**每一项**。字段很多时，E 阶段会介绍用 schema 自动生成校验的工具。
+- 守卫的实现要检查返回类型里承诺的**每一项**。字段很多时，手写这些检查很繁琐；e06 会介绍校验库：只写一份数据结构的定义（schema），就同时得到运行时检查和类型。
 :::
 
 ## 断言函数：不满足就抛错
 
-有时你不想分支，而是想说“这里必须满足，否则就是程序有 bug”。**断言函数**正是这个意思：它的返回类型写成 `asserts 条件参数` 或 `asserts 参数 is 类型`；函数正常返回，就说明断言成立，之后的代码按断言收窄；不成立时它应该抛出错误。
+有时你不想分支，而是想说“这里必须满足，否则就是程序有 bug”。**断言函数**正是这个意思。它的返回类型有两种写法：`asserts 参数 is 类型` 断言参数是这个类型；`asserts 条件参数` 断言传给这个参数的值是 truthy，调用时通常传一个条件表达式。函数正常返回，就说明断言成立，之后的代码按断言收窄；不成立时它应该抛出错误。
 
-断言函数有一个限制：调用时，被调用的名字（包括 `obj.fn` 中的 `obj`）必须有**明确的类型注解**，否则在调用处报 TS2775。用 `const check = (…): asserts … => …` 定义时，函数本身写了返回类型，但变量 `check` 的类型是推断出来的，仍然不行。用 `function` 声明最简单。
+断言函数有一个限制：调用时，被调用的名字（包括 `obj.fn` 中的 `obj`）必须有**明确的类型注解**，否则在调用处报 TS2775。用 `const check = (…): asserts … => …` 定义时，函数本身写了返回类型，但变量 `check` 的类型是推断出来的，仍然不行。用 `function` 声明的函数没有这个问题，所以断言函数用 `function` 声明最简单。
 
 :::playground{#assertions expect="2775@main.ts:24"}
 ```ts file=main.ts
@@ -112,7 +127,8 @@ const check = (condition: unknown): asserts condition => {
 };
 check(found);
 ```
-- 第 14 行之后，`input` 是 `string`；第 18 行之后，`found` 是 `string`。
+- 第 14 行之后，`input` 是 `string`。
+- 第 18 行把条件 `found !== undefined` 传给 `assert`。它正常返回就说明条件为真，所以之后的 `found` 和写在 `if (found !== undefined) { … }` 里面一样，是 `string`。
 - 第 21 行用箭头函数定义了断言函数，但 `check` 这个变量没有明确的类型注解，第 24 行调用它时报 TS2775。把它改成 `function` 声明，或写成 `const check: (condition: unknown) => asserts condition = …`。
 :::
 
@@ -130,7 +146,7 @@ check(found);
 
 - **返回类型写成 `boolean`**：TypeScript 不知道检查的含义，不会收窄。写成 `value is T`。
 - **守卫没有检查承诺的每一项**：TypeScript 不会发现，运行时出错。
-- **用箭头函数定义断言函数却不写类型注解**：TS2775。
+- **用箭头函数定义断言函数，却没有给变量写类型注解**：调用时报 TS2775。改用 `function` 声明。
 - **用断言函数处理正常情况**：预料之中的失败用守卫和分支处理，或返回 `null`（a20）。
 
 ## 下一步

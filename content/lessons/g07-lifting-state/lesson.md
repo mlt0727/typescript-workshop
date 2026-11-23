@@ -195,7 +195,7 @@ createRoot(container).render(<App />);
 
 ## 用组合减少层层传递
 
-state 提升之后，数据有时要穿过好几层组件才能到达用到它的地方，中间的组件只是“转手”（这叫 **prop drilling**）。在求助于 Context（g10）之前，先试试**组合**：让中间的组件接收 `children` 或者其他的 JSX props，由上层直接把内容“插”进去：
+state 提升之后，数据有时要穿过好几层组件才能到达用到它的地方，中间的组件只是“转手”（这叫 **prop drilling**）。在求助于 Context（g10）之前，先试试**组合**：让中间的组件接收 `children` 或者其他以 JSX 为值的 props（JSX props），由上层直接把内容“插”进去：
 
 ```tsx
 // 中间的 Layout 不需要知道 user，只负责摆放
@@ -204,7 +204,7 @@ state 提升之后，数据有时要穿过好几层组件才能到达用到它�
 </Layout>
 ```
 
-`Layout` 的 props 是 `header: ReactNode`、`sidebar: ReactNode` 和 `children: ReactNode`。`user` 从 `App` 直接传给了真正需要它的组件，不经过 `Layout`。
+`Layout` 的 props 是 `header: ReactNode`、`sidebar: ReactNode` 和 `children: ReactNode`。这段 JSX 写在保存 `user` 的 `App` 中，`user` 从 `App` 直接传给了真正需要它的组件，不经过 `Layout`。
 
 ## 泛型的受控组件
 
@@ -220,7 +220,7 @@ type SegmentedProps<T extends string> = {
 };
 ```
 
-`T` 应该从 `options` 推断出来。如果不加 `NoInfer`，TypeScript 也会根据 `value` 推断 `T`：写错成 `value="year"`，`T` 就被放宽成了 `'day' | 'week' | 'year'`，错误被悄悄接受了。`NoInfer<T>`（TypeScript 5.4 加入）告诉编译器“不要从这里推断 `T`”，于是 `value="year"` 会报错。挑战题会实现这个组件。
+`T` 应该从 `options` 推断出来。如果不加 `NoInfer`，TypeScript 也会根据 `value` 推断 `T`：写错成 `value="year"`，`T` 就被放宽成了 `'day' | 'week' | 'year'`，错误被悄悄接受了。c08 讲过的 `NoInfer<T>` 告诉编译器“不要从这里推断 `T`”，于是 `value="year"` 会报错。挑战题会实现这个组件。
 
 ::exercise{#faq}
 

@@ -21,8 +21,8 @@ title: 就地改名
 **`main.ts`**：
 
 1. 点“改名”：进入编辑状态（同一时间只编辑一个任务，点另一个任务的“改名”就换成编辑它），输入框中是原来的标题，**获得焦点并选中全部文字**；
-2. 保存（回车或“保存”）：阻止表单默认的提交；用 `parseTitle` 检查新标题（和添加任务时的规则一样：空白合并成一个空格，不能为空，不超过 40 个字符；`#` 开头的词也只是标题的一部分）。不合法时留在编辑状态，显示 `parseTitle` 返回的错误，输入框中保留用户输入的内容，焦点留在输入框；合法时用 `rename` 动作改名，标题有变化时在 `#announce` 中写入“已改名：新标题”；
-3. 取消（Esc 或“取消”）：不保存；显示错误之后用户修改输入框时，错误提示消失（去掉错误说明和输入框的 `aria-invalid`）；
+2. 保存（回车或“保存”）：阻止表单默认的提交；用 `parseTitle` 检查新标题（和添加任务时的规则一样：空白合并成一个空格，不能为空，不超过 40 个字符；`#` 开头的词也只是标题的一部分）。不合法时留在编辑状态，显示 `parseTitle` 返回的错误，输入框中保留用户输入的内容，焦点留在输入框；显示错误之后用户修改输入框时，错误提示消失（去掉错误说明和输入框的 `aria-invalid`）。合法时用 `rename` 动作改名，标题有变化时在 `#announce` 中写入“已改名：新标题”；
+3. 取消（Esc 或“取消”）：不保存；
 4. 保存、取消之后回到普通的显示，焦点回到这个任务的“改名”按钮；
 5. 编辑时，其他任务的按钮照常工作；任务板因此重新渲染时，表单和正在输入的内容都要保留：在输入框的 `input` 事件中把内容记到 `view.draft` 中。
 
@@ -678,7 +678,7 @@ test('同一时间只编辑一个任务；编辑时其他任务的按钮照常�
 :::
 
 :::hint{level=2}
-`boardRoot.addEventListener('submit', …)` 中，`event.target` 就是被提交的表单；用 `form.elements.namedItem('title')` 取得输入框，检查它是 `HTMLInputElement`。`input` 事件中只更新 `view.draft`，不要重新渲染。`keydown` 中检查 `event.key === 'Escape'`，并且事件来自改名的表单（`closest('form.rename')`）。在 `render.ts` 中，`renderTask` 多接收一个 `view` 参数，`task.id === view.editingId` 时返回表单，输入框的 `value` 是 `view.draft`。
+`boardRoot.addEventListener('submit', …)` 中，`event.target` 就是被提交的表单；`form.elements` 是表单中的控件，`form.elements.namedItem('title')` 按 `name` 取得输入框，再检查它是 `HTMLInputElement`。`input` 事件中只更新 `view.draft`，不要重新渲染。`keydown` 中检查 `event.key === 'Escape'`，并且事件来自改名的表单（`closest('form.rename')`）。在 `render.ts` 中，`renderTask` 多接收一个 `view` 参数，`task.id === view.editingId` 时返回表单，输入框的 `value` 是 `view.draft`。
 :::
 
 :::explanation
@@ -690,7 +690,7 @@ test('同一时间只编辑一个任务；编辑时其他任务的按钮照常�
 
 事件委托在这里不只是为了方便：表单、输入框、取消按钮都是每次渲染新生成的，监听器只能放在不会被替换的 `boardRoot` 上。`submit`、`input` 和 `keydown` 都会冒泡，所以一个 `boardRoot` 就能接住所有任务的表单。
 
-标题的检查和添加任务时用同一个 `parseTitle`：如果改名时只检查“不为空”，就能存进去一个 41 个字符的标题，p1-05 读取保存的数据时会拒绝它。出错时的处理也和添加任务时一样：留在原处、说明原因、标记输入框、保留用户的输入，用户开始修改时错误提示消失（p1-02）。因为输入时不重新渲染，`input` 处理函数直接去掉页面上的错误说明和 `aria-invalid`，同时把 `renameError` 设为 `null`：页面和状态仍然一致。错误的 `p` 有 `role="alert"`，出现时就会被读出。
+标题的检查和添加任务时用同一个 `parseTitle`：如果改名时只检查“不为空”，就能存进去一个 41 个字符的标题，之后 p1-05 读取保存的数据时会拒绝它。出错时的处理也和添加任务时一样：留在原处、说明原因、标记输入框、保留用户的输入，用户开始修改时错误提示消失（p1-02）。因为输入时不重新渲染，`input` 处理函数直接去掉页面上的错误说明和 `aria-invalid`，同时把 `renameError` 设为 `null`：页面和状态仍然一致。错误的 `p` 有 `role="alert"`，出现时就会被读出。
 
 按 Esc 时如果正在用输入法组字（`event.isComposing` 为 `true`），这一下是给输入法的（取消正在组的字），不应该退出编辑。
 :::

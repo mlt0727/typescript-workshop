@@ -148,6 +148,8 @@ createRoot(container).render(<App />);
 
 在组件中加载数据，页面总是先显示出来、再开始请求；如果子组件也要加载数据，它要等父组件的数据到了、渲染出来之后才开始，形成一个接一个的“瀑布”。React Router 的 Data 模式提供了另一种方式：在路由上写一个 **loader**，导航一开始就调用它（嵌套的几个路由的 loader 同时开始），数据到了再显示新的页面，组件用 `useLoaderData()` 读取。
 
+loader 失败时，由路由的**错误边界**来显示：在路由对象上再写一个 `ErrorBoundary` 组件，这个路由的 loader 或组件抛出错误时，React Router 显示它来代替这个路由的组件，它用 `useRouteError()` 取得抛出的错误。
+
 :::playground{#route-loader fixtures=books}
 ```tsx file=App.tsx
 import { data, isRouteErrorResponse, Link, Outlet, useLoaderData, useNavigation, useRouteError, type LoaderFunctionArgs, type RouteObject } from 'react-router';
@@ -252,7 +254,7 @@ function Albums({ albumsPromise }: { albumsPromise: Promise<Album[]> }) {
 // 使用：<Suspense fallback={<p>正在加载…</p>}><Albums albumsPromise={albumsPromise} /></Suspense>
 ```
 
-关键的前提是：**Promise 必须被缓存**，在多次渲染之间是同一个对象。直接在渲染中写 `use(fetch(…))`，每次渲染都会创建一个新的 Promise，组件就会一直挂起、永远显示后备内容，而且每次重试都会再发一次请求。Promise 应该在渲染之外创建：在事件处理函数中、在路由的 loader 中、在服务端组件中（H 阶段），或者由一个负责缓存的框架、库来管理。Suspense 也看不到在 Effect 中发起的请求：它只对 `use` 读取的 Promise（以及 `lazy` 加载的组件等）起作用。
+关键的前提是：**Promise 必须被缓存**，在多次渲染之间是同一个对象。直接在渲染中写 `use(fetch(…))`，每次渲染都会创建一个新的 Promise，组件就会一直挂起、永远显示后备内容，而且每次重新渲染都会再发一次请求。Promise 应该在渲染之外创建：在事件处理函数中、在路由的 loader 中、在服务端组件中（H 阶段），或者由一个负责缓存的框架、库来管理。Suspense 也看不到在 Effect 中发起的请求：它只对 `use` 读取的 Promise（以及用 `lazy` 按需加载代码的组件等）起作用。
 
 ## 真实项目中的数据请求库
 

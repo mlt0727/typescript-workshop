@@ -6,7 +6,7 @@ title: 图形的草稿与统计
 
 1. **`DistributiveOmit<T, K>`**：对联合 `T` 的**每个成员**分别去掉键 `K`；
 2. **`ShapeDraft`**：新建图形时传入的数据，即每种图形去掉 `id`。`{ kind: 'circle', radius: 2 }` 必须能通过检查，`{ kind: 'circle', width: 2 }` 和带 `id` 的对象必须报错；
-3. **`ShapeKind`**：所有图形的 `kind` 组成的联合（从 `Shape` 推导）；**`KindCounts`**：每种 `kind` 都**必须**有一个数字的对象；
+3. **`ShapeKind`**：所有图形的 `kind` 组成的联合（从 `Shape` 推导）；**`KindCounts`**：以每种 `kind` 为键、以数字为值的对象，每个键都**必须**出现；
 4. **`addShape(shapes, draft, nextId)`**：返回在末尾加上新图形的新数组，新图形的 `id` 是 `'s' + nextId`；不修改传入的数组；
 5. **`countByKind(shapes)`**：每种图形的个数，没有的种类也要是 `0`；
 6. **`area(shape)`**：圆的面积 `Math.PI * radius ** 2`，矩形 `width * height`。

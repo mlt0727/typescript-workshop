@@ -14,7 +14,7 @@ type Field =
 
 完成：
 
-1. **`ValueOf<F>`**：一个字段的值的类型。文本是 `string`，数字是 `number`，复选框是 `boolean`，下拉框是它的选项之一（`options` 是 `['free', 'pro']` 时就是 `'free' | 'pro'`）；
+1. **`ValueOf<F>`**：一个字段的值的类型。文本是 `string`，数字是 `number`，复选框是 `boolean`，下拉框是它的选项之一（`options` 是 `['free', 'pro']` 时就是 `'free' | 'pro'`），其他情况是 `never`；
 2. **`FormValues<S>`**：一组字段（对象，键是字段名）对应的值的类型，每个键的值是 `ValueOf<该字段>`；
 3. **`SIGNUP`**：注册表单的字段：`email`（文本）、`age`（数字，最小 0，最大 150）、`plan`（下拉框，选项 `'free'`、`'pro'`）、`agree`（复选框）。要让它**既被检查**符合 `Record<string, Field>`，**又保留**每个字段的字面量类型（下拉框的选项要精确到 `'free' | 'pro'`）；导出 `type SignupValues = FormValues<typeof SIGNUP>`；
 4. **`parseValue(field, raw)`**：把表单中读到的字符串 `raw` 按字段的类型解析，不合法时返回 `null`：

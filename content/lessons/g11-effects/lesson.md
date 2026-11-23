@@ -77,12 +77,12 @@ const container = document.getElementById('root');
 if (!container) throw new Error('页面缺少 #root');
 createRoot(container).render(<App />);
 ```
-- 第 6–14 行：Effect 添加监听器，返回的清理函数移除它。点“隐藏”，控制台打印“停止监听”；再点“显示”，又重新开始。
+- 第 6–14 行：Effect 添加监听器，返回的清理函数移除它。点“隐藏”，控制台打印“停止监听 resize”；再点“显示”，又重新开始。
 - 第 14 行的 `[]` 表示这个 Effect 不依赖任何会变化的值：只在组件出现时执行一次，在组件消失时清理。
 - 如果没有清理函数，每次显示组件都会多加一个监听器，隐藏之后它们仍然在运行，还会去更新一个已经不在页面上的组件。
 :::
 
-**关于开发模式：** 用 `<StrictMode>` 包住应用时（Vite 等脚手架生成的项目默认如此），React 在开发环境中会让每个组件**挂载、卸载、再挂载**一次，于是 Effect 执行、清理、再执行。这是故意的：如果你的 Effect 少了清理，这样一来问题立刻就会暴露出来。生产环境中不会这样。本平台的预览没有使用 `StrictMode`。
+**关于开发模式：** 用 `<StrictMode>` 包住应用时（Vite 等脚手架生成的项目默认如此），React 在开发环境中会让每个组件**挂载、卸载、再挂载**一次，于是 Effect 执行、清理、再执行。这是故意的：如果你的 Effect 少了清理，问题会立刻暴露出来。生产环境中不会这样。本平台的预览没有使用 `StrictMode`。
 
 ## 依赖数组
 
@@ -185,7 +185,7 @@ useEffect(() => {
 }, [roomId]); // 不需要 theme，也不需要 onConnected
 ```
 
-Effect Event 只能在 Effect 内部调用，不要把它传给其他组件，也不要在渲染时调用。挑战题会用它读取最新的回调 props。
+Effect Event 只能在 Effect 内部调用，不要把它传给其他组件，也不要在渲染时调用。下面的小任务会用它调用最新的回调函数。
 
 ::exercise{#effect-hooks}
 

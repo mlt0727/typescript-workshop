@@ -68,7 +68,9 @@ export default function ErrorPage({ error, retry }: { error: unknown; retry: () 
 }
 ```
 
-`error` 的类型是 `unknown`（客户端组件中抛出的可以是任何值），读取属性之前先收窄。`retry()` 重新请求并渲染这一段：它在 16.2 以 `unstable_retry` 的名字加入，16.3 起是稳定的 API。`reset()` 仍然可用，它只清除错误的状态、重新渲染，不重新请求，大多数情况下用 `retry()`。旧的教程中常见的 `error: Error & { digest?: string }` 是以前的写法。在生产服务器上请求这个页面：
+`error` 的类型是 `unknown`（客户端组件中抛出的可以是任何值），读取属性之前先收窄。`retry()` 重新请求并渲染这一段：它在 16.2 以 `unstable_retry` 的名字加入，16.3 起是稳定的 API。`reset()` 仍然可用，它只清除错误的状态、重新渲染，不重新请求，大多数情况下用 `retry()`。旧的教程中常见的 `error: Error & { digest?: string }` 是以前的写法。
+
+在生产服务器上请求这个页面：
 
 - 状态码是 **200**：页面的外壳先送出了，后面的部分出错时状态码已经来不及改（和 h02 中 `notFound()` 的第一次请求一样）。HTML 中有标题“报表”，**没有** `hunter2`；
 - 在浏览器中，`error.tsx` 显示的 `message` 是 `Minified React error #441…`，一段通用的说明，原来的信息不见了；`digest` 是 `2618878670`；
@@ -93,7 +95,7 @@ export default function ErrorPage({ error, retry }: { error: unknown; retry: () 
 
 ## Route Handler
 
-`app/` 中名为 `route.ts` 的文件是 **Route Handler**（h02）：它导出以 HTTP 方法命名的函数，收到 Web 标准的 `Request`，返回 `Response`，和 i01 中的 Vercel Function、这个网站的同步接口一样基于 Web 标准的 `Request`/`Response`。
+`app/` 中名为 `route.ts` 的文件是 **Route Handler**（h02）：它导出以 HTTP 方法命名的函数，收到一个 `Request`，返回一个 `Response`。这两个都是 Web 标准的对象，i01 中的 Vercel Function、这个网站的同步接口用的也是它们。
 
 ```ts
 // app/api/projects/[id]/route.ts

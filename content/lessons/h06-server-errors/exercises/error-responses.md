@@ -283,7 +283,7 @@ describe('readJson', () => {
 
 `Cache-Control: no-store` 防止一个临时的错误（例如数据库重启的那几秒）被 CDN 或浏览器缓存下来。
 
-替代解用一张“错误类 → 状态码”的表，`readJson` 先读出文本再自己 `JSON.parse`，这样“读不出来”和“不是 JSON”自然就分开了。
+另一种写法是用一张“错误类 → 状态码”的表代替一串 `if`，`readJson` 先用 `request.text()` 读出文本，再自己 `JSON.parse`，这样“读不出来”和“不是 JSON”自然就分开了。
 :::
 
 :::variant{kind=alt name=table-and-text}

@@ -2,12 +2,12 @@
 kind: task
 title: 温度类
 ---
-实现 `Temperature` 类：
+起始代码里的 `Temperature` 类有类型错误，功能也不全。把它改写成这样：
 
 - `new Temperature(celsius)` 创建一个温度；
 - `celsius` 是 getter/setter：读取当前摄氏度；赋值时如果低于绝对零度 `-273.15`，抛出 `RangeError`，温度保持不变；
-- `fahrenheit` 是 getter/setter：读取时换算成华氏度（`C × 9 / 5 + 32`）；赋值时换算回摄氏度保存（同样要检查绝对零度）；
-- 构造函数也要检查绝对零度。
+- `fahrenheit` 是 getter/setter：读取时换算成华氏度（`C × 9 / 5 + 32`）；赋值时换算回摄氏度（`(F - 32) × 5 / 9`）保存，换算结果低于绝对零度时同样抛出 `RangeError`，温度保持不变；
+- 构造函数收到低于绝对零度的值时，也抛出 `RangeError`。
 
 温度值必须保存在 JavaScript 的 `#` 私有字段里：实例上不应该有任何可以直接读写的属性（`Object.keys(t)` 是空数组）。
 
@@ -110,7 +110,7 @@ describe('Temperature', () => {
 :::
 
 :::hint{level=2}
-把绝对零度的检查写成一个函数（例如私有的静态方法 `static #check(value: number): number`，不合法就抛出，合法就返回原值），构造函数和两个 setter 都调用它。`fahrenheit` 的 setter 可以直接 `this.celsius = (value - 32) * 5 / 9;`，复用 `celsius` setter 里的检查。
+把绝对零度的检查写成一个函数（例如私有的静态方法 `static #check(value: number): number`，不合法就抛出，合法就返回原值；静态方法要用 `Temperature.#check(…)` 调用），构造函数和 `celsius` 的 setter 都调用它。`fahrenheit` 的 setter 可以直接 `this.celsius = (value - 32) * 5 / 9;`，复用 `celsius` setter 里的检查。构造函数里则要直接给 `#celsius` 赋值：如果只写 `this.celsius = celsius` 让 setter 去赋值，TypeScript 看不出字段已经初始化，会报 TS2564。
 :::
 
 :::explanation
@@ -118,7 +118,9 @@ describe('Temperature', () => {
 
 setter 先检查、后赋值：检查失败时抛出错误，原值不受影响。`fahrenheit` 的 setter 复用了 `celsius` 的 setter，检查逻辑只写一次。
 
-方法名也可以用 `#` 开头，表示私有方法（参考答案中的 `static #check`）。
+构造函数没有用 `this.celsius = celsius` 去复用 setter，而是直接给 `#celsius` 赋值：TypeScript 检查字段是否初始化时，只认声明处的初始值和构造函数里对字段的直接赋值，经过 setter 的赋值它看不出来，会报 TS2564。
+
+方法名也可以用 `#` 开头，表示私有方法（参考答案中的 `static #check`，它是静态的，所以用 `Temperature.#check(…)` 调用）。
 :::
 
 :::variant{kind=alt name=module-function}

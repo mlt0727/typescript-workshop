@@ -41,7 +41,7 @@
   options:
     - text: 新增一种动作却忘了在 update 中处理时，TypeScript 会报错
       correct: true
-      explain: 这是 b09 的穷尽检查：没处理的动作类型会流到 never 分支。
+      explain: "这是 b09 的穷尽检查：漏处理的那种动作会进入 default 分支，它不能赋给 `never` 类型的变量，于是报错。"
     - text: 动作会在运行时自动被验证
       explain: 类型只在编译期起作用。
     - text: 可以省掉 render 函数

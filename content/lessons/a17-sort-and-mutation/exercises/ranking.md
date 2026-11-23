@@ -2,7 +2,7 @@
 kind: challenge
 title: 比赛排名
 ---
-每位选手的成绩是 `{ name: string; score: number; seconds: number }`（得分越高越好，用时越短越好）。实现 `ranking(players)`，返回排名文字数组，格式为 `'名次. 名字'`。
+每位选手的成绩是 `{ name: string; score: number; seconds: number }`（得分越高越好，用时越短越好）。`ranking(players)` 要返回一个字符串数组，按排名先后列出每位选手，每一项的格式为 `'名次. 名字'`。起始代码只是按传入的顺序编号，没有排序，也没有处理并列；把它改写成符合下面规则的实现。
 
 排序规则：
 

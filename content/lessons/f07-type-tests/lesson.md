@@ -58,7 +58,7 @@ expectTypeOf(pick).returns.not.toBeAny();
 | `.toBeCallableWith(…)` | 能用这些参数调用 |
 | `.not`、`.toBeAny()`、`.toBeNever()` | 取反；是不是 `any`、`never` |
 
-上面第二行是一个有用的“错误”：`pick` 是泛型函数，`.parameter(1)` 看到的不是某一次调用，而是把类型参数换成**约束**之后的签名：`T` 成了 `object`，`K` 成了 `keyof object`，也就是 `never`，所以第二个参数的类型是 `readonly never[]`（实际检查得到的）。检查泛型函数在某次调用中的类型，要像第一行那样检查一次具体调用的结果。
+上面代码中的第二个断言是一个有用的“错误”：`pick` 是泛型函数，`.parameter(1)` 看到的不是某一次调用，而是把类型参数换成**约束**之后的签名：`T` 成了 `object`，`K` 成了 `keyof object`，也就是 `never`，所以第二个参数的类型是 `readonly never[]`（实际检查得到的）。检查泛型函数在某次调用中的类型，要像第一个断言那样检查一次具体调用的结果。
 
 **`toEqualTypeOf` 还是 `toExtend`？** 默认用 `toEqualTypeOf`。`toExtend` 只检查“能不能赋值”，返回值多了不该有的属性、或者变成了 `any`，它都会通过。（旧版本中的 `toMatchTypeOf` 从 expect-type 1.2 起已不推荐使用，改用 `toExtend` 或 `toMatchObjectType`。）
 
@@ -99,7 +99,7 @@ pick(usr, ['email']); // usr 拼错了：报错的原因是“找不到 usr”�
 
 ## 在自己的电脑上运行
 
-类型测试的文件名以 `.test-d.ts` 结尾，Vitest 用 `--typecheck` 选项运行它们（会先提示这是一个实验性的功能）。Vitest 要求类型测试也写在 `test()` 中，否则报告“没有找到测试”；这个网站的练习中可以直接写在顶层。在 f06 的项目中写一个 `pick.ts` 和 `pick.test-d.ts`，其中一个断言故意写错：
+类型测试的文件名以 `.test-d.ts` 结尾，Vitest 用 `--typecheck` 选项运行它们（会先提示这是一个实验性的功能）。Vitest 要求类型测试也写在 `test()` 中，否则报告“没有找到测试”；这个网站的练习中可以直接写在顶层。在 f06 的项目的 `src/` 中写一个 `pick.ts`（内容就是上面示例中的 `pick` 函数，前面加上 `export`）和下面的 `pick.test-d.ts`，其中一个断言故意写错：
 
 ```ts
 import { describe, expectTypeOf, test } from 'vitest';

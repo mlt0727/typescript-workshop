@@ -381,13 +381,13 @@ describe('withErrorHandling', () => {
 :::
 
 :::explanation
-包装函数（高阶函数，b10）把每个接口都要做的事集中在一个地方：生成请求的 id、把错误变成响应、记录日志。具体的 handler 只需要写正常的流程，遇到问题就抛出一个预期的错误。
+包装函数（接收一个函数、返回一个新的函数，和 Python 的装饰器是同一个思路；函数类型见 b10）把每个接口都要做的事集中在一个地方：生成请求的 id、把错误变成响应、记录日志。具体的 handler 只需要写正常的流程，遇到问题就抛出一个预期的错误。
 
 最容易出错的是 Next.js 的控制流。`redirect()` 和 `notFound()` 不是返回一个值，而是**抛出**一个带 `digest` 的错误，由 Next.js 在外面接住、变成跳转或者 404。一个“接住所有错误”的 `catch` 会把它们也变成 500：正文中实测，在 `try` 中调用 `redirect()` 的 Route Handler 返回了 500。真实的项目中用 `next/navigation` 的 `unstable_rethrow(error)`，它认识 Next.js 所有这样的控制流；这里只模拟实测的两种。
 
 日志是给开发者看的，但它同样会被保存、被很多人看到：查询字符串中可能有登录的令牌，所以只记录路径；4xx 是用户的问题，不需要 `error`；5xx 才是程序的问题，要有完整的 `error` 才能查。`requestId` 同时出现在响应头、响应体和日志中，用户报告“请求 req-42 失败了”，开发者就能找到对应的那一条日志，这和 Next.js 给页面错误的 `digest` 是同一个思路。
 
-替代解用 `promise.then(onFulfilled, onRejected)` 把成功和失败分成两个回调，构造新的响应时直接把原来的响应作为初始化参数。注意它先 `Promise.resolve().then(() => handler(…))`：直接写 `handler(…).then(…)` 的话，handler 同步抛出的错误不会进入 `onRejected`，而是让整个请求失败；参考解中 `try` 里的 `await` 两种都能接住。
+另一种写法是用 `promise.then(onFulfilled, onRejected)` 把成功和失败分成两个回调，构造新的响应时直接把原来的响应作为初始化参数（`new Response(response.body, response)`）。这样写时要先 `Promise.resolve().then(() => handler(…))`：直接写 `handler(…).then(…)` 的话，handler 同步抛出的错误不会进入 `onRejected`，而是让整个请求失败；参考解中 `try` 里的 `await` 两种都能接住。
 :::
 
 :::variant{kind=alt name=then-callbacks}

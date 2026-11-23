@@ -15,7 +15,7 @@
   options:
     - text: 忘了放 Provider 时立即得到明确的错误，并且 useAuth 的返回类型不含 null
       correct: true
-      explain: 如果默认值是一个“能用”的对象，没有 Provider 时程序会悄悄地不工作，很难发现。
+      explain: 忘了放 Provider 时，第一次渲染就抛出说明原因的错误；检查之后 useAuth 的返回类型就是 AuthValue。如果默认值是一个“能用”的对象，没有 Provider 时程序会悄悄地不工作，很难发现。
     - text: 这样 Context 的值就不会触发重新渲染
       explain: 默认值和重新渲染无关。Provider 的 value 变化时，使用者都会重新渲染。
     - text: React 要求 Context 的默认值必须是 null

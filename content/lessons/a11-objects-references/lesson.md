@@ -29,7 +29,7 @@ references:
 
 ## 对象字面量
 
-对象字面量 `{ 键: 值 }` 直接创建一个对象，不需要先定义类（和 Python 的 dict 字面量写法相似，但用途更像 Java 里只有字段的对象）。用 `.` 或 `['键']` 读写属性。
+对象字面量 `{ 键: 值 }` 直接创建一个对象，不需要先定义类（和 Python 的 dict 字面量写法相似，但用途更像 Java 里只有字段的对象）。和 Python 不同的是，键通常不加引号：`{ title: '三体' }` 里的 `title` 就是属性名本身，不是变量。用 `.` 或 `['键']` 读写属性。
 
 TypeScript 会根据字面量推断对象的**形状**：有哪些属性、各是什么类型。之后就不能随意添加新属性了：
 
@@ -43,10 +43,10 @@ console.log(book);
 ```
 - 把鼠标停在 `book` 上：类型是 `{ title: string; pages: number; }`。
 - 第 3 行：修改已有属性没有问题（`const` 只禁止重新赋值）。
-- 第 4 行：`author` 不在推断出的形状里，报 TS2339。JavaScript 本身允许随时添加属性（运行一下，输出里有 `author`），但 TypeScript 认为这多半是拼写错误或设计问题。需要的属性应该在创建时就写上，或者在类型里声明为可选属性（B 阶段讲）。
+- 第 4 行：`author` 不在推断出的形状里，报 TS2339。JavaScript 本身允许随时添加属性（运行一下，输出里有 `author`），但 TypeScript 认为这多半是拼写错误或设计问题。需要的属性应该在创建时就写上，或者在类型里声明为可选属性（a08 见过，B 阶段详讲）。
 :::
 
-对象也不是 Python 的 dict：用任意字符串变量作键去读取 `book[key]` 时，TypeScript 会报错（TS7053），因为它无法确定这个键存在。键事先不知道的“字典”，可以用 a18 的 `Map`，或者给对象写一个带**索引签名**的类型（例如 `Record<string, number>`，B 阶段会讲）。
+对象也不是 Python 的 dict：如果 `key` 是一个类型为 `string` 的变量，读取 `book[key]` 会报 TS7053。`key` 可能是任何字符串，TypeScript 无法确定 `book` 上有这个属性（a09 提到的 `for...in` 循环里的 `user[key]` 就是这种情况）。键事先不知道的“字典”，可以用 a18 会讲的 `Map`，或者给对象写一个带**索引签名**的类型（例如 `Record<string, number>`，B 阶段会讲）。
 
 ## 变量保存的是引用
 
@@ -72,9 +72,9 @@ console.log(original.name);
 
 ## 浅拷贝：只复制一层
 
-需要一个可以独立修改的副本时，最常用的写法是**展开语法**：`{ ...obj }` 复制对象，`[...arr]` 复制数组（下一课会讲它的更多用法）。展开之后还可以接着写属性，同名属性以后写的为准：`{ ...user, name: 'Grace' }` 得到一个 `name` 被替换的副本。它们都是**浅拷贝**：只复制最外面一层，嵌套的对象和数组仍然是共享的。
+需要一个可以独立修改的副本时，最常用的写法是**展开语法**：`{ ...obj }` 复制对象，`[...arr]` 复制数组（下一课会讲它的更多用法）。展开之后还可以接着写属性，同名的属性以写在后面的为准：`{ ...user, name: 'Grace' }` 得到一个 `name` 被替换的副本。这几种写法都是**浅拷贝**：只复制最外面一层，嵌套的对象和数组仍然是共享的。
 
-需要连嵌套内容一起复制（**深拷贝**）时，用 `structuredClone(obj)`。它是浏览器和 Node.js 都提供的全局函数，可以复制普通对象、数组、`Date`、`Map` 等，但不能复制函数。
+需要连嵌套内容一起复制（**深拷贝**）时，用 `structuredClone(obj)`。它是浏览器和 Node.js 都提供的全局函数，可以复制普通对象、数组、`Date`、`Map` 等，但不能复制函数：对象里有函数时，它会抛出异常。
 
 :::playground{#shallow-copy}
 ```ts file=main.ts
@@ -97,7 +97,7 @@ console.log(original.tags, deep.tags);
 
 ## 遍历对象的属性
 
-`Object.keys(obj)`、`Object.values(obj)`、`Object.entries(obj)` 分别返回属性名数组、属性值数组和 `[键, 值]` 数组：
+`Object.keys(obj)`、`Object.values(obj)`、`Object.entries(obj)` 分别返回属性名的数组、属性值的数组，以及由一对对 `[键, 值]` 组成的数组：
 
 :::playground{#entries}
 ```ts file=main.ts
@@ -111,7 +111,7 @@ for (const [fruit, count] of Object.entries(stock)) {
 }
 ```
 - 第 6 行的 `const [fruit, count]` 把每一项 `[键, 值]` 拆成两个变量，类似 Python 的 `for k, v in d.items()`。这种写法叫**解构**，下一课详讲。
-- `Object.keys` 的返回类型是 `string[]`，不是 `('apple' | 'banana' | 'cherry')[]`。原因与 TypeScript 的结构化类型有关，B 阶段会解释。
+- `Object.keys` 的返回类型是 `string[]`，不是 `('apple' | 'banana' | 'cherry')[]`（原因与 TypeScript 的结构化类型有关，B 阶段会解释）。所以拿它返回的键去读 `stock[key]`，会报本课开头说的 TS7053；键和值都要用时，像第 6 行那样用 `Object.entries`。
 :::
 
 ::exercise{#with-nickname}
@@ -127,7 +127,7 @@ for (const [fruit, count] of Object.entries(stock)) {
 - **以为赋值会复制对象**：`const b = a` 之后，`a` 和 `b` 是同一个对象。
 - **在函数里修改传入的对象**：调用方的数据会被意外改变。需要修改时，返回一个新对象。
 - **以为 `{ ...obj }` 是深拷贝**：嵌套的数组和对象仍然共享。
-- **把普通类型的对象当字典用**：用任意字符串作键会报 TS7053。键不固定时用 `Map`，或使用带索引签名的类型。
+- **把普通类型的对象当字典用**：用 `string` 类型的变量作键读取会报 TS7053。键不固定时用 `Map`，或使用带索引签名的类型。
 
 ## 下一步
 

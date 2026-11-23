@@ -7,8 +7,8 @@ title: 用户的创建、修改与摘要
 1. **`NewUser`**：创建用户时传入的数据，没有 `id` 和 `createdAt`；
 2. **`UserPatch`**：修改时传入的补丁，只能包含 `name`、`email`、`bio`，每一项都可以省略；
 3. **`UserSummary`**：列表中显示的摘要，只有 `id` 和 `name`；
-4. **`createUser(input, id, now)`**：返回完整的 `User`；
-5. **`applyPatch(user, patch)`**：返回修改后的新对象，不修改传入的对象。补丁中**值为 `undefined` 的字段不修改**（`{ name: undefined }` 不能把名字变成 `undefined`）；
+4. **`createUser(input, id, now)`**：返回完整的 `User`，`id` 和 `createdAt` 取自参数 `id`、`now`（即使传入的 `input` 中多出了 `id` 或 `createdAt`，也以参数为准）；
+5. **`applyPatch(user, patch)`**：返回修改后的新对象，不修改传入的对象。补丁中**值为 `undefined` 的字段不修改**（`{ name: undefined }` 不能把名字变成 `undefined`），但空字符串 `''` 是正常的值，要照常写入；
 6. **`summarize(users)`**：返回摘要的数组，每一项**只有** `id` 和 `name` 两个属性。
 
 不能使用类型断言。
@@ -165,7 +165,7 @@ applyPatch(user, { createdAt: new Date() });
 
 三个运行时的细节和类型有关：
 
-- **展开的顺序**：`createUser` 写成 `{ ...input, id, createdAt: now }`，新的 `id` 和 `createdAt` 写在后面。同样因为结构化类型，一个完整的 `User` 也能当作 `NewUser` 传入；如果写成 `{ id, createdAt: now, ...input }`，输入中多出的旧 `id` 会覆盖新的；
+- **展开的顺序**：`createUser` 写成 `{ ...input, id, createdAt: now }`，新的 `id` 和 `createdAt` 写在后面。因为结构化类型，一个完整的 `User` 也能当作 `NewUser` 传入；如果写成 `{ id, createdAt: now, ...input }`，输入中多出的旧 `id` 会覆盖新的；
 
 - **补丁中的 `undefined`**：`UserPatch` 的每个属性都是 `string | undefined`，显式的 `{ name: undefined }` 能通过检查。展开合并 `{ ...user, ...patch }` 时，TypeScript 认为 `name` 仍然是 `string`，运行时却是 `undefined`。逐个字段判断 `!== undefined` 才能避免（用 `??` 回退也可以，但要注意它和 `!== undefined` 的区别：`??` 也会跳过 `null`）；
 - **摘要中多余的字段**：`UserSummary` 只有两个属性，但 TypeScript 允许把一个完整的 `User` 当作 `UserSummary` 返回（结构化类型，多余的属性不报错，b02）。如果摘要要发给前端或写进日志，多余的 `email` 就泄露了出去。用解构构造新对象，才真正只有这两个字段。

@@ -264,7 +264,7 @@ console.log(ok, wrong);
 :::
 
 :::hint{level=1}
-`decodeVlq`：用 `BASE64.indexOf(char)` 得到每个字符的值 `digit`。`digit & 31` 是数据，`digit & 32` 不为 0 表示还没结束。用 `value += (digit & 31) * 2 ** shift` 累加（`shift` 每次加 5），一个数结束时：`value % 2 === 1` 是负数，绝对值是 `Math.floor(value / 2)`。循环结束时如果还有没结束的数，抛出错误。
+`decodeVlq`：用 `BASE64.indexOf(char)` 得到每个字符的值 `digit`。`digit & 31` 是数据（`&` 是按位与，和 C++/Java 中一样），`digit & 32` 不为 0 表示还没结束。用 `value += (digit & 31) * 2 ** shift` 累加（`shift` 每次加 5），一个数结束时：`value % 2 === 1` 是负数，绝对值是 `Math.floor(value / 2)`。循环结束时如果还有没结束的数，抛出错误。
 :::
 
 :::hint{level=2}

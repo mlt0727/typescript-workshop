@@ -76,7 +76,7 @@ for (const id of ['outer', 'inner', 'button']) {
 
 1. `event.target` 是事件实际发生的元素，类型是 `EventTarget | null`，先用 `instanceof Element` 收窄；
 2. 点中的可能是按钮里面的图标，用 `target.closest('button')` 向上找到按钮本身；
-3. 确认找到的按钮在这个容器里面：`list.contains(button)`（`closest` 可能一路找到容器外面去）。
+3. 确认找到的按钮在这个容器里面：`list.contains(button)`（`closest` 可能一路找到容器外面去）。`contains` 是节点的方法，参数是 `list` 本身或者在它里面时返回 `true`。
 
 好处是：只需要一个监听器；之后动态添加的元素自动生效，不需要再挂监听器；删除元素时也不用操心它的监听器。
 

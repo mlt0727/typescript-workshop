@@ -64,9 +64,9 @@ console.log(texts.map(Number.parseInt));
 console.log(texts.map((s) => Number.parseInt(s, 10)));
 console.log(texts.map(Number));
 ```
-- 第 3 行输出 `[ 1, NaN, NaN ]`：实际调用的是 `parseInt('1', 0)`、`parseInt('2', 1)`、`parseInt('3', 2)`。进制 `0` 按“未指定”处理（即十进制），所以第一个碰巧正确；进制 1 不合法，二进制里也没有 `3`。TypeScript 不会报错，因为多出来的参数类型恰好兼容。
+- 第 3 行输出 `[ 1, NaN, NaN ]`：实际调用的是 `parseInt('1', 0)`、`parseInt('2', 1)`、`parseInt('3', 2)`。进制 `0` 按“未指定”处理（即十进制），所以第一个碰巧正确；进制 1 不合法，二进制里也没有 `3`。TypeScript 不会报错：下标是 `number`，`parseInt` 的进制参数也是 `number`，类型恰好对得上。
 - 第 4 行：写一个箭头函数，明确地只传需要的参数。这是最稳妥的习惯。
-- 第 5 行：`Number` 只用第一个参数，所以直接传入没问题——但要确认这一点，不如统一写箭头函数。
+- 第 5 行：`Number` 只用第一个参数，所以直接传入没问题——但与其每次都去确认这一点，不如统一写箭头函数。
 :::
 
 ## find、findIndex、some、every
@@ -92,13 +92,14 @@ console.log(users.some((u) => u.age < 25), users.every((u) => u.age >= 18));
 ```
 - 把鼠标停在 `grace` 上：类型是 `{ name: string; age: number; } | undefined`。所以第 8 行用了 a08 的 `?.`。
 - 第 9 行：找不到时得到 `undefined`。
+- 第 11 行输出 `2`，是 `Linus` 的下标。第 12 行输出 `true true`：有人不到 25 岁，并且所有人都满 18 岁。
 :::
 
 ## reduce：把数组汇总成一个值
 
 `arr.reduce((累计值, 元素) => 新的累计值, 初始值)`：从初始值开始，依次用每个元素更新累计值，最后返回累计值。
 
-**始终提供初始值**。不提供时，`reduce` 会拿第一个元素当初始值，空数组时则直接抛出 `TypeError`。
+**始终提供初始值**。不提供时，`reduce` 会拿第一个元素当初始值，空数组时则直接抛出 `TypeError`。初始值还决定了累计值的类型：写了 `0`，累计值就是 `number`，即使数组的元素是对象也一样；不写，累计值只能和元素是同一种类型。
 
 :::playground{#reduce run=error}
 ```ts file=main.ts
@@ -114,14 +115,15 @@ console.log(empty.reduce((sum, s) => sum + s, 0));
 console.log(empty.reduce((sum, s) => sum + s));
 ```
 - 第 2 行：`sum` 从 `0` 开始，依次加上每个分数。
+- 第 5 行：累计值不一定是“和”。这里它是“到目前为止的最高分”，初始值 `-Infinity` 比任何分数都小。
 - 第 9 行：有初始值，空数组得到 `0`。
 - 第 10 行：没有初始值，空数组抛出 `TypeError`。TypeScript 不会提醒你。
-- `reduce` 很灵活，但累计逻辑一复杂就不好读。汇总成对象、分组之类的任务，用 `for...of` 循环或 a18 的 `Map` 往往更清楚。
+- `reduce` 很灵活，但累计逻辑一复杂就不好读。汇总成对象、分组之类的任务，用 `for...of` 循环或之后 a18 要讲的 `Map` 往往更清楚。
 :::
 
 ## 链式调用与 filter 收窄
 
-这些方法都返回新数组，所以可以连起来写。TypeScript 5.5 起，`filter` 的回调如果明显是在排除某种类型（例如 `x !== null`），返回的数组类型也会随之收窄：
+`map` 和 `filter` 返回的还是数组，所以后面可以接着调用下一个方法，连成一串，这叫链式调用。TypeScript 5.5 起，`filter` 的回调如果明显是在排除某种类型（例如 `x !== null`），返回的数组类型也会随之收窄：
 
 :::playground{#chaining}
 ```ts file=main.ts
@@ -142,9 +144,10 @@ const parsed = inputs.map((s) => (s === '' ? null : Number(s)));
 const present = parsed.filter((n) => n !== null);
 console.log(parsed, present);
 ```
-- 第 7–10 行：先筛选已付款的订单，再取出金额，最后求和，得到 `50`。每一步都返回新数组，原来的 `orders` 不变。
+- 第 7–10 行：先筛选已付款的订单，再取出金额，最后求和，得到 `50`。`filter` 和 `map` 各返回一个新数组，原来的 `orders` 不变。
 - 把鼠标停在 `parsed` 和 `present` 上：分别是 `(number | null)[]` 和 `number[]`。TypeScript 从回调 `n !== null` 推断出了类型守卫（B 阶段会讲）。
-- 需要“对每个元素做点事、不需要结果”时，用 `for...of` 或 `forEach`，不要用 `map`。
+- 这种收窄只对元素本身有效。回调检查的是元素的某个属性时（例如 `users.filter((u) => u.email !== null)`），结果数组的元素类型不变，`email` 的类型里仍然有 `null`。
+- 需要“对每个元素做点事、不需要结果”时，用 `for...of` 或 `forEach`（对每个元素调用回调，不返回结果），不要用 `map`：它会白白生成一个没人用的新数组。
 :::
 
 ::exercise{#order-report}

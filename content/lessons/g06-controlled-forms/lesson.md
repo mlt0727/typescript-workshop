@@ -90,7 +90,7 @@ createRoot(container).render(<App />);
 几点说明：
 
 - **数字**：`<input type="number">` 的 `value` 仍然是字符串。state 也存成字符串，用户才能自由地删改（例如先删成空的，再输入新的数字；存成数字的话，`Number('')` 是 0，输入框没法清空）；提交或计算时再转换、校验。只需要整数的字段，也常用 `type="text"` 加 `inputMode="numeric"`，避免浏览器对 `-`、`e` 这类字符的特殊处理。
-- **下拉框的值是 `string`**：如果 state 是联合类型（例如 `'low' | 'normal' | 'high'`），要先检查读到的值属于这个联合，再设置（b07 的类型守卫）。
+- **下拉框的值是 `string`**：如果 state 是联合类型（例如 `'low' | 'normal' | 'high'`），要先检查读到的值属于这个联合，再设置（b08 的自定义类型守卫）。
 - **事件的类型**：处理函数单独写出来时，输入控件用 `ChangeEvent<HTMLInputElement>`（`HTMLSelectElement`、`HTMLTextAreaElement` 同理），表单提交用 `SubmitEvent<HTMLFormElement>`，都从 `react` 导入。很多旧资料中的 `FormEvent`，在较新的 `@types/react` 19（本平台是 19.3）中已经被标为过时。注意 DOM 中也有一个全局的 `SubmitEvent` 类型：忘了从 `react` 导入时，TypeScript 会报告 “Type 'SubmitEvent' is not generic”。
 
 ## 一个对象管理多个字段
@@ -166,7 +166,7 @@ const container = document.getElementById('root');
 if (!container) throw new Error('页面缺少 #root');
 createRoot(container).render(<App />);
 ```
-- 第 15–17 行：`update('pinned', 'yes')` 会报错，因为 `TaskForm['pinned']` 是 `boolean`。泛型参数 `K` 把“键”和“值的类型”联系在了一起（b14）。
+- 第 15–17 行：在组件里试着加一行 `update('pinned', 'yes')`，编辑器会报错，因为 `TaskForm['pinned']` 是 `boolean`。泛型参数 `K` 把“键”和“值的类型”联系在了一起（b14）。
 - 第 19–22 行：下拉框读到的是 `string`，经过 `isPriority` 收窄之后，才能设置给 `Priority` 类型的字段。
 - 第 24–28 行：提交时先 `preventDefault()`，阻止浏览器真的提交表单、刷新页面（d09）；处理完之后，`setForm(EMPTY)` 一次性清空所有字段。
 - 填好表单后按回车或点“添加”，看控制台的输出。

@@ -23,11 +23,13 @@ references:
 
 ## 类型断言 as：相信我
 
-`值 as 类型` 告诉 TypeScript：“把它当作这个类型”。编译期只做一个很宽松的检查：大致是要求其中一个类型能赋值给另一个，否则报 TS2352。所以 `'hello' as number` 会报错，而 `{ path: '/' } as Route` 即使缺了 `auth` 也不报错（`Route` 能赋值给 `{ path: string }`）。它**不生成任何运行时代码**，也不检查值是否真的是这个类型——和 b08 中写错的类型守卫一样，错误被推迟到了运行时。
+`值 as 类型` 告诉 TypeScript：“把它当作这个类型”。编译期只做一个很宽松的检查：大致是值原来的类型和断言的类型，只要有一个能赋值给另一个就放行，否则报 TS2352。所以 `'hello' as number` 会报错；而假设有 `type Route = { path: string; auth: boolean }`，`{ path: '/' } as Route` 即使缺了 `auth` 也不报错（反过来 `Route` 能赋值给 `{ path: string }`，这就够了）。`as` **不生成任何运行时代码**，也不检查值是否真的是这个类型——和 b08 中写错的类型守卫一样，错误被推迟到了运行时。
+
+它也不是 Java/C++ 的强制类型转换：Java 的 `(String) obj` 在运行时检查（不符就抛出 `ClassCastException`），`(int) 3.7` 真的把值转换成 `3`；`as` 既不检查，也不转换。
 
 TS2352 也能被绕过：先断言成 `unknown` 再断言成任何类型（“双重断言”）。看到 `as unknown as` 时要格外警惕。
 
-旧代码里还能看到尖括号写法 `<number>value`，它和 `as` 等价。它不能用在 .tsx 文件里（和 JSX 冲突），开启 `erasableSyntaxOnly`（下一课）时也会报 TS1294，所以现在统一写 `as`。
+旧代码里还能看到尖括号写法 `<number>value`，它和 `value as number` 等价。它不能用在 .tsx 文件里（G 阶段写 React 时用的文件类型，尖括号在那里有别的含义），本平台开启的 `erasableSyntaxOnly` 选项（b12 提过，下一课细讲）也会拒绝它（TS1294），所以现在统一写 `as`。
 
 :::playground{#assertion expect="2352@main.ts:6" run=error}
 ```ts file=main.ts
@@ -42,7 +44,7 @@ console.log(count, forced);
 ```
 - 第 2 行：TypeScript 相信了断言，`user.age` 的类型是 `number`。运行一下：第 4 行抛出 `TypeError`，因为 `age` 根本不存在。
 - 第 6 行：字符串和数字毫无关系，报 TS2352。
-- 第 7 行：双重断言绕过了检查，`forced` 的类型是 `number`，实际是字符串。
+- 第 7 行：双重断言绕过了检查，`forced` 的类型是 `number`，实际是字符串。程序在第 4 行就中断了，所以第 8 行没有输出；把第 4 行注释掉再运行，会看到 `hello hello`。
 :::
 
 **为什么练习禁止 `as`？** 因为几乎所有“需要 `as`”的场合，都有更安全的写法：用 b07 的收窄、b08 的类型守卫，或者把类型注解写对。`as` 合理的用途很少，例如在测试代码中构造特殊的值，或者你确实比编译器知道得多、并且无法用检查来证明（这种情况应该写注释说明理由）。`as const`（下面讲）虽然名为 const 断言（const assertion），但它不会把值当成别的类型，只让推断更精确，所以判题规则放行它。
@@ -59,6 +61,11 @@ console.log(count, forced);
 
 它常和 **`typeof` 类型运算符**一起使用：在**类型的位置**写 `typeof 变量名`，得到这个变量的类型（a02 提到过，这和运行时的 `typeof` 不是一回事）。于是可以从一份常量数据推导出类型，数据和类型永远一致。
 
+得到变量的类型之后，再用 b15 的两个类型运算符取出需要的部分：
+
+- `keyof typeof 对象`：这个对象所有键的联合；
+- `(typeof 数组)[number]`：所有元素类型的联合。这是索引访问类型 `T[K]` 用在数组上：数组的下标是数字，所以用 `number` 作键。
+
 :::playground{#as-const expect="2540@main.ts:10"}
 ```ts file=main.ts
 const COLORS = ['red', 'green', 'blue'] as const;
@@ -73,13 +80,13 @@ console.log(paint('green'), COLORS.length, CONFIG.mode);
 CONFIG.retries = 4;
 ```
 - 把鼠标停在 `COLORS` 上：`readonly ["red", "green", "blue"]`。
-- 第 2 行：`(typeof COLORS)[number]` 取出元组所有元素的类型，得到 `"red" | "green" | "blue"`。以后在数组里加一种颜色，`Color` 自动跟着变。
+- 第 2 行：`(typeof COLORS)[number]` 取出元组所有元素的类型，得到 `"red" | "green" | "blue"`。以后在数组里加一种颜色，`Color` 自动跟着变。（没有第 1 行的 `as const`，`COLORS` 是 `string[]`，`Color` 就只是 `string`。）
 - 第 10 行：`as const` 让属性变成了只读，报 TS2540。
 :::
 
 ## satisfies：检查，同时保留精确的类型
 
-写类型注解 `const x: T = …` 时，`x` 的类型**就是** `T`，值本身更精确的信息被丢掉了。`表达式 satisfies T`（TypeScript 4.9）检查表达式是否符合 `T`，但不会把 `x` 的类型换成 `T`：类型仍然由表达式本身推断。
+写类型注解 `const x: T = …` 时，`x` 的类型**就是** `T`，值本身更精确的信息被丢掉了。换成 `const x = 表达式 satisfies T`（TypeScript 4.9 加入），同样检查表达式是否符合 `T`，但不会把 `x` 的类型换成 `T`：`x` 的类型仍然由表达式本身推断。
 
 推断时会**参考** `T`：`T` 中是字面量联合（包括 `boolean`，它就是 `true | false`）的位置，推断结果会保留字面量，而不是拓宽。b04 中 `{ align: 'left' }` 被拓宽成 `{ align: string }` 的问题，写成 `{ align: 'left' } satisfies { align: Align }` 就解决了：`align` 的类型是 `'left'`。
 
@@ -103,7 +110,8 @@ console.log(annotated.missing?.path);
 console.log(checked.missing);
 console.log(checked.profile.path, typo);
 ```
-- 把鼠标停在 `annotated` 和 `checked` 上对比：前者是 `Record<string, Route>`，任何键都“存在”，第 15 行访问不存在的 `missing` 不报错（只能靠 `?.` 保护）；后者保留了具体的键 `home`、`profile`，而且两个 `auth` 分别是 `false` 和 `true`：`Route` 中 `auth` 是 `boolean`，推断时参考了它，保留了字面量。
+- 把鼠标停在 `annotated` 上：类型是 `Record<string, Route>`（b01：任意字符串键，值都是 `Route`），任何键都“存在”。所以第 15 行访问不存在的 `missing` 不报错，只能靠 `?.` 保护。
+- 再停在 `checked` 上对比：它保留了具体的键 `home`、`profile`，而且两个 `auth` 分别是 `false` 和 `true`。`Route` 中 `auth` 是 `boolean`，推断时参考了它，保留了字面量。
 - 第 13 行：`auth` 写成了字符串，`satisfies` 照样检查出来，报 TS2322。
 - 第 16 行：`checked` 只有 `home` 和 `profile`，访问 `missing` 报 TS2339。拼错的键在编译期就被发现了。
 :::

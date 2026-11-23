@@ -9,11 +9,11 @@
   options:
     - text: "`undefined`"
       correct: true
-      explain: "`=>` 后面的 `{` 被当成函数体，`ok:` 是一个语句标签，函数没有 `return`。要返回对象需要写成 `() => ({ ok: true })`。把鼠标停在 `f` 上可以看到类型是 `() => void`。"
+      explain: "`=>` 后面的 `{` 被当成函数体，`ok:` 是一个语句标签（和 Java 里配合 `break` 使用的标签一样），函数没有 `return`。要返回对象需要写成 `() => ({ ok: true })`。这一行 TypeScript 不会报错，只是把 `f` 的类型推断成 `() => void`。"
     - text: "`{ ok: true }`"
-      explain: 简洁写法中，花括号会被解析成函数体而不是对象字面量。
+      explain: "`=>` 后面紧跟的花括号会被解析成函数体，而不是对象字面量。"
     - text: "`true`"
-      explain: 函数体里没有 `return`，不会返回任何值。
+      explain: 花括号在这里是函数体，里面没有 `return`，所以 `true` 不会被返回出去。
 - id: argument-count
   type: multiple
   prompt: |
@@ -56,7 +56,7 @@
 - id: contextual-type
   type: single
   prompt: |
-    第 4 行的参数 `n` 是什么类型？
+    最后一行里，箭头函数的参数 `n` 是什么类型？
 
     ```ts
     function applyTwice(fn: (n: number) => number, value: number): number {
@@ -71,4 +71,4 @@
     - text: 隐式 `any`，会报 TS7006
       explain: 独立声明的函数参数需要写类型；作为参数传入、类型已知的回调不需要。
     - text: "`unknown`"
-      explain: TypeScript 能从 `applyTwice` 的声明中得到准确的类型。
+      explain: "`unknown` 表示“不知道是什么类型”，使用前必须先检查（之后会讲）。这里用不到它：TypeScript 能从 `applyTwice` 的声明中得到准确的类型。"

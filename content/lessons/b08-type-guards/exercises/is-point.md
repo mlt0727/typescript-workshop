@@ -8,7 +8,7 @@ title: 筛选合法的坐标点
 - 数组中只保留 `x` 和 `y` 都是数字的对象（可以有其他属性），其他元素丢弃；
 - 返回的每个点只包含 `x` 和 `y` 两个属性。
 
-起始代码的 `isPoint` 返回 `boolean`，所以 `filter` 之后 TypeScript 仍然不知道元素是 `Point`。把它改成类型守卫，并确认它检查了承诺的每一项。
+起始代码的 `isPoint` 返回 `boolean`，所以 `filter` 之后 TypeScript 仍然不知道元素是 `Point`。编辑器里没有报错，只是因为 `Array.isArray` 把 `data` 收窄成了 `any[]`，元素是 `any`，检查被关掉了（b06）。把 `isPoint` 改成类型守卫，并确认它检查了承诺的每一项。
 
 :::files{role=starter}
 ```ts file=points.ts

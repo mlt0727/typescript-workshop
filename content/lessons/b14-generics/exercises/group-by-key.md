@@ -4,7 +4,7 @@ title: 通用的分组函数
 ---
 `groupBy(items, keyOf)` 把数组按 `keyOf(元素)` 的结果分组，返回 `Map<string, 元素数组>`；每组内保持原来的顺序，Map 中键的顺序是第一次出现的顺序。
 
-起始代码用了 `any`，返回的分组失去了元素类型。把它改成泛型函数：传入 `User[]` 时，返回 `Map<string, User[]>`；传入 `number[]` 时，返回 `Map<string, number[]>`。
+起始代码的分组逻辑是对的，但它用了 `any`，返回的分组失去了元素类型。把它改成泛型函数（逻辑不用动）：传入 `User[]` 时，返回 `Map<string, User[]>`；传入 `number[]` 时，返回 `Map<string, number[]>`。
 
 （a18 介绍过内置的 `Map.groupBy`，这一题自己实现一个，练习泛型。）
 
@@ -91,7 +91,7 @@ groupBy(users, (u) => {
 :::
 
 :::explanation
-类型参数 `T` 出现在三个位置：数组的元素、回调的参数、结果中的数组元素。它把这三者联系在一起：调用时 TypeScript 从 `items` 推断出 `T`，于是回调的参数 `u` 自动有了类型（不用写注解），结果也是 `Map<string, User[]>`。
+类型参数 `T` 出现在三个位置：数组的元素、回调的参数、结果中的数组元素。它把这三者联系在一起：假设 `users` 是 `User[]`，调用 `groupBy(users, (u) => u.city)` 时，TypeScript 从第一个实参推断出 `T` 是 `User`，于是回调的参数 `u` 自动有了类型（不用写注解），结果也是 `Map<string, User[]>`。
 
 参数写成 `readonly T[]`，说明函数不会修改传入的数组，同时也能接收只读数组。
 :::

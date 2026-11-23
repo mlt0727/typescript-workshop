@@ -8,9 +8,9 @@ title: 成绩单
 { "id": 7, "name": "Ada", "scores": { "数学": 95, "物理": 88 } }
 ```
 
-`scores` 的键是科目名，事先不知道有哪些科目，不同学生的科目也可能不同。
+`scores` 的键是科目名，事先不知道有哪些科目，不同学生的科目也可能不同。分数是不小于 0 的数字，0 分也是有效的分数。
 
-1. 定义并导出 `interface Student`，准确描述上面的形状（`scores` 用索引签名或 `Record`）。
+1. 补全已经导出的 `interface Student`，准确描述上面的形状（`scores` 用索引签名或 `Record`）。
 2. 实现 `bestSubject(student)`：返回分数最高的科目名；并列时取在 `scores` 中**先出现**的那个；没有任何科目时返回 `null`。
 3. 实现 `subjectAverage(students, subject)`：所有**有这门科目**的学生在这门科目上的平均分；没有学生有这门科目时返回 `null`。
 

@@ -23,7 +23,7 @@ references:
 
 ## 字段、构造函数、方法
 
-类的写法和 Java 很接近。不同点：字段要写在类体里（不需要类型前缀，类型写在名字后面）；构造函数叫 `constructor`；访问字段和方法必须写 `this.`。
+类的写法和 Java 很接近。几处不同：字段的类型写在名字后面，和变量一样；构造函数叫 `constructor`；在类里访问字段和方法必须写 `this.`，不能像 Java、C++ 那样省略。和 Python 不同的是，字段要先在类体里声明：给没有声明过的 `this.x` 赋值会报错（TS2339）。
 
 在严格模式下，TypeScript 要求每个字段**都被初始化**：要么在声明处给初始值，要么在构造函数里赋值，否则报 TS2564（`strictPropertyInitialization`）。例外是类型本身允许 `undefined` 的字段，例如可选字段 `nickname?: string`。
 
@@ -54,13 +54,13 @@ console.log(new Forgotten());
 ```
 - 第 2 行：有初始值，类型推断为 `number`。
 - 第 3 行：`readonly` 字段只能在声明处或构造函数里赋值（b03）。
+- 第 17 行：类是 JavaScript 的真实语法，运行时存在，所以可以用 `instanceof`（a02、b07），这里得到 `true`。
 - 第 20 行：`name` 既没有初始值，也没有在构造函数里赋值，报 TS2564。运行一下，第 22 行输出 `Forgotten { name: undefined }`：类型说它是 `string`，实际是 `undefined`。（输出里有 `name` 这个键，是因为现代 JavaScript 的类字段会在创建对象时被“定义”出来，没有初始值时值就是 `undefined`。）
-- 类是 JavaScript 的真实语法，运行时存在，所以可以用 `instanceof`（a02、b07）。
 :::
 
 ## private 与 #私有字段
 
-TypeScript 的 `private` 和 `protected` 与 Java 的含义相似（`protected` 表示子类也可以访问，b13 会用到），但**只在编译期检查**：编译后它们被擦除，字段在运行时就是普通属性，`JSON.stringify`、`Object.keys` 都能看到。甚至在类型检查阶段，用方括号 `account['owner']` 也能绕过 `private` 的限制。
+成员不写修饰符就是公开的（`public`，通常省略不写；Java 不写修饰符则是包内可见）。TypeScript 的 `private` 和 `protected` 与 Java 的含义相似（`protected` 表示子类也可以访问，b13 会用到），但**只在编译期检查**：编译后它们被擦除，字段在运行时就是普通属性，`JSON.stringify`、`Object.keys` 都能看到。甚至在类型检查阶段，用方括号 `account['owner']` 也能绕过 `private` 的限制。
 
 JavaScript 自己有真正私有的字段：名字以 `#` 开头。类外部的代码在运行时也无法读取它（直接写 `obj.#x` 甚至是语法错误）。需要真正隐藏数据时，用 `#` 字段。
 
@@ -88,9 +88,10 @@ account.deposit(100);
 console.log(account.balance, JSON.stringify(account), Object.keys(account));
 console.log(account.owner);
 ```
+- 第 13 行是一个 **getter**：像属性一样用 `account.balance` 读取，不加括号（相当于 Python 的 `@property`）。只有 getter、没有 setter 时，这个属性是只读的，给它赋值会报错。对应地，`set 名字(value) { … }` 定义 **setter**，赋值时会调用它，适合在保存前做检查，下一节有例子。
 - 第 20 行：`JSON.stringify` 和 `Object.keys` 都包含了 `private` 的 `owner`，但没有 `#balance`。
 - 第 21 行：TypeScript 拒绝在类外访问 `private` 字段（TS2341）；但运行一下，这一行照样输出了 `Ada`——编译期的限制在运行时不存在。
-- 第 13 行是一个 **getter**：用 `account.balance` 读取，不加括号。对应地，`set 名字(value) { … }` 定义 **setter**，赋值时会调用它，适合在保存前做检查，见下面的例子。
+- 点击“查看 JS”：`private` 被擦掉了，`owner` 就是一个普通字段；`#balance` 原样保留，因为它本来就是 JavaScript 的语法。
 :::
 
 ## setter 与私有方法
@@ -157,11 +158,12 @@ console.log(new User(1));
 ```
 - 第 9 行：静态工厂方法，通过 `Temperature.fromFahrenheit(…)` 调用。
 - 第 15 行：参数属性被拒绝，报 TS1294。改写方法就像 `Temperature` 那样：在类体中声明字段，在构造函数里赋值。
+- 运行时第 19 行仍然输出了 `User { id: 1 }`。点击“查看 JS”能看到原因：TypeScript 编译器照样为 `User` 生成了字段声明和 `this.id = id;`，这就是上面说的“额外的赋值代码”。只擦除类型的工具不会生成它们。
 :::
 
 ## 方法作为回调
 
-a15 讲过：方法单独取出来调用会丢失 `this`。类的方法同样如此。如果某个方法经常被当作回调传出去（例如事件处理），可以把它写成**箭头函数字段**：箭头函数没有自己的 `this`，它使用创建实例时的 `this`。
+a15 讲过：方法单独取出来调用会丢失 `this`，传递时要用箭头函数包一层（`() => 对象.方法()`）或者用 `bind`。类的方法同样如此。如果某个方法经常被当作回调传出去（例如事件处理），可以把它写成**箭头函数字段**：箭头函数没有自己的 `this`，它使用创建实例时的 `this`，也就是这个实例本身。
 
 :::playground{#method-callback run=error}
 ```ts file=main.ts
@@ -187,7 +189,7 @@ method();
 ```
 - 第 15 行：箭头函数字段在单独调用时仍然使用 `tracker` 作为 `this`，第 16 行输出 `1`。
 - 第 19 行：普通方法单独调用时 `this` 是 `undefined`，抛出 `TypeError`。
-- 代价：箭头函数字段在每个实例上各有一份，而普通方法所有实例共享一份；它也不在原型上，子类不能用 `super.handleWithArrow()` 调用它（TS2855）。只在确实需要当作回调传递时使用。
+- 代价：普通方法只有一份，放在类的**原型**上（所有实例共用的一个对象，实例自己没有的成员会到那里去找）；箭头函数字段和别的字段一样，每个实例各有一份。它不在原型上，所以子类也不能用 `super.handleWithArrow()` 调用它（TS2855，`super` 下一课讲）。只在确实需要当作回调传递时使用。
 :::
 
 ::exercise{#temperature-class}
@@ -202,7 +204,7 @@ method();
 
 - **以为 `private` 会在运行时隐藏数据**：它只在编译期检查。需要真正私有时用 `#` 字段。
 - **字段既没有初始值，也没在构造函数里赋值**：TS2564。
-- **使用参数属性**：开启 `erasableSyntaxOnly` 时不可用，显式声明字段。
+- **使用参数属性**：开启 `erasableSyntaxOnly` 时不可用，改为在类体中声明字段、在构造函数里赋值。
 - **把类的方法直接作为回调传递**：丢失 `this`。用箭头函数包一层，或写成箭头函数字段。
 
 ## 下一步

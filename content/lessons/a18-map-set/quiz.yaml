@@ -19,7 +19,7 @@
     - text: "`number`"
       explain: 不存在的键会得到 `undefined`，TypeScript 把这种可能写进了类型。
     - text: 不存在时抛出异常，所以是 `number`
-      explain: 这是 Python `dict['a']` 的行为。Map 的 `get` 不会抛异常。
+      explain: 这是 Python `dict['a']` 的行为。Map 的 `get` 不会抛异常，键不存在时返回 `undefined`，所以类型里也包含 `undefined`。
 - id: object-key
   type: single
   prompt: |
@@ -46,6 +46,6 @@
       correct: true
       explain: "`JSON.stringify` 不认识 Map。先用 `Object.fromEntries(map)` 转成普通对象，或展开成数组。"
     - text: "`'{\"a\":1}'`"
-      explain: 这是 `JSON.stringify(Object.fromEntries(map))` 的结果。
+      explain: "直接把 Map 传给 `JSON.stringify` 得到的是 `{}`。先用 `Object.fromEntries(map)` 转成普通对象再转换，才是这个结果。"
     - text: "`'[[\"a\",1]]'`"
-      explain: 这是 `JSON.stringify([...map])` 的结果。
+      explain: "直接把 Map 传给 `JSON.stringify` 得到的是 `{}`。先用 `[...map]` 展开成数组再转换，才是这个结果。"

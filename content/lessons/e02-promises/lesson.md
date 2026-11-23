@@ -66,7 +66,7 @@ rollDice(true)
   .finally(() => console.log('第二次掷骰子结束'));
 console.log('同步代码结束');
 ```
-- 第 2 行：`new Promise(执行函数)` 立即调用执行函数，并传给它 `resolve` 和 `reject`。调用 `resolve(值)` 兑现，调用 `reject(原因)` 拒绝。这是把 `setTimeout` 这类基于回调的 API 包装成 Promise 的标准写法。（如果传给 `resolve` 的本身是另一个 Promise，这个 Promise 不会立刻兑现，而是跟随那个 Promise 的结果。）
+- 第 2 行：`new Promise(执行函数)` 立即调用执行函数，并传给它 `resolve` 和 `reject`。调用 `resolve(值)` 兑现，调用 `reject(原因)` 拒绝。这是把 `setTimeout` 这类基于回调的 API 包装成 Promise 的标准写法。（如果传给 `resolve` 的本身是另一个 Promise，`new Promise` 创建的这个 Promise 不会立刻兑现，而是跟随传入的那个 Promise 的结果。）
 - 第 20–27 行只是**登记**回调，不会等待：“同步代码结束”先输出，结果出来后回调才执行（e01 的事件循环）。
 - 第 24 行的 Promise 被拒绝：`then` 的回调被跳过，`catch` 的回调收到错误；`finally` 无论成败都会执行。
 - 实际开发中，你更多是**使用**别人返回的 Promise（例如 `fetch`），很少自己 `new Promise`。
@@ -119,7 +119,7 @@ console.log('1 同步代码');
 
 在 `then` 回调中抛出错误，或者返回一个被拒绝的 Promise，都会让 `then` 返回的 Promise 被拒绝。拒绝会跳过后面的 `then`，一直传到最近的 `catch`。`catch` 本身也返回新的 Promise：处理完错误后，链可以继续。
 
-没有任何 `catch` 处理的拒绝，会被运行环境报告为“未处理的 Promise 拒绝”——浏览器控制台里的红色错误、Node.js 中甚至会让进程退出。
+没有任何 `catch` 处理的拒绝，会被运行环境报告为“未处理的 Promise 拒绝”：浏览器会在控制台里显示一条红色错误，Node.js 甚至会让进程退出。
 
 :::playground{#errors run=error}
 ```ts file=main.ts

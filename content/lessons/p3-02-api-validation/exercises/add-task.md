@@ -6,13 +6,13 @@ title: 添加任务的接口
 
 按顺序检查，遇到第一个问题就返回：
 
-1. `Content-Type` 的媒体类型（`;` 之前的部分，去掉空白、不分大小写）不是 `application/json`：415，`{ "error": "请求体必须是 JSON" }`；
+1. `Content-Type` 的媒体类型（`;` 之前的部分，去掉空白、不分大小写）不是 `application/json`（包括没有这个请求头）：415，`{ "error": "请求体必须是 JSON" }`；
 2. 请求体不是合法的 JSON：400，`{ "error": "请求体不是合法的 JSON" }`；
 3. `store.get(projectId)` 是 `null`，或者项目已经删除：404，`{ "error": "没有这个项目" }`；
 4. 请求体不是对象（`typeof` 不是 `'object'`，或者是 `null`）：400，`{ "error": "不支持的请求" }`；
 5. 项目的状态是 `'done'`：409，`{ "error": "已完成的项目不能修改任务" }`；
 6. 请求体中没有字符串类型的 `title`：400，`{ "error": "不支持的请求" }`；
-7. `title` 去掉首尾的空白之后：为空是 `任务不能为空`；超过 80 个字符（按码位）是 `任务不能超过 80 个字符`；和一个没有删除的任务同名是 `已经有一个叫“上线”的任务`（换成实际的标题）。都是 422，`{ "errors": { "title": "…" } }`；
+7. `title` 去掉首尾的空白之后：为空是 `任务不能为空`；超过 80 个字符（按码点计算）是 `任务不能超过 80 个字符`；和一个没有删除的任务同名是 `已经有一个叫“上线”的任务`（换成实际的标题）。都是 422，`{ "errors": { "title": "…" } }`；
 8. 创建任务：`id` 是 `deps.newId()`，`done` 是 `false`，`position` 比所有任务（包括删除了的）的最大值大 1（没有任务时是 1），`createdAt` 是 `deps.now()`，`deletedAt` 是 `null`。新的项目是原来的项目加上这个任务（放在最后），`version` 加 1，`updatedAt` 是同一个 `deps.now()`。用 `store.replace(新的项目, 原来的 version)` 写入；
 9. 写入成功：201，响应体是 `{ id, title, done }`，响应头 `Location` 是 `/api/projects/{projectId}/tasks/{任务的 id}`；
 10. `replace` 返回 `false`（读取之后别人修改了项目）：从第 3 步开始重新做（重新读取，重新检查）。一共最多做 3 次，都失败时返回 503，`{ "error": "项目正在被频繁修改，请稍后重试" }`，响应头 `Retry-After: 1`。
@@ -449,7 +449,7 @@ describe('addTask', () => {
 :::
 
 :::hint{level=2}
-`request.json()` 放在 `try` 中，失败时返回 400。`'title' in body` 之后，TypeScript 知道 `body.title` 存在（类型是 `unknown`），再用 `typeof` 检查它是不是字符串。最大的位置：`Math.max(0, ...project.tasks.map((t) => t.position))`，0 让空的数组也有结果。
+`request.json()` 放在 `try` 中，失败时返回 400。`'title' in body` 之后，TypeScript 知道 `body.title` 存在（类型是 `unknown`），再用 `typeof` 检查它是不是字符串。长度按码点计算：`[...title].length`（a09）。最大的位置：`Math.max(0, ...project.tasks.map((t) => t.position))`，0 让空的数组也有结果。
 :::
 
 :::explanation

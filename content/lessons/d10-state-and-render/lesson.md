@@ -108,7 +108,7 @@ function update(state: State, action: Action): State {
 }
 ```
 
-这样，所有改变状态的逻辑都集中在 `update` 里；它不碰 DOM，很容易测试。以后增加一种动作，TypeScript 的穷尽检查会提醒你在 `switch` 中处理它。React 的 `useReducer` 用的正是这种写法（G 阶段）。
+这样，所有改变状态的逻辑都集中在 `update` 里；它不碰 DOM，很容易测试。以后增加一种动作，TypeScript 的穷尽检查会提醒你在 `switch` 中处理它。React 提供的 `useReducer` 用的也是这种写法。
 
 ## 不可变的更新
 
